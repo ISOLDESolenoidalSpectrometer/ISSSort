@@ -1,0 +1,6 @@
+*~
+*.o
+analysis/*
+include/*.gch
+*exe
+*.xcworkspace
