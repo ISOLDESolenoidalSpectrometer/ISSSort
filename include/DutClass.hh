@@ -1,7 +1,7 @@
 #ifndef _DutClass_hh
 #define _DutClass_hh
 
-#include "Common.h"
+#include "Common.hh"
 
 #include "TH2.h"
 

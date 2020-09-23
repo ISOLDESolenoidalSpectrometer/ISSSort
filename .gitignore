@@ -4,3 +4,4 @@ analysis/*
 include/*.gch
 *exe
 *.xcworkspace
+*/.DS_Store

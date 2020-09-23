@@ -1,15 +1,10 @@
 // My code include.
-//#include "AnalysisClass.h"
-//#include "Analyzer.h"
-#include "Common.h"
-#include "Converter.h"
-#include "TimeSorter.h"
-#include "Calibrator.h"
-#include "EventBuilder.h"
-#include "DutClass.h"
-
-// Analysis include.
-//#include "AnalysisPulse.h"
+#include "Common.hh"
+#include "Converter.hh"
+#include "TimeSorter.hh"
+#include "Calibrator.hh"
+#include "EventBuilder.hh"
+#include "DutClass.hh"
 
 // ROOT include.
 #include <TTree.h>
