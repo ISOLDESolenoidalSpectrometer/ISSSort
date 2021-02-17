@@ -344,7 +344,7 @@ void Calibrator (DutClass* dut){
 	/*******************/
 	
 	
-	// Do convertion of ASCII files ?
+	// Do conversion of ASCII files ?
 	if ( !dut->GetFlagCalibrateFile() ) {return;}
 	
 	// Loop over the runs, make name for input and output files.

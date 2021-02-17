@@ -8,10 +8,10 @@ INC_DIR     := ./include
 
 ROOTVER     := $(shell root-config --version | head -c1)
 ifeq ($(ROOTVER),5)
-	ROOTCINT  := rootcint
+	ROOTDICT  := rootcint
 	DICTEXT   := .h
 else
-	ROOTCINT  := rootcling
+	ROOTDICT  := rootcling
 	DICTEXT   := _rdict.pcm
 endif
 
@@ -23,32 +23,65 @@ LIBS         := $(ROOTLIBS)
 # Compiler.
 CC          = $(shell root-config --cxx)
 # Flags for compiler.
-CFLAGS		= -c -Wall -Wextra $(ROOTCFLAGS)
+CFLAGS		= -c -Wall -Wextra $(ROOTCFLAGS) -g
 INCLUDES	+= -I$(INC_DIR) -I.
 # Flags for linker.
 LDFLAGS 	+= $(ROOTLDFLAGS) $(ROOTLIBS)
 
 # The object files.
-OBJECTS =   $(SRC_DIR)/Common.o \
-			$(SRC_DIR)/Converter.o \
-			$(SRC_DIR)/TimeSorter.o \
-			$(SRC_DIR)/Calibrator.o \
-			$(SRC_DIR)/EventBuilder.o \
-			$(SRC_DIR)/DutClass.o \
-			$(SRC_DIR)/MyStyle.o
+OBJECTS =  		$(SRC_DIR)/Calibration.o \
+				$(SRC_DIR)/Common.o \
+				$(SRC_DIR)/CommandLineInterface.o \
+				$(SRC_DIR)/Converter.o \
+				$(SRC_DIR)/ISSEvts.o \
+				$(SRC_DIR)/TimeSorter.o \
+				$(SRC_DIR)/EventBuilder.o
  
-#ANALYSIS =  AnalysisPulse.o  
-#OBJECTS += $(ANALYSIS)
+# The header files.
+DEPENDENCIES =  $(INC_DIR)/Calibration.hh \
+				$(INC_DIR)/Common.hh \
+				$(INC_DIR)/CommandLineInterface.hh \
+				$(INC_DIR)/Converter.hh \
+				$(INC_DIR)/ISSEvts.hh \
+				$(INC_DIR)/TimeSorter.hh \
+				$(INC_DIR)/EventBuilder.hh
+ 
 
-midas2root : midas2root.o $(OBJECTS)
-	$(CC) $(LDFLAGS) -o $@ $^
-#	$(CC) $(LDFLAGS) $(LIBS) -o $@ $^
+$(BIN_DIR)/midas2root: midas2root.o $(OBJECTS) midas2rootDict.o
+	mkdir -p $(BIN_DIR)
+	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
 
-midas2root.o : midas2root.cc
+midas2root.o: midas2root.cc
 	$(CC) $(CFLAGS) $(INCLUDES) $^
-	
-$(SRC_DIR)/%.o: $(SRC_DIR)/%.cc $(INC_DIR)/%.hh
+
+$(SRC_DIR)/Calibration.o: $(SRC_DIR)/Calibration.cc $(INC_DIR)/Calibration.hh
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+$(SRC_DIR)/Common.o: $(SRC_DIR)/Common.cc $(INC_DIR)/Common.hh
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(SRC_DIR)/CommandLineInterface.o: $(SRC_DIR)/CommandLineInterface.cc $(INC_DIR)/CommandLineInterface.hh
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(SRC_DIR)/Converter.o: $(SRC_DIR)/Converter.cc $(INC_DIR)/Converter.hh
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(SRC_DIR)/EventBuilder.o: $(SRC_DIR)/EventBuilder.cc $(INC_DIR)/EventBuilder.hh $(SRC_DIR)/ISSEvts.o
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(SRC_DIR)/ISSEvts.o: $(SRC_DIR)/ISSEvts.cc $(INC_DIR)/ISSEvts.hh
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(SRC_DIR)/TimeSorter.o: $(SRC_DIR)/TimeSorter.cc $(INC_DIR)/TimeSorter.hh $(SRC_DIR)/Calibration.o
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+midas2rootDict.o: midas2rootDict.cc midas2rootDict$(DICTEXT) $(INC_DIR)/RootLinkDef.h
+	$(CC) -fPIC $(CFLAGS) $(INCLUDES) -c $<
+	cp midas2rootDict$(DICTEXT) $(BIN_DIR)/
+
+midas2rootDict.cc: $(DEPENDENCIES) $(INC_DIR)/RootLinkDef.h
+	$(ROOTDICT) -f $@ -c $(INCLUDES) $(DEPENDENCIES) $(INC_DIR)/RootLinkDef.h
+
+
 clean:
-	rm -vf midas2root $(SRC_DIR)/*.o $(SRC_DIR)/*~ $(INC_DIR)/*.gch
+	rm -vf $(BIN_DIR)/midas2root $(SRC_DIR)/*.o $(SRC_DIR)/*~ $(INC_DIR)/*.gch *.o $(BIN_DIR)/*.pcm *.pcm $(BIN_DIR)/*Dict* *Dict*

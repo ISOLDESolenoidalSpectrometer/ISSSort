@@ -5,3 +5,5 @@ include/*.gch
 *exe
 *.xcworkspace
 */.DS_Store
+bin/*
+.DS_Store

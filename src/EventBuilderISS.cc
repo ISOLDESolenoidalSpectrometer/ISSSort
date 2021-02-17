@@ -53,7 +53,7 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 		
 		// Create Root ntuple.
 		TFile* output_file = new TFile(output_file_name.c_str(),"recreate");
-		TTree* output_tree = new TTree("ISS_event","ISS_event");
+		TTree* output_tree = new TTree("iss_event","iss_event");
 		common::struct_entry_event s_entry;
 		
 		
@@ -66,11 +66,12 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 			detectors='2'; //my default for now
 			
 			std::cout<< "\n\n************************************************"
-			<< "    WARNING!! Too many detectors defined for the stack for this implementation of the code:"<<common::n_detector
+			<< "\n  WARNING!! Too many detectors defined for the stack for"
+			<< "\n  this implementation of the code:" << common::n_detector
 			<< "\n  something bound to go very wrong!"
-			<< "\n**************************************************"<<std::endl;
+			<< "\n**************************************************" << std::endl;
 			
-			log_file<< "\n\n***  WARNING!! Too many detectors for DSSD stack:"<<common::n_detector<<" ***"
+			log_file << "\n\n***  WARNING!! Too many detectors for DSSD stack:"<<common::n_detector<<" ***"
 			<< "\n  something bound to go very wrong!\n"<<std::endl;
 			
 		}
@@ -100,7 +101,7 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 		//TFile* histo_file = new TFile(histo_file_name.c_str(),"update");
 		//---- declare histograms here!  ----//
 		//TH1I * Hhistogram= new TH1I("Hhistogram","my histogram;x [ch]",10,-0.5,9.5);
-		//output_file->cd(); 
+		//output_file->cd();
 		
 		input_list >> n_input_files;
 		
@@ -229,7 +230,7 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 					hit_counter++; //increase counter for bits of data included in this event
 					// }  //else{ (if all good with life)
 					
-					//record time of R3B for next 
+					//record time of R3B for next
 					time_prev= s_entry_calib.time_stamp;
 					// ***r3b*** not used //} //if(correct type)
 					
@@ -240,7 +241,7 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 					// no my_hits_type[my_type]= my_hits_type[my_type]+1; //count how many of each...
 					
 					//	      if(my_strip<128){ //x strip! -> 0:127
-					//if(my_side==0){ //***R3B*** two sides per module	
+					//if(my_side==0){ //***R3B*** two sides per module
 					//add to position of this event
 					
 					Trig=1;
@@ -298,7 +299,7 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 					   
 					   
 					   //if signal from low range (decay)
-					   //		if(my_type==0){		  
+					   //		if(my_type==0){
 					   //add to energy of this event
 					   sum_e[my_detector][my_side]= sum_e[my_detector][my_side]+ s_entry_calib.energy;
 					   if( s_entry_calib.energy > e_max[my_detector][my_side]){
@@ -324,13 +325,13 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 					   
 					   // last entry in TTree??
 					   
-					   //	  long long next; 
+					   //	  long long next;
 					   //	  next= i+1;
-					   if( (i+1)==n_entries){
+					   if( (i+1)==n_entries) {
 						flag_close_event=true; //set flag to close this event
 						
 					}
-					   else{  //check if next entry is beyond time window: close event!
+					   else {  //check if next entry is beyond time window: close event!
 						input_tree->GetEntry(i+1);
 						
 						// window= time_stamp_first +/- time_window
@@ -349,7 +350,7 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 									<< "\n  t_event_first= " << my_time_first
 									<< "\n  t_event_min= " << my_time_min
 									<< "\n  t_event_max= " << my_time_max
-									<< "\n  t_next_datum= " << s_entry_calib.time_stamp		       
+									<< "\n  t_next_datum= " << s_entry_calib.time_stamp
 									<< "\n  Event#: "<<n_events <<", R3B_calib entry#: " <<i <<" (last in event)\n"<<std::endl;
 									n_cout++;
 								}
@@ -358,11 +359,12 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 								<< "\n  t_event_first= " << my_time_first
 								<< "\n  t_event_min= " << my_time_min
 								<< "\n  t_event_max= " << my_time_max
-								<< "\n  t_next_datum= " << s_entry_calib.time_stamp			       
-								<< "  Event#: "<<n_events <<", R3B_calib entry#: " <<i <<" (last in event)\n"<<std::endl;	
+								<< "\n  t_next_datum= " << s_entry_calib.time_stamp
+								<< "  Event#: "<<n_events <<", R3B_calib entry#: " <<i <<" (last in event)\n"<<std::endl;
 								
 							}
 						}
+						
 					} //if next entry beyond time window: close event!
 					   
 					   
@@ -371,7 +373,7 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 					   //-------------------
 					   if(flag_close_event && hit_counter>0){
 						
-						s_entry.time= my_time_min+(my_time_max-my_time_min)/2; 
+						s_entry.time= my_time_min+(my_time_max-my_time_min)/2;
 						// s_entry.time_ext= s_entry.time_aida+time_ext_offset;
 						s_entry.time_min= my_time_min;
 						s_entry.time_max= my_time_max;
@@ -410,13 +412,13 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 							s_entry.n_hit[j][1]= hits[j][1];
 						}
 						
-						s_entry.flag_time = my_flag_time; /// implement later?
+						s_entry.flag_time = my_flag_time; // implement later?
 						
 						
 						
 						
 						
-						/***** done with calculating values for this struct_event_entry ******/
+						// done with calculating values for this struct_event_entry //
 						
 						if(flag_debug && n_events<10){
 							std::cout<< "\n ++++ EVENT "<<n_events<< "++++\n"
@@ -444,7 +446,7 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 						flag_close_event= false; //wait for noe event
 						flag_skip= false;
 						hit_counter=0;
-						//my_multi=0;      
+						//my_multi=0;
 						//my_hits_type[0]=0;
 						//my_hits_type[1]=0;
 						
@@ -467,16 +469,16 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 							hits[j][1]=0;
 							
 							my_flag_time= true;
+							
 						}
-						
 						
 					} //if close event && hit_counter>0
 					   
-					   } // End of main loop over TTree to process raw MIDAS data entries (for n_entries)
+				} // End of main loop over TTree to process raw MIDAS data entries (for n_entries)
 					   
 					   
-					   output_file->Write();
-					   output_file->Print(); 
+				output_file->Write();
+				output_file->Print();
 					   
 					   // write histograms (etc...) to common root file
 					   //histo_file->cd();
@@ -484,18 +486,18 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 					   
 					   // last step: close all files (closing them can delete some objects from memory)
 					   //histo_file->Close();
-					   output_file->Close();         
+					   output_file->Close();
 					   input_file->Close(); // Close TFile
 					   
-					   std::cout << "\n EventBuilder ...done with file "<<iter_f<<" ." << std::endl;     
+					   std::cout << "\n EventBuilder ...done with file "<<iter_f<<" ." << std::endl;
 					   }// End of: "if is_open".
 					   else{std::cout << "... cannot open file!"<< std::endl;}
 					   
 					   } //for( iter_f<n_input_list
 					   
 					   //    output_file->Write();
-					   //    output_file->Print(); 
-					   //    output_file->Close(); 
+					   //    output_file->Print();
+					   //    output_file->Close();
 					   //    log_file.close();
 					   
 					   input_list.close();
@@ -510,10 +512,10 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 					   
 					   void EventBuilder (DutClass* dut){
 						
-						//DoCalibrate("one", "two", "three", "four"); 
+						//DoCalibrate("one", "two", "three", "four");
 						//std::cout << " Done with test"<<std::endl;
 						
-						/*******************/
+						//
 						
 						
 						// Do convertion of ASCII files ?
@@ -524,8 +526,8 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 						
 						// Write names of input files to a temporary text file
 						std::string input_list_name;
-						input_list_name= dut->GetDataInputList() ; 
-						std::ofstream input_list (input_list_name.c_str(), std::ios::out|std::ios::trunc);  
+						input_list_name= dut->GetDataInputList() ;
+						std::ofstream input_list (input_list_name.c_str(), std::ios::out|std::ios::trunc);
 						
 						// First step of analysis pipe => get root files to loop through
 						if( dut->GetFlagFirstInPipe() ){
@@ -535,9 +537,9 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 							//if list of input files to be read from text file
 							if(dut->GetFlagInputType()){
 								
-								//user provided file with list of input data files 
+								//user provided file with list of input data files
 								std::string user_list_name;
-								user_list_name= dut->GetDataListUser() ; 
+								user_list_name= dut->GetDataListUser() ;
 								std::ifstream user_list (user_list_name.c_str(), std::ios::in);
 								
 								std::cout <<  "File list from file.... "<<user_list_name.c_str() << std::endl;
@@ -570,17 +572,17 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 											//n_files++;
 											input_list << in_line << '\n';
 										}
-										std::cout << "  line " << in_line << " !!! ..."<< std::endl;   
+										std::cout << "  line " << in_line << " !!! ..."<< std::endl;
 									}
 									
 									
 									
 									user_list.close();
-									std::cout << "  Read " << n_files << " from user list ..."<< std::endl;   
+									std::cout << "  Read " << n_files << " from user list ..."<< std::endl;
 									/************BUBUBUBUGGGGG****************
-									 //user provided file with list of input data files 
+									 //user provided file with list of input data files
 									 std::string user_list_name;
-									 user_list_name= dut->GetDataInputList() ; 
+									 user_list_name= dut->GetDataInputList() ;
 									 std::ifstream user_list (user_list_name.c_str(), std::ios::in);
 									 
 									 if(user_list.is_open()){
@@ -619,7 +621,7 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 									<< "_midas.root"; //previous step=> Converter.cc
 									
 									input_list << name_input_file.str() << '\n';
-								}      
+								}
 							}
 							
 						}
@@ -639,10 +641,10 @@ void DoEventBuild(std::string input_list_name, std::string output_file_name, std
 						input_list.close();
 						
 						//std::string input_list_name;
-						//input_list_name= dut->GetDataInputList() ; 
+						//input_list_name= dut->GetDataInputList() ;
 						
 						std::stringstream name_output_file;
-						name_output_file << dut->GetDataOutputPath() 
+						name_output_file << dut->GetDataOutputPath()
 						<< dut->GetDataOutputPrefix()
 						<< "_event.root";
 						

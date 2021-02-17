@@ -1,5 +1,4 @@
 #include "MyStyle.hh"
-#include <TStyle.h>
 
 TStyle* SetStyle(){
 	

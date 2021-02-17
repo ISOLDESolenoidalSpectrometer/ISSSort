@@ -2,12 +2,13 @@
 #include "Common.hh"
 #include "Converter.hh"
 #include "TimeSorter.hh"
+#include "Calibration.hh"
 #include "Calibrator.hh"
 #include "EventBuilder.hh"
-#include "DutClass.hh"
 
 // ROOT include.
 #include <TTree.h>
+#include <TFile.h>
 
 // C++ include.
 #include <iostream>
@@ -16,125 +17,193 @@
 #include <vector>
 #include <sstream>
 
+// Command line interface
+#ifndef __COMMAND_LINE_INTERFACE
+# include "CommandLineInterface.hh"
+#endif
 
 
-// DESCRIPTION:
-// A Unit Under Test (UUT) object is created.
-// The UUT contains as may Device Under Test (DUT) as you need.
-// Each DUT contains a set of analysis.
+int main( int argc, char *argv[] ){
+	
+	// Default parameters and name
+	std::string output_name = "output.root";
+	std::string name_param_file;
+	std::string name_cal_file;
+	std::vector<std::string> input_names;
+	
+	// select what steps of the analysis to go through
+	bool flag_convert = false;
+	bool flag_sort = false;
+	bool flag_eventbuilder = false;
+	
+	// select what steps of the analysis to be forced
+	bool force_convert = false;
+	bool force_sort = false;
+	
+	// Flag for somebody needing help on command line
+	bool help_flag = false;
+	
+	// Command line interface, stolen from MiniballCoulexSort
+	CommandLineInterface *interface = new CommandLineInterface();
 
-DutClass* MakeDut( std::string name, std::string runNo ){
-  
-  std::string dut_name = name;
-  
-  int dut_sides = common::n_side;
-  int dut_asics = common::n_side*common::n_asic;
-  
-  //path for data input files (merged MIDAS or Root)
-  std::string base_path  = "/home/ISOL/Midas-to-Root/";
- 
-  //path for data input files (merged MIDAS or Root)
-  //  std::string data_input_path  = "/MIDAS/R3B-Data/"; //TapeData/NULL/";
-  std::string data_input_path  = "/TapeData/LivTest/";
+	interface->Add("-i", "List of input files", &input_names );
+	interface->Add("-o", "Output file for events tree", &output_name );
+	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
+	interface->Add("-s", "Flag to sort file by time", &flag_sort );
+	interface->Add("-e", "Flag to build physics events", &flag_eventbuilder );
+	interface->Add("-p", "Parameter file", &name_param_file );
+	interface->Add("-c", "Calibration file", &name_cal_file );
+	interface->Add("-h", "Print this help", &help_flag );
 
+	interface->CheckFlags( argc, argv );
+	if( help_flag ) {
+		
+		interface->CheckFlags( 1, argv );
+		return 0;
+		
+	}
 
-  //path to save Root output files
-  std::string data_output_path = "/home/ISOL/Midas-to-Root/analysis/"; 
+	// Check we have data files
+	if( !input_names.size() ) {
+			
+			std::cout << "You have to provide at least one input file!" << std::endl;
+			return 1;
+			
+	}
+	
+	// Check we have a calibration file
+	if( name_cal_file.size() > 0 ) {
+		
+		std::cout << "Calibration file: " << name_cal_file << std::endl;
+		
+	}
+	else {
+		
+		if( flag_sort || flag_eventbuilder )
+			std::cout << "No calibration file provided. Using defaults." << std::endl;
+		name_cal_file = "dummy";
 
-  //file for temprary storage of list of input files
-  //make this hard coded ?
-  std::string data_input_list = "/home/ISOL/Midas-to-Root/temp/test_input.dat";
-  //file with list of input data files provided by the User
-  std::string data_list_user = "/home/ISOL/Midas-to-Root/files/my_data.dat";
+	}
+	
+	Calibration *cal = new Calibration( name_cal_file );
 
+	//------------------------//
+	// Run conversion to ROOT //
+	//------------------------//
+	Converter conv;
+	std::cout << "\n +++ ISS Analysis:: processing Converter +++" << std::endl;
 
+	TFile rtest;
+	std::ifstream ftest;
+	std::string name_input_file;
+	std::string name_output_file;
+	std::string name_log_file;
+	
+	// Check each file
+	for( unsigned int i = 0; i < input_names.size(); i++ ){
+			
+		name_input_file = input_names.at(i);
+		name_output_file = input_names.at(i) + ".root";
+		name_log_file = input_names.at(i) + ".log";
 
-  std::stringstream output_name;
-  output_name << "Alphas_R" << runNo << "_0";
- 
-  std::stringstream data_file_prefix;
-  data_file_prefix << "R" << runNo;
-  std::string data_output_prefix = output_name.str();
-  int run_first = 0; //CHANGE OUTPUT PREFIX!!!
-  int run_total = 1;
+		// If it doesn't exist, we have to convert it anyway
+		// The convert flag will force it to be converted
+		ftest.open( name_output_file.data() );
+		if( !ftest.is_open() ) force_convert = true;
+		else {
+			
+			ftest.close();
+			rtest.Open( name_output_file.data() );
+			if( rtest.IsZombie() ) force_convert = true;
+			else if( flag_convert )
+				std::cout << name_output_file << " already sorted" << std::endl;
+			rtest.Close();
+			
+		}
 
-  std::cout << "\n\n????is this it??? " << data_output_prefix << " "<<run_first<<std::endl;
+		if( flag_convert || force_convert ) {
+			
+			std::cout << name_input_file << " --> ";
+			std::cout << name_output_file << std::endl;
+			
+			conv.ConvertFile( name_input_file, name_output_file, name_log_file );
 
+			force_convert = false;
+			
+		}
 
-  
- 
-  bool flag_first_in_pipe = true;
-  bool flag_input_type = false; //true= read from text file, false= iterate
-  //bool flag_input_type = true; //true= read from text file, false= iterate
+	}
+		
 
-  //select what steps of the analysis to go through
-  bool flag_convert_file = true;
-  bool flag_sort_file = true;
-  bool flag_calibrate_file = true;
-  bool flag_eventbuild_file = true;
+	//-------------------------//
+	// Do time sorting of data //
+	//-------------------------//
+	TimeSorter sort( cal );
+	std::cout << "\n +++ ISS Analysis:: processing TimeSorter +++" << std::endl;
+	
+	// Check each file
+	for( unsigned int i = 0; i < input_names.size(); i++ ){
+			
+		name_input_file = input_names.at(i) + ".root";
+		name_output_file = input_names.at(i) + "_sort.root";
+		name_log_file = input_names.at(i) + ".log";
 
-  //allways false!
-  //  bool flag_analyze_file = false;
-  
-  //  std::vector<AnalysisClass*> v_analysis;
-  //v_analysis.push_back(new AnalysisPulse());
-  
+		// If it doesn't exist, we have to sort it anyway
+		// But only if we want to  build events
+		if( flag_eventbuilder ) {
+			
+			ftest.open( name_output_file.data() );
+			if( !ftest.is_open() ) force_sort = true;
+			else {
+				
+				ftest.close();
+				rtest.Open( name_output_file.data() );
+				if( rtest.IsZombie() ) force_sort = true;
+				else if( flag_sort )
+					std::cout << name_output_file << " already sorted" << std::endl;
+				rtest.Close();
+				
+			}
+			
+		}
 
- 
-  return new DutClass( dut_name,
-		       dut_sides,
-		       dut_asics,
-		       base_path,
-		       data_input_path,
-		       data_output_path,
-		       data_file_prefix.str(),
-		       data_output_prefix,
-		       data_input_list,
-		       data_list_user,
-		       run_first,
-		       run_total,
-		       flag_first_in_pipe,
-		       flag_input_type,
-		       flag_convert_file,
-		       flag_sort_file,
-		       flag_calibrate_file,
-		       flag_eventbuild_file
-		    );
- 
-}
+		if( flag_sort || force_sort ) {
+		
+			std::cout << name_input_file << " --> ";
+			std::cout << name_output_file << std::endl;
+			
+			sort.SortFile( name_input_file, name_output_file, name_log_file );
+		
+			force_sort = false;
 
-int main ( int argc, char **argv ){
-  
-  //  std::cout << "Let it be !2!" << std::endl;
+		}
+	
+	}
+	
+	
+	//-----------------------//
+	// Physics event builder //
+	//-----------------------//
+	if( !flag_eventbuilder ) return 0;
+	std::cout << "\n +++ ISS Analysis:: processing EventBuilder +++" << std::endl;
 
-  if( argc < 2 || argc > 2 ) {
+	std::vector<string> name_event_files;
+	name_output_file = output_name;
+	//name_log_file = output_name.substr( 0, output_name.find_last_of(".") );
+	//name_log_file += ".log";
 
-    std::cout << "Usage: " << argv[0] << " <runNo>" << std::endl;
-
-  }
-
-  else {
-
-    std::string runNo = argv[1];
-    std::cout << "Run number " << runNo << std::endl;
-    DutClass* dut = MakeDut( "ISS", runNo );
-    Converter( dut );      // To convert midas to root                                                                                      
-  }
-
-  //  for(int i=0; i<=0; i++)  {
-    
-    //    DutClass* dut = MakeDut("ISS-at-CERN", i);
-    //DutClass* dut = MakeDut("ISS", i);
-    
-    // Do convertion.
-    //Converter( dut );      // To convert midas to root
-    //TimeSorter( dut );   // To order data in time
-    //Calibrator( dut );   // To calibrate
-    //EventBuilder( dut ); // To build event
-    
-    
-    //  }
-
-  return 0;
-  
+	// We are going to chain all the files now
+	for( unsigned int i = 0; i < input_names.size(); i++ ){
+			
+		name_input_file = input_names.at(i) + "_sort.root";
+		name_event_files.push_back( name_input_file );
+	
+	}
+	
+	EventBuilder eb( cal, name_event_files, name_output_file );
+	
+	cout << "Finished!\n";
+			
+	return 0;
+	
 }
