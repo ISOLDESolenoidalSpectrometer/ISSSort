@@ -1,9 +1,9 @@
 *~
 *.o
-analysis/*
-include/*.gch
-*exe
-*.xcworkspace
-*/.DS_Store
+*.pcm
 bin/*
+lib/*
+src/.*o
+*.xcworkspace
 .DS_Store
+*/.DS_Store
