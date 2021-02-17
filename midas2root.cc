@@ -27,7 +27,6 @@ int main( int argc, char *argv[] ){
 	
 	// Default parameters and name
 	std::string output_name = "output.root";
-	std::string name_param_file;
 	std::string name_cal_file;
 	std::vector<std::string> input_names;
 	
@@ -51,7 +50,6 @@ int main( int argc, char *argv[] ){
 	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
 	interface->Add("-s", "Flag to sort file by time", &flag_sort );
 	interface->Add("-e", "Flag to build physics events", &flag_eventbuilder );
-	interface->Add("-p", "Parameter file", &name_param_file );
 	interface->Add("-c", "Calibration file", &name_cal_file );
 	interface->Add("-h", "Print this help", &help_flag );
 
