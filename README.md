@@ -13,10 +13,6 @@ git clone https://github.com/ISOLDESolenoidalSpectrometer/ISSSort
 
 ## Compile
 
-Before compiling:
-Edit midas2root.cc and change the file paths to yours as needed.
-Also change the prefix of the MIDAS run file to be read (default: "R7", see file in scratch/). Todo: This would be best as an input argument 
-
 ```bash
 make clean
 make
@@ -26,19 +22,19 @@ make
 ## Execute
 
 ```
-midas2root
+iss_sort
 ```
-if you add the ISSSort/bin to your path. You can also add ISSSort/lib to your (DY)LD_LIBRARY_PATH too.
+if you add the ISSSort/bin to your PATH variable. You can also add ISSSort/lib to your (DY)LD_LIBRARY_PATH too.
 
 or
 ```
-./bin/midas2root
+./bin/iss_sort
 ```
 
 The input options are described below
 
 ```
-use midas2root with following flags:
+use iss_sort with following flags:
         [-i <vector<string>>: List of input files]
         [-o <string        >: Output file for events tree]
         [-f                 : Flag to force new ROOT conversion]
@@ -51,10 +47,10 @@ use midas2root with following flags:
 ## Sorting Philosophy
 
 ### Step 1: Converter
-Running midas2root with a list of input files, using the -i flag, will simple convert them to ROOT format.
+Running iss_sort with a list of input files, using the -i flag, will simple convert them to ROOT format.
 This step produces one output file per input file, which has the name of the input file, appended with .root.
 The ouptut file contains a single ROOT tree of the data and a series of diagnostic histograms.
-If the output file already exists, midas2root will skip this step unless the -f flag is used.
+If the output file already exists, iss_sort will skip this step unless the -f flag is used.
 
 ### Step 2: Calibration and Time Sorting
 In order to combine timestamp and ADC data, the time sorting step needs to be performed by adding the -s flag.

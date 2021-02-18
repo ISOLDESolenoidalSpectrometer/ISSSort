@@ -3,7 +3,6 @@
 #include "Converter.hh"
 #include "TimeSorter.hh"
 #include "Calibration.hh"
-#include "Calibrator.hh"
 #include "EventBuilder.hh"
 
 // ROOT include.

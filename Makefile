@@ -47,11 +47,11 @@ DEPENDENCIES =  $(INC_DIR)/Calibration.hh \
 				$(INC_DIR)/EventBuilder.hh
  
 
-$(BIN_DIR)/midas2root: midas2root.o $(OBJECTS) midas2rootDict.o
+$(BIN_DIR)/iss_sort: iss_sort.o $(OBJECTS) iss_sortDict.o
 	mkdir -p $(BIN_DIR)
 	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
 
-midas2root.o: midas2root.cc
+iss_sort.o: iss_sort.cc
 	$(CC) $(CFLAGS) $(INCLUDES) $^
 
 $(SRC_DIR)/Calibration.o: $(SRC_DIR)/Calibration.cc $(INC_DIR)/Calibration.hh
@@ -75,13 +75,13 @@ $(SRC_DIR)/ISSEvts.o: $(SRC_DIR)/ISSEvts.cc $(INC_DIR)/ISSEvts.hh
 $(SRC_DIR)/TimeSorter.o: $(SRC_DIR)/TimeSorter.cc $(INC_DIR)/TimeSorter.hh $(SRC_DIR)/Calibration.o
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-midas2rootDict.o: midas2rootDict.cc midas2rootDict$(DICTEXT) $(INC_DIR)/RootLinkDef.h
+iss_sortDict.o: iss_sortDict.cc iss_sortDict$(DICTEXT) $(INC_DIR)/RootLinkDef.h
 	$(CC) -fPIC $(CFLAGS) $(INCLUDES) -c $<
-	cp midas2rootDict$(DICTEXT) $(BIN_DIR)/
+	cp iss_sortDict$(DICTEXT) $(BIN_DIR)/
 
-midas2rootDict.cc: $(DEPENDENCIES) $(INC_DIR)/RootLinkDef.h
+iss_sortDict.cc: $(DEPENDENCIES) $(INC_DIR)/RootLinkDef.h
 	$(ROOTDICT) -f $@ -c $(INCLUDES) $(DEPENDENCIES) $(INC_DIR)/RootLinkDef.h
 
 
 clean:
-	rm -vf $(BIN_DIR)/midas2root $(SRC_DIR)/*.o $(SRC_DIR)/*~ $(INC_DIR)/*.gch *.o $(BIN_DIR)/*.pcm *.pcm $(BIN_DIR)/*Dict* *Dict*
+	rm -vf $(BIN_DIR)/iss_sort $(SRC_DIR)/*.o $(SRC_DIR)/*~ $(INC_DIR)/*.gch *.o $(BIN_DIR)/*.pcm *.pcm $(BIN_DIR)/*Dict* *Dict*
