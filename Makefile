@@ -76,6 +76,7 @@ $(SRC_DIR)/TimeSorter.o: $(SRC_DIR)/TimeSorter.cc $(INC_DIR)/TimeSorter.hh $(SRC
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 iss_sortDict.o: iss_sortDict.cc iss_sortDict$(DICTEXT) $(INC_DIR)/RootLinkDef.h
+	mkdir -p $(BIN_DIR)
 	$(CC) -fPIC $(CFLAGS) $(INCLUDES) -c $<
 	cp iss_sortDict$(DICTEXT) $(BIN_DIR)/
 
