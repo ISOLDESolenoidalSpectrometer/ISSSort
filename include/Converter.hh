@@ -46,7 +46,7 @@ private:
 	common::event_id  s_id;
 	common::adc_data  s_adc;
 	
-	TH1F *hadc[common::n_module][common::n_asic][common::n_channel];
+	TH1F *hasic[common::n_module][common::n_asic][common::n_channel];
 	
 };
 
