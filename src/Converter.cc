@@ -26,17 +26,17 @@ void Converter::MakeHists() {
 			// Loop over channels of each ASIC
 			for( int k = 0; k < common::n_channel; ++k ) {
 				
-				hname = "adc_" + std::to_string(i);
+				hname = "asic_" + std::to_string(i);
 				hname += "_" + std::to_string(j);
 				hname += "_" + std::to_string(k);
 				
-				htitle = "Raw adc spectra for module " + std::to_string(i);
+				htitle = "Raw ASIC spectra for module " + std::to_string(i);
 				htitle += ", ASIC " + std::to_string(j);
 				htitle += ", channel " + std::to_string(k);
 				
 				htitle += ";ADC channel;Counts";
 				
-				hadc[i][j][k] = new TH1F( hname.data(), htitle.data(),
+				hasic[i][j][k] = new TH1F( hname.data(), htitle.data(),
 								4096, -0.5, 4095.5 );
 				
 			}
@@ -379,7 +379,7 @@ void Converter::ConvertFile( std::string input_file_name,
 			
 			// Fill histograms
 			if( my_type == 0x3 )
-				hadc[my_mod_id][my_asic_id][my_ch_id]->Fill( my_adc_data );
+				hasic[my_mod_id][my_asic_id][my_ch_id]->Fill( my_adc_data );
 			
 		} // End of: itr_2 loop.
 		
