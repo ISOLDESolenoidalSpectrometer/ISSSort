@@ -67,7 +67,14 @@ float Calibration::AsicEnergy( int mod, int asic, int chan, unsigned short raw )
 		energy += fAsicGain[mod][asic][chan] * raw_rand;
 		energy += fAsicOffset[mod][asic][chan];
 
-		return energy;
+		// Check if we have defaults
+		if( TMath::Abs( fAsicGainQuadr[mod][asic][chan] ) < 1e-6 &&
+		    TMath::Abs( fAsicGain[mod][asic][chan] - 1.0 ) < 1e-6 &&
+		    TMath::Abs( fAsicOffset[mod][asic][chan] ) < 1e-6 )
+			
+			return raw;
+		
+		else return energy;
 		
 	}
 	
