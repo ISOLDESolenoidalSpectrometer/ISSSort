@@ -1,6 +1,7 @@
 // My code include.
 #include "Common.hh"
 #include "Converter.hh"
+#include "Calibrator.hh"
 #include "TimeSorter.hh"
 #include "Calibration.hh"
 #include "EventBuilder.hh"
@@ -31,13 +32,15 @@ int main( int argc, char *argv[] ){
 	
 	// select what steps of the analysis to go through
 	bool flag_convert = false;
+	bool flag_calib = false;
 	bool flag_sort = false;
 	bool flag_eventbuilder = false;
 	
 	// select what steps of the analysis to be forced
 	bool force_convert = false;
+	bool force_calib = false;
 	bool force_sort = false;
-	
+
 	// Flag for somebody needing help on command line
 	bool help_flag = false;
 	
@@ -72,6 +75,7 @@ int main( int argc, char *argv[] ){
 	if( name_cal_file.size() > 0 ) {
 		
 		std::cout << "Calibration file: " << name_cal_file << std::endl;
+		flag_calib = true;
 		
 	}
 	else {
@@ -112,8 +116,8 @@ int main( int argc, char *argv[] ){
 			ftest.close();
 			rtest.Open( name_output_file.data() );
 			if( rtest.IsZombie() ) force_convert = true;
-			else if( flag_convert )
-				std::cout << name_output_file << " already sorted" << std::endl;
+			else if( !flag_convert )
+				std::cout << name_output_file << " already converted" << std::endl;
 			rtest.Close();
 			
 		}
@@ -132,16 +136,61 @@ int main( int argc, char *argv[] ){
 	}
 		
 
-	//-------------------------//
-	// Do time sorting of data //
-	//-------------------------//
-	TimeSorter sort( cal );
-	std::cout << "\n +++ ISS Analysis:: processing TimeSorter +++" << std::endl;
+	//-----------------------------//
+	// Do time calibration of data //
+	//-----------------------------//
+	Calibrator calib( cal );
+	std::cout << "\n +++ ISS Analysis:: processing Calibrator +++" << std::endl;
 	
 	// Check each file
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 			
 		name_input_file = input_names.at(i) + ".root";
+		name_output_file = input_names.at(i) + "_calib.root";
+		name_log_file = input_names.at(i) + ".log";
+
+		// If it doesn't exist, we have to sort it anyway
+		// But only if we want to build events
+		if( flag_eventbuilder || flag_sort ) {
+			
+			ftest.open( name_output_file.data() );
+			if( !ftest.is_open() ) force_calib = true;
+			else {
+				
+				ftest.close();
+				rtest.Open( name_output_file.data() );
+				if( rtest.IsZombie() ) force_calib = true;
+				else if( !flag_calib )
+					std::cout << name_output_file << " already calibrated" << std::endl;
+				rtest.Close();
+				
+			}
+			
+		}
+
+		if( flag_calib || force_calib ) {
+		
+			std::cout << name_input_file << " --> ";
+			std::cout << name_output_file << std::endl;
+			
+			calib.CalibFile( name_input_file, name_output_file, name_log_file );
+		
+			force_calib = false;
+
+		}
+	
+	}
+	
+	//-------------------------//
+	// Do time sorting of data //
+	//-------------------------//
+	TimeSorter sort;
+	std::cout << "\n +++ ISS Analysis:: processing TimeSorter +++" << std::endl;
+	
+	// Check each file
+	for( unsigned int i = 0; i < input_names.size(); i++ ){
+			
+		name_input_file = input_names.at(i) + "_calib.root";
 		name_output_file = input_names.at(i) + "_sort.root";
 		name_log_file = input_names.at(i) + ".log";
 
@@ -156,7 +205,7 @@ int main( int argc, char *argv[] ){
 				ftest.close();
 				rtest.Open( name_output_file.data() );
 				if( rtest.IsZombie() ) force_sort = true;
-				else if( flag_sort )
+				else if( !flag_sort )
 					std::cout << name_output_file << " already sorted" << std::endl;
 				rtest.Close();
 				

@@ -240,10 +240,12 @@ void Calibrator::CalibFile( std::string input_file_name,
 	log_file << " Reading raw data: number of entries in input tree = " << n_entries << std::endl;
 
 	// Create output Root file and Tree.
-	output_file = new TFile( output_file_name.data(), "recreate" );
+	output_file = new TFile( output_file_name.data(), "recreate", "ISS calibrated data", 0 );
+	output_file->cd();
 	output_tree = new TTree( "iss_calib", "Calibrated ISS data" );
 	output_tree->Branch( "data", &s_data, "t_ext/l:time/l:energy/F:hit/b:det/b:layer/b:sector/b:strip/b:side/b" );
-	output_file->cd();
+	output_tree->SetDirectory( output_file );
+
 	
 	//---- declare histograms here!  ----//
 	std::string hname, htitle;

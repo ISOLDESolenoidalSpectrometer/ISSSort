@@ -378,22 +378,22 @@ void EventBuilder::MakeEventHists(){
 		hname = "pn_1v1_s" + std::to_string(i);
 		htitle = "p-side multiplicity = 1 vs. n-side multiplicity = 1 (DSSSD pair ";
 		htitle += std::to_string(i) + ");p-side energy [keV];n-side energy [keV]";
-		pn_11[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+		pn_11[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e3, 2e3, 0, 2e3 );
 
 		hname = "pn_1v2_s" + std::to_string(i);
 		htitle = "p-side multiplicity = 1 vs. n-side multiplicity = 2 (DSSSD pair ";
 		htitle += std::to_string(i) + ");p-side energy [keV];n-side energy [keV]";
-		pn_12[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+		pn_12[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e3, 2e3, 0, 2e3 );
 
 		hname = "pn_2v1_s" + std::to_string(i);
 		htitle = "p-side multiplicity = 2 vs. n-side multiplicity = 1 (DSSSD pair ";
 		htitle += std::to_string(i) + ");p-side energy [keV];n-side energy [keV]";
-		pn_21[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+		pn_21[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e3, 2e3, 0, 2e3 );
 
 		hname = "pn_2v2_s" + std::to_string(i);
 		htitle = "p-side multiplicity = 2 vs. n-side multiplicity = 2 (DSSSD pair ";
 		htitle += std::to_string(i) + ");p-side energy [keV];n-side energy [keV]";
-		pn_22[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+		pn_22[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e3, 2e3, 0, 2e3 );
 		
 		hname = "pn_td_s" + std::to_string(i);
 		htitle = "p-side vs. n-side time difference (DSSSD pair ";

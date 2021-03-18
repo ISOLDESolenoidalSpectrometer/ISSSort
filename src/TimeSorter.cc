@@ -45,12 +45,17 @@ void TimeSorter::SortFile( std::string input_file_name,
 	n_entries = input_tree->GetEntries();
 
 	// Create output Root file and Tree.
-	output_file = new TFile( output_file_name.data(), "recreate" );
+	output_file = new TFile( output_file_name.data(), "recreate", "Time sorted ISS data" );
+	output_file->cd();
 	output_tree = (TTree*)input_tree->CloneTree(0);
+	output_tree->SetDirectory( output_file );
 	output_tree->SetName( "iss_sort" );
 	output_tree->SetTitle( "Time sorted, calibrated ISS data" );
-	output_file->Add(output_tree);
-
+	//output_tree->SetBasketSize( "*", 16000 );
+	output_tree->SetAutoFlush( 30*1024*1024 );	// 30 MB
+	output_tree->SetAutoSave( 100*1024*1024 );	// 100 MB
+	output_tree->AutoSave();
+	
 	// Time sort all entries of the tree
 	std::cout << " Sorting: number of entries in calibrated tree = " << n_entries << std::endl;
 	log_file << " Sorting: number of entries in calibrated tree = " << n_entries << std::endl;
@@ -68,9 +73,10 @@ void TimeSorter::SortFile( std::string input_file_name,
 		input_tree->GetEntry( idx );
 		output_tree->Fill();
 		
-		if( i % 10000 == 0 || i+1 == nb_idx ) {
+		if( i % 100000 == 0 || i+1 == nb_idx ) {
 			
-			std::cout << (float)(i+1)*100.0/(float)nb_idx << "%\r ";
+			std::cout << " " << std::setw(8) << std::setprecision(4);
+			std::cout << (float)(i+1)*100.0/(float)nb_idx << "%\r";
 			std::cout.flush();
 			
 		}

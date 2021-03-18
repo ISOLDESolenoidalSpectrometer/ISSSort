@@ -30,6 +30,7 @@ LDFLAGS 	+= $(ROOTLDFLAGS) $(ROOTLIBS)
 
 # The object files.
 OBJECTS =  		$(SRC_DIR)/Calibration.o \
+				$(SRC_DIR)/Calibrator.o \
 				$(SRC_DIR)/Common.o \
 				$(SRC_DIR)/CommandLineInterface.o \
 				$(SRC_DIR)/Converter.o \
@@ -39,6 +40,7 @@ OBJECTS =  		$(SRC_DIR)/Calibration.o \
  
 # The header files.
 DEPENDENCIES =  $(INC_DIR)/Calibration.hh \
+				$(INC_DIR)/Calibrator.hh \
 				$(INC_DIR)/Common.hh \
 				$(INC_DIR)/CommandLineInterface.hh \
 				$(INC_DIR)/Converter.hh \
@@ -55,6 +57,9 @@ iss_sort.o: iss_sort.cc
 	$(CC) $(CFLAGS) $(INCLUDES) $^
 
 $(SRC_DIR)/Calibration.o: $(SRC_DIR)/Calibration.cc $(INC_DIR)/Calibration.hh
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(SRC_DIR)/Calibrator.o: $(SRC_DIR)/Calibrator.cc $(INC_DIR)/Calibrator.hh
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(SRC_DIR)/Common.o: $(SRC_DIR)/Common.cc $(INC_DIR)/Common.hh
