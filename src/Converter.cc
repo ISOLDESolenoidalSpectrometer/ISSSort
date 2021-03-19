@@ -156,7 +156,14 @@ void Converter::ConvertFile( std::string input_file_name,
 	for( int itr_1 = 0; itr_1 < BLOCKS_NUM ; itr_1++ ){
 		
 		// Take one block each time and analyze it.
-		
+		if( itr_1 % 200 == 0 || itr_1+1 == BLOCKS_NUM ) {
+			
+			std::cout << " " << std::setw(8) << std::setprecision(4);
+			std::cout << (float)(itr_1+1)*100.0/(float)BLOCKS_NUM << "%\r";
+			std::cout.flush();
+			
+		}
+
 		// Get the block.
 		input_file.read( (char*)&block_header, sizeof(block_header) );
 		input_file.read( (char*)&block_data, sizeof(block_data) );

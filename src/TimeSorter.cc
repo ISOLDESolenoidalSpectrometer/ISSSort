@@ -76,7 +76,7 @@ void TimeSorter::SortFile( std::string input_file_name,
 		if( i % 100000 == 0 || i+1 == nb_idx ) {
 			
 			std::cout << " " << std::setw(8) << std::setprecision(4);
-			std::cout << (float)(i+1)*100.0/(float)nb_idx << "%\r";
+			std::cout << (float)(i+1)*100.0/(float)nb_idx << "%    \r";
 			std::cout.flush();
 			
 		}

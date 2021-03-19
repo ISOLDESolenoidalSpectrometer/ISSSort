@@ -94,7 +94,7 @@ int main( int argc, char *argv[] ){
 	Converter conv;
 	std::cout << "\n +++ ISS Analysis:: processing Converter +++" << std::endl;
 
-	TFile rtest;
+	TFile *rtest;
 	std::ifstream ftest;
 	std::string name_input_file;
 	std::string name_output_file;
@@ -114,11 +114,11 @@ int main( int argc, char *argv[] ){
 		else {
 			
 			ftest.close();
-			rtest.Open( name_output_file.data() );
-			if( rtest.IsZombie() ) force_convert = true;
-			else if( !flag_convert )
+			rtest = new TFile( name_output_file.data() );
+			if( rtest->IsZombie() ) force_convert = true;
+			if( !flag_convert && !force_convert )
 				std::cout << name_output_file << " already converted" << std::endl;
-			rtest.Close();
+			rtest->Close();
 			
 		}
 
@@ -158,11 +158,11 @@ int main( int argc, char *argv[] ){
 			else {
 				
 				ftest.close();
-				rtest.Open( name_output_file.data() );
-				if( rtest.IsZombie() ) force_calib = true;
-				else if( !flag_calib )
+				rtest = new TFile( name_output_file.data() );
+				if( rtest->IsZombie() ) force_calib = true;
+				if( !flag_calib && !force_calib )
 					std::cout << name_output_file << " already calibrated" << std::endl;
-				rtest.Close();
+				rtest->Close();
 				
 			}
 			
@@ -203,11 +203,11 @@ int main( int argc, char *argv[] ){
 			else {
 				
 				ftest.close();
-				rtest.Open( name_output_file.data() );
-				if( rtest.IsZombie() ) force_sort = true;
-				else if( !flag_sort )
+				rtest = new TFile( name_output_file.data() );
+				if( rtest->IsZombie() ) force_sort = true;
+				if( !flag_sort && !force_sort )
 					std::cout << name_output_file << " already sorted" << std::endl;
-				rtest.Close();
+				rtest->Close();
 				
 			}
 			
