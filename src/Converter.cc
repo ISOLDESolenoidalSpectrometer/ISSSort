@@ -242,6 +242,7 @@ void Converter::ConvertFile( std::string input_file_name,
 		// Process main ... 8 to read 2x 32-bit (=2x 4-bytes) words
 		for( unsigned int itr_2 = 0; itr_2 < header_DataLen; itr_2 += 8 ) {
 			
+			// Data format here: http://npg.dl.ac.uk/documents/edoc504/edoc504.html
 			// It retrieves two 32-bit words each iteration;
 			// It checks endieness and correct it.
 			// Check if the pair of words are type-A or type-B.
@@ -269,8 +270,8 @@ void Converter::ConvertFile( std::string input_file_name,
 				std::bitset<32> _word_1(word_1);
 				
 				log_file << "= Entry: " << (int) itr_2/8  << std::endl;
-				log_file << "Word 0: " << _word_0 << "  "<< std::hex << "0x"<<word_0 << std::dec<<std::endl; // Must have first 2 bits: 10.
-				log_file << "Word 1: " << _word_1 << "  "<< std::hex << "0x"<<word_1 << std::dec<< std::endl; // Must have first 4 bits: 0000.
+				log_file << "Word 0: " << _word_0 << "  "<< std::hex << "0x"<<word_0 << std::dec << std::endl; // Must have first 2 bits: 10.
+				log_file << "Word 1: " << _word_1 << "  "<< std::hex << "0x"<<word_1 << std::dec << std::endl; // Must have first 4 bits: 0000.
 				
 				unsigned short int number;
 				log_file << "= Entry (in Hex!): " << std::hex  << std::endl;
@@ -308,7 +309,7 @@ void Converter::ConvertFile( std::string input_file_name,
 				
 				//***R3B***: ADCchannelIdent are bits 28:12
 				//***R3B***: and there is no 'my_adc_range' in R3B.
-				//***R3B***: mod_id= but 16:11, asic_id= bit 10:7, ch_id= bit 6:0
+				//***R3B***: mod_id= bit 16:11, asic_id= bit 10:7, ch_id= bit 6:0
 				unsigned int ADCchanIdent = (word_0 >> 12) & 0x0001FFFF; //bits 28:12
 				//(byteN(data1, 1) << 8 | byteN(data1, 2)) & 0x0FFF;
 				my_mod_id = (ADCchanIdent >> 11) & 0x003F; // bits 16:11
@@ -325,7 +326,7 @@ void Converter::ConvertFile( std::string input_file_name,
 			else if( my_type == 0x2 ){
 				
 				my_info_field = word_0 & 0x000FFFFF; //bits 0:19
-				my_mod_id = (word_0 >> 24) & 0x0000003F; //bits 24:29 // !!! Only module ID of side 0 - (as one uses same info-field for side 1) !!!
+				my_mod_id = (word_0 >> 24) & 0x0000003F; //bits 24:29
 				my_info_code = (word_0 >> 20) & 0x0000000F; //bits 20:23
 				my_tm_stp = word_1 & 0x0FFFFFFF;  //bits 0:27
 				
@@ -345,7 +346,7 @@ void Converter::ConvertFile( std::string input_file_name,
 				// Print the information.
 				log_file << "Info:" << std::endl;
 				
-				log_file << "type: " << std::dec << int(my_type) << std::hex<<" 0x"<< int(my_type)<<std::endl;
+				log_file << "type: " << std::dec << int(my_type) << std::hex <<" 0x" << int(my_type)<<std::endl;
 				log_file << "hit: " << std::dec << int(my_hit) << std::hex<<" 0x"<< int(my_hit)<<std::endl;
 				log_file << "module id: " << std::dec << int(my_mod_id) << std::hex<<" 0x"<< int(my_mod_id)<<std::endl;
 				log_file << "asic id: " << std::dec << int(my_asic_id) << std::hex<<" 0x"<< int(my_asic_id)<<std::endl;
