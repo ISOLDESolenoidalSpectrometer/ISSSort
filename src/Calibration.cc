@@ -67,9 +67,9 @@ float Calibration::AsicEnergy( int mod, int asic, int chan, unsigned short raw )
 		energy += fAsicGain[mod][asic][chan] * raw_rand;
 		energy += fAsicOffset[mod][asic][chan];
 
-		// Check if we have defaults
-		if( TMath::Abs( fAsicOffset[mod][asic][chan] + 3000 ) < 1e-6 &&
-		    TMath::Abs( fAsicGain[mod][asic][chan] - 15.0 ) < 1e-6 &&
+		// Check if we have defaults 1 and 0 for ADC channels instead of energy
+		if( TMath::Abs( fAsicOffset[mod][asic][chan] ) < 1e-6 &&
+		    TMath::Abs( fAsicGain[mod][asic][chan] - 1.0 ) < 1e-6 &&
 		    TMath::Abs( fAsicGainQuadr[mod][asic][chan] ) < 1e-6 )
 			
 			return raw;
