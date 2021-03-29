@@ -10,7 +10,7 @@ EventBuilder::EventBuilder( Calibration *mycal,
 	cal = mycal;
 
 	p_even_hits_pulser = 64;
-	p_even_time_window = 3.2e4;
+	p_even_time_window = 3e3;
 	
 	time_prev = 0;
 	n_events  = 0;
