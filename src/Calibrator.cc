@@ -60,7 +60,8 @@ bool Calibrator::SetEntry( long long ts, long long ts_ext ) {
 	int my_sector	= 255;
 	int my_strip	= 255;
 	int my_side		= 255;
-	
+	int my_hit		= 2;
+
 	bool my_sync_flag	= false;
 	bool my_ext_flag	= false;
 	
@@ -91,6 +92,7 @@ bool Calibrator::SetEntry( long long ts, long long ts_ext ) {
 		// Set various IDs
 		my_energy	= cal->AsicEnergy( s_id.mod,
 						s_id.asic, s_id.ch, s_adc.value );
+		my_hit		= s_adc.hit;
 		my_det 		= p_det_type[s_id.mod][s_id.asic][s_id.ch];
 		my_layer	= p_layer_id[s_id.mod][s_id.asic][s_id.ch];
 		my_sector	= p_sector_id[s_id.mod][s_id.asic][s_id.ch];
@@ -103,12 +105,13 @@ bool Calibrator::SetEntry( long long ts, long long ts_ext ) {
 	s_data.time			= ts;
 	s_data.t_ext		= ts_ext;
 	s_data.energy		= my_energy;
+	s_data.hit			= my_hit;
 	s_data.det 			= my_det;
 	s_data.layer		= my_layer;
 	s_data.sector		= my_sector;
 	s_data.strip		= my_strip;
 	s_data.side			= my_side;
-	
+
 	// Check for disabled channels
 	if( !p_ch_enable[s_id.mod][s_id.asic][s_id.ch] ) fill_flag = false;
 
