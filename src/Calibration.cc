@@ -39,9 +39,9 @@ void Calibration::ReadCalibration() {
 
 			for( int chan = 0; chan < common::n_channel; chan++ ){
 				
-				fAsicOffset[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Offset", mod, asic, chan ), -2500.0 );
-				fAsicGain[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Gain", mod, asic, chan ), 12.5 );
-				fAsicGainQuadr[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.GainQuadr", mod, asic, chan ), 0.0 );
+				fAsicOffset[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Offset", mod, asic, chan ), 0. );
+				fAsicGain[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Gain", mod, asic, chan ), 1. );
+				fAsicGainQuadr[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.GainQuadr", mod, asic, chan ), 0. );
 				
 			}
 			
@@ -67,10 +67,10 @@ float Calibration::AsicEnergy( int mod, int asic, int chan, unsigned short raw )
 		energy += fAsicGain[mod][asic][chan] * raw_rand;
 		energy += fAsicOffset[mod][asic][chan];
 
-		// Check if we have defaults 1 and 0 for ADC channels instead of energy
-		if( TMath::Abs( fAsicOffset[mod][asic][chan] ) < 1e-6 &&
+		// Check if we have defaults
+		if( TMath::Abs( fAsicGainQuadr[mod][asic][chan] ) < 1e-6 &&
 		    TMath::Abs( fAsicGain[mod][asic][chan] - 1.0 ) < 1e-6 &&
-		    TMath::Abs( fAsicGainQuadr[mod][asic][chan] ) < 1e-6 )
+		    TMath::Abs( fAsicOffset[mod][asic][chan] ) < 1e-6 )
 			
 			return raw;
 		
