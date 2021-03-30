@@ -60,7 +60,8 @@ bool Calibrator::SetEntry( long long ts, long long ts_ext ) {
 	int my_sector	= 255;
 	int my_strip	= 255;
 	int my_side		= 255;
-	
+	int my_hit		= 2;
+
 	bool my_sync_flag	= false;
 	bool my_ext_flag	= false;
 	
