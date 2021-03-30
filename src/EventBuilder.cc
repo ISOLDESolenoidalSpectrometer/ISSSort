@@ -10,7 +10,7 @@ EventBuilder::EventBuilder( Calibration *mycal,
 	cal = mycal;
 
 	p_even_hits_pulser = 64;
-	p_even_time_window = 3.2e4;
+	p_even_time_window = 3e3;
 	
 	time_prev = 0;
 	n_events  = 0;
@@ -378,27 +378,27 @@ void EventBuilder::MakeEventHists(){
 		hname = "pn_1v1_s" + std::to_string(i);
 		htitle = "p-side multiplicity = 1 vs. n-side multiplicity = 1 (DSSSD pair ";
 		htitle += std::to_string(i) + ");p-side energy [keV];n-side energy [keV]";
-		pn_11[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e3, 2e3, 0, 2e3 );
+		pn_11[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
 
 		hname = "pn_1v2_s" + std::to_string(i);
 		htitle = "p-side multiplicity = 1 vs. n-side multiplicity = 2 (DSSSD pair ";
 		htitle += std::to_string(i) + ");p-side energy [keV];n-side energy [keV]";
-		pn_12[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e3, 2e3, 0, 2e3 );
+		pn_12[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
 
 		hname = "pn_2v1_s" + std::to_string(i);
 		htitle = "p-side multiplicity = 2 vs. n-side multiplicity = 1 (DSSSD pair ";
 		htitle += std::to_string(i) + ");p-side energy [keV];n-side energy [keV]";
-		pn_21[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e3, 2e3, 0, 2e3 );
+		pn_21[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
 
 		hname = "pn_2v2_s" + std::to_string(i);
 		htitle = "p-side multiplicity = 2 vs. n-side multiplicity = 2 (DSSSD pair ";
 		htitle += std::to_string(i) + ");p-side energy [keV];n-side energy [keV]";
-		pn_22[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e3, 2e3, 0, 2e3 );
+		pn_22[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
 		
 		hname = "pn_td_s" + std::to_string(i);
 		htitle = "p-side vs. n-side time difference (DSSSD pair ";
-		htitle += std::to_string(i) + ");time difference [5 ns ticks];counts";
-		pn_td[i] = new TH1F( hname.data(), htitle.data(), 5e4, -5e4, 5e4 );
+		htitle += std::to_string(i) + ");time difference [ns];counts";
+		pn_td[i] = new TH1F( hname.data(), htitle.data(), 10e3, -5e4, 5e4 );
 		
 		hname = "pn_mult_s" + std::to_string(i);
 		htitle = "p-side vs. n-side multiplicity (DSSSD pair ";
@@ -407,7 +407,7 @@ void EventBuilder::MakeEventHists(){
 		
 	}
 	
-	tdiff = new TH1F( "tdiff", "Time difference to first trigger;#Delta t [5 ns ticks]", 2e4+1, -1, 2e5 );
+	tdiff = new TH1F( "tdiff", "Time difference to first trigger;#Delta t [ns]", 2e4+1, -1, 2e5 );
 	
 	return;
 	
