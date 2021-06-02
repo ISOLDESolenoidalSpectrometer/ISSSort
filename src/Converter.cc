@@ -1,10 +1,7 @@
 #include "Converter.hh"
 
 Converter::Converter() {
-	
-	MakeHists();
-	Initialise();
-	
+		
 }
 
 Converter::~Converter() {
@@ -36,7 +33,10 @@ void Converter::MakeHists() {
 				
 				htitle += ";ADC channel;Counts";
 				
-				hasic[i][j][k] = new TH1F( hname.data(), htitle.data(),
+				if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+					hasic[i][j][k] = (TH1F*)output_file->Get( hname.data() );
+				
+				else hasic[i][j][k] = new TH1F( hname.data(), htitle.data(),
 								4096, -0.5, 4095.5 );
 				
 			}
@@ -66,18 +66,27 @@ void Converter::Initialise() {
 	
 }
 
+// Function to process header words
+
+
+
+// Function to process data words
+
+
 
 // Function to run the conversion for a single file
-void Converter::ConvertFile( std::string input_file_name,
+int Converter::ConvertFile( std::string input_file_name,
 							 std::string output_file_name,
-							 std::string log_file_name ){
+							 std::string log_file_name,
+							 int start_block,
+							 int end_block ) {
 	
 	// Read the file.
 	std::ifstream input_file( input_file_name, std::ios::in|std::ios::binary );
 	if( !input_file.is_open() ){
 		
 		std::cout << "Cannot open " << input_file_name << std::endl;
-		return;
+		return -1;
 		
 	}
 	
@@ -90,17 +99,20 @@ void Converter::ConvertFile( std::string input_file_name,
 	// TH1I *Hmidas_type = new TH1I("Hmidas_type","Hmidas_type",4,-0.5,3.5);
 	
 	// Create Root tree.
-	TFile *output_file = new TFile( output_file_name.c_str(), "recreate" );
-	TTree *output_tree = new TTree( "iss", "iss" );
+	output_file = new TFile( output_file_name.c_str(), "update" );
+	output_tree = new TTree( "iss", "iss" );
 	output_tree->Branch( "info_data", &s_info, "tm_stp_lsb/l:field/l:type/b:code/b");
 	output_tree->Branch( "event_id",  &s_id,   "mod/b:asic/b:ch/b");
 	output_tree->Branch( "adc_data",  &s_adc,  "value/s:hit/b");
 
-	// Initialise histograms
+	// Initialise
 	MakeHists();
-	
+	Initialise();
+
 	// Conversion starting
-	std::cout << "Converting file: " << input_file_name << std::endl;
+	std::cout << "Converting file: " << input_file_name;
+	std::cout << " from block " << start_block << std::endl;
+	
 	
 	// Set the size of the block and its components.
 	//const int HEADER_SIZE=24; // 24 byte
@@ -139,6 +151,7 @@ void Converter::ConvertFile( std::string input_file_name,
 	log_file << sslogs.str() << std::endl;
 	sslogs.str( std::string() ); // clean up
 	
+	// Data format: http://npg.dl.ac.uk/documents/edoc504/edoc504.html
 	// The information is split into 2 words of 32 bits (4 byte).
 	// The words can by of two types: A or B.
 	// Type A words have word_0 with msb=10.
@@ -163,11 +176,15 @@ void Converter::ConvertFile( std::string input_file_name,
 			std::cout.flush();
 			
 		}
-
+		
 		// Get the block.
 		input_file.read( (char*)&block_header, sizeof(block_header) );
 		input_file.read( (char*)&block_data, sizeof(block_data) );
 		
+		// Check if we are before the start block or after the end block
+		if( itr_1 < start_block || ( itr_1 > end_block && end_block > 0 ) )
+			continue;
+
 		// Process header.
 		unsigned char header_id[8]; // 8 byte. Must be this string 'EBYEDATA'.
 		for( int itr_2 = 0; itr_2 < 8 ; itr_2++ )
@@ -454,6 +471,6 @@ void Converter::ConvertFile( std::string input_file_name,
 	output_file->Close();
 	log_file.close();
 	
-	return;
+	return BLOCKS_NUM;
 	
 }

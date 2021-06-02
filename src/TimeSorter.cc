@@ -45,7 +45,7 @@ void TimeSorter::SortFile( std::string input_file_name,
 	n_entries = input_tree->GetEntries();
 
 	// Create output Root file and Tree.
-	output_file = new TFile( output_file_name.data(), "recreate", "Time sorted ISS data" );
+	output_file = new TFile( output_file_name.data(), "update", "Time sorted ISS data" );
 	output_file->cd();
 	output_tree = (TTree*)input_tree->CloneTree(0);
 	output_tree->SetDirectory( output_file );
@@ -60,33 +60,44 @@ void TimeSorter::SortFile( std::string input_file_name,
 	std::cout << " Sorting: number of entries in calibrated tree = " << n_entries << std::endl;
 	log_file << " Sorting: number of entries in calibrated tree = " << n_entries << std::endl;
 
-	nb_idx = input_tree->BuildIndex( "0", "time" );
-	att_index = (TTreeIndex*)input_tree->GetTreeIndex();
-
-	std::cout << " Sorting: size of the sorted index = " << nb_idx << std::endl;
-	log_file << " Sorting: size of the sorted index = " << nb_idx << std::endl;
-
-	// Loop on t_raw entries and fill t
-	for( unsigned long long i = 0; i < nb_idx; ++i ) {
+	if( n_entries > 0 ) {
 		
-		idx = att_index->GetIndex()[i];
-		input_tree->GetEntry( idx );
-		output_tree->Fill();
-		
-		if( i % 100000 == 0 || i+1 == nb_idx ) {
+		nb_idx = input_tree->BuildIndex( "0", "time" );
+		att_index = (TTreeIndex*)input_tree->GetTreeIndex();
+	
+		std::cout << " Sorting: size of the sorted index = " << nb_idx << std::endl;
+		log_file << " Sorting: size of the sorted index = " << nb_idx << std::endl;
+
+		// Loop on t_raw entries and fill t
+		for( unsigned long long i = 0; i < nb_idx; ++i ) {
 			
-			std::cout << " " << std::setw(8) << std::setprecision(4);
-			std::cout << (float)(i+1)*100.0/(float)nb_idx << "%    \r";
-			std::cout.flush();
+			idx = att_index->GetIndex()[i];
+			input_tree->GetEntry( idx );
+			output_tree->Fill();
 			
+			if( i % 100000 == 0 || i+1 == nb_idx ) {
+				
+				std::cout << " " << std::setw(8) << std::setprecision(4);
+				std::cout << (float)(i+1)*100.0/(float)nb_idx << "%    \r";
+				std::cout.flush();
+				
+			}
+
 		}
 
 	}
-
 	
+	else {
+		
+		std::cout << " Sorting: nothing to sort " << std::endl;
+		log_file << " Sorting: nothing to sort " << std::endl;
+		
+	}
+	
+
 	// Write histograms, trees and clean up
-	output_file->cd();
-	output_tree->GetCurrentFile()->Write();
+	output_tree->Write( 0, TObject::kWriteDelete );
+	output_file->SaveSelf();
 	//output_file->Print();
 	output_file->Close();
 	input_file->Close(); // Close TFile

@@ -35,11 +35,12 @@ class EventBuilder {
 	
 public:
 
-	EventBuilder( Calibration *mycal,
-				  std::vector<std::string> input_file_names,
-				  std::string output_file_name );
+	EventBuilder( std::string output_file_name );
 	virtual ~EventBuilder();
 
+	void SetInput( std::vector<std::string> input_file_names );
+	void SetInput( std::string input_file_name );
+	void ResetInput();
 	void BuildEvents();
 	void Initialise();
 	void MakeEventHists();
@@ -55,12 +56,10 @@ public:
 
 private:
 	
-	/// Calibration
-	Calibration *cal;
-	
 	/// Input tree
 	TChain *input_tree;
 	common::real_data in_data;
+	std::string monitor_input;
 	
 	/// Outputs
 	TFile *output_file;

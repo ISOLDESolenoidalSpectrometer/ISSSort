@@ -44,10 +44,16 @@ int main( int argc, char *argv[] ){
 	// Flag for somebody needing help on command line
 	bool help_flag = false;
 	
+	// Monitoring input file
+	bool flag_monitor = false;
+	int mon_time = -1; // update time in seconds
+	
+	
 	// Command line interface, stolen from MiniballCoulexSort
 	CommandLineInterface *interface = new CommandLineInterface();
 
 	interface->Add("-i", "List of input files", &input_names );
+	interface->Add("-m", "Monitor input file every X seconds", &mon_time );
 	interface->Add("-o", "Output file for events tree", &output_name );
 	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
 	interface->Add("-s", "Flag to sort file by time", &flag_sort );
@@ -71,6 +77,22 @@ int main( int argc, char *argv[] ){
 			
 	}
 	
+	// Check if we should be monitoring the input
+	if( mon_time > 0 && input_names.size() == 1 ) {
+		
+		flag_monitor = true;
+		std::cout << "Running iss_sort in a loop every " << mon_time;
+		std::cout << " seconds\nMonitoring " << input_names.at(0) << std::endl;
+		
+	}
+	
+	else if( mon_time > 0 && input_names.size() != 1 ) {
+		
+		flag_monitor = false;
+		std::cout << "Cannot monitor multiple input files, switching to normal mode" << std::endl;
+		
+	}
+
 	// Check we have a calibration file
 	if( name_cal_file.size() > 0 ) {
 		
@@ -87,6 +109,50 @@ int main( int argc, char *argv[] ){
 	}
 	
 	Calibration *cal = new Calibration( name_cal_file );
+	
+
+	
+	//-------------------//
+	// Online monitoring //
+	//-------------------//
+	if( flag_monitor ) {
+		
+		Converter conv_mon;
+		Calibrator calib_mon( cal );
+		TimeSorter sort_mon;
+		EventBuilder eb_mon( "monitor_events.root" );
+
+		int start_block = 0;
+		int nblocks = 0;
+		eb_mon.SetInput( "monitor_sort.root" );
+		
+		while( true ) {
+			
+			// Convert
+			nblocks = conv_mon.ConvertFile( input_names.at(0), "monitor.root", "monitor.log", start_block );
+			start_block = nblocks;
+			
+			// Calibrate
+			calib_mon.CalibFile( "monitor.root", "monitor_calib.root", "monitor_calib.log" );
+			
+			// Sort
+			sort_mon.SortFile( "monitor_calib.root", "monitor_sort.root", "monitor_sort.log" );
+			
+			// Event builder
+			eb_mon.ResetInput();
+			eb_mon.BuildEvents();
+			
+			gSystem->ProcessEvents();
+			gSystem->Sleep( mon_time * 1e3 );
+
+		}
+		
+		return 0;
+		
+	}
+
+
+	
 
 	//------------------------//
 	// Run conversion to ROOT //
@@ -132,7 +198,7 @@ int main( int argc, char *argv[] ){
 			force_convert = false;
 			
 		}
-
+		
 	}
 		
 
@@ -231,12 +297,11 @@ int main( int argc, char *argv[] ){
 	// Physics event builder //
 	//-----------------------//
 	if( !flag_eventbuilder ) return 0;
+
+	EventBuilder eb( output_name );
 	std::cout << "\n +++ ISS Analysis:: processing EventBuilder +++" << std::endl;
 
 	std::vector<string> name_event_files;
-	name_output_file = output_name;
-	//name_log_file = output_name.substr( 0, output_name.find_last_of(".") );
-	//name_log_file += ".log";
 
 	// We are going to chain all the files now
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
@@ -245,9 +310,11 @@ int main( int argc, char *argv[] ){
 		name_event_files.push_back( name_input_file );
 	
 	}
-	
-	EventBuilder eb( cal, name_event_files, name_output_file );
-	
+	eb.SetInput( name_event_files );
+
+	// Then build events
+	eb.BuildEvents();
+
 	cout << "Finished!\n";
 			
 	return 0;
