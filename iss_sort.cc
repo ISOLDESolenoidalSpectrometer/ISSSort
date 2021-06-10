@@ -9,6 +9,8 @@
 // ROOT include.
 #include <TTree.h>
 #include <TFile.h>
+#include <THttpServer.h>
+#include <TThread.h>
 
 // C++ include.
 #include <iostream>
@@ -23,31 +25,85 @@
 #endif
 
 
-int main( int argc, char *argv[] ){
-	
-	// Default parameters and name
-	std::string output_name = "output.root";
-	std::string name_cal_file;
-	std::vector<std::string> input_names;
-	
-	// select what steps of the analysis to go through
-	bool flag_convert = false;
-	bool flag_calib = false;
-	bool flag_sort = false;
-	bool flag_eventbuilder = false;
-	
-	// select what steps of the analysis to be forced
-	bool force_convert = false;
-	bool force_calib = false;
-	bool force_sort = false;
+// Default parameters and name
+std::string output_name = "output.root";
+std::string name_cal_file;
+std::vector<std::string> input_names;
 
-	// Flag for somebody needing help on command line
-	bool help_flag = false;
+// select what steps of the analysis to go through
+bool flag_convert = false;
+bool flag_calib = false;
+bool flag_sort = false;
+bool flag_eventbuilder = false;
+
+// select what steps of the analysis to be forced
+bool force_convert = false;
+bool force_calib = false;
+bool force_sort = false;
+
+// Flag for somebody needing help on command line
+bool help_flag = false;
+
+// Monitoring input file
+bool flag_monitor = false;
+int mon_time = -1; // update time in seconds
+
+// Calibration file
+Calibration *cal;
+
+
+void monitor_run(){
 	
-	// Monitoring input file
-	bool flag_monitor = false;
-	int mon_time = -1; // update time in seconds
+	// This function is called to run when monitoring
+	Converter conv_mon;
+	Calibrator calib_mon( cal );
+	TimeSorter sort_mon;
+	EventBuilder eb_mon( "monitor_events.root" );
+
+	int start_block = 0;
+	int nblocks = 0;
+	eb_mon.SetInput( "monitor_sort.root" );
 	
+	while( true ) {
+		
+		// Convert
+		nblocks = conv_mon.ConvertFile( input_names.at(0), "monitor.root", "monitor.log", start_block );
+		start_block = nblocks;
+		
+		// Calibrate
+		calib_mon.CalibFile( "monitor.root", "monitor_calib.root", "monitor_calib.log" );
+		
+		// Sort
+		sort_mon.SortFile( "monitor_calib.root", "monitor_sort.root", "monitor_sort.log" );
+		
+		// Event builder
+		eb_mon.ResetInput();
+		eb_mon.BuildEvents();
+		
+		// Update the Canvas
+		gSystem->ProcessEvents();
+
+		// This makes things unresponsive!
+		// Unless we are threading?
+		gSystem->Sleep( mon_time * 1e3 );
+
+	}
+
+	return;
+	
+}
+
+void* start_http( void* args ){
+	
+	// Server for JSROOT
+	THttpServer *serv = new THttpServer("http:8030?top=ISSDAQMonitoring");
+	serv->SetReadOnly(kFALSE);
+
+	return nullptr;
+	
+}
+
+int main( int argc, char *argv[] ){
 	
 	// Command line interface, stolen from MiniballCoulexSort
 	CommandLineInterface *interface = new CommandLineInterface();
@@ -90,7 +146,7 @@ int main( int argc, char *argv[] ){
 		
 		flag_monitor = false;
 		std::cout << "Cannot monitor multiple input files, switching to normal mode" << std::endl;
-		
+				
 	}
 
 	// Check we have a calibration file
@@ -108,7 +164,7 @@ int main( int argc, char *argv[] ){
 
 	}
 	
-	Calibration *cal = new Calibration( name_cal_file );
+	cal = new Calibration( name_cal_file );
 	
 
 	
@@ -116,38 +172,14 @@ int main( int argc, char *argv[] ){
 	// Online monitoring //
 	//-------------------//
 	if( flag_monitor ) {
+				
 		
-		Converter conv_mon;
-		Calibrator calib_mon( cal );
-		TimeSorter sort_mon;
-		EventBuilder eb_mon( "monitor_events.root" );
-
-		int start_block = 0;
-		int nblocks = 0;
-		eb_mon.SetInput( "monitor_sort.root" );
+		// Thread for the HTTP server
+		TThread *th = new TThread( "httpserver", start_http, (void*)nullptr );
+		th->Run();
 		
-		while( true ) {
-			
-			// Convert
-			nblocks = conv_mon.ConvertFile( input_names.at(0), "monitor.root", "monitor.log", start_block );
-			start_block = nblocks;
-			
-			// Calibrate
-			calib_mon.CalibFile( "monitor.root", "monitor_calib.root", "monitor_calib.log" );
-			
-			// Sort
-			sort_mon.SortFile( "monitor_calib.root", "monitor_sort.root", "monitor_sort.log" );
-			
-			// Event builder
-			eb_mon.ResetInput();
-			eb_mon.BuildEvents();
-			
-			gSystem->ProcessEvents();
-			gSystem->Sleep( mon_time * 1e3 );
-
-		}
-		
-		return 0;
+		// Call monitor run, which has the loop inside
+		monitor_run();
 		
 	}
 

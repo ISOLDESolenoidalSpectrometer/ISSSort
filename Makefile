@@ -17,7 +17,7 @@ endif
 
 ROOTCFLAGS   := $(shell root-config --cflags)
 ROOTLDFLAGS  := $(shell root-config --ldflags)
-ROOTLIBS     := $(shell root-config --glibs)
+ROOTLIBS     := $(shell root-config --glibs) -lRHTTP -lThread
 LIBS         := $(ROOTLIBS)
 
 # Compiler.
@@ -26,7 +26,7 @@ CC          = $(shell root-config --cxx)
 CFLAGS		= -c -Wall -Wextra $(ROOTCFLAGS) -g
 INCLUDES	+= -I$(INC_DIR) -I.
 # Flags for linker.
-LDFLAGS 	+= $(ROOTLDFLAGS) $(ROOTLIBS)
+LDFLAGS 	+= $(ROOTLDFLAGS)
 
 # The object files.
 OBJECTS =  		$(SRC_DIR)/Calibration.o \
