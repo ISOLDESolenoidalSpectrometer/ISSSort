@@ -19,7 +19,7 @@
 #endif
 
 // Uncomment for ASIC only data prior to June 2021
-#define ASIC_ONLY
+//#define ASIC_ONLY
 
 // Uncomment for CAEN only data prior to June 2021
 //#define CAEN_ONLY
