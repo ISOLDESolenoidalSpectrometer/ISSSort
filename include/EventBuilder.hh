@@ -35,16 +35,17 @@ class EventBuilder {
 	
 public:
 
-	EventBuilder( std::string output_file_name );
+	EventBuilder();
 	virtual ~EventBuilder();
 
-	void SetInput( std::vector<std::string> input_file_names );
-	void SetInput( std::string input_file_name );
-	void ResetInput();
-	void BuildEvents();
-	void Initialise();
-	void MakeEventHists();
+	void	SetInputFile( std::vector<std::string> input_file_names );
+	void	SetInputTree( TTree* user_tree );
+	void	SetOutput( std::string output_file_name );
+	void	Initialise();
+	void	MakeEventHists();
 	
+	unsigned long	BuildEvents( unsigned long start_build = 0 );
+
 	// Resolve multiplicities etc
 	void ParticleFinder();
 	void RecoilFinder();
@@ -53,13 +54,19 @@ public:
 	// Geometry functions
 	float GetZ( int layer, int strip );
 	TVector2 GetPhiXY( int sector, int strip );
+	
+	inline TFile* GetFile(){ return output_file; };
+	inline TTree* GetTree(){ return output_tree; };
+	inline void CloseOutput(){
+		output_file->Close();
+	};
+
 
 private:
 	
 	/// Input tree
 	TChain *input_tree;
 	common::real_data in_data;
-	std::string monitor_input;
 	
 	/// Outputs
 	TFile *output_file;

@@ -12,40 +12,40 @@ TimeSorter::~TimeSorter() {
 
 }
 
-void TimeSorter::SortTree(){
-	
-	
-	return;
-	
-}
-
-void TimeSorter::SortFile( std::string input_file_name,
-						   std::string output_file_name,
-						   std::string log_file_name ) {
-
-	// Create log file.
-	std::ofstream log_file;
-	log_file.open( log_file_name.data(), std::ios::app );
-	
-	// Start timer
-	time( &t_start );
+bool TimeSorter::SetInputFile( std::string input_file_name ){
 	
 	// Open next Root input file.
-	std::cout << "Sorting file by timestamp: " << input_file_name << std::endl;
 	input_file = new TFile( input_file_name.data(), "read" );
 	if( input_file->IsZombie() ) {
 		
 		std::cout << "Cannot open " << input_file_name << std::endl;
-		return;
+		return false;
 		
 	}
+	
+	// Set the input tree
+	SetInputTree( (TTree*)input_file->Get("iss_calib") );
 
-	// Find the tree from the input file and set branch addresses
-	input_tree = (TTree*)input_file->Get("iss_calib");
-	n_entries = input_tree->GetEntries();
+	std::cout << "Sorting file by timestamp: " << input_file->GetName() << std::endl;
+
+	return true;
+	
+}
+
+void TimeSorter::SetInputTree( TTree* user_tree ){
+
+	// Find the tree and set branch addresses
+	input_tree = user_tree;
+	return;
+	
+}
+
+void TimeSorter::SetOutput( std::string output_file_name ){
+	
+	// Open root file
+	output_file = new TFile( output_file_name.data(), "recreate", "Time sorted ISS data" );
 
 	// Create output Root file and Tree.
-	output_file = new TFile( output_file_name.data(), "update", "Time sorted ISS data" );
 	output_file->cd();
 	output_tree = (TTree*)input_tree->CloneTree(0);
 	output_tree->SetDirectory( output_file );
@@ -56,7 +56,22 @@ void TimeSorter::SortFile( std::string input_file_name,
 	output_tree->SetAutoSave( 100*1024*1024 );	// 100 MB
 	output_tree->AutoSave();
 	
+	// Create log file.
+	std::string log_file_name = output_file_name.substr( 0, output_file_name.find_last_of(".") );
+	log_file_name += ".log";
+	log_file.open( log_file_name.data(), std::ios::app );
+
+	return;
+	
+};
+
+unsigned long TimeSorter::SortFile( unsigned long start_sort ) {
+
+	// Start timer
+	time( &t_start );
+	
 	// Time sort all entries of the tree
+	n_entries = input_tree->GetEntries();
 	std::cout << " Sorting: number of entries in calibrated tree = " << n_entries << std::endl;
 	log_file << " Sorting: number of entries in calibrated tree = " << n_entries << std::endl;
 
@@ -69,9 +84,10 @@ void TimeSorter::SortFile( std::string input_file_name,
 		log_file << " Sorting: size of the sorted index = " << nb_idx << std::endl;
 
 		// Loop on t_raw entries and fill t
-		for( unsigned long long i = 0; i < nb_idx; ++i ) {
+		for( unsigned long i = 0; i < nb_idx; ++i ) {
 			
 			idx = att_index->GetIndex()[i];
+			if( idx < start_sort ) continue;
 			input_tree->GetEntry( idx );
 			output_tree->Fill();
 			
@@ -99,15 +115,12 @@ void TimeSorter::SortFile( std::string input_file_name,
 	output_tree->Write( 0, TObject::kWriteDelete );
 	output_file->SaveSelf();
 	//output_file->Print();
-	output_file->Close();
-	input_file->Close(); // Close TFile
 	
 	
 	std::cout << "End TimeSorter: time elapsed = " << time(NULL)-t_start << " sec." << std::endl;
 	log_file << "End TimeSorter: time elapsed = " << time(NULL)-t_start << " sec." << std::endl;
 	
-	log_file.close(); //?? to close or not to close?
 	
-	return;
+	return n_entries;
 	
 }

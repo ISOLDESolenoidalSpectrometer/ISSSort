@@ -25,10 +25,19 @@ public:
 	TimeSorter();
 	virtual ~TimeSorter();
 	
-	void	SortFile( std::string input_file_name,
-					  std::string output_file_name,
-					  std::string log_file_name );
-	void	SortTree();
+	unsigned long SortFile( unsigned long start_sort = 0 );
+	
+	bool	SetInputFile( std::string input_file_name );
+	void	SetInputTree( TTree* user_tree );
+	void	SetOutput( std::string output_file_name );
+	inline void CloseOutput(){
+		output_file->Close();
+		input_file->Close(); // Close TFile
+		log_file.close(); //?? to close or not to close?
+	};
+	inline TFile* GetFile(){ return output_file; };
+	inline TTree* GetTree(){ return output_tree; };
+
 
 private:
 		
@@ -36,6 +45,8 @@ private:
 	TTree *input_tree;
 	TFile *output_file;
 	TTree *output_tree;
+	
+	std::ofstream log_file;
 	
 	TTreeIndex *att_index;
 

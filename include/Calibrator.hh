@@ -29,12 +29,25 @@ public:
 	Calibrator( Calibration *cal );
 	virtual ~Calibrator();
 	
+	bool	SetInputFile( std::string input_file_name );
+	void	SetInputTree( TTree* user_tree );
+	void	SetOutput( std::string output_file_name );
+
 	void	Initialise();
+	void	MakeHists();
 	void 	LoadParametersCalib();
-	void	CalibFile( std::string input_file_name,
-					   std::string output_file_name,
-					   std::string log_file_name );
 	bool	SetEntry( long long ts, long long ts_ext );
+
+	unsigned long CalibFile( unsigned long start_entry = 0 );
+
+	inline void CloseOutput(){
+		output_file->Close();
+		input_file->Close(); // Close TFile
+		log_file.close(); //?? to close or not to close?
+	};
+	inline TFile* GetFile(){ return output_file; };
+	inline TTree* GetTree(){ return output_tree; };
+
 
 private:
 	
@@ -54,6 +67,10 @@ private:
 
 	Calibration *cal;
 	
+	// Log file
+	std::ofstream log_file;
+
+	// ROOT files
 	TFile *input_file;
 	TTree *input_tree;
 	TFile *output_file;
@@ -89,6 +106,12 @@ private:
 	
 	// Sort time
 	time_t t_start;
+	
+	// Histograms
+	TProfile *hprof[common::n_module];
+	TProfile *hprofExt[common::n_module];
+	TProfile *hprofSync[common::n_module];
+
 
 };
 

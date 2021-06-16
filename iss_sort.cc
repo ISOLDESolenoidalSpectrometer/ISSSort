@@ -51,55 +51,118 @@ int mon_time = -1; // update time in seconds
 // Calibration file
 Calibration *cal;
 
+// Server and controls for the GUI
+THttpServer *serv;
+Bool_t bRunMon = kTRUE;
+Bool_t bFirstRun = kTRUE;
+string curFileMon;
 
-void monitor_run(){
+// Function to call the monitoring loop
+void* monitor_run( void* ptr ){
+//void monitor_run(){
 	
 	// This function is called to run when monitoring
 	Converter conv_mon;
 	Calibrator calib_mon( cal );
 	TimeSorter sort_mon;
-	EventBuilder eb_mon( "monitor_events.root" );
+	EventBuilder eb_mon;
 
+	// Data/Event counters
 	int start_block = 0;
 	int nblocks = 0;
-	eb_mon.SetInput( "monitor_sort.root" );
+	unsigned long start_calib = 0;
+	unsigned long ncalib = 0;
+	unsigned long start_sort = 0;
+	unsigned long nsort = 0;
+	unsigned long start_build = 0;
+	unsigned long nbuild = 0;
+
+	// Converter setup
+	curFileMon = input_names.at(0); // maybe change in GUI later?
+	conv_mon.SetOutput( "monitor_singles.root" );
+	conv_mon.MakeTree();
+	conv_mon.MakeHists();
 	
-	while( true ) {
+	while( bRunMon ) {
+		
+		// Lock the main thread
+		//TThread::Lock();
 		
 		// Convert
-		nblocks = conv_mon.ConvertFile( input_names.at(0), "monitor.root", "monitor.log", start_block );
+		nblocks = conv_mon.ConvertFile( curFileMon, start_block );
 		start_block = nblocks;
 		
 		// Calibrate
-		calib_mon.CalibFile( "monitor.root", "monitor_calib.root", "monitor_calib.log" );
-		
+		if( bFirstRun ) {
+			calib_mon.SetInputTree( conv_mon.GetTree() );
+			calib_mon.SetOutput( "monitor_calib.root" );
+		}
+		ncalib = calib_mon.CalibFile( start_calib );
+		start_calib = ncalib;
+
 		// Sort
-		sort_mon.SortFile( "monitor_calib.root", "monitor_sort.root", "monitor_sort.log" );
+		if( bFirstRun ) {
+			sort_mon.SetInputTree( calib_mon.GetTree() );
+			sort_mon.SetOutput( "monitor_sort.root" );
+		}
+		nsort = sort_mon.SortFile( start_sort );
+		start_sort = nsort;
 		
 		// Event builder
-		eb_mon.ResetInput();
-		eb_mon.BuildEvents();
+		if( bFirstRun ) {
+			eb_mon.SetInputTree( sort_mon.GetTree() );
+			eb_mon.SetOutput( "monitor_events.root" );
+		}
+		nbuild = eb_mon.BuildEvents( start_build );
+		start_build = nbuild;
 		
-		// Update the Canvas
-		gSystem->ProcessEvents();
+		// If this was the first time we ran, do stuff?
+		if( bFirstRun ) {
+			
+			bFirstRun = kFALSE;
+			
+		}
+		
+		// Now we can unlock the main thread again
+		//TThread::UnLock();
+
+		// Update the Canvas, but not when in a thread
+		//gSystem->ProcessEvents();
 
 		// This makes things unresponsive!
 		// Unless we are threading?
 		gSystem->Sleep( mon_time * 1e3 );
 
 	}
+	
+	conv_mon.CloseOutput();
+	calib_mon.CloseOutput();
+	sort_mon.CloseOutput();
+	eb_mon.CloseOutput();
 
-	return;
+	return 0;
 	
 }
 
-void* start_http( void* args ){
-	
+//void* start_http( void* ptr ){
+void start_http(){
+
 	// Server for JSROOT
-	THttpServer *serv = new THttpServer("http:8030?top=ISSDAQMonitoring");
+	serv = new THttpServer("http:8030?top=ISSDAQMonitoring");
 	serv->SetReadOnly(kFALSE);
 
-	return nullptr;
+	// enable monitoring and
+	// specify items to draw when page is opened
+	serv->SetItemField("/","_monitoring","5000");
+	serv->SetItemField("/","_layout","grid2x2");
+	//serv->SetItemField("/","_drawitem","[hpxpy,hpx,Debug]");
+	serv->SetItemField("/","_drawopt","col");
+	
+	// register simple start/stop commands
+	//serv->RegisterCommand("/Start", "bRunMon=kTRUE;", "button;./icons/ed_execute.png");
+	//serv->RegisterCommand("/Stop",  "bRunMon=kFALSE;", "button;./icons/ed_interrupt.png");
+
+	return;
 	
 }
 
@@ -172,14 +235,30 @@ int main( int argc, char *argv[] ){
 	// Online monitoring //
 	//-------------------//
 	if( flag_monitor ) {
-				
 		
 		// Thread for the HTTP server
-		TThread *th = new TThread( "httpserver", start_http, (void*)nullptr );
+		//TThread *th = new TThread( "http_server", start_http, (void*)nullptr );
+		//th->Run();
+
+		// Start the HTTP server from the main thread (should usually do this)
+		start_http();
+		
+		// Thread for the monitor process
+		TThread *th = new TThread( "monitor", monitor_run, (void*)nullptr );
 		th->Run();
 		
-		// Call monitor run, which has the loop inside
-		monitor_run();
+		// Just call monitor process without threading
+		//monitor_run();
+		
+		// wait until we finish
+		while( bRunMon ){
+			
+			gSystem->Sleep(100);
+			gSystem->ProcessEvents();
+			
+		}
+		
+		return 0;
 		
 	}
 
@@ -196,14 +275,12 @@ int main( int argc, char *argv[] ){
 	std::ifstream ftest;
 	std::string name_input_file;
 	std::string name_output_file;
-	std::string name_log_file;
 	
 	// Check each file
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 			
 		name_input_file = input_names.at(i);
 		name_output_file = input_names.at(i) + ".root";
-		name_log_file = input_names.at(i) + ".log";
 
 		// If it doesn't exist, we have to convert it anyway
 		// The convert flag will force it to be converted
@@ -225,7 +302,11 @@ int main( int argc, char *argv[] ){
 			std::cout << name_input_file << " --> ";
 			std::cout << name_output_file << std::endl;
 			
-			conv.ConvertFile( name_input_file, name_output_file, name_log_file );
+			conv.SetOutput( name_output_file );
+			conv.MakeTree();
+			conv.MakeHists();
+			conv.ConvertFile( name_input_file );
+			conv.CloseOutput();
 
 			force_convert = false;
 			
@@ -245,7 +326,6 @@ int main( int argc, char *argv[] ){
 			
 		name_input_file = input_names.at(i) + ".root";
 		name_output_file = input_names.at(i) + "_calib.root";
-		name_log_file = input_names.at(i) + ".log";
 
 		// If it doesn't exist, we have to sort it anyway
 		// But only if we want to build events
@@ -271,8 +351,11 @@ int main( int argc, char *argv[] ){
 			std::cout << name_input_file << " --> ";
 			std::cout << name_output_file << std::endl;
 			
-			calib.CalibFile( name_input_file, name_output_file, name_log_file );
-		
+			calib.SetInputFile( name_input_file );
+			calib.SetOutput( name_output_file );
+			calib.CalibFile();
+			calib.CloseOutput();
+			
 			force_calib = false;
 
 		}
@@ -290,7 +373,6 @@ int main( int argc, char *argv[] ){
 			
 		name_input_file = input_names.at(i) + "_calib.root";
 		name_output_file = input_names.at(i) + "_sort.root";
-		name_log_file = input_names.at(i) + ".log";
 
 		// If it doesn't exist, we have to sort it anyway
 		// But only if we want to  build events
@@ -316,8 +398,11 @@ int main( int argc, char *argv[] ){
 			std::cout << name_input_file << " --> ";
 			std::cout << name_output_file << std::endl;
 			
-			sort.SortFile( name_input_file, name_output_file, name_log_file );
-		
+			sort.SetInputFile( name_input_file );
+			sort.SetOutput( name_output_file );
+			sort.SortFile();
+			sort.CloseOutput();
+
 			force_sort = false;
 
 		}
@@ -330,7 +415,8 @@ int main( int argc, char *argv[] ){
 	//-----------------------//
 	if( !flag_eventbuilder ) return 0;
 
-	EventBuilder eb( output_name );
+	EventBuilder eb;
+	eb.SetOutput( output_name );
 	std::cout << "\n +++ ISS Analysis:: processing EventBuilder +++" << std::endl;
 
 	std::vector<string> name_event_files;
@@ -342,7 +428,7 @@ int main( int argc, char *argv[] ){
 		name_event_files.push_back( name_input_file );
 	
 	}
-	eb.SetInput( name_event_files );
+	eb.SetInputFile( name_event_files );
 
 	// Then build events
 	eb.BuildEvents();

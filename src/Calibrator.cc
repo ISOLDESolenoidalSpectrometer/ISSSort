@@ -8,6 +8,12 @@ Calibrator::Calibrator( Calibration *mycal ){
 	
 }
 
+Calibrator::~Calibrator() {
+	
+	//std::cout << "destructor" << std::endl;
+
+}
+
 void Calibrator::Initialise(){
 	
 	// Start counters at zero
@@ -46,10 +52,57 @@ void Calibrator::Initialise(){
 	
 }
 
-Calibrator::~Calibrator() {
+bool Calibrator::SetInputFile( std::string input_file_name ){
 	
-	//std::cout << "destructor" << std::endl;
+	// Open next Root input file.
+	input_file = new TFile( input_file_name.data(), "read" );
+	if( input_file->IsZombie() ) {
+		
+		std::cout << "Cannot open " << input_file_name << std::endl;
+		return false;
+		
+	}
 
+	// Set the input tree
+	SetInputTree( (TTree*)input_file->Get("iss") );
+
+	std::cout << "Calibrating file: " << input_file->GetName() << std::endl;
+
+	return true;
+	
+}
+
+void Calibrator::SetInputTree( TTree* user_tree ){
+	
+	// Find the tree and set branch addresses
+	input_tree = user_tree;
+	input_tree->SetBranchAddress( "info_data", &s_info );
+	input_tree->SetBranchAddress( "event_id",  &s_id   );
+	input_tree->SetBranchAddress( "adc_data",  &s_adc  );
+
+	return;
+	
+}
+
+void Calibrator::SetOutput( std::string output_file_name ){
+
+	// Create output Root file and Tree.
+	output_file = new TFile( output_file_name.data(), "recreate", "ISS calibrated data", 0 );
+	output_file->cd();
+	output_tree = new TTree( "iss_calib", "Calibrated ISS data" );
+	output_tree->Branch( "data", &s_data, "t_ext/l:time/l:energy/F:hit/b:det/b:layer/b:sector/b:strip/b:side/b" );
+	output_tree->SetDirectory( output_file );
+
+	// Create log file.
+	std::string log_file_name = output_file_name.substr( 0, output_file_name.find_last_of(".") );
+	log_file_name += ".log";
+	log_file.open( log_file_name.c_str(), std::ios::out );
+	
+	// Make histograms too
+	MakeHists();
+
+	return;
+	
 }
 
 bool Calibrator::SetEntry( long long ts, long long ts_ext ) {
@@ -211,50 +264,10 @@ void Calibrator::LoadParametersCalib() { // maybe also file to read param from f
 	
 }
 
-void Calibrator::CalibFile( std::string input_file_name,
-						    std::string output_file_name,
-						    std::string log_file_name ) {
-
-	// Get ready to calibrate
-	Initialise();
-	
-	// Create log file.
-	std::ofstream log_file;
-	log_file.open( log_file_name.data(), std::ios::app );
-	
-	// Open next Root input file.
-	std::cout << "Calibrating file: " << input_file_name << std::endl;
-	input_file = new TFile( input_file_name.data(), "read" );
-	if( input_file->IsZombie() ) {
-		
-		std::cout << "Cannot open " << input_file_name << std::endl;
-		return;
-		
-	}
-
-	// Find the tree from the input file and set branch addresses
-	input_tree = (TTree*)input_file->Get("iss");
-	input_tree->SetBranchAddress( "info_data", &s_info );
-	input_tree->SetBranchAddress( "event_id",  &s_id   );
-	input_tree->SetBranchAddress( "adc_data",  &s_adc  );
-
-	n_entries = input_tree->GetEntries();
-	std::cout << " Reading raw data: number of entries in input tree = " << n_entries << std::endl;
-	log_file << " Reading raw data: number of entries in input tree = " << n_entries << std::endl;
-
-	// Create output Root file and Tree.
-	output_file = new TFile( output_file_name.data(), "recreate", "ISS calibrated data", 0 );
-	output_file->cd();
-	output_tree = new TTree( "iss_calib", "Calibrated ISS data" );
-	output_tree->Branch( "data", &s_data, "t_ext/l:time/l:energy/F:hit/b:det/b:layer/b:sector/b:strip/b:side/b" );
-	output_tree->SetDirectory( output_file );
-
+void Calibrator::MakeHists(){
 	
 	//---- declare histograms here!  ----//
 	std::string hname, htitle;
-	TProfile *hprof[common::n_module];
-	TProfile *hprofExt[common::n_module];
-	TProfile *hprofSync[common::n_module];
 	for( unsigned int i = 0; i < common::n_module; ++i ) {
 		
 		hname = "hprof" + std::to_string(i);
@@ -271,8 +284,24 @@ void Calibrator::CalibFile( std::string input_file_name,
 	
 	}
 
+	return;
+	
+}
+
+unsigned long Calibrator::CalibFile( unsigned long start_entry ) {
+
+	// Get ready to calibrate
+	Initialise();
+
+	n_entries = input_tree->GetEntries();
+	std::cout << " Reading raw data: number of entries in input tree = " << n_entries << std::endl;
+	log_file << " Reading raw data: number of entries in input tree = " << n_entries << std::endl;
+	std::cout << " Starting the calibration at entry = " << start_entry << std::endl;
+	log_file << " Starting the calibration at entry = " << start_entry << std::endl;
+
+	
 	// Main loop over TTree to process raw MIDAS data entries
-	for( unsigned long long i = 0; i < n_entries; i++ ){
+	for( unsigned long i = start_entry; i < n_entries; i++ ){
 		
 		input_tree->GetEntry(i);
 		//std::cout << s_info.tm_stp_lsb << std::endl;
@@ -384,8 +413,6 @@ void Calibrator::CalibFile( std::string input_file_name,
 	output_file->cd();
 	output_file->Write();
 	//output_file->Print();
-	output_file->Close();
-	input_file->Close(); // Close TFile
 	
 	// Print some stats
 	for( unsigned int i = 0; i < common::n_module; ++i ) {
@@ -406,9 +433,7 @@ void Calibrator::CalibFile( std::string input_file_name,
 	
 	std::cout << "End Calibrator: time elapsed = " << time(NULL)-t_start << " sec." << std::endl;
 	log_file << "End Calibrator: time elapsed = " << time(NULL)-t_start << " sec." << std::endl;
-	
-	log_file.close(); //?? to close or not to close?
-	
-	return;
+		
+	return n_entries;
 	
 }

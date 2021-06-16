@@ -10,16 +10,69 @@ Converter::~Converter() {
 
 }
 
+void Converter::SetOutput( std::string output_file_name ){
+	
+	// Open output file
+	output_file = new TFile( output_file_name.data(), "recreate", 0 );
+
+	// Create log file.
+	std::string log_file_name = output_file_name.substr( 0, output_file_name.find_last_of(".") );
+	log_file_name += ".log";
+	log_file.open( log_file_name.c_str(), std::ios::out );
+	
+	return;
+
+};
+
+
+void Converter::MakeTree() {
+
+	// Create Root tree
+	if( gDirectory->GetListOfKeys()->Contains( "iss" ) ) {
+		
+		output_tree = (TTree*)gDirectory->Get("iss");
+		output_tree->SetBranchAddress( "info_data", &s_info );
+		output_tree->SetBranchAddress( "event_id", &s_id );
+		output_tree->SetBranchAddress( "adc_data", &s_adc );
+
+	}
+	
+	else {
+	
+		output_tree = new TTree( "iss", "iss" );
+		output_tree->Branch( "info_data", &s_info, "tm_stp_lsb/l:field/l:type/b:code/b");
+		output_tree->Branch( "event_id",  &s_id,   "mod/b:asic/b:ch/b");
+		output_tree->Branch( "adc_data",  &s_adc,  "value/s:hit/b");
+
+	}
+	
+	return;
+	
+}
+
 void Converter::MakeHists() {
 	
 	std::string hname, htitle;
+	std::string dirname, maindirname, subdirname;
 	
+	// Make directories
+	maindirname = "asic_hists";
+
 	// Loop over ISS modules
 	for( int i = 0; i < common::n_module; ++i ) {
+		
+		subdirname = "/module_" + std::to_string(i);
 		
 		// Loop over ASICs for the array
 		for( int j = 0; j < common::n_asic; ++j ) {
 			
+			dirname = maindirname + subdirname;
+			dirname += "/asic_" + std::to_string(j);
+			
+			if( !output_file->GetDirectory( dirname.data() ) )
+				output_file->mkdir( dirname.data() );
+			output_file->cd( dirname.data() );
+
 			// Loop over channels of each ASIC
 			for( int k = 0; k < common::n_channel; ++k ) {
 				
@@ -36,8 +89,14 @@ void Converter::MakeHists() {
 				if( output_file->GetListOfKeys()->Contains( hname.data() ) )
 					hasic[i][j][k] = (TH1F*)output_file->Get( hname.data() );
 				
-				else hasic[i][j][k] = new TH1F( hname.data(), htitle.data(),
+				else {
+					
+					hasic[i][j][k] = new TH1F( hname.data(), htitle.data(),
 								4096, -0.5, 4095.5 );
+					hasic[i][j][k]->SetDirectory(
+							output_file->GetDirectory( dirname.data() ) );
+					
+				}
 				
 			}
 			
@@ -45,9 +104,18 @@ void Converter::MakeHists() {
 		
 	}
 	
+	// Make directories
+	maindirname = "caen_hists";
+
 	// Loop over CAEN modules
 	for( int i = 0; i < common::n_caen_mod; ++i ) {
 		
+		dirname = maindirname + "/module_" + std::to_string(i);
+		
+		if( !output_file->GetDirectory( dirname.data() ) )
+			output_file->mkdir( dirname.data() );
+		output_file->cd( dirname.data() );
+
 		// Loop over channels of each CAEN module
 		for( int j = 0; j < common::n_caen_ch; ++j ) {
 			
@@ -62,8 +130,15 @@ void Converter::MakeHists() {
 			if( output_file->GetListOfKeys()->Contains( hname.data() ) )
 				hcaen[i][j] = (TH1F*)output_file->Get( hname.data() );
 			
-			else hcaen[i][j] = new TH1F( hname.data(), htitle.data(),
+			else {
+				
+				hcaen[i][j] = new TH1F( hname.data(), htitle.data(),
 										   65536, -0.5, 65535.5 );
+			
+				hcaen[i][j]->SetDirectory(
+						output_file->GetDirectory( dirname.data() ) );
+				
+			}
 			
 		}
 					
@@ -469,8 +544,6 @@ void Converter::FillTree(){
 
 // Function to run the conversion for a single file
 int Converter::ConvertFile( std::string input_file_name,
-							 std::string output_file_name,
-							 std::string log_file_name,
 							 int start_block,
 							 int end_block ) {
 	
@@ -483,23 +556,13 @@ int Converter::ConvertFile( std::string input_file_name,
 		
 	}
 	
-	// Create log file.
-	//std::ofstream log_file;
-	//std::stringstream sslogs;
-	log_file.open( log_file_name.c_str(), std::ios::out );
 	
 	// test Histogram ---- add more here!
 	// TH1I *Hmidas_type = new TH1I("Hmidas_type","Hmidas_type",4,-0.5,3.5);
 	
-	// Create Root tree.
-	output_file = new TFile( output_file_name.c_str(), "update" );
-	output_tree = new TTree( "iss", "iss" );
-	output_tree->Branch( "info_data", &s_info, "tm_stp_lsb/l:field/l:type/b:code/b");
-	output_tree->Branch( "event_id",  &s_id,   "mod/b:asic/b:ch/b");
-	output_tree->Branch( "adc_data",  &s_adc,  "value/s:hit/b");
-
 	// Initialise
-	MakeHists();
+	//MakeTree();
+	//MakeHists();
 	Initialise();
 
 	// Conversion starting
@@ -584,9 +647,8 @@ int Converter::ConvertFile( std::string input_file_name,
 	} // loop - nblock < BLOCKS_NUM
 	
 	input_file.close();
-	output_file->Write();
+	output_file->Write( 0, TObject::kWriteDelete );
 	//output_file->Print();
-	output_file->Close();
 	log_file.close();
 	
 	return BLOCKS_NUM;

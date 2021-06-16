@@ -1,6 +1,6 @@
 #include "EventBuilder.hh"
 
-EventBuilder::EventBuilder( std::string output_file_name ){
+EventBuilder::EventBuilder(){
 	
 	// ------------------------------------------------------------------------ //
 	// Initialise variables and flags
@@ -13,12 +13,6 @@ EventBuilder::EventBuilder( std::string output_file_name ){
 	n_cout = 0;
 	
 	
-	// ------------------------------------------------------------------------ //
-	// Create output file and create events tree
-	// ------------------------------------------------------------------------ //
-	output_file = new TFile( output_file_name.data(), "recreate" );
-	output_tree = new TTree( "evt_tree", "evt_tree" );
-	output_tree->Branch( "ISSEvts", "ISSEvts", &write_evts );
 	
 	// -------------------------------------------- //
 	// Event lists for reconstruction
@@ -33,18 +27,13 @@ EventBuilder::EventBuilder( std::string output_file_name ){
 	rtd_list.resize( common::n_sector );
 	rid_list.resize( common::n_sector );
 	
-	// Get ready and go
-	Initialise();
-	MakeEventHists();
-
-
 }
 
 EventBuilder::~EventBuilder(){
 			
 }
 
-void EventBuilder::SetInput( std::vector<std::string> input_file_names ) {
+void EventBuilder::SetInputFile( std::vector<std::string> input_file_names ) {
 	
 	/// Overlaoded function for a single file or multiple files
 	input_tree = new TChain( "iss_sort" );
@@ -59,28 +48,27 @@ void EventBuilder::SetInput( std::vector<std::string> input_file_names ) {
 	
 }
 
-void EventBuilder::SetInput( std::string input_file_name ) {
+void EventBuilder::SetInputTree( TTree* user_tree ){
 	
-	/// Overlaoded function for a single file or multiple files
-	monitor_input = input_file_name;
-	
-	input_tree = new TChain( "iss_sort" );
-	input_tree->Add( monitor_input.data() );
+	// Find the tree and set branch addresses
+	input_tree = (TChain*)user_tree;
 	input_tree->SetBranchAddress( "data", &in_data );
 
 	return;
 	
 }
 
-void EventBuilder::ResetInput() {
-	
-	/// To be called in monitor mode when the input needs refreshing
-	input_tree->Reset();
-	input_tree->Add( monitor_input.data() );
-	input_tree->SetBranchAddress( "data", &in_data );
+void EventBuilder::SetOutput( std::string output_file_name ) {
 
-	return;
-	
+	// ------------------------------------------------------------------------ //
+	// Create output file and create events tree
+	// ------------------------------------------------------------------------ //
+	output_file = new TFile( output_file_name.data(), "recreate" );
+	output_tree = new TTree( "evt_tree", "evt_tree" );
+	output_tree->Branch( "ISSEvts", "ISSEvts", &write_evts );
+
+	MakeEventHists();
+
 }
 
 void EventBuilder::Initialise(){
@@ -118,28 +106,30 @@ void EventBuilder::Initialise(){
 	
 }
 
-void EventBuilder::BuildEvents() {
+unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 	
 	/// Function to loop over the sort tree and build array and recoil events
 
 	if( input_tree->LoadTree(0) < 0 ){
 		
 		std::cout << " Event Building: nothing to do" << std::endl;
-		return;
+		return 0;
 		
 	}
 	
+	// Get ready and go
 	Initialise();
 	n_entries = input_tree->GetEntries();
 
 	std::cout << " Event Building: number of entries in input tree = ";
 	std::cout << n_entries << std::endl;
+	std::cout << " Start build at event " << start_build << std::endl;
 
 	
 	// ------------------------------------------------------------------------ //
 	// Main loop over TTree to find events
 	// ------------------------------------------------------------------------ //
-	for( unsigned long long i = 0; i < n_entries; ++i ) {
+	for( unsigned long i = start_build; i < n_entries; ++i ) {
 		
 		// Current event data
 		input_tree->GetEntry(i);
@@ -271,7 +261,7 @@ void EventBuilder::BuildEvents() {
 	//output_file->Print();
 	//output_file->Close();
 
-	return;
+	return n_entries;
 	
 }
 

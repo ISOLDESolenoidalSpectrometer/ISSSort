@@ -32,14 +32,14 @@ public:
 	Converter();
 	~Converter();
 	
+
 	int ConvertFile( std::string input_file_name,
-					  std::string output_file_name,
-					  std::string log_file_name,
 					  int start_block = 0,
 					  int end_block = -1);
 	void Initialise();
 	void MakeHists();
-	
+	void MakeTree();
+
 	void SetBlockHeader( char *input_header );
 	void ProcessBlockHeader( int nblock );
 
@@ -52,8 +52,14 @@ public:
 	
 	void FillTree();
 	
+	void SetOutput( std::string output_file_name );
 	
-	
+	inline void CloseOutput(){
+		output_file->Close();
+	};
+	inline TFile* GetFile(){ return output_file; };
+	inline TTree* GetTree(){ return output_tree; };
+
 	
 
 private:
