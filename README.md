@@ -35,7 +35,7 @@ The input options are described below
 
 ```
 use iss_sort with following flags:
-		[-i <vector<string>>: List of input files]
+        [-i <vector<string>>: List of input files]
         [-m <int           >: Monitor input file every X seconds]
         [-p <int           >: Port number for web server (default 8030)]
         [-o <string        >: Output file for events tree]
