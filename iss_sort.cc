@@ -1,7 +1,6 @@
 // My code include.
 #include "Common.hh"
 #include "Converter.hh"
-//#include "Calibrator.hh"
 #include "TimeSorter.hh"
 #include "Calibration.hh"
 #include "EventBuilder.hh"
@@ -39,7 +38,6 @@ bool flag_eventbuilder = false;
 
 // select what steps of the analysis to be forced
 bool force_convert = false;
-//bool force_calib = false;
 bool force_sort = false;
 
 // Flag for somebody needing help on command line
@@ -65,7 +63,6 @@ void* monitor_run( void* ptr ){
 	
 	// This function is called to run when monitoring
 	Converter conv_mon;
-	//Calibrator calib_mon( cal );
 	TimeSorter sort_mon;
 	EventBuilder eb_mon;
 
@@ -95,14 +92,6 @@ void* monitor_run( void* ptr ){
 		nblocks = conv_mon.ConvertFile( curFileMon, start_block );
 		start_block = nblocks;
 		
-		// Calibrate
-		//if( bFirstRun ) {
-		//	calib_mon.SetInputTree( conv_mon.GetTree() );
-		//	calib_mon.SetOutput( "monitor_calib.root" );
-		//}
-		//ncalib = calib_mon.CalibFile( start_calib );
-		//start_calib = ncalib;
-
 		// Sort
 		if( bFirstRun ) {
 			sort_mon.SetInputTree( conv_mon.GetTree() );
@@ -323,53 +312,6 @@ int main( int argc, char *argv[] ){
 		
 	}
 		
-
-	//-----------------------------//
-	// Do time calibration of data //
-	//-----------------------------//
-//	Calibrator calib( cal );
-//	std::cout << "\n +++ ISS Analysis:: processing Calibrator +++" << std::endl;
-//
-//	// Check each file
-//	for( unsigned int i = 0; i < input_names.size(); i++ ){
-//
-//		name_input_file = input_names.at(i) + ".root";
-//		name_output_file = input_names.at(i) + "_calib.root";
-//
-//		// If it doesn't exist, we have to sort it anyway
-//		// But only if we want to build events
-//		if( flag_eventbuilder || flag_sort ) {
-//
-//			ftest.open( name_output_file.data() );
-//			if( !ftest.is_open() ) force_calib = true;
-//			else {
-//
-//				ftest.close();
-//				rtest = new TFile( name_output_file.data() );
-//				if( rtest->IsZombie() ) force_calib = true;
-//				if( !flag_calib && !force_calib )
-//					std::cout << name_output_file << " already calibrated" << std::endl;
-//				rtest->Close();
-//
-//			}
-//
-//		}
-//
-//		if( flag_calib || force_calib ) {
-//
-//			std::cout << name_input_file << " --> ";
-//			std::cout << name_output_file << std::endl;
-//
-//			calib.SetInputFile( name_input_file );
-//			calib.SetOutput( name_output_file );
-//			calib.CalibFile();
-//			calib.CloseOutput();
-//
-//			force_calib = false;
-//
-//		}
-//
-//	}
 	
 	//-------------------------//
 	// Do time sorting of data //
@@ -380,7 +322,6 @@ int main( int argc, char *argv[] ){
 	// Check each file
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 			
-//		name_input_file = input_names.at(i) + "_calib.root";
 		name_input_file = input_names.at(i) + ".root";
 		name_output_file = input_names.at(i) + "_sort.root";
 

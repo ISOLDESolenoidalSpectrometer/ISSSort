@@ -59,9 +59,6 @@ iss_sort.o: iss_sort.cc
 $(SRC_DIR)/Calibration.o: $(SRC_DIR)/Calibration.cc $(INC_DIR)/Calibration.hh
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-#$(SRC_DIR)/Calibrator.o: $(SRC_DIR)/Calibrator.cc $(INC_DIR)/Calibrator.hh
-#	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
-
 $(SRC_DIR)/Common.o: $(SRC_DIR)/Common.cc $(INC_DIR)/Common.hh
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
