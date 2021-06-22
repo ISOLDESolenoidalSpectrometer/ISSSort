@@ -1,7 +1,7 @@
 // My code include.
 #include "Common.hh"
 #include "Converter.hh"
-#include "Calibrator.hh"
+//#include "Calibrator.hh"
 #include "TimeSorter.hh"
 #include "Calibration.hh"
 #include "EventBuilder.hh"
@@ -27,18 +27,19 @@
 
 // Default parameters and name
 std::string output_name = "output.root";
+std::string datadir_name;
 std::string name_cal_file;
 std::vector<std::string> input_names;
 
 // select what steps of the analysis to go through
 bool flag_convert = false;
-bool flag_calib = false;
+//bool flag_calib = false;
 bool flag_sort = false;
 bool flag_eventbuilder = false;
 
 // select what steps of the analysis to be forced
 bool force_convert = false;
-bool force_calib = false;
+//bool force_calib = false;
 bool force_sort = false;
 
 // Flag for somebody needing help on command line
@@ -56,6 +57,7 @@ THttpServer *serv;
 Bool_t bRunMon = kTRUE;
 Bool_t bFirstRun = kTRUE;
 string curFileMon;
+int port_num;
 
 // Function to call the monitoring loop
 void* monitor_run( void* ptr ){
@@ -63,15 +65,15 @@ void* monitor_run( void* ptr ){
 	
 	// This function is called to run when monitoring
 	Converter conv_mon;
-	Calibrator calib_mon( cal );
+	//Calibrator calib_mon( cal );
 	TimeSorter sort_mon;
 	EventBuilder eb_mon;
 
 	// Data/Event counters
 	int start_block = 0;
 	int nblocks = 0;
-	unsigned long start_calib = 0;
-	unsigned long ncalib = 0;
+	//unsigned long start_calib = 0;
+	//unsigned long ncalib = 0;
 	unsigned long start_sort = 0;
 	unsigned long nsort = 0;
 	unsigned long start_build = 0;
@@ -82,7 +84,8 @@ void* monitor_run( void* ptr ){
 	conv_mon.SetOutput( "monitor_singles.root" );
 	conv_mon.MakeTree();
 	conv_mon.MakeHists();
-	
+	conv_mon.AddCalibration( cal );
+
 	while( bRunMon ) {
 		
 		// Lock the main thread
@@ -93,16 +96,16 @@ void* monitor_run( void* ptr ){
 		start_block = nblocks;
 		
 		// Calibrate
-		if( bFirstRun ) {
-			calib_mon.SetInputTree( conv_mon.GetTree() );
-			calib_mon.SetOutput( "monitor_calib.root" );
-		}
-		ncalib = calib_mon.CalibFile( start_calib );
-		start_calib = ncalib;
+		//if( bFirstRun ) {
+		//	calib_mon.SetInputTree( conv_mon.GetTree() );
+		//	calib_mon.SetOutput( "monitor_calib.root" );
+		//}
+		//ncalib = calib_mon.CalibFile( start_calib );
+		//start_calib = ncalib;
 
 		// Sort
 		if( bFirstRun ) {
-			sort_mon.SetInputTree( calib_mon.GetTree() );
+			sort_mon.SetInputTree( conv_mon.GetTree() );
 			sort_mon.SetOutput( "monitor_sort.root" );
 		}
 		nsort = sort_mon.SortFile( start_sort );
@@ -136,7 +139,7 @@ void* monitor_run( void* ptr ){
 	}
 	
 	conv_mon.CloseOutput();
-	calib_mon.CloseOutput();
+	//calib_mon.CloseOutput();
 	sort_mon.CloseOutput();
 	eb_mon.CloseOutput();
 
@@ -148,7 +151,8 @@ void* monitor_run( void* ptr ){
 void start_http(){
 
 	// Server for JSROOT
-	serv = new THttpServer("http:8030?top=ISSDAQMonitoring");
+	string server_name = "http:" + to_string(port_num) + "?top=ISSDAQMonitoring";
+	serv = new THttpServer( server_name.data() );
 	serv->SetReadOnly(kFALSE);
 
 	// enable monitoring and
@@ -162,6 +166,9 @@ void start_http(){
 	//serv->RegisterCommand("/Start", "bRunMon=kTRUE;", "button;./icons/ed_execute.png");
 	//serv->RegisterCommand("/Stop",  "bRunMon=kFALSE;", "button;./icons/ed_interrupt.png");
 
+	// Add data directory
+	if( datadir_name.size() > 0 ) serv->AddLocation( "data/", datadir_name.data() );
+	
 	return;
 	
 }
@@ -173,7 +180,9 @@ int main( int argc, char *argv[] ){
 
 	interface->Add("-i", "List of input files", &input_names );
 	interface->Add("-m", "Monitor input file every X seconds", &mon_time );
+	interface->Add("-p", "Port number for web server (default 8030)", &port_num );
 	interface->Add("-o", "Output file for events tree", &output_name );
+	interface->Add("-d", "Data directory to add to the monitor", &datadir_name );
 	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
 	interface->Add("-s", "Flag to sort file by time", &flag_sort );
 	interface->Add("-e", "Flag to build physics events", &flag_eventbuilder );
@@ -211,12 +220,11 @@ int main( int argc, char *argv[] ){
 		std::cout << "Cannot monitor multiple input files, switching to normal mode" << std::endl;
 				
 	}
-
+	
 	// Check we have a calibration file
 	if( name_cal_file.size() > 0 ) {
 		
 		std::cout << "Calibration file: " << name_cal_file << std::endl;
-		flag_calib = true;
 		
 	}
 	else {
@@ -305,6 +313,7 @@ int main( int argc, char *argv[] ){
 			conv.SetOutput( name_output_file );
 			conv.MakeTree();
 			conv.MakeHists();
+			conv.AddCalibration( cal );
 			conv.ConvertFile( name_input_file );
 			conv.CloseOutput();
 
@@ -318,49 +327,49 @@ int main( int argc, char *argv[] ){
 	//-----------------------------//
 	// Do time calibration of data //
 	//-----------------------------//
-	Calibrator calib( cal );
-	std::cout << "\n +++ ISS Analysis:: processing Calibrator +++" << std::endl;
-	
-	// Check each file
-	for( unsigned int i = 0; i < input_names.size(); i++ ){
-			
-		name_input_file = input_names.at(i) + ".root";
-		name_output_file = input_names.at(i) + "_calib.root";
-
-		// If it doesn't exist, we have to sort it anyway
-		// But only if we want to build events
-		if( flag_eventbuilder || flag_sort ) {
-			
-			ftest.open( name_output_file.data() );
-			if( !ftest.is_open() ) force_calib = true;
-			else {
-				
-				ftest.close();
-				rtest = new TFile( name_output_file.data() );
-				if( rtest->IsZombie() ) force_calib = true;
-				if( !flag_calib && !force_calib )
-					std::cout << name_output_file << " already calibrated" << std::endl;
-				rtest->Close();
-				
-			}
-			
-		}
-
-		if( flag_calib || force_calib ) {
-		
-			std::cout << name_input_file << " --> ";
-			std::cout << name_output_file << std::endl;
-			
-			calib.SetInputFile( name_input_file );
-			calib.SetOutput( name_output_file );
-			calib.CalibFile();
-			calib.CloseOutput();
-			
-			force_calib = false;
-
-		}
-	
-	}
+//	Calibrator calib( cal );
+//	std::cout << "\n +++ ISS Analysis:: processing Calibrator +++" << std::endl;
+//
+//	// Check each file
+//	for( unsigned int i = 0; i < input_names.size(); i++ ){
+//
+//		name_input_file = input_names.at(i) + ".root";
+//		name_output_file = input_names.at(i) + "_calib.root";
+//
+//		// If it doesn't exist, we have to sort it anyway
+//		// But only if we want to build events
+//		if( flag_eventbuilder || flag_sort ) {
+//
+//			ftest.open( name_output_file.data() );
+//			if( !ftest.is_open() ) force_calib = true;
+//			else {
+//
+//				ftest.close();
+//				rtest = new TFile( name_output_file.data() );
+//				if( rtest->IsZombie() ) force_calib = true;
+//				if( !flag_calib && !force_calib )
+//					std::cout << name_output_file << " already calibrated" << std::endl;
+//				rtest->Close();
+//
+//			}
+//
+//		}
+//
+//		if( flag_calib || force_calib ) {
+//
+//			std::cout << name_input_file << " --> ";
+//			std::cout << name_output_file << std::endl;
+//
+//			calib.SetInputFile( name_input_file );
+//			calib.SetOutput( name_output_file );
+//			calib.CalibFile();
+//			calib.CloseOutput();
+//
+//			force_calib = false;
+//
+//		}
+//
+//	}
 	
 	//-------------------------//
 	// Do time sorting of data //
@@ -371,7 +380,8 @@ int main( int argc, char *argv[] ){
 	// Check each file
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 			
-		name_input_file = input_names.at(i) + "_calib.root";
+//		name_input_file = input_names.at(i) + "_calib.root";
+		name_input_file = input_names.at(i) + ".root";
 		name_output_file = input_names.at(i) + "_sort.root";
 
 		// If it doesn't exist, we have to sort it anyway

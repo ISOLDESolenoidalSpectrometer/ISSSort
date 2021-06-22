@@ -1,7 +1,25 @@
 #include "Converter.hh"
 
 Converter::Converter() {
+	
+	my_tm_stp_msb = 0;
+	my_tm_stp_hsb = 0;
+
+	// Start counters at zero
+	for( unsigned int i = 0; i < common::n_module; ++i ) {
+				
+		ctr_asic_hit[i]	= 0;	// hits on each module
+		ctr_asic_ext[i]	= 0;	// external timestamps
 		
+	}
+	
+	for( unsigned int i = 0; i < common::n_caen_mod; ++i ) {
+				
+		ctr_caen_hit[i]	= 0;	// hits on each module
+		ctr_caen_ext[i]	= 0;	// external timestamps
+		
+	}
+
 }
 
 Converter::~Converter() {
@@ -9,6 +27,7 @@ Converter::~Converter() {
 	//std::cout << "destructor" << std::endl;
 
 }
+
 
 void Converter::SetOutput( std::string output_file_name ){
 	
@@ -31,20 +50,25 @@ void Converter::MakeTree() {
 	if( gDirectory->GetListOfKeys()->Contains( "iss" ) ) {
 		
 		output_tree = (TTree*)gDirectory->Get("iss");
-		output_tree->SetBranchAddress( "info_data", &s_info );
-		output_tree->SetBranchAddress( "event_id", &s_id );
-		output_tree->SetBranchAddress( "adc_data", &s_adc );
+		output_tree->SetBranchAddress( "data", &data_packet );
 
 	}
 	
 	else {
 	
 		output_tree = new TTree( "iss", "iss" );
-		output_tree->Branch( "info_data", &s_info, "tm_stp_lsb/l:field/l:type/b:code/b");
-		output_tree->Branch( "event_id",  &s_id,   "mod/b:asic/b:ch/b");
-		output_tree->Branch( "adc_data",  &s_adc,  "value/s:hit/b");
-
+		data_packet = new DataPackets();
+		output_tree->Branch( "data", "DataPackets", &data_packet );
+		
 	}
+	
+	asic_data = new AsicData();
+	caen_data = new CaenData();
+	info_data = new InfoData();
+	
+	asic_data->ClearData();
+	caen_data->ClearData();
+	info_data->ClearData();
 	
 	return;
 	
@@ -143,25 +167,80 @@ void Converter::MakeHists() {
 		}
 					
 	}
+	
+	// Make directories
+	dirname = "timing_hists";
+	if( !output_file->GetDirectory( dirname.data() ) )
+		output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+
+	// Loop over ISS modules
+	for( unsigned int i = 0; i < common::n_module; ++i ) {
+		
+		hname = "hasic_hit" + std::to_string(i);
+		htitle = "Profile of ts versus hit_id in ISS module " + std::to_string(i);
+
+		if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+			hasic_hit[i] = (TProfile*)output_file->Get( hname.data() );
+
+		else {
+
+			hasic_hit[i] = new TProfile( hname.data(), htitle.data(), 3001 , 0., 30000., 0, 3.61e14 );
+			hasic_hit[i]->SetDirectory(
+					output_file->GetDirectory( dirname.data() ) );
+
+		}
+		
+		hname = "hasic_ext" + std::to_string(i);
+		htitle = "Profile of external trigger ts versus hit_id in ISS module " + std::to_string(i);
+
+		if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+			hasic_ext[i] = (TProfile*)output_file->Get( hname.data() );
+
+		else {
+
+			hasic_ext[i] = new TProfile( hname.data(), htitle.data(), 3001 , 0., 30000., 0, 3.61e14 );
+			hasic_ext[i]->SetDirectory(
+					output_file->GetDirectory( dirname.data() ) );
+
+		}
+	
+	}
+	
+	// Loop over CAEN modules
+	for( unsigned int i = 0; i < common::n_caen_mod; ++i ) {
+		
+		hname = "hcaen_hit" + std::to_string(i);
+		htitle = "Profile of ts versus hit_id in CAEN module " + std::to_string(i);
+
+		if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+			hcaen_hit[i] = (TProfile*)output_file->Get( hname.data() );
+
+		else {
+
+			hcaen_hit[i] = new TProfile( hname.data(), htitle.data(), 3001 , 0., 30000., 0, 3.61e14 );
+			hcaen_hit[i]->SetDirectory(
+					output_file->GetDirectory( dirname.data() ) );
+
+		}
 
 	
-	return;
-	
-}
+		hname = "hcaen_ext" + std::to_string(i);
+		htitle = "Profile of external trigger ts versus hit_id in CAEN module " + std::to_string(i);
 
-// Clean up function
-void Converter::Initialise() {
-	
-	my_tm_stp = 0;
-	my_info_field = 0;
-	my_info_code = 0;
-	my_type = 0;
-	my_adc_data = 0;
-	my_hit = 0;
-	my_mod_id = 0;
-	my_ch_id = 0;
-	my_asic_id = 0;
+		if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+			hcaen_ext[i] = (TProfile*)output_file->Get( hname.data() );
 
+		else {
+
+			hcaen_ext[i] = new TProfile( hname.data(), htitle.data(), 3001 , 0., 30000., 0, 3.61e13 );
+			hcaen_ext[i]->SetDirectory(
+					output_file->GetDirectory( dirname.data() ) );
+
+		}
+
+	}
+	
 	return;
 	
 }
@@ -185,6 +264,12 @@ void Converter::ProcessBlockHeader( int nblock ){
 	
 	// Flag if we have ASIC data
 	flag_asic_data = false;
+	
+	// Flags for CAEN data items
+	flag_caen_data0 = false;
+	flag_caen_data1 = false;
+	flag_caen_data3 = false;
+	flag_caen_trace = false;
 
 	// Flag when we find the end of the data
 	flag_terminator = false;
@@ -230,7 +315,7 @@ void Converter::ProcessBlockHeader( int nblock ){
 		
 	}
 	
-	if( std::string(header_id) != "EBYEDATA" ) {
+	if( std::string(header_id).substr(0,8) != "EBYEDATA" ) {
 	
 		std::cerr << "Bad header in block " << nblock << std::endl;
 		exit(0);
@@ -246,7 +331,7 @@ void Converter::ProcessBlockHeader( int nblock ){
 void Converter::SetBlockData( char *input_data ){
 	
 	// Copy header
-	for( int i = 0; i < MAIN_SIZE ; i++ )
+	for( UInt_t i = 0; i < MAIN_SIZE ; i++ )
 		block_data[i] = input_data[i];
 
 	return;
@@ -319,10 +404,7 @@ void Converter::ProcessBlockData( int nblock ){
 			
 		}
 		
-	
-		// initialized... to ensure default value of zero when filling TTree
-		Initialise();
-		
+			
 		// Data type is highest two bits
 		my_type = ( word_0 >> 30 ) & 0x3;
 		
@@ -346,9 +428,9 @@ void Converter::ProcessBlockData( int nblock ){
 			
 			else {
 				
-				flag_caen_data = true;
 				ProcessCAENData();
-				
+				FinishCAENData();
+
 			}
 #endif
 		}
@@ -357,25 +439,50 @@ void Converter::ProcessBlockData( int nblock ){
 		else if( my_type == 0x2 ){
 			
 			ProcessInfoData();
-			
+
 		}
 		
 		// Trace header
 		else if( my_type == 0x1 ){
 			
-			// TODO - contains the sample length
-			nsamples = word_1 & 0xFFFF; // 16 bits from 0 in second word
+			// contains the sample length
+			nsamples = word_1 & 0x0000FFFF; // 16 bits from 0 in second word
 			if( i < 25 && nblock < 10 ) log_file << "nsamples = " << nsamples << std::endl;
-			continue;
 			
+			// Get the samples from the trace
+			for( UInt_t j = 0; j < nsamples; j++ ){
+				
+				// get next word
+				i++;
+				sample_packet = GetWord(i);
+				
+				block_test = ( sample_packet >> 32 ) & 0x00000000FFFFFFFF;
+				trace_test = ( sample_packet >> 62 ) & 0x0000000000000003;
+				
+				if( trace_test == 0 && block_test != 0x5E5E5E5E ){
+					
+					caen_data->AddSample( ( sample_packet >> 48 ) & 0x0000000000003FFF );
+					caen_data->AddSample( ( sample_packet >> 32 ) & 0x0000000000003FFF );
+					caen_data->AddSample( ( sample_packet >> 16 ) & 0x0000000000003FFF );
+					caen_data->AddSample( sample_packet & 0x0000000000003FFF );
+					
+				}
+				
+				else {
+					
+					//std::cout << "This isn't a trace anymore..." << std::endl;
+					//std::cout << "Sample #" << j << " of " << nsamples << std::endl;
+					//std::cout << " trace_test = " << (int)trace_test << std::endl;
+
+					i--;
+					break;
+					
+				}
+
+			}
 			
-		}
-		
-		// Trace sample
-		else if( my_type == 0x0 ){
-			
-			// TODO - 4 x 14-bit samples in the 64-bit word
-			continue;
+			flag_caen_trace = true;
+			FinishCAENData();
 
 		}
 		
@@ -415,21 +522,6 @@ void Converter::ProcessBlockData( int nblock ){
 
 }
 
-void Converter::ProcessInfoData(){
-
-	// MIDAS info data format
-	my_info_field = word_0 & 0x000FFFFF; //bits 0:19
-	my_mod_id = (word_0 >> 24) & 0x0000003F; //bits 24:29
-	my_info_code = (word_0 >> 20) & 0x0000000F; //bits 20:23
-	my_tm_stp = word_1 & 0x0FFFFFFF;  //bits 0:27
-
-	// Fill tree
-	FillTree();
-	
-	return;
-	
-}
-
 void Converter::ProcessASICData(){
 
 	// ISS/R3B ASIC data format
@@ -443,8 +535,10 @@ void Converter::ProcessASICData(){
 	my_asic_id = (ADCchanIdent >> 7 ) & 0x000F; // 4 bits from 7
 	my_ch_id = ADCchanIdent & 0x007F; // 7 bits from 0
 	
-	my_tm_stp = word_1 & 0x0FFFFFFF;  // 28 bits from 0
+	my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  // 28 bits from 0
 	
+	// reconstruct time stamp= HSB+MSB+LSB
+	my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
 	
 	// Check things make sense
 	if( my_mod_id >= common::n_module ||
@@ -461,11 +555,30 @@ void Converter::ProcessASICData(){
 		
 		// Fill histograms
 		hasic[my_mod_id][my_asic_id][my_ch_id]->Fill( my_adc_data );
+		hasic_hit[my_mod_id]->Fill( ctr_asic_hit[my_mod_id], my_tm_stp, 1 );
 
-		// Fill tree
-		FillTree();
-	
+
+		// Make an AsicData item
+		asic_data->SetTime( my_tm_stp );
+		asic_data->SetAdcValue( my_adc_data );
+		asic_data->SetHitBit( my_hit );
+		asic_data->SetModule( my_mod_id );
+		asic_data->SetAsic( my_asic_id );
+		asic_data->SetChannel( my_ch_id );
+		asic_data->SetEnergy( cal->AsicEnergy( my_mod_id, my_asic_id, my_ch_id, my_adc_data ) );
+		
+		// Set this data and fill event to tree
+		data_packet->SetData( asic_data );
+		output_tree->Fill();
+		asic_data->Clear();
+		
+		// Count asic hit per module
+		ctr_asic_hit[my_mod_id]++;
+
 	}
+	
+	// We need a new time stamps I think?
+	hsb_ready = false;
 	
 	return;
 	
@@ -485,58 +598,230 @@ void Converter::ProcessCAENData(){
 	my_data_id = (ADCchanIdent >> 6 ) & 0x0003; // 2 bits from 6
 	my_ch_id = ADCchanIdent & 0x003F; // 6 bits from 0
 	
-	// just set asic_id = 0 as a bodge until we have separate trees
-	my_asic_id = 0;
+	// reconstruct time stamp= MSB+LSB
+	my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  // 28 bits from 0
+	my_tm_stp = ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
 	
-	my_tm_stp = word_1 & 0x0FFFFFFF;  // 28 bits from 0
+	// CAEN timestamps are 4 ns precision
+	my_tm_stp = my_tm_stp*4;
 
-	// Check things make sense and only use Qlong
+	// Check things make sense
 	if( my_mod_id >= common::n_caen_mod ||
 		my_ch_id >= common::n_caen_ch ) {
 		
 		std::cout << "Bad CAEN event with mod_id=" << my_mod_id;
 		std::cout << " ch_id=" << my_ch_id;
 		std::cout << " data_id=" << my_data_id << std::endl;
+		return;
 
 	}
+	
+	// First of the data items
+	if( !flag_caen_data0 && !flag_caen_data1 && !flag_caen_data3 ){
+		
+		// Make a CaenData item, need to add Qshort and traces
+		caen_data->SetTime( my_tm_stp );
+		caen_data->SetModule( my_mod_id );
+		caen_data->SetChannel( my_ch_id );
+		
+	}
 
-	else if( my_data_id == 0 ) {
+	// Qlong
+	if( my_data_id == 0 ) {
 		
 		// Fill histograms
 		hcaen[my_mod_id][my_ch_id]->Fill( my_adc_data );
-
-		// Shift module number in the tree by number of ASIC/ISS modules
-		my_mod_id += common::n_module;
 		
-		// Fill tree
-		FillTree();
+		caen_data->SetQlong( my_adc_data );
+		caen_data->SetEnergy( cal->CaenEnergy( my_mod_id, my_ch_id, my_adc_data ) );
+		flag_caen_data0 = true;
 
 	}
+	
+	// Qshort
+	if( my_data_id == 1 ) {
+		
+		my_adc_data = my_adc_data & 0x7FFF; // 15 bits from 0
+		caen_data->SetQshort( my_adc_data );
+		flag_caen_data1 = true;
+
+	}
+
+	// Fine timing
+	if( my_data_id == 3 ) {
+		
+		my_adc_data = my_adc_data & 0x03FF; // 10 bits from 0
+		caen_data->SetFineTime( my_adc_data );
+		flag_caen_data3 = true;
+
+	}
+
 	
 	return;
 
 }
 
-
-void Converter::FillTree(){
+void Converter::FinishCAENData(){
 	
-	// Fill branches
-	s_info.tm_stp_lsb	= my_tm_stp;
-	s_info.field		= my_info_field;
-	s_info.type			= my_type;
-	s_info.code			= my_info_code;
+	// Got all items
+	if( flag_caen_data0 && flag_caen_data1 && flag_caen_data3 && flag_caen_trace ){
+		
+		// Fill histograms
+		hcaen_hit[caen_data->GetModule()]->Fill( ctr_caen_hit[caen_data->GetModule()], caen_data->GetTime(), 1 );
+
+		// Check if this is actually just a timestamp
+		flag_caen_info = false;
+		if( caen_data->GetModule() == common::caen_pulser_mod &&
+		    caen_data->GetChannel() == common::caen_pulser_ch ){
+			
+			flag_caen_info = true;
+			my_info_code = common::pulser_code;
+			
+		}
+		
+		else if( caen_data->GetModule() == common::caen_ebis_mod &&
+		    caen_data->GetChannel() == common::caen_ebis_ch ){
+			
+			flag_caen_info = true;
+			my_info_code = common::ebis_code;
+			
+		}
+		
+		else if( caen_data->GetModule() == common::caen_t1_mod &&
+		    caen_data->GetChannel() == common::caen_t1_ch ){
+			
+			flag_caen_info = true;
+			my_info_code = common::t1_code;
+			
+		}
+
+		// If this is a timestamp, fill an info event
+		if( flag_caen_info ) {
+					
+			info_data->SetTime( caen_data->GetTime() );
+			info_data->SetCode( my_info_code );
+			data_packet->SetData( info_data );
+			output_tree->Fill();
+			info_data->Clear();
+
+			// Fill histograms
+			hcaen_ext[caen_data->GetModule()]->Fill( ctr_caen_ext[caen_data->GetModule()], caen_data->GetTime(), 1 );
+
+			// Count external trigger event
+			ctr_caen_ext[caen_data->GetModule()]++;
+
+		}
+
+		// Otherwise it is real data, so fule is caen event
+		else {
+			
+			// Set this data and fill event to tree
+			data_packet->SetData( caen_data );
+			output_tree->Fill();
+			
+			//std::cout << "Complete CAEN event" << std::endl;
+			//std::cout << "Trace length = " << caen_data->GetTraceLength() << std::endl;
+
+		}
+
+	}
 	
-	s_id.mod			= my_mod_id;
-	s_id.asic			= my_asic_id;
-	s_id.ch				= my_ch_id;
+	// missing something
+	else if( my_tm_stp != caen_data->GetTime() ) {
+		
+		std::cout << "Missing something in CAEN data and new event occured" << std::endl;
+		std::cout << " Qlong       = " << flag_caen_data0 << std::endl;
+		std::cout << " Qshort      = " << flag_caen_data1 << std::endl;
+		std::cout << " fine timing = " << flag_caen_data3 << std::endl;
+		std::cout << " trace data  = " << flag_caen_trace << std::endl;
 
-	s_adc.value			= my_adc_data;
-	s_adc.hit			= my_hit;
+	}
+
+	// This is normal, just not finished yet
+	else return;
 	
+	// Count the hit, even if it's bad
+	ctr_caen_hit[caen_data->GetModule()]++;
+	
+	// Assuming it did finish, in a good way or bad, clean up.
+	flag_caen_data0 = false;
+	flag_caen_data1 = false;
+	flag_caen_data3 = false;
+	flag_caen_trace = false;
+	caen_data->ClearData();
+	
+	return;
 
-	// Save this entry to TTree
-	output_tree->Fill();
+}
 
+void Converter::ProcessInfoData(){
+
+	// MIDAS info data format
+	my_info_field = word_0 & 0x000FFFFF; //bits 0:19
+	my_mod_id = (word_0 >> 24) & 0x0000003F; //bits 24:29
+	my_info_code = (word_0 >> 20) & 0x0000000F; //bits 20:23
+	my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  //bits 0:27
+	
+	ts_flag = false;
+
+	// HSB of timstamp
+	if( my_info_code == common::thsb_code ) {
+		
+		my_tm_stp_hsb = my_info_field & 0x000FFFFF;
+		hsb_ready = true;
+	
+	}
+	
+	// MSB of timstamp in sync pulse or CAEN extended time stamp
+	if( my_info_code == common::sync_code ) {
+		
+		my_tm_stp_msb = my_info_field & 0x000FFFFF;
+		ts_flag = true;
+		
+	}
+	
+	// External trigger
+	if( my_info_code == common::extt_code ) {
+		
+		my_tm_stp_msb = my_info_field & 0x000FFFFF;
+		ts_flag = true;
+
+	}
+
+	// Check what to do with this
+	if( ts_flag ) {
+		
+		// reconstruct time stamp= HSB+MSB+LSB
+		if( hsb_ready )
+			my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | ( my_tm_stp_lsb & 0x0FFFFFFF );
+
+		// reconstruct time stamp= MSB+LSB
+		else
+			my_tm_stp = ( my_tm_stp_msb << 28 ) | ( my_tm_stp_lsb & 0x0FFFFFFF );
+		
+		hsb_ready = false;
+		
+	}
+	
+	else return;
+	
+	// Create an info event and fill the tree for external triggers
+	if( common::extt_code == my_info_code ) {
+
+		// Fill histograms
+		hasic_ext[my_mod_id]->Fill( ctr_asic_ext[my_mod_id], my_tm_stp, 1 );
+
+		info_data->SetTime( my_tm_stp );
+		info_data->SetCode( my_info_code );
+		data_packet->SetData( info_data );
+		output_tree->Fill();
+		info_data->Clear();
+		
+		// Count external trigger event
+		ctr_asic_ext[my_mod_id]++;
+
+	}
+	
 	return;
 	
 }
@@ -555,15 +840,6 @@ int Converter::ConvertFile( std::string input_file_name,
 		return -1;
 		
 	}
-	
-	
-	// test Histogram ---- add more here!
-	// TH1I *Hmidas_type = new TH1I("Hmidas_type","Hmidas_type",4,-0.5,3.5);
-	
-	// Initialise
-	//MakeTree();
-	//MakeHists();
-	Initialise();
 
 	// Conversion starting
 	std::cout << "Converting file: " << input_file_name;

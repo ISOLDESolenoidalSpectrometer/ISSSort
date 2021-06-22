@@ -12,10 +12,21 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TH1.h>
+#include <TProfile.h>
 
 // Common header
 #ifndef __COMMON_HH
 # include "Common.hh"
+#endif
+
+// Calibration header
+#ifndef __CALIBRATION_HH
+# include "Calibration.hh"
+#endif
+
+// Data packets header
+#ifndef _DataPackets_hh
+# include "DataPackets.hh"
 #endif
 
 // Uncomment for ASIC only data prior to June 2021
@@ -36,10 +47,9 @@ public:
 	int ConvertFile( std::string input_file_name,
 					  int start_block = 0,
 					  int end_block = -1);
-	void Initialise();
 	void MakeHists();
 	void MakeTree();
-
+	
 	void SetBlockHeader( char *input_header );
 	void ProcessBlockHeader( int nblock );
 
@@ -49,49 +59,25 @@ public:
 	void ProcessASICData();
 	void ProcessCAENData();
 	void ProcessInfoData();
-	
-	void FillTree();
-	
+	void FinishCAENData();
+
 	void SetOutput( std::string output_file_name );
 	
 	inline void CloseOutput(){
 		output_file->Close();
+		delete data_packet;
+		//delete asic_data;
+		//delete caen_data;
+		//delete info_data;
 	};
 	inline TFile* GetFile(){ return output_file; };
 	inline TTree* GetTree(){ return output_tree; };
 
+	inline void AddCalibration( Calibration *mycal ){ cal = mycal; };
+
 	
 
 private:
-	
-	// Log file
-	std::ofstream log_file;
-	std::stringstream sslogs;
-
-	
-	// Set the size of the block and its components.
-	static const int HEADER_SIZE = 24; // Size of header in bytes
-#ifdef CAEN_ONLY
-	static const int BLOCK_SIZE = 0x20000; // Block size for CAEN data = 128 kB prior to June 2021
-#else
-	static const int BLOCK_SIZE = 0x10000; // Block size for ISS/ASIC data = 64 kB, also CAEN data from June 2021 onwards
-#endif
-	static const int MAIN_SIZE = BLOCK_SIZE - HEADER_SIZE;
-	static const int WORD_SIZE = MAIN_SIZE / sizeof(ULong64_t);
-
-	// Set the arrays for the block components.
-	char block_header[HEADER_SIZE];
-	char block_data[MAIN_SIZE];
-	
-	// Data words - 1 word of 64 bits (8 bytes)
-	ULong64_t word;
-	
-	// Data words - 2 words of 32 bits (4 byte).
-	UInt_t word_0;
-	UInt_t word_1;
-	
-	// Pointer to the data words
-	ULong64_t *data;
 
 	// enumeration for swapping modes
 	enum swap_t {
@@ -144,6 +130,36 @@ private:
 	};
 
 
+	// Log file
+	std::ofstream log_file;
+	std::stringstream sslogs;
+
+	
+	// Set the size of the block and its components.
+	static const int HEADER_SIZE = 24; // Size of header in bytes
+#ifdef CAEN_ONLY
+	static const int BLOCK_SIZE = 0x20000; // Block size for CAEN data = 128 kB prior to June 2021
+#else
+	static const int BLOCK_SIZE = 0x10000; // Block size for ISS/ASIC data = 64 kB, also CAEN data from June 2021 onwards
+#endif
+	static const int MAIN_SIZE = BLOCK_SIZE - HEADER_SIZE;
+	static const int WORD_SIZE = MAIN_SIZE / sizeof(ULong64_t);
+
+	// Set the arrays for the block components.
+	char block_header[HEADER_SIZE];
+	char block_data[MAIN_SIZE];
+	
+	// Data words - 1 word of 64 bits (8 bytes)
+	ULong64_t word;
+	
+	// Data words - 2 words of 32 bits (4 byte).
+	UInt_t word_0;
+	UInt_t word_1;
+	
+	// Pointer to the data words
+	ULong64_t *data;
+
+
 	
 	// End of data in  a block looks like:
 	// word_0 = 0xFFFFFFFF, word_1 = 0xFFFFFFFF.
@@ -151,8 +167,12 @@ private:
 	bool flag_terminator;
 
 	// Flag to identify CAEN or ASIC data
-	bool flag_caen_data;
 	bool flag_asic_data;
+	bool flag_caen_data0;
+	bool flag_caen_data1;
+	bool flag_caen_data3;
+	bool flag_caen_trace;
+	bool flag_caen_info;
 
 
 	// Raw data variables
@@ -167,6 +187,9 @@ private:
 	
 	// Interpretated variables
 	unsigned long my_tm_stp;
+	unsigned long my_tm_stp_lsb;
+	unsigned long my_tm_stp_msb;
+	unsigned long my_tm_stp_hsb;
 	unsigned long my_info_field;
 	unsigned long my_info_code;
 	unsigned long my_type;
@@ -177,19 +200,44 @@ private:
 	unsigned long my_asic_id;
 	unsigned long my_data_id;
 	
-	// For traces
-	UInt_t nsamples;
-	std::vector< UShort_t> trace;
+	// Flags
+	bool ts_flag;
+	bool hsb_ready;
 
-	common::info_data s_info;
-	common::event_id  s_id;
-	common::adc_data  s_adc;
+	// For traces
+	unsigned int nsamples;
+	ULong64_t sample_packet;
+	unsigned char trace_test;
+	UInt_t block_test;
+
+	// Data types
+	DataPackets *data_packet;
+	AsicData *asic_data;
+	CaenData *caen_data;
+	InfoData *info_data;
 	
+	// Output stuff
 	TFile *output_file;
 	TTree *output_tree;
 	
+	// Counters
+	int ctr_asic_hit[common::n_module];		// hits on each ISS module
+	int ctr_asic_ext[common::n_module];		// external (pulser) ISS timestamps
+	int ctr_caen_hit[common::n_module];		// hits on each CAEN module
+	int ctr_caen_ext[common::n_module];		// external (pulser) CAEN timestamps
+
+	// Histograms
+	TProfile *hasic_hit[common::n_module];
+	TProfile *hasic_ext[common::n_module];
+	TProfile *hcaen_hit[common::n_caen_mod];
+	TProfile *hcaen_ext[common::n_caen_mod];
+
 	TH1F *hasic[common::n_module][common::n_asic][common::n_channel];
 	TH1F *hcaen[common::n_caen_mod][common::n_caen_ch];
+	
+	// 	Calibrator
+	Calibration *cal;
+
 
 };
 

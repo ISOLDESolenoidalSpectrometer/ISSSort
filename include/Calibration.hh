@@ -40,6 +40,9 @@ public:
 	float AsicEnergy( int mod, int asic, int chan, unsigned short raw );
 	float AsicThreshold( int mod, int asic, int chan );
 	float AsicTime( int mod, int asic );
+	float CaenEnergy( int mod, int chan, unsigned short raw );
+	float CaenThreshold( int mod, int chan );
+	float CaenTime( int mod );
 	
 
 
@@ -47,13 +50,17 @@ private:
 
 	std::string fInputFile;
 
-	TRandom* fRand;
-  
 	std::vector< std::vector< std::vector<float> > > fAsicOffset;
 	std::vector< std::vector< std::vector<float> > > fAsicGain;
 	std::vector< std::vector< std::vector<float> > > fAsicGainQuadr;
 	std::vector< std::vector< std::vector<float> > > fAsicThreshold;
 	std::vector< std::vector<float> > fAsicTime;
+
+	std::vector< std::vector<float> > fCaenOffset;
+	std::vector< std::vector<float> > fCaenGain;
+	std::vector< std::vector<float> > fCaenGainQuadr;
+	std::vector< std::vector<float> > fCaenThreshold;
+	std::vector< float > fCaenTime;
 
 	//ClassDef(Calibration, 1)
    

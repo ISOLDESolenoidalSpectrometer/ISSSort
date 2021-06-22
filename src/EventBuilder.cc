@@ -5,33 +5,99 @@ EventBuilder::EventBuilder(){
 	// ------------------------------------------------------------------------ //
 	// Initialise variables and flags
 	// ------------------------------------------------------------------------ //
-	p_even_hits_pulser = 64;
-	p_even_time_window = 3e3;
+	build_window = 3e3;
 	
 	time_prev = 0;
-	n_events  = 0;
-	n_cout = 0;
+
+	n_asic_data	= 0;
+	n_caen_data	= 0;
+	n_info_data	= 0;
+
+	n_caen_pulser	= 0;
+	n_asic_pulser	= 0;
+
+	array_ctr	= 0;
+	recoil_ctr	= 0;
+	elum_ctr	= 0;
+	zd_ctr		= 0;
+	
+	// Some flags must be false to start
+	flag_asic_pulser = false;
+	flag_caen_pulser = false;
+
+	
+	 // p-side = 0; n-side = 1;
+	array_side.push_back(0); // asic 0 = p-side
+	array_side.push_back(1); // asic 1 = n-side
+	array_side.push_back(0); // asic 2 = p-side
+	array_side.push_back(0); // asic 3 = p-side
+	array_side.push_back(1); // asic 4 = n-side
+	array_side.push_back(0); // asic 5 = p-side
+
+	array_row.push_back(0); // asic 0 = row 0 p-side
+	array_row.push_back(0); // asic 1 = row 0 and 1 n-side
+	array_row.push_back(1); // asic 2 = row 1 p-side
+	array_row.push_back(2); // asic 3 = row 2 p-side
+	array_row.push_back(2); // asic 4 = row 2 and 3 n-side
+	array_row.push_back(3); // asic 5 = row 3 p-side
 	
 	
+	// Loop over ASICs in a module
+	for( int i = 0; i < common::n_asic; ++i ) {
+		
+		// Loop over channels in each ASIC
+		for( int j = 0; j < common::n_channel; ++j ) {
+			
+			// p-side: all channels used
+			if( array_side.at(i) == 0 ) {
+				
+				mystrip = j + common::n_pstrip * array_row.at(i);
+				array_pid.push_back( mystrip );
+				
+			}
+			
+			// n-side: 11 channels per ASIC 0/2A
+			else if( j >= 11 && j <= 21 ) {
+				
+				mystrip = j - 11;
+				array_nid.push_back( mystrip );
+				
+			}
+			
+			// n-side: 11 channels per ASIC 0/2B
+			else if( j >= 28 && j <= 38 ) {
+				
+				mystrip = 38 - j + common::n_nstrip;
+				array_nid.push_back( mystrip );
+
+			}
+			
+			// n-side: 11 channels per ASIC 1/3A
+			else if( j >= 89 && j <= 99 ) {
+				
+				mystrip = j - 89 + common::n_nstrip;
+				array_nid.push_back( mystrip );
+
+			}
+			
+			// n-side: 11 channels per ASIC 1/3B
+			else if( j >= 106 && j <= 116 ) {
+				
+				mystrip = 116 - j;
+				array_nid.push_back( mystrip );
+
+			}
+			
+			// n-side: empty channels
+			else array_nid.push_back(-1);
 	
-	// -------------------------------------------- //
-	// Event lists for reconstruction
-	// -------------------------------------------- //
-	pen_list.resize( common::n_pairs );
-	nen_list.resize( common::n_pairs );
-	ptd_list.resize( common::n_pairs );
-	ntd_list.resize( common::n_pairs );
-	z_list.resize( common::n_pairs );
-	phixy_list.resize( common::n_pairs );
-	ren_list.resize( common::n_sector );
-	rtd_list.resize( common::n_sector );
-	rid_list.resize( common::n_sector );
+		}
+		
+	}
 	
 }
 
-EventBuilder::~EventBuilder(){
-			
-}
+EventBuilder::~EventBuilder(){}
 
 void EventBuilder::SetInputFile( std::vector<std::string> input_file_names ) {
 	
@@ -77,30 +143,9 @@ void EventBuilder::Initialise(){
 	
 	flag_close_event = false;
 
-	hit_ctr		= 0;
-	array_ctr	= 0;
-	recoil_ctr	= 0;
+	hit_ctr = 0;
 	
-	for( int i = 0; i < common::n_pairs; ++i ){
-		
-		pen_list.at(i).resize(0);
-		nen_list.at(i).resize(0);
-		ptd_list.at(i).resize(0);
-		ntd_list.at(i).resize(0);
-		z_list.at(i).resize(0);
-		phixy_list.at(i).resize(0);
-		
-	}
-	
-	for( int i = 0; i < common::n_sector; ++i ){
-		
-		ren_list.at(i).resize(0);
-		rtd_list.at(i).resize(0);
-		rid_list.at(i).resize(0);
-
-	}
-	
-	write_evts.Initialise();
+	write_evts->ClearEvt();
 	
 	return;
 	
@@ -133,51 +178,73 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 		
 		// Current event data
 		input_tree->GetEntry(i);
-		mytime		= in_data.time;
-		myenergy	= in_data.energy;
-		mydet		= in_data.det;
-		mylayer		= in_data.layer;
-		mysector	= in_data.sector;
-		mystrip		= in_data.strip;
-		myside		= in_data.side;
-
+		
+		// Get the time of the event
+		mytime = in_data->GetTime();
+		
 		// check time stamp monotonically increases!
 		if( time_prev > mytime ) std::cout << "*t*";
 			
-
-		// if this is first datum included in Event
-		if( hit_ctr == 0 ) {
+		// Sort out the timing for the event window
+		// but only if it isn't an info event, i.e only for real data
+		if( !in_data->IsInfo() ) {
 			
-			time_min	= mytime;
-			time_max	= mytime;
-			time_first	= mytime;
+			// if this is first datum included in Event
+			if( hit_ctr == 0 ) {
+				
+				time_min	= mytime;
+				time_max	= mytime;
+				time_first	= mytime;
+				
+			}
+			hit_ctr++; // increase counter for bits of data included in this event
+			
+			// record time of this event
+			time_prev = mytime;
+			
+			// Update min and max
+			if( mytime > time_max ) time_max = mytime;
+			else if( mytime < time_min ) time_min = mytime;
 			
 		}
-		hit_ctr++; // increase counter for bits of data included in this event
-
 
 		// ------------------------------------------ //
 		// Find particles on the array
 		// ------------------------------------------ //
-		if( mydet == 0 ) {
+		if( in_data->IsAsic() ) {
 			
-			mypair = mysector/2;
-			mypair *= common::n_layer;
-			mypair += mylayer;
+			// Increment event counter
+			n_asic_data++;
 			
-			if( myside == 0 && mypair < common::n_pairs ) { // p-side
+			asic_data = in_data->GetAsicData();
+			myenergy = asic_data->GetEnergy();
+			mymod = asic_data->GetModule();
+			myside = array_side.at( asic_data->GetAsic() );
+			myrow = array_row.at( asic_data->GetAsic() );
 			
-				pen_list.at(mypair).push_back( myenergy );
-				ptd_list.at(mypair).push_back( mytime - time_first );
-				z_list.at(mypair).push_back( GetZ( mylayer, mystrip ) );
+			// p-side event
+			if( myside == 0 ) {
 				
+				mystrip = array_pid.at( asic_data->GetChannel() );
+				
+				pen_list.push_back( myenergy );
+				ptd_list.push_back( mytime - time_first );
+				pmod_list.push_back( mymod );
+				pid_list.push_back( mystrip );
+				prow_list.push_back( myrow );
+
 			}
-			
-			else if( myside == 1 && mypair < common::n_pairs ) { // n-side
-			
-				nen_list.at(mypair).push_back( myenergy );
-				ntd_list.at(mypair).push_back( mytime - time_first );
-				phixy_list.at(mypair).push_back( GetPhiXY( mysector, mystrip ) );
+
+			// n-side event
+			else {
+				
+				mystrip = array_nid.at( asic_data->GetChannel() );
+				
+				nen_list.push_back( myenergy );
+				ntd_list.push_back( mytime - time_first );
+				nmod_list.push_back( mymod );
+				nid_list.push_back( mystrip );
+				nrow_list.push_back( myrow );
 
 				
 			}
@@ -185,22 +252,76 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 		}
 
 		// ------------------------------------------ //
-		// Find recoils
+		// Find recoils and other things
 		// ------------------------------------------ //
-		if( mydet == 1 ) {
+		if( in_data->IsCaen() ) {
 			
-			ren_list.at(mysector).push_back( myenergy );
-			rtd_list.at(mysector).push_back( mytime - time_first );
-			rid_list.at(mysector).push_back( mylayer );
+			// Increment event counter
+			n_caen_data++;
 			
+			caen_data = in_data->GetCaenData();
+					
 		}
-				
-		// record time of this events
-		time_prev = mytime;
 		
-		// Update min and max
-		if( mytime > time_max ) time_max = mytime;
-		else if( mytime < time_min ) time_min = mytime;
+		
+		// ------------------------------------------ //
+		// Find info events, like timestamps etc
+		// ------------------------------------------ //
+		if( in_data->IsInfo() ) {
+			
+			// Increment event counter
+			n_info_data++;
+			
+			info_data = in_data->GetInfoData();
+			
+			// Update EBIS time
+			if( info_data->GetCode() == common::ebis_code )
+				ebis_time = info_data->GetTime();
+				
+			// Update T1 time
+			if( info_data->GetCode() == common::t1_code )
+				t1_time = info_data->GetTime();
+
+			// Update CAEN pulser time
+			if( info_data->GetCode() == common::pulser_code ) {
+				
+				caen_time = info_data->GetTime();
+				flag_caen_pulser = true;
+				n_caen_pulser++;
+				
+			}
+
+			// Update ISS pulser time
+			if( info_data->GetCode() == common::extt_code ){
+				
+				asic_time = info_data->GetTime();
+				flag_asic_pulser = true;
+				n_asic_pulser++;
+
+			}
+			
+			// If we a pulser event from both DAQs, fill time difference
+			if( flag_caen_pulser && flag_asic_pulser ) {
+				
+				asic_hz = 1e9 / ( (double)asic_time - (double)asic_prev );
+				caen_hz = 1e9 / ( (double)caen_time - (double)caen_prev );
+				
+				daq_sync_diff = (double)caen_time - (double)asic_time;
+				
+				daq_sync->Fill( asic_time, daq_sync_diff );
+				asic_freq->Fill( asic_time, asic_hz );
+				caen_freq->Fill( caen_time, caen_hz );
+				freq_diff->Fill( asic_time, asic_hz - caen_hz );
+				pulser_loss->Fill( asic_time, (int)n_asic_pulser - (int)n_caen_pulser );
+				
+				flag_asic_pulser = false;
+				flag_caen_pulser = false;
+				asic_prev = asic_time;
+				caen_prev = caen_time;
+
+			}
+			
+		}
 
 		
 		//------------------------------
@@ -213,17 +334,20 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 		else {  //check if next entry is beyond time window: close event!
 
 			input_tree->GetEntry(i+1);
-			
-			time_diff = in_data.time - time_first;
-			tdiff->Fill( time_diff );
-			
+						
+			time_diff = in_data->GetTime() - time_first;
+
 			// window = time_stamp_first + time_window
-			if( time_diff > p_even_time_window )
+			if( time_diff > build_window )
 				flag_close_event = true; // set flag to close this event
 
 			// we've gone on to the next file in the chain
 			else if( time_diff < 0 )
 				flag_close_event = true; // set flag to close this event
+				
+			// Fill tdiff hist only for real data
+			if( !in_data->IsInfo() ) tdiff->Fill( time_diff );
+
 
 		} // if next entry beyond time window: close event!
 		
@@ -234,15 +358,23 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 		if( flag_close_event && hit_ctr > 0 ) {
 
 			//----------------------------------
-			// Build array events and recoils
+			// Build array events, recoils, etc
 			//----------------------------------
-			RecoilFinder();		// same recoils for all array particles
-			ParticleFinder();	// every array particle will fill one event
-		
-			//----------------------------------
+			ArrayFinder();		// add an ArrayEvt for each n/p pair
+			RecoilFinder();		// add a RecoilEvt for each dE-E
+			ElumFinder();		// add an ElumEvt for each S1 event
+			ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
+
+			// ------------------------------------
+			// Add timing and fill the ISSEvts tree
+			// ------------------------------------
+			write_evts->SetEBIS( ebis_time );
+			write_evts->SetT1( t1_time );
+			output_tree->Fill();
+			
+			//--------------------------------------------------
 			// clear values of arrays to store intermediate info
-			//----------------------------------
-			n_events++;
+			//--------------------------------------------------
 			Initialise();
 			
 		} // if close event && hit_ctr > 0
@@ -253,9 +385,15 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 	// Clean up
 	//--------------------------
 
-	std::cout << "\n EventBuilder finished with " << n_events;
-	std::cout << " events and " << output_tree->GetEntries();
-	std::cout << " tree entries" << std::endl;
+	std::cout << "\n EventBuilder finished..." << std::endl;
+	std::cout << "  ASIC data packets = " << n_asic_data << std::endl;
+	std::cout << "  CAEN data packets = " << n_caen_data << std::endl;
+	std::cout << "  Info data packets = " << n_info_data << std::endl;
+	std::cout << "   Array events = " << array_ctr << std::endl;
+	std::cout << "   Recoil events = " << recoil_ctr << std::endl;
+	std::cout << "   ELUM events = " << elum_ctr << std::endl;
+	std::cout << "   ZeroDegree events = " << zd_ctr << std::endl;
+	std::cout << "  Tree entries = " << output_tree->GetEntries() << std::endl;
 
 	output_file->Write( 0, TObject::kWriteDelete );
 	//output_file->Print();
@@ -265,122 +403,99 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 	
 }
 
-float EventBuilder::GetZ( int layer, int strip ){
+
+void EventBuilder::ArrayFinder() {
 	
-	/// Get the z position of the interaction
-	/// Note that there is no radial correction yet implemented
-	/// the origin is at the target position
-	/// z is positive in the beam direction
-	/// x is positive in the vertical direction towards the sky
-	/// y is positive in the horizontal direction towards XT03 (right)
-	/// phi is positive in the clockwise direction, looking from the origin to positive z (beam direction)
+	std::vector<unsigned int> pindex;
+	std::vector<unsigned int> nindex;
 
-	//float z = Cal->GetTargetDist(); // not yet implemented
-	float z = -10.0; 			// just until it is in the cal file
-	float d = 127.5 - strip;	// take centre of the end strip
-	d *= 0.95;					// p-side strip pitch = 0.95 mm
-	d += (3-layer) * 125.5;		// inter wafer distance (to be confirmed)
-	d += 1.7;					// distance from wafer edge to active region
-
-	if( z > 0 ) z += d;	// forward direction (downstream)
-	else z -= d;		// backward direction (upstream)
+	// Do each module and row individually
+	for( int i = 0; i < common::n_module; ++i ) {
 		
-	return z; // in mm
-	
-}
+		for( int j = 0; j < common::n_row; ++j ) {
+			
+			// Empty the array of indexes
+			pindex.clear();
+			nindex.clear();
 
-TVector2 EventBuilder::GetPhiXY( int sector, int strip ){
-	
-	/// Get the phi angle of the interaction, and in the meantime define x,y too
-	/// Note that there is no radial correction yet implemented
-	/// the origin is at the target position
-	/// z is positive in the beam direction
-	/// x is positive in the vertical direction towards the sky
-	/// y is positive in the horizontal direction towards XT03 (right)
-	/// phi is positive in the clockwise direction, looking from the origin to positive z (beam direction)
-	
-	// Start with a flat wafer pointing to the sky
-	float x = 53.5 / 2.0; 	// diameter is 53.5 mm
-	float y = strip - 4.5;	// take strip relative to centre (11 strips)
-	y *= 2.0;				// n-side strip pitch = 2.0 mm
-
-	// This vector can now be rotated to the correct position
-	TVector2 vec( x, y );
-	
-	vec = vec.Rotate( TMath::Pi() / 6. );			// start in the centre of first face
-	vec = vec.Rotate( sector * TMath::Pi() / 3. );	// get side of hexagon
-	
-	return vec;
-
-}
-
-void EventBuilder::ParticleFinder() {
-	
-	bool good_event;
-	
-	// Do each layer individually
-	for( int i = 0; i < common::n_pairs; ++i ) {
-		
-		good_event = false;
-		
-		pn_mult[i]->Fill( ptd_list.at(i).size(), ntd_list.at(i).size() );
-		
-		for( unsigned int j = 0; j < ptd_list.at(i).size(); ++j ) {
-
-			for( unsigned int k = 0; k < ntd_list.at(i).size(); ++k ) {
-
-				pn_td[i]->Fill( ptd_list.at(i).at(j) - ntd_list.at(i).at(k) );
+			// Loop over p-side events
+			for( unsigned int k = 0; k < pen_list.size(); ++k ) {
+				
+				// Check if it is the module and row we want
+				if( pmod_list.at(k) == i && prow_list.at(k) == j ) {
+					
+					// Put in the index
+					pindex.push_back( k );
+					
+				}
 				
 			}
-
-		}
-
-		// Easy case, 1p vs 1n
-		if( pen_list.at(i).size() == 1 &&
-		    nen_list.at(i).size() == 1 ) {
-
-			write_evts.SetParticle( pen_list.at(i).at(0),
-									nen_list.at(i).at(0),
-									z_list.at(i).at(0),
-									phixy_list.at(i).at(0),
-									ptd_list.at(i).at(0),
-									ntd_list.at(i).at(0) );
-
-			good_event = true;
 			
-			pn_11[i]->Fill( pen_list.at(i).at(0), nen_list.at(i).at(0) );
-			
-		}
-		
-		// Others too, but who can be arsed at the moment
-		else if( pen_list.at(i).size() == 2 &&
-				 nen_list.at(i).size() == 1 ) {
-			
-			pn_21[i]->Fill( pen_list.at(i).at(0), nen_list.at(i).at(0) );
-			pn_21[i]->Fill( pen_list.at(i).at(1), nen_list.at(i).at(0) );
+			// Loop over n-side events
+			for( unsigned int l = 0; l < nen_list.size(); ++l ) {
+				
+				// Check if it is the module and row we want
+				if( nmod_list.at(l) == i && nrow_list.at(l) == j ) {
+				
+					// Put in the index
+					nindex.push_back( l );
 
-		}
-		
-		else if( pen_list.at(i).size() == 1 &&
-				 nen_list.at(i).size() == 2 ) {
+				}
+				
+			}
 			
-			pn_12[i]->Fill( pen_list.at(i).at(0), nen_list.at(i).at(0) );
-			pn_12[i]->Fill( pen_list.at(i).at(0), nen_list.at(i).at(1) );
+			// Multiplicty hist
+			pn_mult[i][j]->Fill( pindex.size(), nindex.size() );
 
-		}
-		
-		else if( pen_list.at(i).size() == 2 &&
-				 nen_list.at(i).size() == 2 ) {
-		
-			pn_22[i]->Fill( pen_list.at(i).at(0), nen_list.at(i).at(0) );
-			pn_22[i]->Fill( pen_list.at(i).at(1), nen_list.at(i).at(0) );
-			pn_22[i]->Fill( pen_list.at(i).at(0), nen_list.at(i).at(1) );
-			pn_22[i]->Fill( pen_list.at(i).at(1), nen_list.at(i).at(1) );
+			// Time difference hists
+			for( unsigned int k = 0; k < pindex.size(); ++k )
+				for( unsigned int l = 0; l < nindex.size(); ++l )
+					pn_td[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( pindex.at(j) ) );
+
 			
+			// Easy case, 1p vs 1n
+			if( pindex.size() == 1 && nindex.size() == 1 ) {
+				
+				array_evt->SetEvent( pen_list.at( pindex.at(0) ),
+									 nen_list.at( nindex.at(0) ),
+									 pid_list.at( pindex.at(0) ),
+									 nid_list.at( nindex.at(0) ),
+									 ptd_list.at( pindex.at(0) ),
+									 ntd_list.at( nindex.at(0) ),
+									 i );
+				
+				write_evts->AddEvt( array_evt );
+				array_ctr++;
+
+				pn_11[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(0) ) );
+				
+			}
+			
+			// Others too, but who can be arsed at the moment
+			if( pindex.size() == 2 && nindex.size() == 1 ) {
+
+				pn_21[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(0) ) );
+				pn_21[i][j]->Fill( pen_list.at( pindex.at(1) ), nen_list.at( nindex.at(0) ) );
+				
+			}
+			
+			if( pindex.size() == 1 && nindex.size() == 2 ) {
+
+				pn_12[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(0) ) );
+				pn_12[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(1) ) );
+				
+			}
+			
+			if( pindex.size() == 2 && nindex.size() == 2 ) {
+
+				pn_22[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(0) ) );
+				pn_22[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(1) ) );
+				pn_22[i][j]->Fill( pen_list.at( pindex.at(1) ), nen_list.at( nindex.at(0) ) );
+				pn_22[i][j]->Fill( pen_list.at( pindex.at(1) ), nen_list.at( nindex.at(1) ) );
+				
+			}
+						
 		}
-		
-		// Fill one particle per layer
-		if( good_event ) output_tree->Fill();
 
 	}
 	
@@ -391,45 +506,88 @@ void EventBuilder::RecoilFinder() {
 	
 }
 
+void EventBuilder::ElumFinder() {
+	
+	
+}
+
+void EventBuilder::ZeroDegreeFinder() {
+	
+	
+}
+
 void EventBuilder::MakeEventHists(){
 	
 	std::string hname, htitle;
-	for( unsigned int i = 0; i < common::n_pairs; ++i ) {
-		
-		hname = "pn_1v1_s" + std::to_string(i);
-		htitle = "p-side multiplicity = 1 vs. n-side multiplicity = 1 (DSSSD pair ";
-		htitle += std::to_string(i) + ");p-side energy [keV];n-side energy [keV]";
-		pn_11[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+	std::string dirname, maindirname, subdirname;
+	
+	// Make directories
+	maindirname = "array_hists";
 
-		hname = "pn_1v2_s" + std::to_string(i);
-		htitle = "p-side multiplicity = 1 vs. n-side multiplicity = 2 (DSSSD pair ";
-		htitle += std::to_string(i) + ");p-side energy [keV];n-side energy [keV]";
-		pn_12[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+	// ---------------- //
+	// Array histograms //
+	// ---------------- //
+	// Loop over ISS modules
+	for( unsigned int i = 0; i < common::n_module; ++i ) {
+	
+		dirname = maindirname + "/module_" + std::to_string(i);
 
-		hname = "pn_2v1_s" + std::to_string(i);
-		htitle = "p-side multiplicity = 2 vs. n-side multiplicity = 1 (DSSSD pair ";
-		htitle += std::to_string(i) + ");p-side energy [keV];n-side energy [keV]";
-		pn_21[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+		if( !output_file->GetDirectory( dirname.data() ) )
+			output_file->mkdir( dirname.data() );
+		output_file->cd( dirname.data() );
 
-		hname = "pn_2v2_s" + std::to_string(i);
-		htitle = "p-side multiplicity = 2 vs. n-side multiplicity = 2 (DSSSD pair ";
-		htitle += std::to_string(i) + ");p-side energy [keV];n-side energy [keV]";
-		pn_22[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+		// Loop over rows of the array
+		for( int j = 0; j < common::n_row; ++j ) {
+
+			hname = "pn_1v1_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "p-side multiplicity = 1 vs. n-side multiplicity = 1 (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
+			pn_11[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			
+			hname = "pn_1v2_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "p-side multiplicity = 1 vs. n-side multiplicity = 2 (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
+			pn_12[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			
+			hname = "pn_2v1_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "p-side multiplicity = 2 vs. n-side multiplicity = 1 (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
+			pn_21[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			
+			hname = "pn_2v2_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "p-side multiplicity = 2 vs. n-side multiplicity = 2 (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
+			pn_22[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			
+			hname = "pn_td_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "p-side vs. n-side time difference (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];counts";
+			pn_td[i][j] = new TH1F( hname.data(), htitle.data(), 10e3, -5e4, 5e4 );
+			
+			hname = "pn_mult_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "p-side vs. n-side multiplicity (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");mult p-side;mult n-side";
+			pn_mult[i][j] = new TProfile( hname.data(), htitle.data(), 20, 0, 20, 0, 20 );
 		
-		hname = "pn_td_s" + std::to_string(i);
-		htitle = "p-side vs. n-side time difference (DSSSD pair ";
-		htitle += std::to_string(i) + ");time difference [ns];counts";
-		pn_td[i] = new TH1F( hname.data(), htitle.data(), 10e3, -5e4, 5e4 );
-		
-		hname = "pn_mult_s" + std::to_string(i);
-		htitle = "p-side vs. n-side multiplicity (DSSSD pair ";
-		htitle += std::to_string(i) + ");mult p-side;mult n-side";
-		pn_mult[i] = new TProfile( hname.data(), htitle.data(), 20, 0, 20, 0, 20 );
+		}
 		
 	}
 	
+	// ----------------- //
+	// Timing histograms //
+	// ----------------- //
+	dirname =  "timing";
+	if( !output_file->GetDirectory( dirname.data() ) )
+		output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+
 	tdiff = new TH1F( "tdiff", "Time difference to first trigger;#Delta t [ns]", 2e4+1, -1, 2e5 );
-	
+	daq_sync = new TProfile( "daq_sync", "Time difference between ASIC pulser and CAEN pulser as a function of time;time [ns];#Delta t [ns]", 3.6e3, 0, 3.6e12, -5e6, 5e6 );
+	asic_freq = new TProfile( "asic_freq", "Frequency of pulser in ISS DAQ as a function of time;time [ns];f [Hz]", 3.6e3, 0, 3.6e12, 95., 105. );
+	caen_freq = new TProfile( "caen_freq", "Frequency of pulser in CAEN DAQ as a function of time;time [ns];f [Hz]", 3.6e3, 0, 3.6e12, 95., 105. );
+	freq_diff = new TProfile( "freq_diff", "Frequency difference of pulser events in ISS/CAEN DAQs as a function of time;time [ns];#Delta f [Hz]", 3.6e3, 0, 3.6e12, -1., 1. );
+	pulser_loss = new TProfile( "pulser_loss", "Number of missing pulser events in ISS/CAEN DAQs as a function of time;time [ns];(+ive CAEN missing, -ive ISS missing)", 3.6e3, 0, 3.6e12 );
+
 	return;
 	
 }

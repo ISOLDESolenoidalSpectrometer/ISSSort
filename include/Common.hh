@@ -19,59 +19,30 @@ const int n_asic	= 6;	///< 4 p-side + 2 n-side per module
 const int n_channel	= 128;	///< 128 channels per ASIC
 
 const int n_det		= 1;	///< detector types  just the array for now, expand for recoils etc.
-const int n_layer	= 4;	///< 4x2 DSSSDs per module, but paired; dE-E for recoil, gas cathodes (13?)
-const int n_strip	= 128;	///< strip number of DSSSD
+const int n_row		= 4;	///< 4x2 DSSSDs per module, but paired; dE-E for recoil, gas cathodes (13?)
+const int n_pstrip	= 128;	///< number of p-side strips in each DSSSD
+const int n_nstrip	= 11;	///< strip number of DSSSD
 const int n_side	= 2;	///< p-side and n-side
 
-const int n_unit	= n_module * n_asic;	///< number of physical ASIC devices/units
-const int n_sector	= n_module * 2;			///< 6 sides of the hexagonal array or 4 quadrants for recoil, 4 arms of the FiFi
-const int n_pairs	= n_module * n_layer;	///< this is basically pairs of wafers relevant for readout
-const int n_wafer	= n_sector * n_layer;	///< this is "detectors" in event builder
+//const int n_unit	= n_module * n_asic;	///< number of physical ASIC devices/units
+//const int n_sector	= n_module * 2;			///< 6 sides of the hexagonal array or 4 quadrants for recoil, 4 arms of the FiFi
+//const int n_pairs	= n_module * n_row;	///< this is basically pairs of wafers relevant for readout
+//const int n_wafer	= n_sector * n_row;	///< this is "detectors" in event builder
 
-const int sync_code = 14;	///< This is the info code for the sync pulse, 5 before 2019 and 14 after 2019 (what is it though?)
+const int extt_code = 14;	///< This is the info code for the external timestamp, 5 before 2019 and 14 after 2019 (This is ISS == 14)
+const int sync_code = 4;	///< Medium significant bits of the timestamp are here
+const int thsb_code = 5;	///< Highest significant bits of the timestamp are here
 
-// Liam's structs for different branches
-struct info_data {
-	
-	unsigned long	tm_stp_lsb;	///< least significant bits timestamp
-	unsigned long	field;	///< contains the MS bits for the timestamp
-	unsigned char	type;	///< type: 0 = sample waveform, 1 = sample length, 2 = info data, 3 = ADC data
-	unsigned char	code;	///< 5 is high significant bits of timestamp; 14 is external timestamp ...
-	
-};
-
-struct event_id {
-	
-	unsigned char	mod;
-	unsigned char	asic;
-	unsigned char	ch;
-
-};
-
-struct adc_data {
-	
-	unsigned short	value;
-	unsigned char	hit;
-
-};
-
-struct real_data {
-	
-	unsigned long long		t_ext;	///< external timestamp
-	unsigned long long		time;	///< absolute reconstructed timestamp
-	float 					energy;	///< calibrated energy
-	unsigned char			hit;	///< hit event = 1, neighbour strip = 0
-	unsigned char			det;	///< detector type 0 = array; 1 = recoil
-	unsigned char			layer;	///< 4 wafers along array, 2 dE-E, 13 for gas
-	unsigned char			sector;	///< 6 edges of hexagonal array, 4 quadrants of the recoil
-	unsigned char			strip;	///< obvious for DSSSD, useless for recoils
-	unsigned char			side;	///< p-side = 0; n-side = 1
-
-	
-};
-
-
-// End of Liam's structs
+const int caen_pulser_mod = 0;	///< Location of the pulser in the CAEN system (module)
+//const int caen_pulser_ch = 13;	///< Location of the pulser in the CAEN system (module) - CERN experiments
+const int caen_pulser_ch = 1;	///< Location of the pulser in the CAEN system (module) - Daresbury test
+const int pulser_code = 20;		///< Info code when we have a pulser event in InfoData packets
+const int caen_ebis_mod = 0;	///< Location of the EBIS signal in the CAEN system (module)
+const int caen_ebis_ch = 14;	///< Location of the EBIS signal in the CAEN system (module)
+const int ebis_code = 21;		///< Info code when we have an EBIS event in InfoData packets
+const int caen_t1_mod = 0;		///< Location of the T1 signal in the CAEN system (module)
+const int caen_t1_ch = 15;		///< Location of the T1 signal in the CAEN system (module)
+const int t1_code = 22;			///< Info code when we have a T1 event in InfoData packets
 
 }
 

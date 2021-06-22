@@ -24,7 +24,7 @@ bool TimeSorter::SetInputFile( std::string input_file_name ){
 	}
 	
 	// Set the input tree
-	SetInputTree( (TTree*)input_file->Get("iss_calib") );
+	SetInputTree( (TTree*)input_file->Get("iss") );
 
 	std::cout << "Sorting file by timestamp: " << input_file->GetName() << std::endl;
 
@@ -72,12 +72,12 @@ unsigned long TimeSorter::SortFile( unsigned long start_sort ) {
 	
 	// Time sort all entries of the tree
 	n_entries = input_tree->GetEntries();
-	std::cout << " Sorting: number of entries in calibrated tree = " << n_entries << std::endl;
-	log_file << " Sorting: number of entries in calibrated tree = " << n_entries << std::endl;
+	std::cout << " Sorting: number of entries in input tree = " << n_entries << std::endl;
+	log_file << " Sorting: number of entries in input tree = " << n_entries << std::endl;
 
 	if( n_entries > 0 ) {
 		
-		nb_idx = input_tree->BuildIndex( "0", "time" );
+		nb_idx = input_tree->BuildIndex( "0", "data.GetTime()" );
 		att_index = (TTreeIndex*)input_tree->GetTreeIndex();
 	
 		std::cout << " Sorting: size of the sorted index = " << nb_idx << std::endl;

@@ -21,28 +21,20 @@ void Calibrator::Initialise(){
 		
 		my_tm_stp[i] 			= 0;
 		my_tm_stp_ext[i]		= 0;
+		my_tm_stp_sync[i]		= 0;
 		tm_stp_msb_modules[i]	= 0;	// medium significant bits
-		tm_stp_hsb_modules[i]	= 0;	// highest significant bit
-		
+		tm_stp_hsb_modules[i]	= 0;	// highest significant bits
+
 		ctr_hit[i]				= 0;	// hits on each module
-		ctr_hit_Ext[i]			= 0;	// external timestamps
-		ctr_hit_Sync[i]			= 0;	// sync timestamps
-		ctr_pause[i]			= 0;	// info code 2
-		ctr_resume[i]			= 0;	// info code 3
-		ctr_code_sync[i]		= 0;	// info code "common::sync_code"
-		ctr_code4[i]			= 0;	// info code 4
-		ctr_code7[i]			= 0;	// info code 7
+		ctr_ext[i]				= 0;	// external timestamps
+		ctr_sync[i]				= 0;	// sync timestamps
 
 	}
 	
 	// Flags
-	Ext_flag = false;
-	for( unsigned int i = 0; i < common::n_module; ++i ) {
-		
-		DetTag_Ext[i] = false;
-		SyncTag[i] = false;
-
-	}
+	ext_flag = false;
+	sync_flag = false;
+	hsb_ready = false;
 
 	// Reset Timestamps
 	t0_sync = 0;
@@ -76,9 +68,10 @@ void Calibrator::SetInputTree( TTree* user_tree ){
 	
 	// Find the tree and set branch addresses
 	input_tree = user_tree;
-	input_tree->SetBranchAddress( "info_data", &s_info );
-	input_tree->SetBranchAddress( "event_id",  &s_id   );
-	input_tree->SetBranchAddress( "adc_data",  &s_adc  );
+	//input_tree->SetBranchAddress( "info_data", &s_info );
+	//input_tree->SetBranchAddress( "event_id",  &s_id   );
+	//input_tree->SetBranchAddress( "adc_data",  &s_adc  );
+	input_tree->SetBranchAddress( "data",  &data_packet  );
 
 	return;
 	
@@ -105,7 +98,7 @@ void Calibrator::SetOutput( std::string output_file_name ){
 	
 }
 
-bool Calibrator::SetEntry( long long ts, long long ts_ext ) {
+bool Calibrator::SetEntry( long long ts ) {
 	
 	float my_energy	= -999;
 	int my_det 		= 255;
@@ -124,20 +117,31 @@ bool Calibrator::SetEntry( long long ts, long long ts_ext ) {
 	// if INFO CODE data
 	if( s_info.type == 2 ){
 		
-		// keep simple: for now only record SYNC-like pulses
-		if( s_info.code == 4 || s_info.code == common::sync_code || s_info.code == 7 ) {
+		switch( s_info.code ) {
 			
-			my_sync_flag = true;
-			fill_flag = false; // to skip filling the iss_calib tree with SYNC100 pulses
-			if( s_info.code == common::sync_code ) my_ext_flag = true;
-			
+			// look for SYNC-like pulses
+			case common::sync_code:
+
+				my_sync_flag = true;
+				fill_flag = false; // to skip filling the iss_calib tree with SYNC100 pulses
+
+			// external triggers, this is the sync to the CAEN system
+			case common::extt_code:
+
+				fill_flag = true; // we need to fill these
+				my_ext_flag = true;
+
+			default:
+				
+				// skip everything else!
+				fill_flag = false;
+				std::cout << "Unknown info code = " << s_info.code << std::endl;
+				
 		}
-		
-		// skip everything else!
-		else fill_flag = false;
 		
 	}
 	
+	// ADC data
 	else if( s_info.type == 3 ) {
 		
 		fill_flag = true;
@@ -156,7 +160,6 @@ bool Calibrator::SetEntry( long long ts, long long ts_ext ) {
 	
 	// Real data
 	s_data.time			= ts;
-	s_data.t_ext		= ts_ext;
 	s_data.energy		= my_energy;
 	s_data.hit			= my_hit;
 	s_data.det 			= my_det;
@@ -307,102 +310,81 @@ unsigned long Calibrator::CalibFile( unsigned long start_entry ) {
 		//std::cout << s_info.tm_stp_lsb << std::endl;
 		//std::cout << s_id.asic << std::endl;
 
-		no_sync_flag = true;
-		
+		ts_flag = false;
+		sync_flag = false;
+		ext_flag = false;
+
 		// if INFO code
 		if( s_info.type == 3 ) ctr_hit[s_id.mod]++;
 		
 		if( s_info.type == 2 ){
 			
-			if( s_info.code == 2 ) ctr_pause[s_id.mod]++;
-			if( s_info.code == 3 ) ctr_resume[s_id.mod]++;
-			
-			// If SYNC pulse
-			if( s_info.code == 4 || s_info.code == common::sync_code || s_info.code == 7 ) {
-				
-				if( s_info.code == 4 )  ctr_code4[s_id.mod]++;
-				if( s_info.code == common::sync_code ) ctr_code_sync[s_id.mod]++;
-				if( s_info.code == 7 )  ctr_code7[s_id.mod]++;
-				
-				no_sync_flag = false;
-				
+			// If SYNC pulse or external timestamp
+			if( s_info.code == common::sync_code || s_info.code == common::extt_code ) {
+
 				my_tm_stp_msb = (s_info.field & 0x000FFFFF);	// MS bits (47:28) of timestamp
 				tm_stp_msb_modules[s_id.mod] = my_tm_stp_msb;	// update for use with other data types
 				
-				if( s_info.code == common::sync_code ) ctr_hit_Ext[s_id.mod]++;
-				if( s_info.code == common::sync_code && SyncTag[s_id.mod] ) ctr_hit_Sync[s_id.mod]++;
-				
 				// reconstruct time stamp= MSB+LSB
 				my_tm_stp[s_id.mod] = (tm_stp_msb_modules[s_id.mod] << 28 ) | (s_info.tm_stp_lsb & 0x0FFFFFFF);
-				
+
 				if( s_info.code == common::sync_code ) {
 					
-					my_tm_stp_ext[s_id.mod] = my_tm_stp[s_id.mod];
-					Ext_flag = true;
-					
+					ctr_ext[s_id.mod]++;
+					my_tm_stp_sync[s_id.mod] = my_tm_stp[s_id.mod];
+					sync_flag = true;
+					ts_flag = true;
+
 				}
 				
+				if( s_info.code == common::extt_code ) {
+					
+					ctr_sync[s_id.mod]++;
+					my_tm_stp_ext[s_id.mod] = my_tm_stp[s_id.mod];
+					ext_flag = true;
+					ts_flag = true;
+
+				}
+
 			}
 			
-			// Since 2019  high significant bits
-			if( s_info.code == 5 && common::sync_code != 5 ) {
+			// Highest significant bits in code 5
+			// We need to get code 4 next and alert that hsb are ready
+			if( s_info.code == common::thsb_code ){
 				
 				my_tm_stp_hsb = ( s_info.field & 0x000FFFFF); // MS bits (47:28) of timestamp
 				tm_stp_hsb_modules[s_id.mod] = my_tm_stp_hsb;
+				ts_flag = false;
+				hsb_ready = true;
 				
-				// ie: code "common::sync_code" prior this code 5
-				if( !Ext_flag ){
-				
-					my_tm_stp[s_id.mod] = (tm_stp_hsb_modules[s_id.mod] << 48 ) | (tm_stp_msb_modules[s_id.mod] << 28 ) | (s_info.tm_stp_lsb & 0x0FFFFFFF);
-
-				}
-
-				else {
-				
-					my_tm_stp_ext[s_id.mod] = (tm_stp_hsb_modules[s_id.mod] << 48 ) | (my_tm_stp_ext[s_id.mod] & 0x0FFFFFFFFFFFF);
-			
-					//
-					// sanity check of det synchronisation using external signal
-					//
-					// Let's determine the lowest time stamp when EVERY detector DAQs start receiving external time stamp.
-					if( !DetTag_Ext[s_id.mod] ) { // if first time we see this detector in the datastream
-						
-						if( my_tm_stp_ext[s_id.mod] >= t0_sync ){
-							
-							t0_sync = my_tm_stp_ext[s_id.mod];
-							DetTag_Ext[s_id.mod] = true;
-							std::cout << "new t0_sync found: " << t0_sync << " in module #" << (int)s_id.mod << std::endl;
-							
-						}
-					}
-
-					Ext_flag = false;
-					
-				}
-				
-				//std::cout << "ts data= " << my_tm_stp <<  std::endl;
-								
 			}
 			
 		}
 		
-		// if any other data type
-		if( no_sync_flag ){
+		// if timestamp is complete (after we get sync code)
+		if( ts_flag ){
 			
 			// reconstruct time stamp= HSB+MSB+LSB
-			my_tm_stp[s_id.mod] = ( ( tm_stp_hsb_modules[s_id.mod] << 48 ) | ( tm_stp_msb_modules[s_id.mod] << 28 ) | ( s_info.tm_stp_lsb & 0x0FFFFFFF ) );
-			
+			if( hsb_ready )
+				my_tm_stp[s_id.mod] = ( tm_stp_hsb_modules[s_id.mod] << 48 ) | ( tm_stp_msb_modules[s_id.mod] << 28 ) | ( s_info.tm_stp_lsb & 0x0FFFFFFF );
+
+			// reconstruct time stamp= MSB+LSB
+			else
+				my_tm_stp[s_id.mod] = ( tm_stp_msb_modules[s_id.mod] << 28 ) | ( s_info.tm_stp_lsb & 0x0FFFFFFF );
+				
 		}
 		
-		if( SetEntry( my_tm_stp[s_id.mod], my_tm_stp_ext[s_id.mod] ) ) {
+		else continue;
+		
+		if( SetEntry( my_tm_stp[s_id.mod] ) ) {
 			
 			//std::cout << s_info.tm_stp_lsb << std::endl;
 			
 			output_tree->Fill();
 			
 			hprof[s_id.mod]->Fill( ctr_hit[s_id.mod], my_tm_stp[s_id.mod], 1 );
-			hprofExt[s_id.mod]->Fill( ctr_hit_Ext[s_id.mod], my_tm_stp_ext[s_id.mod], 1 );
-			hprofSync[s_id.mod]->Fill( ctr_hit_Sync[s_id.mod], my_tm_stp_ext[s_id.mod], 1 );
+			hprofExt[s_id.mod]->Fill( ctr_ext[s_id.mod], my_tm_stp_ext[s_id.mod], 1 );
+			hprofSync[s_id.mod]->Fill( ctr_sync[s_id.mod], my_tm_stp_sync[s_id.mod], 1 );
 			
 		}
 
@@ -418,11 +400,8 @@ unsigned long Calibrator::CalibFile( unsigned long start_entry ) {
 	for( unsigned int i = 0; i < common::n_module; ++i ) {
 		
 		log_file << " Number of hit in module #" << i << ": " << ctr_hit[i] << "" << std::endl;
-		log_file << "   Nb of PAUSE:     " << ctr_resume[i] << std::endl;
-		log_file << "   Nb of RESUME:    " << ctr_pause[i] << std::endl;
-		log_file << "   Nb of code4:     " << ctr_code4[i] << std::endl;
-		log_file << "   Nb of code_sync: " << ctr_code_sync[i] << std::endl;
-		log_file << "   Nb of code7:     " << ctr_code7[i] << std::endl;
+		log_file << "   Nb of ext:  " << ctr_ext[i] << std::endl;
+		log_file << "   Nb of sync: " << ctr_sync[i] << std::endl;
 			
 		// Clean histograms
 		//delete hprof[i];

@@ -36,6 +36,7 @@ The input options are described below
 ```
 use iss_sort with following flags:
         [-i <vector<string>>: List of input files]
+        [-m <int           >: Monitor input file every X seconds]
         [-o <string        >: Output file for events tree]
         [-f                 : Flag to force new ROOT conversion]
         [-s                 : Flag to sort file by time]
