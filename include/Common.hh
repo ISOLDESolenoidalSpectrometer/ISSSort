@@ -18,7 +18,6 @@ const int n_module	= 3;	///< 3 modules make a full array
 const int n_asic	= 6;	///< 4 p-side + 2 n-side per module
 const int n_channel	= 128;	///< 128 channels per ASIC
 
-const int n_det		= 1;	///< detector types  just the array for now, expand for recoils etc.
 const int n_row		= 4;	///< 4x2 DSSSDs per module, but paired; dE-E for recoil, gas cathodes (13?)
 const int n_pstrip	= 128;	///< number of p-side strips in each DSSSD
 const int n_nstrip	= 11;	///< strip number of DSSSD

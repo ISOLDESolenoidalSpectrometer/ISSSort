@@ -106,9 +106,9 @@ private:
 	// Time variables
 	long		 		time_diff;
 	unsigned long long	time_prev, time_min, time_max, time_first;
-	unsigned long long  ebis_time, t1_time;
+	unsigned long long  ebis_time, t1_time, ebis_prev, t1_prev;
 	unsigned long long	asic_time, caen_time, asic_prev, caen_prev;
-	double asic_hz, caen_hz, daq_sync_diff;
+	double asic_hz, caen_hz, ebis_hz, t1_hz, daq_sync_diff;
 
 	// Data variables - generic
 	unsigned long long	mytime;		///< absolute timestamp
@@ -167,6 +167,7 @@ private:
 	TH1F *tdiff;
 	TProfile *daq_sync;
 	TProfile *caen_freq, *asic_freq, *freq_diff;
+	TProfile *ebis_freq, *t1_freq;
 	TProfile *pulser_loss;
 
 	
