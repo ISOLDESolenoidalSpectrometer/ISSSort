@@ -94,17 +94,26 @@ void DataPackets::ClearData(){
 }
 
 unsigned long DataPackets::GetTime(){
-	
-	unsigned long t = 0;
-	
+		
 	if( IsAsic() ) return GetAsicData()->GetTime();
 	if( IsCaen() ) return GetCaenData()->GetTime();
 	if( IsInfo() ) return GetInfoData()->GetTime();
 
-	return t;
+	return 0;
 	
 }
 
+UInt_t DataPackets::GetTimeMSB(){
+	
+	return ( (this->GetTime() >> 32) & 0x0000FFFF );
+	
+}
+
+UInt_t DataPackets::GetTimeLSB(){
+	
+	return (UInt_t)this->GetTime();
+	
+}
 
 void CaenData::ClearData(){
 	

@@ -152,7 +152,9 @@ public:
 	
 	// Complicated way to get the time...
 	unsigned long GetTime();
-	
+	UInt_t GetTimeMSB();
+	UInt_t GetTimeLSB();
+
 	void ClearData();
 
 protected:

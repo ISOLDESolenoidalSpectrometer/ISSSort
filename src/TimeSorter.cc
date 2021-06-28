@@ -77,7 +77,8 @@ unsigned long TimeSorter::SortFile( unsigned long start_sort ) {
 
 	if( n_entries > 0 ) {
 		
-		nb_idx = input_tree->BuildIndex( "0", "data.GetTime()" );
+		nb_idx = input_tree->BuildIndex( "data.GetTimeMSB()", "data.GetTimeLSB()" );
+		//nb_idx = input_tree->BuildIndex( "0", "data.GetTime()" );
 		att_index = (TTreeIndex*)input_tree->GetTreeIndex();
 	
 		std::cout << " Sorting: size of the sorted index = " << nb_idx << std::endl;
