@@ -302,39 +302,41 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			if( info_data->GetCode() == common::pulser_code ) {
 				
 				caen_time = info_data->GetTime();
+				caen_hz = 1e9 / ( (double)caen_time - (double)caen_prev );
+				if( caen_prev != 0 ) caen_freq->Fill( caen_time, caen_hz );
+
 				flag_caen_pulser = true;
 				n_caen_pulser++;
-				
+				caen_prev = caen_time;
+
 			}
 
 			// Update ISS pulser time
 			if( info_data->GetCode() == common::extt_code ){
 				
 				asic_time = info_data->GetTime();
+				asic_hz = 1e9 / ( (double)asic_time - (double)asic_prev );
+				if( asic_prev != 0 ) asic_freq->Fill( asic_time, asic_hz );
+
 				flag_asic_pulser = true;
 				n_asic_pulser++;
+				asic_prev = asic_time;
 
 			}
 			
 			// If we a pulser event from both DAQs, fill time difference
 			if( flag_caen_pulser && flag_asic_pulser ) {
 				
-				asic_hz = 1e9 / ( (double)asic_time - (double)asic_prev );
-				caen_hz = 1e9 / ( (double)caen_time - (double)caen_prev );
 				
 				daq_sync_diff = (double)caen_time - (double)asic_time;
 				
 				daq_sync->Fill( asic_time, daq_sync_diff );
-				asic_freq->Fill( asic_time, asic_hz );
-				caen_freq->Fill( caen_time, caen_hz );
 				freq_diff->Fill( asic_time, asic_hz - caen_hz );
 				pulser_loss->Fill( asic_time, (int)n_asic_pulser - (int)n_caen_pulser );
 				
 				flag_asic_pulser = false;
 				flag_caen_pulser = false;
-				asic_prev = asic_time;
-				caen_prev = caen_time;
-
+	
 			}
 			
 		}
