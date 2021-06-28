@@ -15,6 +15,14 @@ else
 	DICTEXT   := _rdict.pcm
 endif
 
+PLATFORM:=$(shell uname)
+ifeq ($(PLATFORM),Darwin)
+SHAREDSWITCH = -Qunused-arguments -shared -undefined dynamic_lookup -dynamiclib -Wl,-install_name,'@executable_path/../lib/'# NO ENDING SPACE
+else
+SHAREDSWITCH = -shared -Wl,-soname,# NO ENDING SPACE
+endif
+
+
 ROOTCFLAGS   := $(shell root-config --cflags)
 ROOTLDFLAGS  := $(shell root-config --ldflags)
 ROOTLIBS     := $(shell root-config --glibs) -lRHTTP -lThread
@@ -25,6 +33,9 @@ CC          = $(shell root-config --cxx)
 # Flags for compiler.
 CFLAGS		= -c -Wall -Wextra $(ROOTCFLAGS) -g
 INCLUDES	+= -I$(INC_DIR) -I.
+
+# Linker.
+LD          = $(shell root-config --ld)
 # Flags for linker.
 LDFLAGS 	+= $(ROOTLDFLAGS)
 
@@ -48,10 +59,15 @@ DEPENDENCIES =  $(INC_DIR)/Calibration.hh \
 				$(INC_DIR)/TimeSorter.hh \
 				$(INC_DIR)/EventBuilder.hh
  
+.PHONY : all
+all: $(BIN_DIR)/iss_sort $(LIB_DIR)/libiss_sort.so
+ 
+$(LIB_DIR)/libiss_sort.so: iss_sort.o $(OBJECTS) iss_sortDict.o
+	$(LD) iss_sort.o $(OBJECTS) iss_sortDict.o $(SHAREDSWITCH)$@ $(LIBS) -o $@
 
 $(BIN_DIR)/iss_sort: iss_sort.o $(OBJECTS) iss_sortDict.o
 	mkdir -p $(BIN_DIR)
-	$(CC) -o $@ $^ $(LDFLAGS) $(LIBS)
+	$(LD) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 iss_sort.o: iss_sort.cc
 	$(CC) $(CFLAGS) $(INCLUDES) $^
@@ -84,6 +100,7 @@ iss_sortDict.o: iss_sortDict.cc iss_sortDict$(DICTEXT) $(INC_DIR)/RootLinkDef.h
 	mkdir -p $(BIN_DIR)
 	$(CC) -fPIC $(CFLAGS) $(INCLUDES) -c $<
 	cp iss_sortDict$(DICTEXT) $(BIN_DIR)/
+	cp iss_sortDict$(DICTEXT) $(LIB_DIR)/
 
 iss_sortDict.cc: $(DEPENDENCIES) $(INC_DIR)/RootLinkDef.h
 	$(ROOTDICT) -f $@ -c $(INCLUDES) $(DEPENDENCIES) $(INC_DIR)/RootLinkDef.h
