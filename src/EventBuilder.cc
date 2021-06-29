@@ -600,13 +600,13 @@ void EventBuilder::MakeEventHists(){
 	output_file->cd( dirname.data() );
 
 	tdiff = new TH1F( "tdiff", "Time difference to first trigger;#Delta t [ns]", 2e4+1, -1, 2e5 );
-	daq_sync = new TProfile( "daq_sync", "Time difference between ASIC pulser and CAEN pulser as a function of time;time [ns];#Delta t [ns]", 3.6e3, 0, 3.6e12, -5e6, 5e6 );
-	asic_freq = new TProfile( "asic_freq", "Frequency of pulser in ISS DAQ as a function of time;time [ns];f [Hz]", 3.6e3, 0, 3.6e12, 95., 105. );
-	caen_freq = new TProfile( "caen_freq", "Frequency of pulser in CAEN DAQ as a function of time;time [ns];f [Hz]", 3.6e3, 0, 3.6e12, 95., 105. );
-	ebis_freq = new TProfile( "ebis_freq", "Frequency of EBIS events as a function of time;time [ns];f [Hz]", 3.6e3, 0, 3.6e12 );
-	t1_freq = new TProfile( "t1_freq", "Frequency of T1 events (p+ on ISOLDE target) as a function of time;time [ns];f [Hz]", 3.6e3, 0, 3.6e12 );
-	freq_diff = new TProfile( "freq_diff", "Frequency difference of pulser events in ISS/CAEN DAQs as a function of time;time [ns];#Delta f [Hz]", 3.6e3, 0, 3.6e12, -1., 1. );
-	pulser_loss = new TProfile( "pulser_loss", "Number of missing pulser events in ISS/CAEN DAQs as a function of time;time [ns];(+ive CAEN missing, -ive ISS missing)", 3.6e3, 0, 3.6e12 );
+	daq_sync = new TProfile( "daq_sync", "Time difference between ASIC pulser and CAEN pulser as a function of time;time [ns];#Delta t [ns]", 10.8e3, 0, 10.8e12 );
+	asic_freq = new TProfile( "asic_freq", "Frequency of pulser in ISS DAQ as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
+	caen_freq = new TProfile( "caen_freq", "Frequency of pulser in CAEN DAQ as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
+	ebis_freq = new TProfile( "ebis_freq", "Frequency of EBIS events as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
+	t1_freq = new TProfile( "t1_freq", "Frequency of T1 events (p+ on ISOLDE target) as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
+	freq_diff = new TProfile( "freq_diff", "Frequency difference of pulser events in ISS/CAEN DAQs as a function of time;time [ns];#Delta f [Hz]", 10.8e3, 0, 10.8e12 );
+	pulser_loss = new TProfile( "pulser_loss", "Number of missing pulser events in ISS/CAEN DAQs as a function of time;time [ns];(+ive CAEN missing, -ive ISS missing)", 10.8e3, 0, 10.8e12 );
 
 	return;
 	
