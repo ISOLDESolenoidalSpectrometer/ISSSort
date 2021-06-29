@@ -63,6 +63,7 @@ DEPENDENCIES =  $(INC_DIR)/Calibration.hh \
 all: $(BIN_DIR)/iss_sort $(LIB_DIR)/libiss_sort.so
  
 $(LIB_DIR)/libiss_sort.so: iss_sort.o $(OBJECTS) iss_sortDict.o
+	mkdir -p $(LIB_DIR)
 	$(LD) iss_sort.o $(OBJECTS) iss_sortDict.o $(SHAREDSWITCH)$@ $(LIBS) -o $@
 
 $(BIN_DIR)/iss_sort: iss_sort.o $(OBJECTS) iss_sortDict.o
@@ -87,7 +88,7 @@ $(SRC_DIR)/Converter.o: $(SRC_DIR)/Converter.cc $(INC_DIR)/Converter.hh
 $(SRC_DIR)/DataPackets.o: $(SRC_DIR)/DataPackets.cc $(INC_DIR)/DataPackets.hh
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-$(SRC_DIR)/EventBuilder.o: $(SRC_DIR)/EventBuilder.cc $(INC_DIR)/EventBuilder.hh $(SRC_DIR)/ISSEvts.o
+$(SRC_DIR)/EventBuilder.o: $(SRC_DIR)/EventBuilder.cc $(INC_DIR)/EventBuilder.hh
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(SRC_DIR)/ISSEvts.o: $(SRC_DIR)/ISSEvts.cc $(INC_DIR)/ISSEvts.hh
