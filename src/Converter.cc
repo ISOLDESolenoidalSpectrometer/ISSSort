@@ -185,7 +185,7 @@ void Converter::MakeHists() {
 
 		else {
 
-			hasic_hit[i] = new TProfile( hname.data(), htitle.data(), 3001 , 0., 30000., 0, 3.61e14 );
+			hasic_hit[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 1080000. );
 			hasic_hit[i]->SetDirectory(
 					output_file->GetDirectory( dirname.data() ) );
 
@@ -199,7 +199,7 @@ void Converter::MakeHists() {
 
 		else {
 
-			hasic_ext[i] = new TProfile( hname.data(), htitle.data(), 3001 , 0., 30000., 0, 3.61e14 );
+			hasic_ext[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 1080000. );
 			hasic_ext[i]->SetDirectory(
 					output_file->GetDirectory( dirname.data() ) );
 
@@ -218,7 +218,7 @@ void Converter::MakeHists() {
 
 		else {
 
-			hcaen_hit[i] = new TProfile( hname.data(), htitle.data(), 3001 , 0., 30000., 0, 3.61e14 );
+			hcaen_hit[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 1080000. );
 			hcaen_hit[i]->SetDirectory(
 					output_file->GetDirectory( dirname.data() ) );
 
@@ -233,7 +233,7 @@ void Converter::MakeHists() {
 
 		else {
 
-			hcaen_ext[i] = new TProfile( hname.data(), htitle.data(), 3001 , 0., 30000., 0, 3.61e13 );
+			hcaen_ext[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 1080000. );
 			hcaen_ext[i]->SetDirectory(
 					output_file->GetDirectory( dirname.data() ) );
 
