@@ -19,6 +19,9 @@ EventBuilder::EventBuilder(){
 
 	n_caen_pulser	= 0;
 	n_asic_pulser	= 0;
+	
+	n_ebis	= 0;
+	n_t1	= 0;
 
 	array_ctr	= 0;
 	recoil_ctr	= 0;
@@ -285,6 +288,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				ebis_hz = 1e9 / ( (double)ebis_time - (double)ebis_prev );
 				if( ebis_prev != 0 ) ebis_freq->Fill( ebis_time, ebis_hz );
 				ebis_prev = ebis_time;
+				n_ebis++;
 				
 			}
 		
@@ -295,6 +299,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				t1_hz = 1e9 / ( (double)t1_time - (double)t1_prev );
 				if( t1_prev != 0 ) t1_freq->Fill( t1_time, t1_hz );
 				t1_prev = t1_time;
+				n_t1++;
 
 			}
 			
@@ -411,6 +416,10 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 	std::cout << "   Recoil events = " << recoil_ctr << std::endl;
 	std::cout << "   ELUM events = " << elum_ctr << std::endl;
 	std::cout << "   ZeroDegree events = " << zd_ctr << std::endl;
+	std::cout << "   CAEN pulser = " << n_caen_pulser << std::endl;
+	std::cout << "   ASIC pulser = " << n_asic_pulser << std::endl;
+	std::cout << "   EBIS events = " << n_ebis << std::endl;
+	std::cout << "   T1 events = " << n_t1 << std::endl;
 	std::cout << "  Tree entries = " << output_tree->GetEntries() << std::endl;
 
 	output_file->Write( 0, TObject::kWriteDelete );

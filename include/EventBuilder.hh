@@ -143,17 +143,11 @@ private:
 	std::vector<float>	rsec_list;	///< list of recoil sectors for RecoilFinder
 
 	// Counters
-	unsigned int		hit_ctr;
-	unsigned long		array_ctr;
-	unsigned long		recoil_ctr;
-	unsigned long		elum_ctr;
-	unsigned long		zd_ctr;
-	unsigned long		n_asic_data;
-	unsigned long		n_caen_data;
-	unsigned long		n_info_data;
+	unsigned int		hit_ctr, array_ctr, recoil_ctr, elum_ctr, zd_ctr;
+	unsigned long		n_asic_data, n_caen_data, n_info_data;
 	unsigned long long	n_entries;
-	unsigned long		n_caen_pulser;
-	unsigned long		n_asic_pulser;
+	unsigned long		n_caen_pulser, n_asic_pulser;
+	unsigned long		n_ebis, n_t1;
 
 	// Histograms
 	TH2F *pn_11[common::n_module][common::n_row];
