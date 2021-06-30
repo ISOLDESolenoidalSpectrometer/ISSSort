@@ -26,7 +26,7 @@
 
 // Default parameters and name
 std::string output_name = "output.root";
-std::string datadir_name;
+std::string datadir_name = "/eos/experiment/isolde-iss/2021/";
 std::string name_cal_file;
 std::vector<std::string> input_names;
 
@@ -55,7 +55,7 @@ THttpServer *serv;
 Bool_t bRunMon = kTRUE;
 Bool_t bFirstRun = kTRUE;
 string curFileMon;
-int port_num;
+int port_num = 8030;
 
 // Function to call the monitoring loop
 void* monitor_run( void* ptr ){
@@ -149,11 +149,15 @@ void start_http(){
 	serv->SetItemField("/","_monitoring","5000");
 	serv->SetItemField("/","_layout","grid2x2");
 	//serv->SetItemField("/","_drawitem","[hpxpy,hpx,Debug]");
-	serv->SetItemField("/","_drawopt","col");
+	//serv->SetItemField("/","_drawopt","col");
 	
 	// register simple start/stop commands
-	//serv->RegisterCommand("/Start", "bRunMon=kTRUE;", "button;./icons/ed_execute.png");
-	//serv->RegisterCommand("/Stop",  "bRunMon=kFALSE;", "button;./icons/ed_interrupt.png");
+	serv->RegisterCommand("/Start", "bRunMon=kTRUE;", "button;/rootsys/icons/ed_execute.png");
+	serv->RegisterCommand("/Stop",  "bRunMon=kFALSE;", "button;/rootsys/icons/ed_interrupt.png");
+
+	// hide commands so the only show as buttons
+	serv->Hide("/Start");
+	serv->Hide("/Stop");
 
 	// Add data directory
 	if( datadir_name.size() > 0 ) serv->AddLocation( "data/", datadir_name.data() );
