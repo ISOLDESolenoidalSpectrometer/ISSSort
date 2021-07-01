@@ -152,8 +152,8 @@ void start_http(){
 	//serv->SetItemField("/","_drawopt","col");
 	
 	// register simple start/stop commands
-	serv->RegisterCommand("/Start", "bRunMon=kTRUE;", "button;/rootsys/icons/ed_execute.png");
-	serv->RegisterCommand("/Stop",  "bRunMon=kFALSE;", "button;/rootsys/icons/ed_interrupt.png");
+	serv->RegisterCommand("/Start", "bRunMon=kTRUE;", "button;/usr/share/root/icons/ed_execute.png");
+	serv->RegisterCommand("/Stop",  "bRunMon=kFALSE;", "button;/usr/share/root/icons/ed_interrupt.png");
 
 	// hide commands so the only show as buttons
 	serv->Hide("/Start");
