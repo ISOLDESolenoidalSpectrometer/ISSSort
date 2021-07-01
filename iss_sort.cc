@@ -25,19 +25,16 @@
 
 
 // Default parameters and name
-std::string output_name = "output.root";
+std::string output_name;
 std::string datadir_name = "/eos/experiment/isolde-iss/2021/";
 std::string name_cal_file;
 std::vector<std::string> input_names;
 
-// select what steps of the analysis to go through
+// a flag at the input to force the conversion
 bool flag_convert = false;
-//bool flag_calib = false;
-bool flag_sort = false;
-bool flag_eventbuilder = false;
 
 // select what steps of the analysis to be forced
-bool force_convert = false;
+std::vector<bool> force_convert;
 bool force_sort = false;
 
 // Flag for somebody needing help on command line
@@ -177,8 +174,8 @@ int main( int argc, char *argv[] ){
 	interface->Add("-o", "Output file for events tree", &output_name );
 	interface->Add("-d", "Data directory to add to the monitor", &datadir_name );
 	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
-	interface->Add("-s", "Flag to sort file by time", &flag_sort );
-	interface->Add("-e", "Flag to build physics events", &flag_eventbuilder );
+	//interface->Add("-s", "Flag to sort file by time", &flag_sort );
+	//interface->Add("-e", "Flag to build physics events", &flag_eventbuilder );
 	interface->Add("-c", "Calibration file", &name_cal_file );
 	interface->Add("-h", "Print this help", &help_flag );
 
@@ -214,16 +211,23 @@ int main( int argc, char *argv[] ){
 				
 	}
 	
+	// Check the ouput file name
+	if( output_name.length() == 0 ) {
+	
+		if( input_names.size() == 1 ) output_name = input_names.at(0) + "_events.root";
+		else output_name = "events.root";
+		
+	}
+	
 	// Check we have a calibration file
-	if( name_cal_file.size() > 0 ) {
+	if( name_cal_file.length() > 0 ) {
 		
 		std::cout << "Calibration file: " << name_cal_file << std::endl;
 		
 	}
 	else {
 		
-		if( flag_sort || flag_eventbuilder )
-			std::cout << "No calibration file provided. Using defaults." << std::endl;
+		std::cout << "No calibration file provided. Using defaults." << std::endl;
 		name_cal_file = "dummy";
 
 	}
@@ -282,23 +286,25 @@ int main( int argc, char *argv[] ){
 			
 		name_input_file = input_names.at(i);
 		name_output_file = input_names.at(i) + ".root";
+		
+		force_convert.push_back( false );
 
 		// If it doesn't exist, we have to convert it anyway
 		// The convert flag will force it to be converted
 		ftest.open( name_output_file.data() );
-		if( !ftest.is_open() ) force_convert = true;
+		if( !ftest.is_open() ) force_convert.at(i) = true;
 		else {
 			
 			ftest.close();
 			rtest = new TFile( name_output_file.data() );
-			if( rtest->IsZombie() ) force_convert = true;
-			if( !flag_convert && !force_convert )
+			if( rtest->IsZombie() ) force_convert.at(i) = true;
+			if( !flag_convert && !force_convert.at(i) )
 				std::cout << name_output_file << " already converted" << std::endl;
 			rtest->Close();
 			
 		}
 
-		if( flag_convert || force_convert ) {
+		if( flag_convert || force_convert.at(i) ) {
 			
 			std::cout << name_input_file << " --> ";
 			std::cout << name_output_file << std::endl;
@@ -310,8 +316,6 @@ int main( int argc, char *argv[] ){
 			conv.ConvertFile( name_input_file );
 			conv.CloseOutput();
 
-			force_convert = false;
-			
 		}
 		
 	}
@@ -329,9 +333,13 @@ int main( int argc, char *argv[] ){
 		name_input_file = input_names.at(i) + ".root";
 		name_output_file = input_names.at(i) + "_sort.root";
 
+
+		// We need to time sort it if we just converted it
+		if( flag_convert || force_convert.at(i) )
+			force_sort = true;
+			
 		// If it doesn't exist, we have to sort it anyway
-		// But only if we want to  build events
-		if( flag_eventbuilder ) {
+		else {
 			
 			ftest.open( name_output_file.data() );
 			if( !ftest.is_open() ) force_sort = true;
@@ -340,7 +348,7 @@ int main( int argc, char *argv[] ){
 				ftest.close();
 				rtest = new TFile( name_output_file.data() );
 				if( rtest->IsZombie() ) force_sort = true;
-				if( !flag_sort && !force_sort )
+				if( !force_sort )
 					std::cout << name_output_file << " already sorted" << std::endl;
 				rtest->Close();
 				
@@ -348,7 +356,7 @@ int main( int argc, char *argv[] ){
 			
 		}
 
-		if( flag_sort || force_sort ) {
+		if( force_sort ) {
 		
 			std::cout << name_input_file << " --> ";
 			std::cout << name_output_file << std::endl;
@@ -368,8 +376,6 @@ int main( int argc, char *argv[] ){
 	//-----------------------//
 	// Physics event builder //
 	//-----------------------//
-	if( !flag_eventbuilder ) return 0;
-
 	EventBuilder eb;
 	eb.SetOutput( output_name );
 	std::cout << "\n +++ ISS Analysis:: processing EventBuilder +++" << std::endl;
