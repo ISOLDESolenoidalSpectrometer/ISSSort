@@ -215,7 +215,7 @@ int main( int argc, char *argv[] ){
 	if( output_name.length() == 0 ) {
 	
 		if( input_names.size() == 1 ) output_name = input_names.at(0) + "_events.root";
-		else output_name = "events.root";
+		else output_name = input_names.at(0).substr( 0, input_names.at(0).find_last_of("/") ) + "/events.root";
 		
 	}
 	
