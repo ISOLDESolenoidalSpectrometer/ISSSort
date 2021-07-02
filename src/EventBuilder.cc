@@ -104,7 +104,15 @@ EventBuilder::EventBuilder(){
 	
 }
 
-EventBuilder::~EventBuilder(){}
+EventBuilder::~EventBuilder(){
+	
+	delete output_tree;
+	delete array_evt;
+	delete recoil_evt;
+	delete elum_evt;
+	delete zd_evt;
+
+}
 
 void EventBuilder::SetInputFile( std::vector<std::string> input_file_names ) {
 	
@@ -141,6 +149,11 @@ void EventBuilder::SetOutput( std::string output_file_name ) {
 	output_tree->Branch( "ISSEvts", "ISSEvts", &write_evts );
 
 	MakeEventHists();
+	
+	array_evt = new ArrayEvt();
+	recoil_evt = new RecoilEvt();
+	elum_evt = new ElumEvt();
+	zd_evt = new ZeroDegreeEvt();
 
 }
 
@@ -394,13 +407,22 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			write_evts->SetEBIS( ebis_time );
 			write_evts->SetT1( t1_time );
 			output_tree->Fill();
-			
+
 			//--------------------------------------------------
 			// clear values of arrays to store intermediate info
 			//--------------------------------------------------
 			Initialise();
 			
 		} // if close event && hit_ctr > 0
+		
+		if( i % 1000 == 0 || i+1 == n_entries ) {
+			
+			std::cout << " " << std::setw(8) << std::setprecision(4);
+			std::cout << (float)(i+1)*100.0/(float)n_entries << "%    \r";
+			std::cout.flush();
+			
+		}
+		
 		
 	} // End of main loop over TTree to process raw MIDAS data entries (for n_entries)
 	
@@ -444,6 +466,8 @@ void EventBuilder::ArrayFinder() {
 			// Empty the array of indexes
 			pindex.clear();
 			nindex.clear();
+			std::vector<unsigned int>().swap(pindex);
+			std::vector<unsigned int>().swap(nindex);
 
 			// Loop over p-side events
 			for( unsigned int k = 0; k < pen_list.size(); ++k ) {
@@ -477,7 +501,7 @@ void EventBuilder::ArrayFinder() {
 			// Time difference hists
 			for( unsigned int k = 0; k < pindex.size(); ++k )
 				for( unsigned int l = 0; l < nindex.size(); ++l )
-					pn_td[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( pindex.at(j) ) );
+					pn_td[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ) );
 
 			
 			// Easy case, 1p vs 1n
@@ -525,7 +549,7 @@ void EventBuilder::ArrayFinder() {
 		}
 
 	}
-	
+		
 }
 
 void EventBuilder::RecoilFinder() {
