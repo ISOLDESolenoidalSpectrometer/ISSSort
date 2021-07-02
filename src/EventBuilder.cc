@@ -165,6 +165,17 @@ void EventBuilder::Initialise(){
 
 	hit_ctr = 0;
 	
+	pen_list.clear();
+	nen_list.clear();
+	ptd_list.clear();
+	ntd_list.clear();
+	pid_list.clear();
+	nid_list.clear();
+	pmod_list.clear();
+	nmod_list.clear();
+	prow_list.clear();
+	nrow_list.clear();
+	
 	write_evts->ClearEvt();
 	
 	return;
@@ -415,7 +426,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			
 		} // if close event && hit_ctr > 0
 		
-		if( i % 1000 == 0 || i+1 == n_entries ) {
+		if( i % 10000 == 0 || i+1 == n_entries ) {
 			
 			std::cout << " " << std::setw(8) << std::setprecision(4);
 			std::cout << (float)(i+1)*100.0/(float)n_entries << "%    \r";
