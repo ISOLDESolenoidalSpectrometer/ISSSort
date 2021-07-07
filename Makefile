@@ -78,6 +78,7 @@ $(SRC_DIR)/%.o: $(SRC_DIR)/%.cc $(INC_DIR)/%.hh
 
 iss_sortDict.o: iss_sortDict.cc iss_sortDict$(DICTEXT) $(INC_DIR)/RootLinkDef.h
 	mkdir -p $(BIN_DIR)
+	mkdir -p $(LIB_DIR)
 	$(CC) -fPIC $(CFLAGS) $(INCLUDES) -c $<
 	cp iss_sortDict$(DICTEXT) $(BIN_DIR)/
 	cp iss_sortDict$(DICTEXT) $(LIB_DIR)/
