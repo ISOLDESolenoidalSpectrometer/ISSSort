@@ -1,0 +1,109 @@
+##########################################################
+# This file contains all the settings for the DAQ        #
+# including the geometry mapping for each detector       #
+# Parameters that are commented are the defaults values  #
+# If you want to change them, uncomment or make a copy   #
+#                                                        #
+# You pass this file to iss_sort with the -s if needed   #
+##########################################################
+
+#--------------#
+# Array things #
+#--------------#
+NumberOfArrayModules: 3
+NumberOfArrayASICs: 6
+NumberOfArrayChannels: 128
+NumberOfArrayRows: 4
+NumberOfArrayPstrips: 128
+NumberOfArrayNstrips: 11
+
+
+#-------------#
+# CAEN things #
+#-------------#
+NumberOfCAENModules: 2
+NumberOfCAENChannels: 16
+
+
+#------------------------#
+# Triggers, pulsers, etc #
+#------------------------#
+ExternalTriggerCode: 14 
+SyncCode: 4 
+TimestampCode: 5
+PulserModule: 0
+PulserChannel: 1
+PulserCode: 20
+EBISModule: 0
+EBISChannel: 14
+EBISCode: 21
+T1Module: 0
+T1Channel: 15
+T1Code: 22
+
+
+#-------------#
+# Data things #
+#-------------#
+DataBlockSize: 0x10000 # 64 kB for ISS/CAEN data or 128 kB (0x20000) for CAEN only data
+ASICDataOnly: false	# normally we have a mix of data in the file
+CAENDataOnly: false	# prior to June 2021 we need these switches
+
+
+#---------------#
+# Event builder #
+#---------------#
+EventWindow: 3e3 # in ns. Default is 3 µs
+
+
+#-----------------#
+# Recoil Detector #
+#-----------------#
+NumberOfRecoilSectors: 4 # 4 quadrants for Si dE-E, or just 1 for the ionisation chamber
+NumberOfRecoilLayers: 2 # 2 layers of Si in the dE-E, or 13 anodes for the ionisation chamber
+Recoil_0_0.Module: 0	# R0-dE, sector 0, layer 0
+Recoil_0_0.Channel: 0	# R0-dE, sector 0, layer 0
+Recoil_0_1.Module: 0	# R0-E, sector 0, layer 1
+Recoil_0_1.Channel: 1	# R0-E, sector 0, layer 1
+Recoil_1_0.Module: 0	# R1-dE, sector 1, layer 0
+Recoil_1_0.Channel: 2	# R1-dE, sector 1, layer 0
+Recoil_1_1.Module: 0	# R1-E, sector 1, layer 1
+Recoil_1_1.Channel: 3	# R1-E, sector 1, layer 1
+Recoil_2_0.Module: 0	# R2-dE, sector 2, layer 0
+Recoil_2_0.Channel: 4	# R2-dE, sector 2, layer 0
+Recoil_2_1.Module: 0	# R2-E, sector 2, layer 1
+Recoil_2_1.Channel: 5	# R2-E, sector 2, layer 1
+Recoil_3_0.Module: 0	# R3-dE, sector 3, layer 0
+Recoil_3_0.Channel: 6	# R3-dE, sector 3, layer 0
+Recoil_3_1.Module: 0	# R3-E, sector 3, layer 1
+Recoil_3_1.Channel: 7	# R3-E, sector 3, layer 1
+
+
+
+#---------------#
+# ELUM Detector #
+#---------------#
+NumberOfELUMSectors: 4	# 4 quadrants for S1 ELUM with Jim's FlexPCB (might be 6 in the future)
+ELUM_0.Module: 1	# ELUM0, sector/quadrant 0 of the S1
+ELUM_0.Channel: 0	# ELUM0, sector/quadrant 0 of the S1
+ELUM_1.Module: 1	# ELUM1, sector/quadrant 1 of the S1
+ELUM_1.Channel: 1	# ELUM1, sector/quadrant 1 of the S1
+ELUM_2.Module: 1	# ELUM2, sector/quadrant 2 of the S1
+ELUM_2.Channel: 2	# ELUM2, sector/quadrant 2 of the S1
+ELUM_3.Module: 1	# ELUM3, sector/quadrant 3 of the S1
+ELUM_3.Channel: 3	# ELUM3, sector/quadrant 3 of the S1
+
+
+#---------------------#
+# ZeroDegree Detector #
+#---------------------#
+NumberOfZDLayers: 2	# This should always be 2, because it's a silicon dE-E
+ZD_0.Module: 1		# ZeroDegree dE
+ZD_0.Channel: 6		# ZeroDegree dE
+ZD_1.Module: 1		# ZeroDegree E
+ZD_1.Channel: 7		# ZeroDegree E
+
+
+
+
+

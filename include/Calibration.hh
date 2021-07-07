@@ -13,21 +13,21 @@
 #include "TRandom.h"
 #include "TMath.h"
 
-// Common header
-#ifndef __COMMON_HH
-# include "Common.hh"
+// Settings header
+#ifndef __SETTINGS_HH
+# include "Settings.hh"
 #endif
 
 /// A class to read in the calibration file in ROOT's TConfig format.
 /// Each ASIC channel can have offset, gain and quadratic terms.
-/// Each channel also has a threshold for each channel (not implemented)
+/// Each channel also has a threshold (not implemented)
 /// and there is a time offset parameter for each ASIC module, too.
 
 class Calibration {
 
 public:
 
-	Calibration( std::string filename );
+	Calibration( std::string filename, Settings *myset );
 	virtual ~Calibration();
 	void ReadCalibration();
 	void PrintCalibration();
@@ -37,18 +37,20 @@ public:
 	const std::string InputFile(){
 		return fInputFile;
 	}
-	float AsicEnergy( int mod, int asic, int chan, unsigned short raw );
-	float AsicThreshold( int mod, int asic, int chan );
-	float AsicTime( int mod, int asic );
-	float CaenEnergy( int mod, int chan, unsigned short raw );
-	float CaenThreshold( int mod, int chan );
-	float CaenTime( int mod );
+	float AsicEnergy( unsigned int mod, unsigned int asic, unsigned int chan, unsigned short raw );
+	float AsicThreshold( unsigned int mod, unsigned int asic, unsigned int chan );
+	float AsicTime( unsigned int mod, unsigned int asic );
+	float CaenEnergy( unsigned int mod, unsigned int chan, unsigned short raw );
+	float CaenThreshold( unsigned int mod, unsigned int chan );
+	float CaenTime( unsigned int mod );
 	
 
 
 private:
 
 	std::string fInputFile;
+	
+	Settings *set;
 
 	std::vector< std::vector< std::vector<float> > > fAsicOffset;
 	std::vector< std::vector< std::vector<float> > > fAsicGain;

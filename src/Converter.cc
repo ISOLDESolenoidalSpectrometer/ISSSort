@@ -1,22 +1,25 @@
 #include "Converter.hh"
 
-Converter::Converter() {
+Converter::Converter( Settings *myset ) {
+
+	// We need to do initialise, but only after Settings are added
+	set = myset;
 	
 	my_tm_stp_msb = 0;
 	my_tm_stp_hsb = 0;
 
 	// Start counters at zero
-	for( unsigned int i = 0; i < common::n_module; ++i ) {
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 				
-		ctr_asic_hit[i]	= 0;	// hits on each module
-		ctr_asic_ext[i]	= 0;	// external timestamps
+		ctr_asic_hit.push_back(0);	// hits on each module
+		ctr_asic_ext.push_back(0);	// external timestamps
 		
 	}
 	
-	for( unsigned int i = 0; i < common::n_caen_mod; ++i ) {
+	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
 				
-		ctr_caen_hit[i]	= 0;	// hits on each module
-		ctr_caen_ext[i]	= 0;	// external timestamps
+		ctr_caen_hit.push_back(0);	// hits on each module
+		ctr_caen_ext.push_back(0);	// external timestamps
 		
 	}
 
@@ -27,7 +30,6 @@ Converter::~Converter() {
 	//std::cout << "destructor" << std::endl;
 
 }
-
 
 void Converter::SetOutput( std::string output_file_name ){
 	
@@ -82,14 +84,19 @@ void Converter::MakeHists() {
 	// Make directories
 	maindirname = "asic_hists";
 
+	// Resize vectors
+	hasic.resize( set->GetNumberOfArrayModules() );
+	
 	// Loop over ISS modules
-	for( int i = 0; i < common::n_module; ++i ) {
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 		
+		hasic[i].resize( set->GetNumberOfArrayASICs() );
 		subdirname = "/module_" + std::to_string(i);
 		
 		// Loop over ASICs for the array
-		for( int j = 0; j < common::n_asic; ++j ) {
+		for( unsigned int j = 0; j < set->GetNumberOfArrayASICs(); ++j ) {
 			
+			hasic[i][j].resize( set->GetNumberOfArrayChannels() );
 			dirname = maindirname + subdirname;
 			dirname += "/asic_" + std::to_string(j);
 			
@@ -98,7 +105,7 @@ void Converter::MakeHists() {
 			output_file->cd( dirname.data() );
 
 			// Loop over channels of each ASIC
-			for( int k = 0; k < common::n_channel; ++k ) {
+			for( unsigned int k = 0; k < set->GetNumberOfArrayChannels(); ++k ) {
 				
 				hname = "asic_" + std::to_string(i);
 				hname += "_" + std::to_string(j);
@@ -130,10 +137,14 @@ void Converter::MakeHists() {
 	
 	// Make directories
 	maindirname = "caen_hists";
+	
+	// Resive vectors
+	hcaen.resize( set->GetNumberOfCAENModules() );
 
 	// Loop over CAEN modules
-	for( int i = 0; i < common::n_caen_mod; ++i ) {
+	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
 		
+		hcaen[i].resize( set->GetNumberOfCAENChannels() );
 		dirname = maindirname + "/module_" + std::to_string(i);
 		
 		if( !output_file->GetDirectory( dirname.data() ) )
@@ -141,7 +152,7 @@ void Converter::MakeHists() {
 		output_file->cd( dirname.data() );
 
 		// Loop over channels of each CAEN module
-		for( int j = 0; j < common::n_caen_ch; ++j ) {
+		for( unsigned int j = 0; j < set->GetNumberOfCAENChannels(); ++j ) {
 			
 			hname = "caen_" + std::to_string(i);
 			hname += "_" + std::to_string(j);
@@ -174,8 +185,14 @@ void Converter::MakeHists() {
 		output_file->mkdir( dirname.data() );
 	output_file->cd( dirname.data() );
 
+	// Resize vectors
+	hasic_hit.resize( set->GetNumberOfArrayModules() );
+	hasic_ext.resize( set->GetNumberOfArrayModules() );
+	hcaen_hit.resize( set->GetNumberOfCAENModules() );
+	hcaen_ext.resize( set->GetNumberOfCAENModules() );
+	
 	// Loop over ISS modules
-	for( unsigned int i = 0; i < common::n_module; ++i ) {
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 		
 		hname = "hasic_hit" + std::to_string(i);
 		htitle = "Profile of ts versus hit_id in ISS module " + std::to_string(i);
@@ -208,7 +225,7 @@ void Converter::MakeHists() {
 	}
 	
 	// Loop over CAEN modules
-	for( unsigned int i = 0; i < common::n_caen_mod; ++i ) {
+	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
 		
 		hname = "hcaen_hit" + std::to_string(i);
 		htitle = "Profile of ts versus hit_id in CAEN module " + std::to_string(i);
@@ -249,7 +266,7 @@ void Converter::MakeHists() {
 void Converter::SetBlockHeader( char *input_header ){
 	
 	// Copy header
-	for( int i = 0; i < HEADER_SIZE ; i++ )
+	for( unsigned int i = 0; i < HEADER_SIZE; i++ )
 		block_header[i] = input_header[i];
 
 	return;
@@ -275,7 +292,7 @@ void Converter::ProcessBlockHeader( int nblock ){
 	flag_terminator = false;
 
 	// Process header.
-	for( UInt_t i = 0; i < 8 ; i++ )
+	for( UInt_t i = 0; i < 8; i++ )
 		header_id[i] = block_header[i];
 	
 	header_sequence =
@@ -294,8 +311,6 @@ void Converter::ProcessBlockHeader( int nblock ){
 	(block_header[20] & 0xFF) | (block_header[21]& 0xFF) << 8 |
 	(block_header[22] & 0xFF) << 16  | (block_header[23]& 0xFF) << 24 ;
 	
-	//nwords = header_DataLen / sizeof(ULong64_t);
-	nwords = MAIN_SIZE / sizeof(ULong64_t);
 
 	// Print header info.
 	log_file << "== DATA BLOCK: " << nblock << std::endl;
@@ -308,7 +323,7 @@ void Converter::ProcessBlockHeader( int nblock ){
 	log_file << "Header_DataLen: " << header_DataLen << std::endl;
 	
 	log_file << "== and in HEX:" << std::hex << std::endl;
-	for( UInt_t i = 0; i < 24; i++ ) {
+	for( unsigned int i = 0; i < HEADER_SIZE; i++ ) {
 		
 		log_file << int( block_header[i] ) << " ";
 		if( (i+1)%4 == 0 ) log_file << std::endl;
@@ -331,7 +346,7 @@ void Converter::ProcessBlockHeader( int nblock ){
 void Converter::SetBlockData( char *input_data ){
 	
 	// Copy header
-	for( UInt_t i = 0; i < MAIN_SIZE ; i++ )
+	for( UInt_t i = 0; i < MAIN_SIZE; i++ )
 		block_data[i] = input_data[i];
 
 	return;
@@ -355,7 +370,7 @@ void Converter::ProcessBlockData( int nblock ){
 		
 		// However, that is not all, the words may also be swapped, so check
 		// for that. Bits 31:30 should always be zero in the timestamp word
-		for( UInt_t i = 0; i < nwords; i++ ) {
+		for( UInt_t i = 0; i < WORD_SIZE; i++ ) {
 			ULong64_t word = (swap & SWAP_ENDIAN) ? Swap64(data[i]) : data[i];
 			if( word & 0xC000000000000000LL ) {
 				swap |= SWAP_KNOWN;
@@ -372,7 +387,7 @@ void Converter::ProcessBlockData( int nblock ){
 
 	
 	// Process all words
-	for( UInt_t i = 0; i < nwords; i++ ) {
+	for( UInt_t i = 0; i < WORD_SIZE; i++ ) {
 		
 		word = GetWord(i);
 		word_0 = (word & 0xFFFFFFFF00000000) >> 32;
@@ -415,11 +430,8 @@ void Converter::ProcessBlockData( int nblock ){
 			// ISS/R3B ASICs will have 28th bit of word_1 set to 1
 			// This is for data after to R3B data format change (June 2021)
 			// Otherwise, we rely on the #define directive at the top of Converter.hh
-#ifdef ASIC_ONLY
-			flag_asic_data = true;
-			ProcessASICData();
-#else
-			if( ((word_1 >> 28) & 0x00000001) == 0x00000001 ){
+			if( ((word_1 >> 28) & 0x00000001) == 0x00000001 ||
+			    set->IsASICOnly() ){
 
 				flag_asic_data = true;
 				ProcessASICData();
@@ -432,7 +444,7 @@ void Converter::ProcessBlockData( int nblock ){
 				FinishCAENData();
 
 			}
-#endif
+
 		}
 		
 		// Information data
@@ -541,9 +553,9 @@ void Converter::ProcessASICData(){
 	my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
 	
 	// Check things make sense
-	if( my_mod_id >= common::n_module ||
-		my_asic_id >= common::n_asic ||
-		my_ch_id >= common::n_channel ) {
+	if( my_mod_id >= set->GetNumberOfArrayModules() ||
+		my_asic_id >= set->GetNumberOfArrayASICs() ||
+		my_ch_id >= set->GetNumberOfArrayChannels() ) {
 		
 		std::cout << "Bad ASIC event with mod_id=" << my_mod_id;
 		std::cout << " asic_id=" << my_asic_id;
@@ -606,8 +618,8 @@ void Converter::ProcessCAENData(){
 	my_tm_stp = my_tm_stp*4;
 
 	// Check things make sense
-	if( my_mod_id >= common::n_caen_mod ||
-		my_ch_id >= common::n_caen_ch ) {
+	if( my_mod_id >= set->GetNumberOfCAENModules() ||
+		my_ch_id >= set->GetNumberOfCAENChannels() ) {
 		
 		std::cout << "Bad CAEN event with mod_id=" << my_mod_id;
 		std::cout << " ch_id=" << my_ch_id;
@@ -690,27 +702,27 @@ void Converter::FinishCAENData(){
 
 		// Check if this is actually just a timestamp
 		flag_caen_info = false;
-		if( caen_data->GetModule() == common::caen_pulser_mod &&
-		    caen_data->GetChannel() == common::caen_pulser_ch ){
+		if( caen_data->GetModule() == set->GetCAENPulserModule() &&
+		    caen_data->GetChannel() == set->GetCAENPulserChannel() ){
 			
 			flag_caen_info = true;
-			my_info_code = common::pulser_code;
+			my_info_code = set->GetCAENPulserCode();
 			
 		}
 		
-		else if( caen_data->GetModule() == common::caen_ebis_mod &&
-		    caen_data->GetChannel() == common::caen_ebis_ch ){
+		else if( caen_data->GetModule() == set->GetEBISModule() &&
+		    caen_data->GetChannel() == set->GetEBISChannel() ){
 			
 			flag_caen_info = true;
-			my_info_code = common::ebis_code;
+			my_info_code = set->GetEBISCode();
 			
 		}
 		
-		else if( caen_data->GetModule() == common::caen_t1_mod &&
-		    caen_data->GetChannel() == common::caen_t1_ch ){
+		else if( caen_data->GetModule() == set->GetT1Module() &&
+		    caen_data->GetChannel() == set->GetT1Channel() ){
 			
 			flag_caen_info = true;
-			my_info_code = common::t1_code;
+			my_info_code = set->GetT1Code();
 			
 		}
 
@@ -784,7 +796,7 @@ void Converter::ProcessInfoData(){
 	ts_flag = false;
 
 	// HSB of timstamp
-	if( my_info_code == common::thsb_code ) {
+	if( my_info_code == set->GetTimestampCode() ) {
 		
 		my_tm_stp_hsb = my_info_field & 0x000FFFFF;
 		hsb_ready = true;
@@ -792,7 +804,7 @@ void Converter::ProcessInfoData(){
 	}
 	
 	// MSB of timstamp in sync pulse or CAEN extended time stamp
-	if( my_info_code == common::sync_code ) {
+	if( my_info_code == set->GetSyncCode() ) {
 		
 		my_tm_stp_msb = my_info_field & 0x000FFFFF;
 		ts_flag = true;
@@ -800,7 +812,7 @@ void Converter::ProcessInfoData(){
 	}
 	
 	// External trigger
-	if( my_info_code == common::extt_code ) {
+	if( my_info_code == set->GetExternalTriggerCode() ) {
 		
 		my_tm_stp_msb = my_info_field & 0x000FFFFF;
 		ts_flag = true;
@@ -825,7 +837,7 @@ void Converter::ProcessInfoData(){
 	else return;
 	
 	// Create an info event and fill the tree for external triggers
-	if( common::extt_code == my_info_code ) {
+	if( my_info_code == set->GetExternalTriggerCode() ) {
 
 		// Fill histograms
 		hasic_ext[my_mod_id]->Fill( ctr_asic_ext[my_mod_id], my_tm_stp, 1 );
@@ -910,25 +922,25 @@ int Converter::ConvertFile( std::string input_file_name,
 			
 		}
 		
-		// Get the header.
-		input_file.read( (char*)&block_header, sizeof(block_header) );
-		// Get the block
-		input_file.read( (char*)&block_data, sizeof(block_data) );
-
-
-		// Process header.
-		ProcessBlockHeader( nblock );
-
 		
+		// Get the header.
+		input_file.read( (char*)&block_header, HEADER_SIZE );
+		// Get the block
+		input_file.read( (char*)&block_data, MAIN_SIZE );
+
+
 		// Check if we are before the start block or after the end block
 		if( nblock < start_block || ( nblock > end_block && end_block > 0 ) )
 			continue;
 
 
+		// Process header.
+		ProcessBlockHeader( nblock );
+
 		// Process the main block data until terminator found
 		data = (ULong64_t *)(block_data);
 		ProcessBlockData( nblock );
-		
+				
 		// Check once more after going over left overs....
 		if( !flag_terminator && flag_asic_data ){
 

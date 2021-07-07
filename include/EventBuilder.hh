@@ -16,9 +16,9 @@
 #include <TVector2.h>
 #include <TVector3.h>
 
-// Common header
-#ifndef __COMMON_HH
-# include "Common.hh"
+// Settings header
+#ifndef __SETTINGS_HH
+# include "Settings.hh"
 #endif
 
 // Calibration header
@@ -41,7 +41,7 @@ class EventBuilder {
 	
 public:
 
-	EventBuilder();
+	EventBuilder( Settings *myset );
 	virtual ~EventBuilder();
 
 	void	SetInputFile( std::vector<std::string> input_file_names );
@@ -87,6 +87,9 @@ private:
 	RecoilEvt *recoil_evt;
 	ElumEvt *elum_evt;
 	ZeroDegreeEvt *zd_evt;
+	
+	// Settings file
+	Settings *set;
 
 	
 	// These things should probably be in the settings file
@@ -111,17 +114,19 @@ private:
 	double asic_hz, caen_hz, ebis_hz, t1_hz, daq_sync_diff;
 
 	// Data variables - generic
+	unsigned char		mymod;		///< module number
+	unsigned char		mych;		///< channel number
 	unsigned long long	mytime;		///< absolute timestamp
 	float 				myenergy;	///< calibrated energy
 	
 	// Data variables - Array
-	unsigned char		mymod;		///< iss module number
 	unsigned char		myside;		///< p-side = 0; n-side = 1
 	unsigned char		myrow;		///< 4 wafers along array, 2 dE-E, 13 for gas
 	int					mystrip;	///< strip number for DSSSD
 	
 	// Data variables - Recoil / ELUM / ZeroDegree
-	unsigned char		mysector;	///< 4 quadrants of the recoil
+	unsigned char		mysector;	///< 4 quadrants of the recoil, for example
+	unsigned char		mylayer;	///< 2 layers for the dE-E, for example
 
 
 	// Array variables
@@ -139,8 +144,18 @@ private:
 	// Recoil variables
 	std::vector<float>	ren_list;	///< list of recoil energies for RecoilFinder
 	std::vector<long>	rtd_list;	///< list of recoil time differences for RecoilFinder
-	std::vector<float>	rid_list;	///< list of recoil ids for RecoilFinder
-	std::vector<float>	rsec_list;	///< list of recoil sectors for RecoilFinder
+	std::vector<int>	rid_list;	///< list of recoil IDs/layers for RecoilFinder
+	std::vector<int>	rsec_list;	///< list of recoil sectors for RecoilFinder
+	
+	// ELUM variables
+	std::vector<float>	een_list;	///< list of ELUM energies for ELUMFinder
+	std::vector<long>	etd_list;	///< list of ELUM time differences for ELUMFinder
+	std::vector<int>	esec_list;	///< list of ELUM sectors for ELUMFinder
+
+	// ZeroDegree variables
+	std::vector<float>	zen_list;	///< list of ZeroDegree energies for ELUMFinder
+	std::vector<long>	ztd_list;	///< list of ZeroDegree time differences for ELUMFinder
+	std::vector<int>	zid_list;	///< list of ZeroDegree IDs/layers for ELUMFinder
 
 	// Counters
 	unsigned int		hit_ctr, array_ctr, recoil_ctr, elum_ctr, zd_ctr;
@@ -150,13 +165,13 @@ private:
 	unsigned long		n_ebis, n_t1;
 
 	// Histograms
-	TH2F *pn_11[common::n_module][common::n_row];
-	TH2F *pn_12[common::n_module][common::n_row];
-	TH2F *pn_21[common::n_module][common::n_row];
-	TH2F *pn_22[common::n_module][common::n_row];
-	TH1F *pn_td[common::n_module][common::n_row];
+	std::vector<std::vector<TH2F*>> pn_11;
+	std::vector<std::vector<TH2F*>> pn_12;
+	std::vector<std::vector<TH2F*>> pn_21;
+	std::vector<std::vector<TH2F*>> pn_22;
+	std::vector<std::vector<TH1F*>> pn_td;
 
-	TProfile *pn_mult[common::n_row][common::n_row];
+	std::vector<std::vector<TProfile*>> pn_mult;
 
 	TH1F *tdiff;
 	TProfile *daq_sync;

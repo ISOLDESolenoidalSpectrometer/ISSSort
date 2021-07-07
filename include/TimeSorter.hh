@@ -13,11 +13,6 @@
 #include <TTree.h>
 #include <TTreeIndex.h>
 
-// Common header
-#ifndef __COMMON_HH
-# include "Common.hh"
-#endif
-
 class TimeSorter {
 
 public:

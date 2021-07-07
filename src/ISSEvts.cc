@@ -136,11 +136,11 @@ float ArrayEvt::GetZ(){
 	/// phi is positive in the clockwise direction, looking from the origin to positive z (beam direction)
 
 	//float z = Cal->GetTargetDist(); // not yet implemented
-	float z = -10.0; 						// just until it is in the cal file
-	float d = common::n_pstrip - pid;		// take centre of the end strip
-	d *= 0.95;								// p-side strip pitch = 0.95 mm
-	d += (3 - pid/common::n_pstrip) * 3.9;	// inter wafer distance (to be confirmed)
-	d += 1.7;								// distance from wafer edge to active region
+	float z = -10.0; 				// just until it is in the cal file
+	float d = 128 - pid;			// take centre of the end strip
+	d *= 0.95;						// p-side strip pitch = 0.95 mm
+	d += (3 - pid/128) * 3.9;		// inter wafer distance (to be confirmed)
+	d += 1.7;						// distance from wafer edge to active region
 
 	if( z > 0 ) z += d;	// forward direction (downstream)
 	else z -= d;		// backward direction (upstream)
@@ -203,6 +203,15 @@ void RecoilEvt::SetEvent( std::vector<float> myenergy,
 	
 }
 
+void RecoilEvt::ClearEvent(){
+	
+	energy.clear();
+	id.clear();
+	std::vector<float>().swap(energy);
+	std::vector<int>().swap(id);
+
+}
+
 // ----------- //
 // Elum events //
 // ----------- //
@@ -239,4 +248,13 @@ void ZeroDegreeEvt::SetEvent( std::vector<float> myenergy,
 	
 	return;
 	
+}
+
+void ZeroDegreeEvt::ClearEvent(){
+	
+	energy.clear();
+	id.clear();
+	std::vector<float>().swap(energy);
+	std::vector<int>().swap(id);
+
 }

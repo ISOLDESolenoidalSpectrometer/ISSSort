@@ -1,8 +1,9 @@
 #include "Calibration.hh"
 
-Calibration::Calibration( std::string filename ) {
+Calibration::Calibration( std::string filename, Settings *myset ) {
 
 	SetFile( filename );
+	set = myset;
 	ReadCalibration();
 		
 }
@@ -18,31 +19,31 @@ void Calibration::ReadCalibration() {
 	TEnv *config = new TEnv( fInputFile.data() );
 	
 	// ASIC initialisation
-	fAsicOffset.resize( common::n_module );
-	fAsicGain.resize( common::n_module );
-	fAsicGainQuadr.resize( common::n_module );
-	fAsicThreshold.resize( common::n_module );
-	fAsicTime.resize( common::n_module );
+	fAsicOffset.resize( set->GetNumberOfArrayModules() );
+	fAsicGain.resize( set->GetNumberOfArrayModules() );
+	fAsicGainQuadr.resize( set->GetNumberOfArrayModules() );
+	fAsicThreshold.resize( set->GetNumberOfArrayModules() );
+	fAsicTime.resize( set->GetNumberOfArrayModules() );
 	
 	// ASIC parameter read
-	for( int mod = 0; mod < common::n_module; mod++ ){
+	for( unsigned int mod = 0; mod < set->GetNumberOfArrayModules(); mod++ ){
 
-		fAsicOffset[mod].resize( common::n_asic );
-		fAsicGain[mod].resize( common::n_asic );
-		fAsicGainQuadr[mod].resize( common::n_asic );
-		fAsicThreshold[mod].resize( common::n_asic );
-		fAsicTime[mod].resize( common::n_asic );
+		fAsicOffset[mod].resize( set->GetNumberOfArrayASICs() );
+		fAsicGain[mod].resize( set->GetNumberOfArrayASICs() );
+		fAsicGainQuadr[mod].resize( set->GetNumberOfArrayASICs() );
+		fAsicThreshold[mod].resize( set->GetNumberOfArrayASICs() );
+		fAsicTime[mod].resize( set->GetNumberOfArrayASICs() );
 		
-		for( int asic = 0; asic < common::n_asic; asic++ ){
+		for( unsigned int asic = 0; asic < set->GetNumberOfArrayASICs(); asic++ ){
 
-			fAsicOffset[mod][asic].resize( common::n_channel );
-			fAsicGain[mod][asic].resize( common::n_channel );
-			fAsicGainQuadr[mod][asic].resize( common::n_channel );
-			fAsicThreshold[mod][asic].resize( common::n_channel );
+			fAsicOffset[mod][asic].resize( set->GetNumberOfArrayChannels() );
+			fAsicGain[mod][asic].resize( set->GetNumberOfArrayChannels() );
+			fAsicGainQuadr[mod][asic].resize( set->GetNumberOfArrayChannels() );
+			fAsicThreshold[mod][asic].resize( set->GetNumberOfArrayChannels() );
 
 			fAsicTime[mod][asic] = config->GetValue( Form( "asic_%d_%d.Time", mod, asic ), 0. );
 
-			for( int chan = 0; chan < common::n_channel; chan++ ){
+			for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
 				
 				fAsicOffset[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Offset", mod, asic, chan ), 0. );
 				fAsicGain[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Gain", mod, asic, chan ), 1. );
@@ -57,23 +58,23 @@ void Calibration::ReadCalibration() {
 	
 	
 	// CAEN initialisation
-	fCaenOffset.resize( common::n_caen_mod );
-	fCaenGain.resize( common::n_caen_mod );
-	fCaenGainQuadr.resize( common::n_caen_mod );
-	fCaenThreshold.resize( common::n_caen_mod );
-	fCaenTime.resize( common::n_caen_mod );
+	fCaenOffset.resize( set->GetNumberOfCAENModules() );
+	fCaenGain.resize( set->GetNumberOfCAENModules() );
+	fCaenGainQuadr.resize( set->GetNumberOfCAENModules() );
+	fCaenThreshold.resize( set->GetNumberOfCAENModules() );
+	fCaenTime.resize( set->GetNumberOfCAENModules() );
 
 	// CAEN parameter read
-	for( int mod = 0; mod < common::n_caen_mod; mod++ ){
+	for( unsigned int mod = 0; mod < set->GetNumberOfCAENModules(); mod++ ){
 
-		fCaenOffset[mod].resize( common::n_caen_ch );
-		fCaenGain[mod].resize( common::n_caen_ch );
-		fCaenGainQuadr[mod].resize( common::n_caen_ch );
-		fCaenThreshold[mod].resize( common::n_caen_ch );
+		fCaenOffset[mod].resize( set->GetNumberOfCAENChannels() );
+		fCaenGain[mod].resize( set->GetNumberOfCAENChannels() );
+		fCaenGainQuadr[mod].resize( set->GetNumberOfCAENChannels() );
+		fCaenThreshold[mod].resize( set->GetNumberOfCAENChannels() );
 
 		fCaenTime[mod] = config->GetValue( Form( "caen_%d.Time", mod ), 0. );
 
-		for( int chan = 0; chan < common::n_caen_ch; chan++ ){
+		for( unsigned int chan = 0; chan < set->GetNumberOfCAENChannels(); chan++ ){
 
 			fCaenOffset[mod][chan] = config->GetValue( Form( "caen_%d_%d.Offset", mod, chan ), 0. );
 			fCaenGain[mod][chan] = config->GetValue( Form( "caen_%d_%d.Gain", mod, chan ), 1. );
@@ -88,14 +89,14 @@ void Calibration::ReadCalibration() {
 	
 }
 
-float Calibration::AsicEnergy( int mod, int asic, int chan, unsigned short raw ) {
+float Calibration::AsicEnergy( unsigned int mod, unsigned int asic, unsigned int chan, unsigned short raw ) {
 	
 	float energy, raw_rand;
 	TRandom *fRand = new TRandom();
 	
-	if( mod >= 0 && mod  < common::n_module &&
-	   asic >= 0 && asic < common::n_asic &&
-	   chan >= 0 && chan < common::n_channel ) {
+	if( mod < set->GetNumberOfArrayModules() &&
+	   asic < set->GetNumberOfArrayASICs() &&
+	   chan < set->GetNumberOfArrayChannels() ) {
 
 		raw_rand = raw + 0.5 - fRand->Uniform();
 
@@ -120,11 +121,11 @@ float Calibration::AsicEnergy( int mod, int asic, int chan, unsigned short raw )
 	
 }
 
-float Calibration::AsicThreshold( int mod, int asic, int chan ) {
+float Calibration::AsicThreshold( unsigned int mod, unsigned int asic, unsigned int chan ) {
 	
-	if( mod >= 0 && mod  < common::n_module &&
-	   asic >= 0 && asic < common::n_asic &&
-	   chan >= 0 && chan < common::n_channel ) {
+	if( mod < set->GetNumberOfArrayModules() &&
+	   asic < set->GetNumberOfArrayASICs() &&
+	   chan < set->GetNumberOfArrayChannels() ) {
 
 		return fAsicThreshold[mod][asic][chan];
 		
@@ -134,10 +135,10 @@ float Calibration::AsicThreshold( int mod, int asic, int chan ) {
 	
 }
 
-float Calibration::AsicTime( int mod, int asic ){
+float Calibration::AsicTime( unsigned int mod, unsigned int asic ){
 	
-	if( mod >= 0 && mod  < common::n_module &&
-	   asic >= 0 && asic < common::n_asic ) {
+	if( mod < set->GetNumberOfArrayModules() &&
+	   asic < set->GetNumberOfArrayASICs() ) {
 
 		return fAsicTime[mod][asic];
 		
@@ -149,15 +150,15 @@ float Calibration::AsicTime( int mod, int asic ){
 
 
 
-float Calibration::CaenEnergy( int mod, int chan, unsigned short raw ) {
+float Calibration::CaenEnergy( unsigned int mod, unsigned int chan, unsigned short raw ) {
 	
 	float energy, raw_rand;
 	TRandom *fRand = new TRandom();
 	
 	//std::cout << "mod=" << mod << "; chan=" << chan << std::endl;
 
-	if( mod >= 0 && mod  < common::n_caen_mod &&
-	   chan >= 0 && chan < common::n_caen_ch ) {
+	if( mod < set->GetNumberOfCAENModules() &&
+	   chan < set->GetNumberOfCAENChannels() ) {
 
 		raw_rand = raw + 0.5 - fRand->Uniform();
 
@@ -183,10 +184,10 @@ float Calibration::CaenEnergy( int mod, int chan, unsigned short raw ) {
 	
 }
 
-float Calibration::CaenThreshold( int mod, int chan ) {
+float Calibration::CaenThreshold( unsigned int mod, unsigned int chan ) {
 	
-	if( mod >= 0 && mod  < common::n_caen_mod &&
-	   chan >= 0 && chan < common::n_caen_ch ) {
+	if( mod < set->GetNumberOfCAENModules() &&
+	   chan < set->GetNumberOfCAENChannels() ) {
 
 		return fCaenThreshold[mod][chan];
 		
@@ -196,9 +197,9 @@ float Calibration::CaenThreshold( int mod, int chan ) {
 	
 }
 
-float Calibration::CaenTime( int mod ){
+float Calibration::CaenTime( unsigned int mod ){
 	
-	if( mod >= 0 && mod  < common::n_caen_mod ) {
+	if( mod < set->GetNumberOfCAENModules() ) {
 
 		return fCaenTime[mod];
 		

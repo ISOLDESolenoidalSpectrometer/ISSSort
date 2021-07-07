@@ -3,6 +3,7 @@
 #pragma link off all classes;
 #pragma link off all functions;
 #pragma link C++ class Calibration+;
+#pragma link C++ class Settings+;
 #pragma link C++ class CommandLineInterface+;
 #pragma link C++ class Converter+;
 #pragma link C++ class TimeSorter+;

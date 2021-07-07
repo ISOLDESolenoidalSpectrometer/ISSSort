@@ -1,9 +1,9 @@
 // My code include.
-#include "Common.hh"
 #include "Converter.hh"
-#include "TimeSorter.hh"
+#include "Settings.hh"
 #include "Calibration.hh"
 #include "EventBuilder.hh"
+#include "TimeSorter.hh"
 
 // ROOT include.
 #include <TTree.h>
@@ -27,6 +27,7 @@
 // Default parameters and name
 std::string output_name;
 std::string datadir_name = "/eos/experiment/isolde-iss/2021/";
+std::string name_set_file;
 std::string name_cal_file;
 std::vector<std::string> input_names;
 
@@ -44,6 +45,9 @@ bool help_flag = false;
 bool flag_monitor = false;
 int mon_time = -1; // update time in seconds
 
+// Settings file
+Settings *set;
+
 // Calibration file
 Calibration *cal;
 
@@ -59,9 +63,9 @@ void* monitor_run( void* ptr ){
 //void monitor_run(){
 	
 	// This function is called to run when monitoring
-	Converter conv_mon;
+	Converter conv_mon( set );
 	TimeSorter sort_mon;
-	EventBuilder eb_mon;
+	EventBuilder eb_mon( set );
 
 	// Data/Event counters
 	int start_block = 0;
@@ -75,10 +79,10 @@ void* monitor_run( void* ptr ){
 
 	// Converter setup
 	curFileMon = input_names.at(0); // maybe change in GUI later?
+	conv_mon.AddCalibration( cal );
 	conv_mon.SetOutput( "monitor_singles.root" );
 	conv_mon.MakeTree();
 	conv_mon.MakeHists();
-	conv_mon.AddCalibration( cal );
 
 	while( bRunMon ) {
 		
@@ -174,8 +178,7 @@ int main( int argc, char *argv[] ){
 	interface->Add("-o", "Output file for events tree", &output_name );
 	interface->Add("-d", "Data directory to add to the monitor", &datadir_name );
 	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
-	//interface->Add("-s", "Flag to sort file by time", &flag_sort );
-	//interface->Add("-e", "Flag to build physics events", &flag_eventbuilder );
+	interface->Add("-s", "Settings file", &name_set_file );
 	interface->Add("-c", "Calibration file", &name_cal_file );
 	interface->Add("-h", "Print this help", &help_flag );
 
@@ -219,6 +222,19 @@ int main( int argc, char *argv[] ){
 		
 	}
 	
+	// Check we have a Settings file
+	if( name_set_file.length() > 0 ) {
+		
+		std::cout << "Settings file: " << name_set_file << std::endl;
+		
+	}
+	else {
+		
+		std::cout << "No settings file provided. Using defaults." << std::endl;
+		name_set_file = "dummy";
+
+	}
+	
 	// Check we have a calibration file
 	if( name_cal_file.length() > 0 ) {
 		
@@ -232,8 +248,9 @@ int main( int argc, char *argv[] ){
 
 	}
 	
-	cal = new Calibration( name_cal_file );
-	
+	set = new Settings( name_set_file );
+	cal = new Calibration( name_cal_file, set );
+
 
 	
 	//-------------------//
@@ -273,7 +290,7 @@ int main( int argc, char *argv[] ){
 	//------------------------//
 	// Run conversion to ROOT //
 	//------------------------//
-	Converter conv;
+	Converter conv( set );
 	std::cout << "\n +++ ISS Analysis:: processing Converter +++" << std::endl;
 
 	TFile *rtest;
@@ -376,7 +393,7 @@ int main( int argc, char *argv[] ){
 	//-----------------------//
 	// Physics event builder //
 	//-----------------------//
-	EventBuilder eb;
+	EventBuilder eb( set );
 	eb.SetOutput( output_name );
 	std::cout << "\n +++ ISS Analysis:: processing EventBuilder +++" << std::endl;
 

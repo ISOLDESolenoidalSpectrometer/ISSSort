@@ -1,11 +1,14 @@
 #include "EventBuilder.hh"
 
-EventBuilder::EventBuilder(){
+EventBuilder::EventBuilder( Settings *myset ){
+	
+	// First get the settings
+	set = myset;
 	
 	// ------------------------------------------------------------------------ //
 	// Initialise variables and flags
 	// ------------------------------------------------------------------------ //
-	build_window = 3e3;
+	build_window = set->GetEventWindow();
 	
 	time_prev = 0;
 	asic_prev = 0;
@@ -50,15 +53,15 @@ EventBuilder::EventBuilder(){
 	
 	
 	// Loop over ASICs in a module
-	for( int i = 0; i < common::n_asic; ++i ) {
+	for( unsigned int i = 0; i < set->GetNumberOfArrayASICs(); ++i ) {
 		
 		// Loop over channels in each ASIC
-		for( int j = 0; j < common::n_channel; ++j ) {
+		for( unsigned int j = 0; j < set->GetNumberOfArrayChannels(); ++j ) {
 			
 			// p-side: all channels used
 			if( array_side.at(i) == 0 ) {
 				
-				mystrip = j + common::n_pstrip * array_row.at(i);
+				mystrip = j + set->GetNumberOfArrayPstrips() * array_row.at(i);
 				array_pid.push_back( mystrip );
 				
 			}
@@ -74,7 +77,7 @@ EventBuilder::EventBuilder(){
 			// n-side: 11 channels per ASIC 0/2B
 			else if( j >= 28 && j <= 38 ) {
 				
-				mystrip = 38 - j + common::n_nstrip;
+				mystrip = 38 - j + set->GetNumberOfArrayNstrips();
 				array_nid.push_back( mystrip );
 
 			}
@@ -82,7 +85,7 @@ EventBuilder::EventBuilder(){
 			// n-side: 11 channels per ASIC 1/3A
 			else if( j >= 89 && j <= 99 ) {
 				
-				mystrip = j - 89 + common::n_nstrip;
+				mystrip = j - 89 + set->GetNumberOfArrayNstrips();
 				array_nid.push_back( mystrip );
 
 			}
@@ -106,11 +109,12 @@ EventBuilder::EventBuilder(){
 
 EventBuilder::~EventBuilder(){
 	
-	delete output_tree;
-	delete array_evt;
-	delete recoil_evt;
-	delete elum_evt;
-	delete zd_evt;
+	//delete output_tree;
+	//delete write_evts;
+	//delete array_evt;
+	//delete recoil_evt;
+	//delete elum_evt;
+	//delete zd_evt;
 
 }
 
@@ -141,6 +145,13 @@ void EventBuilder::SetInputTree( TTree* user_tree ){
 
 void EventBuilder::SetOutput( std::string output_file_name ) {
 
+	// These are the branches we need
+	write_evts = new ISSEvts();
+	array_evt = new ArrayEvt();
+	recoil_evt = new RecoilEvt();
+	elum_evt = new ElumEvt();
+	zd_evt = new ZeroDegreeEvt();
+
 	// ------------------------------------------------------------------------ //
 	// Create output file and create events tree
 	// ------------------------------------------------------------------------ //
@@ -148,13 +159,9 @@ void EventBuilder::SetOutput( std::string output_file_name ) {
 	output_tree = new TTree( "evt_tree", "evt_tree" );
 	output_tree->Branch( "ISSEvts", "ISSEvts", &write_evts );
 
+	// Hisograms in separate function
 	MakeEventHists();
 	
-	array_evt = new ArrayEvt();
-	recoil_evt = new RecoilEvt();
-	elum_evt = new ElumEvt();
-	zd_evt = new ZeroDegreeEvt();
-
 }
 
 void EventBuilder::Initialise(){
@@ -175,6 +182,19 @@ void EventBuilder::Initialise(){
 	nmod_list.clear();
 	prow_list.clear();
 	nrow_list.clear();
+	
+	ren_list.clear();
+	rtd_list.clear();
+	rid_list.clear();
+	rsec_list.clear();
+	
+	een_list.clear();
+	etd_list.clear();
+	esec_list.clear();
+	
+	zen_list.clear();
+	ztd_list.clear();
+	zid_list.clear();
 	
 	write_evts->ClearEvt();
 	
@@ -291,7 +311,45 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			n_caen_data++;
 			
 			caen_data = in_data->GetCaenData();
-					
+			mymod = caen_data->GetModule();
+			mych = caen_data->GetChannel();
+			myenergy = caen_data->GetEnergy();
+			
+			// Is it a recoil
+			if( set->IsRecoil( mymod, mych ) ) {
+				
+				mysector = set->GetRecoilSector( mymod, mych );
+				mylayer = set->GetRecoilLayer( mymod, mych );
+				
+				ren_list.push_back( myenergy );
+				rtd_list.push_back( mytime - time_first );
+				rid_list.push_back( mylayer );
+				rsec_list.push_back( mysector );
+
+			}
+			
+			// Is it an ELUM?
+			if( set->IsELUM( mymod, mych ) ) {
+				
+				mysector = set->GetELUMSector( mymod, mych );
+				
+				een_list.push_back( myenergy );
+				etd_list.push_back( mytime - time_first );
+				esec_list.push_back( mysector );
+
+			}
+
+			// Is it a ZeroDegree?
+			if( set->IsZD( mymod, mych ) ) {
+				
+				mylayer = set->GetZDLayer( mymod, mych );
+				
+				zen_list.push_back( myenergy );
+				ztd_list.push_back( mytime - time_first );
+				zid_list.push_back( mylayer );
+				
+			}
+
 		}
 		
 		
@@ -306,7 +364,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			info_data = in_data->GetInfoData();
 			
 			// Update EBIS time
-			if( info_data->GetCode() == common::ebis_code ) {
+			if( info_data->GetCode() == set->GetEBISCode() ) {
 				
 				ebis_time = info_data->GetTime();
 				ebis_hz = 1e9 / ( (double)ebis_time - (double)ebis_prev );
@@ -317,7 +375,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 		
 			// Update T1 time
-			if( info_data->GetCode() == common::t1_code ){
+			if( info_data->GetCode() == set->GetT1Code() ){
 				
 				t1_time = info_data->GetTime();
 				t1_hz = 1e9 / ( (double)t1_time - (double)t1_prev );
@@ -328,7 +386,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 			
 			// Update CAEN pulser time
-			if( info_data->GetCode() == common::pulser_code ) {
+			if( info_data->GetCode() == set->GetCAENPulserCode() ) {
 				
 				caen_time = info_data->GetTime();
 				caen_hz = 1e9 / ( (double)caen_time - (double)caen_prev );
@@ -341,7 +399,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 
 			// Update ISS pulser time
-			if( info_data->GetCode() == common::extt_code ){
+			if( info_data->GetCode() == set->GetExternalTriggerCode() ){
 				
 				asic_time = info_data->GetTime();
 				asic_hz = 1e9 / ( (double)asic_time - (double)asic_prev );
@@ -355,7 +413,6 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			
 			// If we a pulser event from both DAQs, fill time difference
 			if( flag_caen_pulser && flag_asic_pulser ) {
-				
 				
 				daq_sync_diff = (double)caen_time - (double)asic_time;
 				
@@ -470,9 +527,9 @@ void EventBuilder::ArrayFinder() {
 	std::vector<unsigned int> nindex;
 
 	// Do each module and row individually
-	for( int i = 0; i < common::n_module; ++i ) {
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 		
-		for( int j = 0; j < common::n_row; ++j ) {
+		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
 			
 			// Empty the array of indexes
 			pindex.clear();
@@ -484,7 +541,7 @@ void EventBuilder::ArrayFinder() {
 			for( unsigned int k = 0; k < pen_list.size(); ++k ) {
 				
 				// Check if it is the module and row we want
-				if( pmod_list.at(k) == i && prow_list.at(k) == j ) {
+				if( pmod_list.at(k) == (int)i && prow_list.at(k) == (int)j ) {
 					
 					// Put in the index
 					pindex.push_back( k );
@@ -497,7 +554,7 @@ void EventBuilder::ArrayFinder() {
 			for( unsigned int l = 0; l < nen_list.size(); ++l ) {
 				
 				// Check if it is the module and row we want
-				if( nmod_list.at(l) == i && nrow_list.at(l) == j ) {
+				if( nmod_list.at(l) == (int)i && nrow_list.at(l) == (int)j ) {
 				
 					// Put in the index
 					nindex.push_back( l );
@@ -564,17 +621,112 @@ void EventBuilder::ArrayFinder() {
 }
 
 void EventBuilder::RecoilFinder() {
+		
+	// Checks to prevent re-using events
+	std::vector<unsigned int> index;
+	bool flag_skip;
 	
+	// Loop over recoil events
+	for( unsigned int i = 0; i < ren_list.size(); ++i ) {
+
+		// Find the dE event, usually the trigger
+		if( rid_list[i] == 0 ){
+			
+			recoil_evt->ClearEvent();
+			recoil_evt->SetTime( rtd_list[i] );
+			recoil_evt->SetSector( rsec_list[i] );
+			recoil_evt->AddRecoil( ren_list[i], 0 );
+
+			// Look for matching dE events
+			for( unsigned int j = 0; j < ren_list.size(); ++j ) {
+
+				// Check if we already used this hit
+				flag_skip = false;
+				for( unsigned int k = 0; k < index.size(); ++k )
+					if( index[k] == j ) flag_skip = true;
+
+				
+				// Found a match
+				if( i != j && rid_list[i] != 0 && !flag_skip &&
+				    rsec_list[i] == rsec_list[j] ){
+					
+					index.push_back(j);
+					recoil_evt->AddRecoil( ren_list[i], rid_list[i] );
+					
+				}
+				
+			}
+			
+			// Fill the tree and get ready for next recoil event
+			write_evts->AddEvt( recoil_evt );
+			recoil_ctr++;
+			
+		}
+		
+	}
 	
 }
 
 void EventBuilder::ElumFinder() {
 	
+	// Loop over ELUM events
+	for( unsigned int i = 0; i < een_list.size(); ++i ) {
+
+		// Set the ELUM event (nice and easy)
+		elum_evt->SetEvent( een_list[i], 0,
+						    esec_list[i], etd_list[i] );
+
+		// Write event to tree
+		write_evts->AddEvt( elum_evt );
+		elum_ctr++;
+		
+	}
 	
 }
 
 void EventBuilder::ZeroDegreeFinder() {
 	
+	// Checks to prevent re-using events
+	std::vector<unsigned int> index;
+	bool flag_skip;
+	
+	// Loop over ZeroDegree events
+	for( unsigned int i = 0; i < zen_list.size(); ++i ) {
+
+		// Find the dE event, usually the trigger
+		if( zid_list[i] == 0 ){
+			
+			zd_evt->ClearEvent();
+			zd_evt->SetTime( ztd_list[i] );
+			zd_evt->SetSector( 0 ); // always 0 ZeroDegree
+			zd_evt->AddZeroDegree( zen_list[i], 0 );
+
+			// Look for matching dE events
+			for( unsigned int j = 0; j < zen_list.size(); ++j ) {
+
+				// Check if we already used this hit
+				flag_skip = false;
+				for( unsigned int k = 0; k < index.size(); ++k )
+					if( index[k] == j ) flag_skip = true;
+
+				
+				// Found a match
+				if( i != j && zid_list[i] != 0 && !flag_skip ){
+					
+					index.push_back(j);
+					zd_evt->AddZeroDegree( zen_list[i], zid_list[i] );
+					
+				}
+				
+			}
+			
+			// Fill the tree and get ready for next recoil event
+			write_evts->AddEvt( zd_evt );
+			zd_ctr++;
+			
+		}
+		
+	}
 	
 }
 
@@ -589,8 +741,15 @@ void EventBuilder::MakeEventHists(){
 	// ---------------- //
 	// Array histograms //
 	// ---------------- //
+	pn_11.resize( set->GetNumberOfArrayModules() );
+	pn_12.resize( set->GetNumberOfArrayModules() );
+	pn_21.resize( set->GetNumberOfArrayModules() );
+	pn_22.resize( set->GetNumberOfArrayModules() );
+	pn_td.resize( set->GetNumberOfArrayModules() );
+	pn_mult.resize( set->GetNumberOfArrayModules() );
+
 	// Loop over ISS modules
-	for( unsigned int i = 0; i < common::n_module; ++i ) {
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 	
 		dirname = maindirname + "/module_" + std::to_string(i);
 
@@ -598,8 +757,15 @@ void EventBuilder::MakeEventHists(){
 			output_file->mkdir( dirname.data() );
 		output_file->cd( dirname.data() );
 
+		pn_11[i].resize( set->GetNumberOfArrayRows() );
+		pn_12[i].resize( set->GetNumberOfArrayRows() );
+		pn_21[i].resize( set->GetNumberOfArrayRows() );
+		pn_22[i].resize( set->GetNumberOfArrayRows() );
+		pn_td[i].resize( set->GetNumberOfArrayRows() );
+		pn_mult[i].resize( set->GetNumberOfArrayRows() );
+
 		// Loop over rows of the array
-		for( int j = 0; j < common::n_row; ++j ) {
+		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
 
 			hname = "pn_1v1_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side multiplicity = 1 vs. n-side multiplicity = 1 (module ";

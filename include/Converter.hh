@@ -14,9 +14,9 @@
 #include <TH1.h>
 #include <TProfile.h>
 
-// Common header
-#ifndef __COMMON_HH
-# include "Common.hh"
+// Settings header
+#ifndef __SETTINGS_HH
+# include "Settings.hh"
 #endif
 
 // Calibration header
@@ -40,7 +40,7 @@ class Converter {
 
 public:
 	
-	Converter();
+	Converter( Settings *myset );
 	~Converter();
 	
 
@@ -119,7 +119,7 @@ private:
 	inline ULong64_t GetWord( UInt_t n = 0 ){
 	
 		// If word number is out of range, return zero
-		if( n >= nwords ) return(0);
+		if( n >= WORD_SIZE ) return(0);
 
 		// Perform byte swapping according to swap mode
 		ULong64_t result = data[n];
@@ -158,8 +158,6 @@ private:
 	
 	// Pointer to the data words
 	ULong64_t *data;
-
-
 	
 	// End of data in  a block looks like:
 	// word_0 = 0xFFFFFFFF, word_1 = 0xFFFFFFFF.
@@ -180,10 +178,9 @@ private:
 	UInt_t header_sequence; // 4 byte.
 	UShort_t header_stream; // 2 byte.
 	UShort_t header_tape; // 2 byte.
-	UShort_t header_MyEndian; // 2 byte. If 256 then correct endianess.
+	UShort_t header_MyEndian; // 2 byte. If 1 then correct endianess.
 	UShort_t header_DataEndian; // 2 byte.
 	UInt_t header_DataLen; // 4 byte.
-	UInt_t nwords; // number of 64 bit words
 	
 	// Interpretated variables
 	unsigned long my_tm_stp;
@@ -221,20 +218,23 @@ private:
 	TTree *output_tree;
 	
 	// Counters
-	int ctr_asic_hit[common::n_module];		// hits on each ISS module
-	int ctr_asic_ext[common::n_module];		// external (pulser) ISS timestamps
-	int ctr_caen_hit[common::n_module];		// hits on each CAEN module
-	int ctr_caen_ext[common::n_module];		// external (pulser) CAEN timestamps
+	std::vector<unsigned int> ctr_asic_hit;		// hits on each ISS module
+	std::vector<unsigned int> ctr_asic_ext;		// external (pulser) ISS timestamps
+	std::vector<unsigned int> ctr_caen_hit;		// hits on each CAEN module
+	std::vector<unsigned int> ctr_caen_ext;		// external (pulser) CAEN timestamps
 
 	// Histograms
-	TProfile *hasic_hit[common::n_module];
-	TProfile *hasic_ext[common::n_module];
-	TProfile *hcaen_hit[common::n_caen_mod];
-	TProfile *hcaen_ext[common::n_caen_mod];
+	std::vector<TProfile*> hasic_hit;
+	std::vector<TProfile*> hasic_ext;
+	std::vector<TProfile*> hcaen_hit;
+	std::vector<TProfile*> hcaen_ext;
 
-	TH1F *hasic[common::n_module][common::n_asic][common::n_channel];
-	TH1F *hcaen[common::n_caen_mod][common::n_caen_ch];
+	std::vector<std::vector<std::vector<TH1F*>>> hasic;
+	std::vector<std::vector<TH1F*>> hcaen;
 	
+	// 	Settings file
+	Settings *set;
+
 	// 	Calibrator
 	Calibration *cal;
 

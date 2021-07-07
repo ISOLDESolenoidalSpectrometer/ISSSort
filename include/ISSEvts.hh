@@ -9,11 +9,6 @@
 #include "TVector3.h"
 #include "TObject.h"
 
-// Common header
-#ifndef __COMMON_HH
-# include "Common.hh"
-#endif
-
 class ArrayEvt : public TObject {
 
 public:
@@ -70,6 +65,8 @@ public:
 	void SetEvent( std::vector<float> myenergy,
 					std::vector<int> myid,
 					int mysec, long mytd );
+	
+	void ClearEvent();
 	
 	inline void AddRecoil( float myenergy, int myid ){
 		energy.push_back( myenergy );
@@ -160,6 +157,8 @@ public:
 	void SetEvent( std::vector<float> myenergy,
 					std::vector<int> myid,
 					int mysec, long mytd );
+	
+	void ClearEvent();
 
 	inline void AddZeroDegree( float myenergy, int myid ){
 		energy.push_back( myenergy );
