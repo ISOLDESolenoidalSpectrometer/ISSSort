@@ -96,8 +96,9 @@ private:
 	long build_window;  /// length of build window in ns
 	
 	// Some more things that should be in a settings file
-	std::vector<unsigned char> array_side;
-	std::vector<unsigned char> array_row;
+	std::vector<unsigned char> asic_side;
+	std::vector<unsigned char> asic_row;
+	std::vector<std::vector<unsigned char>> array_row;
 	std::vector<int> array_pid;
 	std::vector<int> array_nid;
 

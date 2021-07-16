@@ -36,20 +36,22 @@ EventBuilder::EventBuilder( Settings *myset ){
 	flag_caen_pulser = false;
 
 	
-	 // p-side = 0; n-side = 1;
-	array_side.push_back(0); // asic 0 = p-side
-	array_side.push_back(1); // asic 1 = n-side
-	array_side.push_back(0); // asic 2 = p-side
-	array_side.push_back(0); // asic 3 = p-side
-	array_side.push_back(1); // asic 4 = n-side
-	array_side.push_back(0); // asic 5 = p-side
+	// p-side = 0; n-side = 1;
+	asic_side.push_back(0); // asic 0 = p-side
+	asic_side.push_back(1); // asic 1 = n-side
+	asic_side.push_back(0); // asic 2 = p-side
+	asic_side.push_back(0); // asic 3 = p-side
+	asic_side.push_back(1); // asic 4 = n-side
+	asic_side.push_back(0); // asic 5 = p-side
 
-	array_row.push_back(0); // asic 0 = row 0 p-side
-	array_row.push_back(0); // asic 1 = row 0 and 1 n-side
-	array_row.push_back(1); // asic 2 = row 1 p-side
-	array_row.push_back(2); // asic 3 = row 2 p-side
-	array_row.push_back(2); // asic 4 = row 2 and 3 n-side
-	array_row.push_back(3); // asic 5 = row 3 p-side
+	asic_row.push_back(0); // asic 0 = row 0 p-side
+	asic_row.push_back(0); // asic 1 = row 0 and 1 n-side
+	asic_row.push_back(1); // asic 2 = row 1 p-side
+	asic_row.push_back(2); // asic 3 = row 2 p-side
+	asic_row.push_back(2); // asic 4 = row 2 and 3 n-side
+	asic_row.push_back(3); // asic 5 = row 3 p-side
+
+	array_row.resize( set->GetNumberOfArrayASICs() );
 	
 	
 	// Loop over ASICs in a module
@@ -57,11 +59,16 @@ EventBuilder::EventBuilder( Settings *myset ){
 		
 		// Loop over channels in each ASIC
 		for( unsigned int j = 0; j < set->GetNumberOfArrayChannels(); ++j ) {
+
+			// Sort out the rows 
+			// pside all ok
+			// nside need incrementing for odd wafers
+			array_row.at(i).push_back( asic_row.at(i) );
 			
 			// p-side: all channels used
-			if( array_side.at(i) == 0 ) {
+			if( asic_side.at(i) == 0 ) {
 				
-				mystrip = j + set->GetNumberOfArrayPstrips() * array_row.at(i);
+				mystrip = j + set->GetNumberOfArrayPstrips() * asic_row.at(i);
 				array_pid.push_back( mystrip );
 				
 			}
@@ -87,6 +94,7 @@ EventBuilder::EventBuilder( Settings *myset ){
 				
 				mystrip = j - 89 + set->GetNumberOfArrayNstrips();
 				array_nid.push_back( mystrip );
+				array_row.at(i).at(j)++;
 
 			}
 			
@@ -95,6 +103,7 @@ EventBuilder::EventBuilder( Settings *myset ){
 				
 				mystrip = 116 - j;
 				array_nid.push_back( mystrip );
+				array_row.at(i).at(j)++;
 
 			}
 			
@@ -270,8 +279,8 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			asic_data = in_data->GetAsicData();
 			myenergy = asic_data->GetEnergy();
 			mymod = asic_data->GetModule();
-			myside = array_side.at( asic_data->GetAsic() );
-			myrow = array_row.at( asic_data->GetAsic() );
+			myside = asic_side.at( asic_data->GetAsic() );
+			myrow = array_row.at( asic_data->GetAsic() ).at( asic_data->GetChannel() );
 			
 			// p-side event
 			if( myside == 0 ) {
