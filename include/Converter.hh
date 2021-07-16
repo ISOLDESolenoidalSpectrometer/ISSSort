@@ -12,6 +12,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TH1.h>
+#include <TH2.h>
 #include <TProfile.h>
 
 // Settings header
@@ -196,6 +197,7 @@ private:
 	unsigned long my_ch_id;
 	unsigned long my_asic_id;
 	unsigned long my_data_id;
+	float my_energy;
 	
 	// Flags
 	bool ts_flag;
@@ -229,8 +231,13 @@ private:
 	std::vector<TProfile*> hcaen_hit;
 	std::vector<TProfile*> hcaen_ext;
 
-	std::vector<std::vector<std::vector<TH1F*>>> hasic;
+	std::vector<std::vector<TH2F*>> hasic;
+	std::vector<std::vector<TH2F*>> hasic_cal;
 	std::vector<std::vector<TH1F*>> hcaen;
+	std::vector<std::vector<TH1F*>> hcaen_cal;
+
+	std::vector<TH1F*> hpside;
+	std::vector<TH1F*> hnside;
 	
 	// 	Settings file
 	Settings *set;

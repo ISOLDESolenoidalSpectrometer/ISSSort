@@ -86,51 +86,78 @@ void Converter::MakeHists() {
 
 	// Resize vectors
 	hasic.resize( set->GetNumberOfArrayModules() );
+	hpside.resize( set->GetNumberOfArrayModules() );
+	hnside.resize( set->GetNumberOfArrayModules() );
 	
 	// Loop over ISS modules
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 		
 		hasic[i].resize( set->GetNumberOfArrayASICs() );
 		subdirname = "/module_" + std::to_string(i);
+		dirname = maindirname + subdirname;
 		
+		// calibrated p-side sum
+		hname = "pside_" + std::to_string(i);	
+		htitle = "Calibrated p-side ASIC spectra for module " + std::to_string(i);
+		htitle += ";Energy (keV);Counts per 15 keV";
+		
+		if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+			hpside[i] = (TH1F*)output_file->Get( hname.data() );
+		
+		else {
+			
+			hpside[i] = new TH1F( hname.data(), htitle.data(),
+						1500, -7.5, 29992.5 );
+			hpside[i]->SetDirectory(
+					output_file->GetDirectory( dirname.data() ) );
+			
+		}
+
+		// calibrated n-side sum
+		hname = "nside_" + std::to_string(i);	
+		htitle = "Calibrated n-side ASIC spectra for module " + std::to_string(i);
+		htitle += ";Energy (keV);Counts per 15 keV";
+		
+		if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+			hnside[i] = (TH1F*)output_file->Get( hname.data() );
+		
+		else {
+			
+			hnside[i] = new TH1F( hname.data(), htitle.data(),
+						1500, -7.5, 29992.5 );
+			hnside[i]->SetDirectory(
+					output_file->GetDirectory( dirname.data() ) );
+			
+		}
+
 		// Loop over ASICs for the array
 		for( unsigned int j = 0; j < set->GetNumberOfArrayASICs(); ++j ) {
-			
-			hasic[i][j].resize( set->GetNumberOfArrayChannels() );
-			dirname = maindirname + subdirname;
-			dirname += "/asic_" + std::to_string(j);
 			
 			if( !output_file->GetDirectory( dirname.data() ) )
 				output_file->mkdir( dirname.data() );
 			output_file->cd( dirname.data() );
-
-			// Loop over channels of each ASIC
-			for( unsigned int k = 0; k < set->GetNumberOfArrayChannels(); ++k ) {
 				
-				hname = "asic_" + std::to_string(i);
-				hname += "_" + std::to_string(j);
-				hname += "_" + std::to_string(k);
+			hname = "asic_" + std::to_string(i);
+			hname += "_" + std::to_string(j);
 				
-				htitle = "Raw ASIC spectra for module " + std::to_string(i);
-				htitle += ", ASIC " + std::to_string(j);
-				htitle += ", channel " + std::to_string(k);
-				
-				htitle += ";ADC channel;Counts";
-				
-				if( output_file->GetListOfKeys()->Contains( hname.data() ) )
-					hasic[i][j][k] = (TH1F*)output_file->Get( hname.data() );
-				
-				else {
-					
-					hasic[i][j][k] = new TH1F( hname.data(), htitle.data(),
-								4096, -0.5, 4095.5 );
-					hasic[i][j][k]->SetDirectory(
-							output_file->GetDirectory( dirname.data() ) );
-					
-				}
-				
-			}
+			htitle = "Raw ASIC spectra for module " + std::to_string(i);
+			htitle += ", ASIC " + std::to_string(j);
 			
+			htitle += ";Channel;ADC value;Counts";
+			
+			if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+				hasic[i][j] = (TH2F*)output_file->Get( hname.data() );
+				
+			else {
+					
+				hasic[i][j] = new TH2F( hname.data(), htitle.data(),
+							set->GetNumberOfArrayChannels(), -0.5, set->GetNumberOfArrayChannels()-0.5,
+							4096, -0.5, 4095.5 );
+				hasic[i][j]->SetDirectory(
+						output_file->GetDirectory( dirname.data() ) );
+					
+			}
+				
 		}
 		
 	}
@@ -564,10 +591,19 @@ void Converter::ProcessASICData(){
 	}
 
 	else {
+
+		// Calibrate
+		my_energy = cal->AsicEnergy( my_mod_id, my_asic_id, my_ch_id, my_adc_data );
 		
 		// Fill histograms
-		hasic[my_mod_id][my_asic_id][my_ch_id]->Fill( my_adc_data );
+		hasic[my_mod_id][my_asic_id]->Fill( my_ch_id, my_adc_data );
+		hasic_cal[my_mod_id][my_asic_id]->Fill( my_ch_id, my_energy );
 		hasic_hit[my_mod_id]->Fill( ctr_asic_hit[my_mod_id], my_tm_stp, 1 );
+
+		if( my_asic_id == 0 || my_asic_id == 2 || my_asic_id == 3 || my_asic_id == 5 )
+			hpside[my_mod_id]->Fill( my_energy );
+		else if( my_asic_id == 1 || my_asic_id == 4 )
+			hnside[my_mod_id]->Fill( my_energy );
 
 
 		// Make an AsicData item
@@ -577,7 +613,7 @@ void Converter::ProcessASICData(){
 		asic_data->SetModule( my_mod_id );
 		asic_data->SetAsic( my_asic_id );
 		asic_data->SetChannel( my_ch_id );
-		asic_data->SetEnergy( cal->AsicEnergy( my_mod_id, my_asic_id, my_ch_id, my_adc_data ) );
+		asic_data->SetEnergy( my_energy );
 		
 		// Set this data and fill event to tree
 		data_packet->SetData( asic_data );
@@ -661,10 +697,12 @@ void Converter::ProcessCAENData(){
 	if( my_data_id == 0 ) {
 		
 		// Fill histograms
+		my_energy = cal->CaenEnergy( my_mod_id, my_ch_id, my_adc_data );
 		hcaen[my_mod_id][my_ch_id]->Fill( my_adc_data );
+		hcaen_cal[my_mod_id][my_ch_id]->Fill( my_energy );
 		
 		caen_data->SetQlong( my_adc_data );
-		caen_data->SetEnergy( cal->CaenEnergy( my_mod_id, my_ch_id, my_adc_data ) );
+		caen_data->SetEnergy( my_energy );
 		flag_caen_data0 = true;
 
 	}
