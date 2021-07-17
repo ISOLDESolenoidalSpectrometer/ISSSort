@@ -170,6 +170,7 @@ private:
 	std::vector<std::vector<TH2F*>> pn_12;
 	std::vector<std::vector<TH2F*>> pn_21;
 	std::vector<std::vector<TH2F*>> pn_22;
+	std::vector<std::vector<TH2F*>> pn_max;
 	std::vector<std::vector<TH1F*>> pn_td;
 
 	std::vector<std::vector<TProfile*>> pn_mult;

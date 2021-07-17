@@ -483,7 +483,10 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			// ------------------------------------
 			write_evts->SetEBIS( ebis_time );
 			write_evts->SetT1( t1_time );
-			output_tree->Fill();
+			if( write_evts->GetArrayMultiplicity() ||
+			    write_evts->GetRecoilMultiplicity() ||
+			    write_evts->GetElumMultiplicity() ||
+			    write_evts->GetZeroDegreeMultiplicity() ) output_tree->Fill();
 
 			//--------------------------------------------------
 			// clear values of arrays to store intermediate info
@@ -534,6 +537,8 @@ void EventBuilder::ArrayFinder() {
 	
 	std::vector<unsigned int> pindex;
 	std::vector<unsigned int> nindex;
+	int pmax_idx, nmax_idx;
+	float pmax_en, nmax_en;
 
 	// Do each module and row individually
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
@@ -545,6 +550,8 @@ void EventBuilder::ArrayFinder() {
 			nindex.clear();
 			std::vector<unsigned int>().swap(pindex);
 			std::vector<unsigned int>().swap(nindex);
+			pmax_idx = nmax_idx = -1;
+			pmax_en = nmax_en = -1;
 
 			// Loop over p-side events
 			for( unsigned int k = 0; k < pen_list.size(); ++k ) {
@@ -554,6 +561,14 @@ void EventBuilder::ArrayFinder() {
 					
 					// Put in the index
 					pindex.push_back( k );
+					
+					// Check if it is max energy
+					if( pen_list.at(k) > pmax_en ){
+					
+						pmax_en = pen_list.at(k);
+						pmax_idx = k;
+					
+					}
 					
 				}
 				
@@ -567,6 +582,14 @@ void EventBuilder::ArrayFinder() {
 				
 					// Put in the index
 					nindex.push_back( l );
+
+					// Check if it is max energy
+					if( nen_list.at(l) > nmax_en ){
+					
+						nmax_en = nen_list.at(l);
+						nmax_idx = l;
+					
+					}
 
 				}
 				
@@ -584,18 +607,21 @@ void EventBuilder::ArrayFinder() {
 			// Easy case, 1p vs 1n
 			if( pindex.size() == 1 && nindex.size() == 1 ) {
 				
-				array_evt->SetEvent( pen_list.at( pindex.at(0) ),
-									 nen_list.at( nindex.at(0) ),
-									 pid_list.at( pindex.at(0) ),
-									 nid_list.at( nindex.at(0) ),
-									 ptd_list.at( pindex.at(0) ),
-									 ntd_list.at( nindex.at(0) ),
-									 i );
-				
-				write_evts->AddEvt( array_evt );
-				array_ctr++;
+				// This works without neighbour mode
+				//array_evt->SetEvent( pen_list.at( pindex.at(0) ),
+				//					 nen_list.at( nindex.at(0) ),
+				//					 pid_list.at( pindex.at(0) ),
+				//					 nid_list.at( nindex.at(0) ),
+				//					 ptd_list.at( pindex.at(0) ),
+				//					 ntd_list.at( nindex.at(0) ),
+				//					 i );
+				//
+				//write_evts->AddEvt( array_evt );
+				//array_ctr++;
 
 				pn_11[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(0) ) );
+				//write_evts->AddEvt( array_evt );
+				//array_ctr++;
 				
 			}
 			
@@ -621,6 +647,25 @@ void EventBuilder::ArrayFinder() {
 				pn_22[i][j]->Fill( pen_list.at( pindex.at(1) ), nen_list.at( nindex.at(0) ) );
 				pn_22[i][j]->Fill( pen_list.at( pindex.at(1) ), nen_list.at( nindex.at(1) ) );
 				
+			}
+			
+			// Just take the maximum energy instead for now
+			// But make sure that both p- and n-sides are good
+			if( pmax_idx >= 0 && nmax_idx >= 0 ){
+			
+				array_evt->SetEvent( pen_list.at( pmax_idx ),
+									 nen_list.at( nmax_idx ),
+									 pid_list.at( pmax_idx ),
+									 nid_list.at( nmax_idx ),
+									 ptd_list.at( pmax_idx ),
+									 ntd_list.at( nmax_idx ),
+									 i );
+				
+				write_evts->AddEvt( array_evt );
+				array_ctr++;
+
+				pn_max[i][j]->Fill( pmax_en, nmax_en );
+			
 			}
 						
 		}
@@ -754,6 +799,7 @@ void EventBuilder::MakeEventHists(){
 	pn_12.resize( set->GetNumberOfArrayModules() );
 	pn_21.resize( set->GetNumberOfArrayModules() );
 	pn_22.resize( set->GetNumberOfArrayModules() );
+	pn_max.resize( set->GetNumberOfArrayModules() );
 	pn_td.resize( set->GetNumberOfArrayModules() );
 	pn_mult.resize( set->GetNumberOfArrayModules() );
 
@@ -770,6 +816,7 @@ void EventBuilder::MakeEventHists(){
 		pn_12[i].resize( set->GetNumberOfArrayRows() );
 		pn_21[i].resize( set->GetNumberOfArrayRows() );
 		pn_22[i].resize( set->GetNumberOfArrayRows() );
+		pn_max[i].resize( set->GetNumberOfArrayRows() );
 		pn_td[i].resize( set->GetNumberOfArrayRows() );
 		pn_mult[i].resize( set->GetNumberOfArrayRows() );
 
@@ -795,6 +842,11 @@ void EventBuilder::MakeEventHists(){
 			htitle = "p-side multiplicity = 2 vs. n-side multiplicity = 2 (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
 			pn_22[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			
+			hname = "pn_max_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "p-side max energy vs. n-side max energy (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
+			pn_max[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
 			
 			hname = "pn_td_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side vs. n-side time difference (module ";

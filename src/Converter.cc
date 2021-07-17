@@ -86,6 +86,7 @@ void Converter::MakeHists() {
 
 	// Resize vectors
 	hasic.resize( set->GetNumberOfArrayModules() );
+	hasic_cal.resize( set->GetNumberOfArrayModules() );
 	hpside.resize( set->GetNumberOfArrayModules() );
 	hnside.resize( set->GetNumberOfArrayModules() );
 	
@@ -93,11 +94,12 @@ void Converter::MakeHists() {
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 		
 		hasic[i].resize( set->GetNumberOfArrayASICs() );
+		hasic_cal[i].resize( set->GetNumberOfArrayASICs() );
 		subdirname = "/module_" + std::to_string(i);
 		dirname = maindirname + subdirname;
 		
 		// calibrated p-side sum
-		hname = "pside_" + std::to_string(i);	
+		hname = "pside_mod" + std::to_string(i);	
 		htitle = "Calibrated p-side ASIC spectra for module " + std::to_string(i);
 		htitle += ";Energy (keV);Counts per 15 keV";
 		
@@ -114,7 +116,7 @@ void Converter::MakeHists() {
 		}
 
 		// calibrated n-side sum
-		hname = "nside_" + std::to_string(i);	
+		hname = "nside_mod" + std::to_string(i);	
 		htitle = "Calibrated n-side ASIC spectra for module " + std::to_string(i);
 		htitle += ";Energy (keV);Counts per 15 keV";
 		
@@ -137,6 +139,7 @@ void Converter::MakeHists() {
 				output_file->mkdir( dirname.data() );
 			output_file->cd( dirname.data() );
 				
+			// Uncalibrated
 			hname = "asic_" + std::to_string(i);
 			hname += "_" + std::to_string(j);
 				
@@ -157,6 +160,30 @@ void Converter::MakeHists() {
 						output_file->GetDirectory( dirname.data() ) );
 					
 			}
+			
+			// Calibrated
+			hname = "asic_" + std::to_string(i);
+			hname += "_" + std::to_string(j);
+			hname += "_cal";
+				
+			htitle = "Calibrated ASIC spectra for module " + std::to_string(i);
+			htitle += ", ASIC " + std::to_string(j);
+			
+			htitle += ";Channel;Energy (keV);Counts per 15 keV";
+			
+			if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+				hasic_cal[i][j] = (TH2F*)output_file->Get( hname.data() );
+				
+			else {
+					
+				hasic_cal[i][j] = new TH2F( hname.data(), htitle.data(),
+							set->GetNumberOfArrayChannels(), -0.5, set->GetNumberOfArrayChannels()-0.5,
+							1500, -7.5, 29992.5 );
+				hasic_cal[i][j]->SetDirectory(
+						output_file->GetDirectory( dirname.data() ) );
+					
+			}
+
 				
 		}
 		
@@ -167,11 +194,13 @@ void Converter::MakeHists() {
 	
 	// Resive vectors
 	hcaen.resize( set->GetNumberOfCAENModules() );
+	hcaen_cal.resize( set->GetNumberOfCAENModules() );
 
 	// Loop over CAEN modules
 	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
 		
 		hcaen[i].resize( set->GetNumberOfCAENChannels() );
+		hcaen_cal[i].resize( set->GetNumberOfCAENChannels() );
 		dirname = maindirname + "/module_" + std::to_string(i);
 		
 		if( !output_file->GetDirectory( dirname.data() ) )
@@ -181,6 +210,7 @@ void Converter::MakeHists() {
 		// Loop over channels of each CAEN module
 		for( unsigned int j = 0; j < set->GetNumberOfCAENChannels(); ++j ) {
 			
+			// Uncalibrated
 			hname = "caen_" + std::to_string(i);
 			hname += "_" + std::to_string(j);
 			
@@ -201,6 +231,30 @@ void Converter::MakeHists() {
 						output_file->GetDirectory( dirname.data() ) );
 				
 			}
+			
+			// Calibrated
+			hname = "caen_" + std::to_string(i);
+			hname += "_" + std::to_string(j);
+			hname += "_cal";
+			
+			htitle = "Calibrated CAEN V1725 spectra for module " + std::to_string(i);
+			htitle += ", channel " + std::to_string(j);
+			
+			htitle += ";Energy (keV);Counts per 10 keV";
+			
+			if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+				hcaen_cal[i][j] = (TH1F*)output_file->Get( hname.data() );
+			
+			else {
+				
+				hcaen_cal[i][j] = new TH1F( hname.data(), htitle.data(),
+										   4000, -5, 39995 );
+			
+				hcaen_cal[i][j]->SetDirectory(
+						output_file->GetDirectory( dirname.data() ) );
+				
+			}
+
 			
 		}
 					
