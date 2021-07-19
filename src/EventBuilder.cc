@@ -701,11 +701,11 @@ void EventBuilder::RecoilFinder() {
 
 				
 				// Found a match
-				if( i != j && rid_list[i] != 0 && !flag_skip &&
+				if( i != j && rid_list[j] != 0 && !flag_skip &&
 				    rsec_list[i] == rsec_list[j] ){
 					
 					index.push_back(j);
-					recoil_evt->AddRecoil( ren_list[i], rid_list[i] );
+					recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
 					
 				}
 				
@@ -765,10 +765,10 @@ void EventBuilder::ZeroDegreeFinder() {
 
 				
 				// Found a match
-				if( i != j && zid_list[i] != 0 && !flag_skip ){
+				if( i != j && zid_list[j] != 0 && !flag_skip ){
 					
 					index.push_back(j);
-					zd_evt->AddZeroDegree( zen_list[i], zid_list[i] );
+					zd_evt->AddZeroDegree( zen_list[j], zid_list[j] );
 					
 				}
 				
