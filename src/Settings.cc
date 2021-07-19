@@ -35,13 +35,13 @@ void Settings::ReadSettings() {
 	extt_code = config->GetValue( "ExternalTriggerCode", 14 );
 	sync_code = config->GetValue( "SyncCode", 4 );
 	thsb_code = config->GetValue( "TimestampCode", 5 );
-	caen_pulser_mod = config->GetValue( "PulserModule", 0 );
-	caen_pulser_ch = config->GetValue( "PulserChannel", 1 );
+	caen_pulser_mod = config->GetValue( "PulserModule", 1 );
+	caen_pulser_ch = config->GetValue( "PulserChannel", 13 );
 	pulser_code = config->GetValue( "PulserCode", 20 );
-	caen_ebis_mod = config->GetValue( "EBISModule", 0 );
+	caen_ebis_mod = config->GetValue( "EBISModule", 1 );
 	caen_ebis_ch = config->GetValue( "EBISChannel", 14 );
 	ebis_code = config->GetValue( "EBISCode", 21 );
-	caen_t1_mod = config->GetValue( "T1Module", 0 );
+	caen_t1_mod = config->GetValue( "T1Module", 1 );
 	caen_t1_ch = config->GetValue( "T1Channel", 15 );
 	t1_code = config->GetValue( "T1Code", 22 );
 
