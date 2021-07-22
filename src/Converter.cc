@@ -283,7 +283,7 @@ void Converter::MakeHists() {
 
 		else {
 
-			hasic_hit[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 1080000. );
+			hasic_hit[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 108000. );
 			hasic_hit[i]->SetDirectory(
 					output_file->GetDirectory( dirname.data() ) );
 
@@ -297,7 +297,7 @@ void Converter::MakeHists() {
 
 		else {
 
-			hasic_ext[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 1080000. );
+			hasic_ext[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 108000. );
 			hasic_ext[i]->SetDirectory(
 					output_file->GetDirectory( dirname.data() ) );
 
@@ -316,7 +316,7 @@ void Converter::MakeHists() {
 
 		else {
 
-			hcaen_hit[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 1080000. );
+			hcaen_hit[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 108000. );
 			hcaen_hit[i]->SetDirectory(
 					output_file->GetDirectory( dirname.data() ) );
 
@@ -331,7 +331,7 @@ void Converter::MakeHists() {
 
 		else {
 
-			hcaen_ext[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 1080000. );
+			hcaen_ext[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 108000. );
 			hcaen_ext[i]->SetDirectory(
 					output_file->GetDirectory( dirname.data() ) );
 
@@ -936,6 +936,7 @@ void Converter::ProcessInfoData(){
 
 		info_data->SetTime( my_tm_stp );
 		info_data->SetCode( my_info_code );
+		info_data->SetModule( my_mod_id );
 		data_packet->SetData( info_data );
 		output_tree->Fill();
 		info_data->Clear();

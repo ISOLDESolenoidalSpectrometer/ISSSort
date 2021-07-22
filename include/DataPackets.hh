@@ -109,14 +109,17 @@ public:
 	
 	inline unsigned long GetTime(){ return time; };
 	inline unsigned char GetCode(){ return code; };
+	inline unsigned char GetModule(){ return mod; };
 	
 	inline void SetTime( unsigned long t ){ time = t; };
 	inline void SetCode( unsigned char c ){ code = c; };
+	inline void SetModule( unsigned char m ){ mod = m; };
 
 	void ClearData();
 
 protected:
 	
+	unsigned char	mod;	///< module ID of the event
 	unsigned long	time;	///< timestamp of info event
 	unsigned char	code;	///< code here represents which information timestamp we have
 	/// code = 4 is extended timestimp, i.e. next 16 bits
