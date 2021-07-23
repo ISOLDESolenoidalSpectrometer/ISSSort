@@ -104,7 +104,7 @@ class InfoData : public TObject {
 public:
 
 	InfoData();
-	InfoData( unsigned long t, unsigned char c );
+	InfoData( unsigned long t, unsigned char c, unsigned char m );
 	~InfoData();
 	
 	inline unsigned long GetTime(){ return time; };

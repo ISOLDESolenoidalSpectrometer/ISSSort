@@ -408,9 +408,9 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 
 			// Update ISS pulser time - only for module 0
-			if( info_data->GetCode() == set->GetExternalTriggerCode() 
-				&& info_data->GetModule() == 0 ){
-				
+			if( info_data->GetCode() == set->GetExternalTriggerCode() &&
+			    info_data->GetModule() == 0 ) {
+			   
 				asic_time = info_data->GetTime();
 				asic_hz = 1e9 / ( (double)asic_time - (double)asic_prev );
 				if( asic_prev != 0 ) asic_freq->Fill( asic_time, asic_hz );

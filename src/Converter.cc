@@ -272,6 +272,8 @@ void Converter::MakeHists() {
 	// Resize vectors
 	hasic_hit.resize( set->GetNumberOfArrayModules() );
 	hasic_ext.resize( set->GetNumberOfArrayModules() );
+	hasic_pause.resize( set->GetNumberOfArrayModules() );
+	hasic_resume.resize( set->GetNumberOfArrayModules() );
 	hcaen_hit.resize( set->GetNumberOfCAENModules() );
 	hcaen_ext.resize( set->GetNumberOfCAENModules() );
 	
@@ -314,7 +316,7 @@ void Converter::MakeHists() {
 
 		else {
 
-			hasic_pause[i] = new TProfile( hname.data(), htitle.data(), 1000, 0., 1000. );
+			hasic_pause[i] = new TProfile( hname.data(), htitle.data(), 1000, 0., 10000. );
 			hasic_pause[i]->SetDirectory(
 					output_file->GetDirectory( dirname.data() ) );
 
@@ -328,7 +330,7 @@ void Converter::MakeHists() {
 
 		else {
 
-			hasic_resume[i] = new TProfile( hname.data(), htitle.data(), 1000, 0., 1000. );
+			hasic_resume[i] = new TProfile( hname.data(), htitle.data(), 1000, 0., 10000. );
 			hasic_resume[i]->SetDirectory(
 					output_file->GetDirectory( dirname.data() ) );
 
@@ -911,8 +913,9 @@ void Converter::FinishCAENData(){
 void Converter::ProcessInfoData(){
 
 	// MIDAS info data format
+	my_mod_id = (word_0 >> 24) & 0x003F; // bits 24:29
+
 	my_info_field = word_0 & 0x000FFFFF; //bits 0:19
-	my_mod_id = (word_0 >> 24) & 0x0000003F; //bits 24:29
 	my_info_code = (word_0 >> 20) & 0x0000000F; //bits 20:23
 	my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  //bits 0:27
 	

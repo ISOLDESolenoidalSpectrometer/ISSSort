@@ -21,8 +21,8 @@ CaenData::CaenData( unsigned long t, unsigned short f,
 
 InfoData::InfoData(){}
 InfoData::~InfoData(){}
-InfoData::InfoData( unsigned long t, unsigned char c ) :
-					time(t), code(c) {}
+InfoData::InfoData( unsigned long t, unsigned char c, unsigned char m ) :
+					time(t), code(c), mod(m) {}
 
 
 void DataPackets::SetData( AsicData *data ){
@@ -77,7 +77,8 @@ void DataPackets::SetData( InfoData *data ){
 	InfoData fill_data;
 	fill_data.SetTime( data->GetTime() );
 	fill_data.SetCode( data->GetCode() );
-	
+	fill_data.SetModule( data->GetModule() );
+
 	info_packets.push_back( fill_data );
 	
 }
@@ -148,6 +149,7 @@ void InfoData::ClearData(){
 	
 	time = 0;
 	code = 0;
+	mod = 255;
 	
 	return;
 	
