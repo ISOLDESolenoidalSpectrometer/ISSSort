@@ -839,6 +839,9 @@ void EventBuilder::ElumFinder() {
 		write_evts->AddEvt( elum_evt );
 		elum_ctr++;
 		
+		// Histogram the data
+		elum->Fill( esec_list[i], een_list[i] );
+		
 	}
 	
 }
@@ -875,6 +878,9 @@ void EventBuilder::ZeroDegreeFinder() {
 					index.push_back(j);
 					zd_evt->AddZeroDegree( zen_list[j], zid_list[j] );
 					
+					// Histogram the ZeroDegree
+					zd->Fill( zid_list[i], zen_list[j] );
+
 				}
 				
 			}
@@ -882,6 +888,7 @@ void EventBuilder::ZeroDegreeFinder() {
 			// Fill the tree and get ready for next recoil event
 			write_evts->AddEvt( zd_evt );
 			zd_ctr++;
+			
 			
 		}
 		
@@ -993,6 +1000,10 @@ void EventBuilder::MakeEventHists(){
 		output_file->mkdir( dirname.data() );
 	output_file->cd( dirname.data() );
 
+	
+	// ----------------- //
+	// Recoil histograms //
+	// ----------------- //
 	recoil_EdE.resize( set->GetNumberOfRecoilSectors() );
 	recoil_dEsum.resize( set->GetNumberOfRecoilSectors() );
 	
@@ -1007,10 +1018,29 @@ void EventBuilder::MakeEventHists(){
 		hname = "recoil_dEsum" + std::to_string(i);
 		htitle = "Recoil dE vs Esum for sector " + std::to_string(i);
 		htitle += ";Total energy, Esum [keV];Energy loss, dE [keV];Counts";
-		recoil_EdE[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 20000 );
+		recoil_dEsum[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 20000 );
 		
 	}
 	
+	
+	// ---------------- //
+	// ELUM histograms //
+	// ---------------- //
+	output_file->cd();
+	hname = "elum";
+	htitle = "ELUM energy vs sector;Sector;Energy [keV];Counts";
+	elum = new TH2F( hname.data(), htitle.data(),
+			set->GetNumberOfELUMSectors(), -0.5, set->GetNumberOfELUMSectors()-0.5, 2000, 0, 20000 );
+
+	
+	// --------------------- //
+	// ZeroDegree histograms //
+	// --------------------- //
+	output_file->cd();
+	hname = "zd";
+	htitle = "ZeroDegree dE vs E;Energy Loss [keV]; Rest Energy [keV];Counts";
+	zd = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 20000 );
+
 	return;
 	
 }

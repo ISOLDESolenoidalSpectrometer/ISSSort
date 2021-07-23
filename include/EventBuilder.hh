@@ -190,7 +190,11 @@ private:
 	std::vector<TH2F*> recoil_EdE;
 	std::vector<TH2F*> recoil_dEsum;
 
-
+	// ELUM histograms
+	TH2F *elum;
+	
+	// ZeroDegree histograms
+	TH2F *zd;
 	
 };
 
