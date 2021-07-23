@@ -489,7 +489,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 					
 					// If we have didn't get the pause, module was stuck at start of run
 					if( !flag_pause[info_data->GetModule()] ) {
-						
+
 						std::cout << "Module " << info_data->GetModule();
 						std::cout << " was blocked at start of run for ";
 						std::cout << (double)resume_time[info_data->GetModule()]/1e9;
@@ -806,12 +806,15 @@ void EventBuilder::RecoilFinder() {
 					index.push_back(j);
 					recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
 					
+					// All vs. dE
+					recoil_EdE[rsec_list[i]]->Fill( ren_list[j], ren_list[i] );
+					
 				}
 				
 			}
 			
 			// Histogram the recoils
-			recoil_EdE[rsec_list[i]]->Fill( sum_energy, ren_list[i] );
+			recoil_dEsum[rsec_list[i]]->Fill( sum_energy, ren_list[i] );
 			
 			// Fill the tree and get ready for next recoil event
 			write_evts->AddEvt( recoil_evt );
@@ -991,13 +994,19 @@ void EventBuilder::MakeEventHists(){
 	output_file->cd( dirname.data() );
 
 	recoil_EdE.resize( set->GetNumberOfRecoilSectors() );
+	recoil_dEsum.resize( set->GetNumberOfRecoilSectors() );
 	
 	// Loop over number of recoil sectors
 	for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
 	
 		hname = "recoil_EdE" + std::to_string(i);
 		htitle = "Recoil dE vs E for sector " + std::to_string(i);
-		htitle += ";Total energy, E [keV];Energy loss, dE [keV];Counts";
+		htitle += ";Rest energy, E [keV];Energy loss, dE [keV];Counts";
+		recoil_EdE[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 20000 );
+		
+		hname = "recoil_dEsum" + std::to_string(i);
+		htitle = "Recoil dE vs Esum for sector " + std::to_string(i);
+		htitle += ";Total energy, Esum [keV];Energy loss, dE [keV];Counts";
 		recoil_EdE[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 20000 );
 		
 	}

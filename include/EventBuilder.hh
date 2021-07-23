@@ -188,6 +188,7 @@ private:
 
 	// Recoil histograms
 	std::vector<TH2F*> recoil_EdE;
+	std::vector<TH2F*> recoil_dEsum;
 
 
 	
