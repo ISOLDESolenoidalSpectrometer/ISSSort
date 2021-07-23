@@ -106,6 +106,7 @@ private:
 	bool flag_close_event;
 	bool flag_asic_pulser;
 	bool flag_caen_pulser;
+	std::vector<bool> flag_pause, flag_resume;
 
 	// Time variables
 	long		 		time_diff;
@@ -113,6 +114,9 @@ private:
 	unsigned long long  ebis_time, t1_time, ebis_prev, t1_prev;
 	unsigned long long	asic_time, caen_time, asic_prev, caen_prev;
 	double asic_hz, caen_hz, ebis_hz, t1_hz, daq_sync_diff;
+	std::vector<unsigned long long> pause_time, resume_time, asic_dead_time;
+	std::vector<unsigned long long> asic_time_start, asic_time_stop;
+	std::vector<unsigned long long> caen_time_start, caen_time_stop;
 
 	// Data variables - generic
 	unsigned char		mymod;		///< module number
@@ -164,22 +168,27 @@ private:
 	unsigned long long	n_entries;
 	unsigned long		n_caen_pulser, n_asic_pulser;
 	unsigned long		n_ebis, n_t1;
+	std::vector<unsigned long>	n_asic_pause, n_asic_resume;
 
-	// Histograms
+	// Array Histograms
 	std::vector<std::vector<TH2F*>> pn_11;
 	std::vector<std::vector<TH2F*>> pn_12;
 	std::vector<std::vector<TH2F*>> pn_21;
 	std::vector<std::vector<TH2F*>> pn_22;
 	std::vector<std::vector<TH2F*>> pn_max;
 	std::vector<std::vector<TH1F*>> pn_td;
-
 	std::vector<std::vector<TProfile*>> pn_mult;
 
+	// Timing histograms
 	TH1F *tdiff;
 	TProfile *daq_sync;
 	TProfile *caen_freq, *asic_freq, *freq_diff;
 	TProfile *ebis_freq, *t1_freq;
 	TProfile *pulser_loss;
+
+	// Recoil histograms
+	std::vector<TH2F*> recoil_EdE;
+
 
 	
 };

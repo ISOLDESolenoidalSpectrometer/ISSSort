@@ -31,6 +31,27 @@ EventBuilder::EventBuilder( Settings *myset ){
 	elum_ctr	= 0;
 	zd_ctr		= 0;
 	
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
+	
+		n_asic_pause.push_back( 0 );
+		n_asic_resume.push_back( 0 );
+		flag_pause.push_back( false );
+		flag_resume.push_back( false );
+		pause_time.push_back( 0 );
+		resume_time.push_back( 0 );
+		asic_dead_time.push_back( 0 );
+		asic_time_start.push_back( 0 );
+		asic_time_stop.push_back( 0 );
+
+	}
+	
+	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
+
+		caen_time_start.push_back( 0 );
+		caen_time_stop.push_back( 0 );
+
+	}
+	
 	// Some flags must be false to start
 	flag_asic_pulser = false;
 	flag_caen_pulser = false;
@@ -241,7 +262,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 		
 		// Get the time of the event
 		mytime = in_data->GetTime();
-		
+				
 		// check time stamp monotonically increases!
 		if( time_prev > mytime ) std::cout << "*t*";
 			
@@ -309,6 +330,14 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				
 			}
 			
+			// Is it the start event?
+			if( asic_time_start.at( mymod ) == 0 )
+				asic_time_start.at( mymod ) = mytime;
+			
+			// or is it the end event (we don't know so keep updating
+			asic_time_stop.at( mymod ) = mytime;
+
+			
 		}
 
 		// ------------------------------------------ //
@@ -358,6 +387,14 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				zid_list.push_back( mylayer );
 				
 			}
+			
+			// Is it the start event?
+			if( caen_time_start.at( mymod ) == 0 )
+				caen_time_start.at( mymod ) = mytime;
+			
+			// or is it the end event (we don't know so keep updating
+			caen_time_stop.at( mymod ) = mytime;
+
 
 		}
 		
@@ -421,6 +458,52 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 
 			}
 			
+			// Check the pause events for each module
+			if( info_data->GetCode() == set->GetPauseCode() ) {
+				
+				if( info_data->GetModule() >= set->GetNumberOfArrayModules() ) {
+				
+					n_asic_pause[info_data->GetModule()]++;
+					flag_pause[info_data->GetModule()] = true;
+					pause_time[info_data->GetModule()] = info_data->GetTime();
+				
+				}
+				
+				else
+					std::cerr << "Bad pause event in module " << info_data->GetModule() << std::endl;
+				
+			}
+			
+			// Check the resume events for each module
+			if( info_data->GetCode() == set->GetResumeCode() ) {
+				
+				if( info_data->GetModule() >= set->GetNumberOfArrayModules() ) {
+				
+					n_asic_resume[info_data->GetModule()]++;
+					flag_resume[info_data->GetModule()] = true;
+					resume_time[info_data->GetModule()] = info_data->GetTime();
+					
+					// Work out the dead time
+					asic_dead_time[info_data->GetModule()] += resume_time[info_data->GetModule()];
+					asic_dead_time[info_data->GetModule()] -= pause_time[info_data->GetModule()];
+					
+					// If we have didn't get the pause, module was stuck at start of run
+					if( !flag_pause[info_data->GetModule()] ) {
+						
+						std::cout << "Module " << info_data->GetModule();
+						std::cout << " was blocked at start of run for ";
+						std::cout << (double)resume_time[info_data->GetModule()]/1e9;
+						std::cout << " seconds" << std::endl;
+					
+					}
+				
+				}
+				
+				else
+					std::cerr << "Bad resume event in module " << info_data->GetModule() << std::endl;
+				
+			}
+
 			// If we a pulser event from both DAQs, fill time difference
 			if( flag_caen_pulser && flag_asic_pulser ) {
 				
@@ -434,6 +517,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				flag_caen_pulser = false;
 	
 			}
+			
 			
 		}
 
@@ -513,7 +597,18 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 
 	std::cout << "\n EventBuilder finished..." << std::endl;
 	std::cout << "  ASIC data packets = " << n_asic_data << std::endl;
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
+		std::cout << "   Module " << i << " pause = " << n_asic_pause[i] << std::endl;
+		std::cout << "           resume = " << n_asic_resume[i] << std::endl;
+		std::cout << "        dead time = " << (double)asic_dead_time[i]/1e9 << " s" << std::endl;
+		std::cout << "        live time = " << (double)(asic_time_stop[i]-asic_time_start[i])/1e9 << " s" << std::endl;
+	}
 	std::cout << "  CAEN data packets = " << n_caen_data << std::endl;
+	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
+		std::cout << "   Module " << i << " live time = ";
+		std::cout << (double)(caen_time_stop[i]-caen_time_start[i])/1e9;
+		std::cout << " s" << std::endl;
+	}
 	std::cout << "  Info data packets = " << n_info_data << std::endl;
 	std::cout << "   Array events = " << array_ctr << std::endl;
 	std::cout << "   Recoil events = " << recoil_ctr << std::endl;
@@ -680,13 +775,15 @@ void EventBuilder::RecoilFinder() {
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
 	bool flag_skip;
+	float sum_energy;
 	
 	// Loop over recoil events
 	for( unsigned int i = 0; i < ren_list.size(); ++i ) {
-
+		
 		// Find the dE event, usually the trigger
 		if( rid_list[i] == 0 ){
 			
+			sum_energy = ren_list[i];
 			recoil_evt->ClearEvent();
 			recoil_evt->SetTime( rtd_list[i] );
 			recoil_evt->SetSector( rsec_list[i] );
@@ -705,12 +802,16 @@ void EventBuilder::RecoilFinder() {
 				if( i != j && rid_list[j] != 0 && !flag_skip &&
 				    rsec_list[i] == rsec_list[j] ){
 					
+					sum_energy += ren_list[j];
 					index.push_back(j);
 					recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
 					
 				}
 				
 			}
+			
+			// Histogram the recoils
+			recoil_EdE[rsec_list[i]]->Fill( sum_energy, ren_list[i] );
 			
 			// Fill the tree and get ready for next recoil event
 			write_evts->AddEvt( recoil_evt );
@@ -791,7 +892,7 @@ void EventBuilder::MakeEventHists(){
 	std::string dirname, maindirname, subdirname;
 	
 	// Make directories
-	maindirname = "array_hists";
+	maindirname = "array";
 
 	// ---------------- //
 	// Array histograms //
@@ -880,6 +981,27 @@ void EventBuilder::MakeEventHists(){
 	freq_diff = new TProfile( "freq_diff", "Frequency difference of pulser events in ISS/CAEN DAQs as a function of time;time [ns];#Delta f [Hz]", 10.8e3, 0, 10.8e12 );
 	pulser_loss = new TProfile( "pulser_loss", "Number of missing pulser events in ISS/CAEN DAQs as a function of time;time [ns];(+ive CAEN missing, -ive ISS missing)", 10.8e3, 0, 10.8e12 );
 
+	
+	// ----------------- //
+	// Timing histograms //
+	// ----------------- //
+	dirname = "recoils";
+	if( !output_file->GetDirectory( dirname.data() ) )
+		output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+
+	recoil_EdE.resize( set->GetNumberOfRecoilSectors() );
+	
+	// Loop over number of recoil sectors
+	for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
+	
+		hname = "recoil_EdE" + std::to_string(i);
+		htitle = "Recoil dE vs E for sector " + std::to_string(i);
+		htitle += ";Total energy, E [keV];Energy loss, dE [keV];Counts";
+		recoil_EdE[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 20000 );
+		
+	}
+	
 	return;
 	
 }
