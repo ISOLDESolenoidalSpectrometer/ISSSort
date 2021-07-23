@@ -119,9 +119,9 @@ public:
 
 protected:
 	
-	unsigned char	mod;	///< module ID of the event
 	unsigned long	time;	///< timestamp of info event
 	unsigned char	code;	///< code here represents which information timestamp we have
+	unsigned char	mod;	///< module ID of the event
 	/// code = 4 is extended timestimp, i.e. next 16 bits
 	/// code = 14 is external timestamp to ISS for checking sync to CAEN
 	/// code = 20 is CAEN pulser event for checking sync to ISS
