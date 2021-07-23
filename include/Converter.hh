@@ -46,17 +46,17 @@ public:
 	
 
 	int ConvertFile( std::string input_file_name,
-					  int start_block = 0,
-					  int end_block = -1);
+					int start_block = 0,
+					int end_block = -1);
 	void MakeHists();
 	void MakeTree();
-	
+
 	void SetBlockHeader( char *input_header );
 	void ProcessBlockHeader( int nblock );
 
 	void SetBlockData( char *input_data );
 	void ProcessBlockData( int nblock );
-	
+
 	void ProcessASICData();
 	void ProcessCAENData();
 	void ProcessInfoData();
@@ -76,7 +76,7 @@ public:
 
 	inline void AddCalibration( Calibration *mycal ){ cal = mycal; };
 
-	
+
 
 private:
 
@@ -118,7 +118,7 @@ private:
 	
 	// Get nth word
 	inline ULong64_t GetWord( UInt_t n = 0 ){
-	
+
 		// If word number is out of range, return zero
 		if( n >= WORD_SIZE ) return(0);
 
@@ -222,12 +222,16 @@ private:
 	// Counters
 	std::vector<unsigned int> ctr_asic_hit;		// hits on each ISS module
 	std::vector<unsigned int> ctr_asic_ext;		// external (pulser) ISS timestamps
+	std::vector<unsigned int> ctr_asic_pause;   // pause acq for module
+	std::vector<unsigned int> ctr_asic_resume;  // resume acq for module
 	std::vector<unsigned int> ctr_caen_hit;		// hits on each CAEN module
 	std::vector<unsigned int> ctr_caen_ext;		// external (pulser) CAEN timestamps
 
 	// Histograms
 	std::vector<TProfile*> hasic_hit;
 	std::vector<TProfile*> hasic_ext;
+	std::vector<TProfile*> hasic_pause;
+	std::vector<TProfile*> hasic_resume;
 	std::vector<TProfile*> hcaen_hit;
 	std::vector<TProfile*> hcaen_ext;
 

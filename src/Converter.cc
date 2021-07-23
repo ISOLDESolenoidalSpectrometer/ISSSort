@@ -13,6 +13,9 @@ Converter::Converter( Settings *myset ) {
 				
 		ctr_asic_hit.push_back(0);	// hits on each module
 		ctr_asic_ext.push_back(0);	// external timestamps
+		ctr_asic_pause.push_back(0);
+		ctr_asic_resume.push_back(0);
+
 		
 	}
 	
@@ -99,7 +102,7 @@ void Converter::MakeHists() {
 		dirname = maindirname + subdirname;
 		
 		// calibrated p-side sum
-		hname = "pside_mod" + std::to_string(i);	
+		hname = "pside_mod" + std::to_string(i);
 		htitle = "Calibrated p-side ASIC spectra for module " + std::to_string(i);
 		htitle += ";Energy (keV);Counts per 15 keV";
 		
@@ -116,7 +119,7 @@ void Converter::MakeHists() {
 		}
 
 		// calibrated n-side sum
-		hname = "nside_mod" + std::to_string(i);	
+		hname = "nside_mod" + std::to_string(i);
 		htitle = "Calibrated n-side ASIC spectra for module " + std::to_string(i);
 		htitle += ";Energy (keV);Counts per 15 keV";
 		
@@ -302,6 +305,34 @@ void Converter::MakeHists() {
 					output_file->GetDirectory( dirname.data() ) );
 
 		}
+
+		hname = "hasic_pause" + std::to_string(i);
+		htitle = "Profile of ts versus pause events in ISS module " + std::to_string(i);
+
+		if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+			hasic_pause[i] = (TProfile*)output_file->Get( hname.data() );
+
+		else {
+
+			hasic_pause[i] = new TProfile( hname.data(), htitle.data(), 1000, 0., 1000. );
+			hasic_pause[i]->SetDirectory(
+					output_file->GetDirectory( dirname.data() ) );
+
+		}
+
+		hname = "hasic_resume" + std::to_string(i);
+		htitle = "Profile of ts versus resume events in ISS module " + std::to_string(i);
+
+		if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+			hasic_resume[i] = (TProfile*)output_file->Get( hname.data() );
+
+		else {
+
+			hasic_resume[i] = new TProfile( hname.data(), htitle.data(), 1000, 0., 1000. );
+			hasic_resume[i]->SetDirectory(
+					output_file->GetDirectory( dirname.data() ) );
+
+		}
 	
 	}
 	
@@ -316,7 +347,7 @@ void Converter::MakeHists() {
 
 		else {
 
-			hcaen_hit[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 108000. );
+			hcaen_hit[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 1080000. );
 			hcaen_hit[i]->SetDirectory(
 					output_file->GetDirectory( dirname.data() ) );
 
@@ -911,6 +942,25 @@ void Converter::ProcessInfoData(){
 
 	}
 
+	// Pause
+    if( my_info_code == set->GetPauseCode() ) {
+         
+        my_tm_stp_msb = my_info_field & 0x000FFFFF;
+        ts_flag = true;
+        ctr_asic_pause[my_mod_id]++;
+
+    }
+
+
+	// Resume
+	if( my_info_code == set->GetResumeCode() ) {
+         
+       my_tm_stp_msb = my_info_field & 0x000FFFFF;
+       ts_flag = true;
+       ctr_asic_resume[my_mod_id]++;
+
+    }
+
 	// Check what to do with this
 	if( ts_flag ) {
 		
@@ -928,21 +978,48 @@ void Converter::ProcessInfoData(){
 	
 	else return;
 	
-	// Create an info event and fill the tree for external triggers
-	if( my_info_code == set->GetExternalTriggerCode() ) {
+	// Create an info event and fill the tree for external triggers and pause/resume
+	if( my_info_code == set->GetExternalTriggerCode() ||
+	    my_info_code == set->GetPauseCode() ||
+	    my_info_code == set->GetResumeCode() ) {
 
-		// Fill histograms
-		hasic_ext[my_mod_id]->Fill( ctr_asic_ext[my_mod_id], my_tm_stp, 1 );
-
+		info_data->SetModule( my_mod_id );
 		info_data->SetTime( my_tm_stp );
 		info_data->SetCode( my_info_code );
-		info_data->SetModule( my_mod_id );
 		data_packet->SetData( info_data );
 		output_tree->Fill();
 		info_data->Clear();
-		
+
+	}
+	
+	// Histogramming
+	if( my_info_code == set->GetExternalTriggerCode() ) {
+
+	   // Fill histograms
+		hasic_ext[my_mod_id]->Fill( ctr_asic_ext[my_mod_id], my_tm_stp, 1 );
+
 		// Count external trigger event
 		ctr_asic_ext[my_mod_id]++;
+
+	}
+	
+	if( my_info_code == set->GetPauseCode() ) {
+
+		// Fill histograms
+		hasic_pause[my_mod_id]->Fill( ctr_asic_pause[my_mod_id], my_tm_stp, 1 );
+
+		// Count external trigger event
+		ctr_asic_pause[my_mod_id]++;
+
+	}
+	
+	if( my_info_code == set->GetResumeCode() ) {
+
+		// Fill histograms
+		hasic_resume[my_mod_id]->Fill( ctr_asic_resume[my_mod_id], my_tm_stp, 1 );
+
+		// Count external trigger event
+		ctr_asic_resume[my_mod_id]++;
 
 	}
 	

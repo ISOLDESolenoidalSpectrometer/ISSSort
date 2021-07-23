@@ -48,6 +48,9 @@ public:
 	inline unsigned int GetSyncCode(){ return sync_code; };
 	inline unsigned int GetTimestampCode(){ return thsb_code; };
 
+	inline unsigned int GetPauseCode(){ return pause_code;};
+	inline unsigned int GetResumeCode(){ return resume_code;};
+
 	inline unsigned int GetCAENPulserModule(){ return caen_pulser_mod; };
 	inline unsigned int GetCAENPulserChannel(){ return caen_pulser_ch; };
 	inline unsigned int GetCAENPulserCode(){ return pulser_code; };
@@ -115,6 +118,8 @@ private:
 	unsigned int extt_code;			///< This is the info code for the external timestamp, 5 before 2019 and 14 after 2019 (This is ISS == 14)
 	unsigned int sync_code;			///< Medium significant bits of the timestamp are here
 	unsigned int thsb_code;			///< Highest significant bits of the timestamp are here
+	unsigned int pause_code;        ///< Info code when ISS acquisition has paused due to a full buffer
+	unsigned int resume_code;       ///< Info code when ISS acquisition has resumed after a pause.
 	unsigned int caen_pulser_mod;	///< Location of the pulser in the CAEN system (module)
 	unsigned int caen_pulser_ch;	///< Location of the pulser in the CAEN system (channel) - Daresbury test
 	unsigned int pulser_code;		///< Info code when we have a pulser event in InfoData packets
