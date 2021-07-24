@@ -113,7 +113,8 @@ private:
 	unsigned long long	time_prev, time_min, time_max, time_first;
 	unsigned long long  ebis_time, t1_time, ebis_prev, t1_prev;
 	unsigned long long	asic_time, caen_time, asic_prev, caen_prev;
-	double asic_hz, caen_hz, ebis_hz, t1_hz, daq_sync_diff;
+	unsigned long long	asic_test_time;
+	double asic_hz, caen_hz, ebis_hz, t1_hz, daq_sync_diff, asic_test_diff;
 	std::vector<unsigned long long> pause_time, resume_time, asic_dead_time;
 	std::vector<unsigned long long> asic_time_start, asic_time_stop;
 	std::vector<unsigned long long> caen_time_start, caen_time_stop;
@@ -184,7 +185,7 @@ private:
 	TProfile *daq_sync;
 	TProfile *caen_freq, *asic_freq, *freq_diff;
 	TProfile *ebis_freq, *t1_freq;
-	TProfile *pulser_loss;
+	TProfile *pulser_loss, *carls_test;
 
 	// Recoil histograms
 	std::vector<TH2F*> recoil_EdE;
