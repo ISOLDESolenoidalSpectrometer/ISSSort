@@ -139,7 +139,7 @@ float ArrayEvt::GetZ(){
 
 	//float z = Cal->GetTargetDist(); // not yet implemented
 	float z = -10.0; 				// just until it is in the cal file
-	float d = 128 - pid;			// take centre of the end strip
+	float d = 128 - pid%128;		// take centre of the end strip
 	d *= 0.95;						// p-side strip pitch = 0.95 mm
 	d += (3 - pid/128) * 3.9;		// inter wafer distance (to be confirmed)
 	d += 1.7;						// distance from wafer edge to active region
