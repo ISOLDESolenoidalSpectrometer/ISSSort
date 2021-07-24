@@ -50,8 +50,9 @@ void ISSEvts::AddEvt( RecoilEvt *event ) {
 	fill_evt.SetEvent( event->GetEnergies(),
 					   event->GetIDs(),
 					   event->GetSector(),
-					   event->GetTime() );
-	
+					   event->GetdETime(),
+					   event->GetETime() );
+
 	recoil_event.push_back( fill_evt );
 	
 }
@@ -76,8 +77,9 @@ void ISSEvts::AddEvt( ZeroDegreeEvt *event ) {
 	fill_evt.SetEvent( event->GetEnergies(),
 					   event->GetIDs(),
 					   event->GetSector(),
-					   event->GetTime() );
-	
+					   event->GetdETime(),
+					   event->GetETime() );
+
 	zd_event.push_back( fill_evt );
 	
 }
@@ -90,15 +92,15 @@ ArrayEvt::~ArrayEvt(){}
 
 void ArrayEvt::SetEvent( float mypen, float mynen,
 						 int mypid, int mynid,
-						 long myptd, long myntd,
+						 long myptime, long myntime,
 						 int mymod ) {
 	
 	pen = mypen;
-	ptd = myptd;
+	ptime = myptime;
 	pid = mypid;
 	
 	nen = mynen;
-	ntd = myntd;
+	ntime = myntime;
 	nid = mynid;
 	
 	mod = mymod;
@@ -192,13 +194,14 @@ RecoilEvt::~RecoilEvt(){}
 
 void RecoilEvt::SetEvent( std::vector<float> myenergy,
 						 std::vector<int> myid,
-						 int mysec, long mytd ) {
+						 int mysec, long mydetime, long myetime ) {
 	
 	energy = myenergy;
 	id = myid;
 	sec = mysec;
-	td = mytd;
-	
+	detime = mydetime;
+	etime = myetime;
+
 	return;
 	
 }
@@ -219,12 +222,12 @@ ElumEvt::ElumEvt(){}
 ElumEvt::~ElumEvt(){}
 
 void ElumEvt::SetEvent( float myenergy, int myid,
-						 int mysec, long mytd ) {
+						 int mysec, long mytime ) {
 	
 	energy = myenergy;
 	id = myid;
 	sec = mysec;
-	td = mytd;
+	time = mytime;
 	
 	return;
 	
@@ -239,13 +242,14 @@ ZeroDegreeEvt::~ZeroDegreeEvt(){}
 
 void ZeroDegreeEvt::SetEvent( std::vector<float> myenergy,
 						 std::vector<int> myid,
-						 int mysec, long mytd ) {
+						 int mysec, long mydetime, long myetime ) {
 	
 	energy = myenergy;
 	id = myid;
 	sec = mysec;
-	td = mytd;
-	
+	detime = mydetime;
+	etime = myetime;
+
 	return;
 	
 }

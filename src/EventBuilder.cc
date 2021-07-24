@@ -163,7 +163,7 @@ void EventBuilder::SetInputFile( std::vector<std::string> input_file_names ) {
 	
 }
 
-void EventBuilder::SetInputTree( TTree* user_tree ){
+void EventBuilder::SetInputTree( TTree *user_tree ){
 	
 	// Find the tree and set branch addresses
 	input_tree = (TChain*)user_tree;
@@ -309,7 +309,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				mystrip = array_pid.at( asic_data->GetChannel() );
 				
 				pen_list.push_back( myenergy );
-				ptd_list.push_back( mytime - time_first );
+				ptd_list.push_back( mytime );
 				pmod_list.push_back( mymod );
 				pid_list.push_back( mystrip );
 				prow_list.push_back( myrow );
@@ -322,7 +322,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				mystrip = array_nid.at( asic_data->GetChannel() );
 				
 				nen_list.push_back( myenergy );
-				ntd_list.push_back( mytime - time_first );
+				ntd_list.push_back( mytime );
 				nmod_list.push_back( mymod );
 				nid_list.push_back( mystrip );
 				nrow_list.push_back( myrow );
@@ -360,7 +360,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				mylayer = set->GetRecoilLayer( mymod, mych );
 				
 				ren_list.push_back( myenergy );
-				rtd_list.push_back( mytime - time_first );
+				rtd_list.push_back( mytime );
 				rid_list.push_back( mylayer );
 				rsec_list.push_back( mysector );
 
@@ -372,7 +372,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				mysector = set->GetELUMSector( mymod, mych );
 				
 				een_list.push_back( myenergy );
-				etd_list.push_back( mytime - time_first );
+				etd_list.push_back( mytime );
 				esec_list.push_back( mysector );
 
 			}
@@ -383,7 +383,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				mylayer = set->GetZDLayer( mymod, mych );
 				
 				zen_list.push_back( myenergy );
-				ztd_list.push_back( mytime - time_first );
+				ztd_list.push_back( mytime );
 				zid_list.push_back( mylayer );
 				
 			}
@@ -785,7 +785,7 @@ void EventBuilder::RecoilFinder() {
 			
 			sum_energy = ren_list[i];
 			recoil_evt->ClearEvent();
-			recoil_evt->SetTime( rtd_list[i] );
+			recoil_evt->SetdETime( rtd_list[i] );
 			recoil_evt->SetSector( rsec_list[i] );
 			recoil_evt->AddRecoil( ren_list[i], 0 );
 
@@ -805,6 +805,7 @@ void EventBuilder::RecoilFinder() {
 					sum_energy += ren_list[j];
 					index.push_back(j);
 					recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
+					if( rid_list[j] == 1 ) recoil_evt->SetETime( rtd_list[j] );
 					
 					// All vs. dE
 					recoil_EdE[rsec_list[i]]->Fill( ren_list[j], ren_list[i] );
@@ -859,7 +860,7 @@ void EventBuilder::ZeroDegreeFinder() {
 		if( zid_list[i] == 0 ){
 			
 			zd_evt->ClearEvent();
-			zd_evt->SetTime( ztd_list[i] );
+			zd_evt->SetdETime( ztd_list[i] );
 			zd_evt->SetSector( 0 ); // always 0 ZeroDegree
 			zd_evt->AddZeroDegree( zen_list[i], 0 );
 
@@ -877,6 +878,7 @@ void EventBuilder::ZeroDegreeFinder() {
 					
 					index.push_back(j);
 					zd_evt->AddZeroDegree( zen_list[j], zid_list[j] );
+					if( zid_list[j] == 1 ) zd_evt->SetETime( ztd_list[i] );
 					
 					// Histogram the ZeroDegree
 					zd->Fill( zid_list[i], zen_list[j] );
@@ -1013,12 +1015,12 @@ void EventBuilder::MakeEventHists(){
 		hname = "recoil_EdE" + std::to_string(i);
 		htitle = "Recoil dE vs E for sector " + std::to_string(i);
 		htitle += ";Rest energy, E [keV];Energy loss, dE [keV];Counts";
-		recoil_EdE[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 20000 );
+		recoil_EdE[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 200000, 2000, 0, 200000 );
 		
 		hname = "recoil_dEsum" + std::to_string(i);
 		htitle = "Recoil dE vs Esum for sector " + std::to_string(i);
 		htitle += ";Total energy, Esum [keV];Energy loss, dE [keV];Counts";
-		recoil_dEsum[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 20000 );
+		recoil_dEsum[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 200000, 2000, 0, 200000 );
 		
 	}
 	
@@ -1039,7 +1041,7 @@ void EventBuilder::MakeEventHists(){
 	output_file->cd();
 	hname = "zd";
 	htitle = "ZeroDegree dE vs E;Energy Loss [keV]; Rest Energy [keV];Counts";
-	zd = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 20000 );
+	zd = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 200000 );
 
 	return;
 	

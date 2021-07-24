@@ -20,17 +20,18 @@ public:
 	// Event reconstruction
 	void SetEvent( float mypen, float mynen,
 				   int mypid, int mynid,
-				   long myptd, long myntd,
+				   long myptime, long myntime,
 				   int mymod );
 	
-	inline float 	GetEnergy(){ return pen; };
-	inline float 	GetPEnergy(){ return pen; };
-	inline float 	GetNEnergy(){ return nen; };
-	inline int	 	GetPID(){ return pid; };
-	inline int	 	GetNID(){ return nid; };
-	inline long	 	GetPTime(){ return ptd; };
-	inline long	 	GetNTime(){ return ntd; };
-	inline int		GetModule(){ return mod; };
+	inline float 		GetEnergy(){ return pen; };
+	inline float 		GetPEnergy(){ return pen; };
+	inline float 		GetNEnergy(){ return nen; };
+	inline int	 		GetPID(){ return pid; };
+	inline int	 		GetNID(){ return nid; };
+	inline long long	GetTime(){ return ptime; };
+	inline long long 	GetPTime(){ return ptime; };
+	inline long long 	GetNTime(){ return ntime; };
+	inline int			GetModule(){ return mod; };
 
 	float		GetX();
 	float		GetY();
@@ -42,13 +43,14 @@ public:
 private:
 
 	// variables for particle event
+	int	  mod;		///< module number
 	float pen;		///< p-side energy in keV
 	float nen;		///< n-side energy in keV
 	int	  pid;		///< p-side strip id, from 0 - 511, i.e along all 4 wafers
 	int   nid;		///< n-side strip id, from 0 - 65, i.e. around all 6 sides
-	long  ptd;		///< p-side time difference to first trigger in event
-	long  ntd;		///< n-side time difference to first trigger in event
-	int	  mod;		///< module number
+	unsigned long long  ptime;		///< p-side timestamp
+	unsigned long long  ntime;		///< n-side timestamp
+
 
 	ClassDef( ArrayEvt, 1 )
 
@@ -64,7 +66,7 @@ public:
 
 	void SetEvent( std::vector<float> myenergy,
 					std::vector<int> myid,
-					int mysec, long mytd );
+					int mysec, long mydetime, long myetime );
 	
 	void ClearEvent();
 	
@@ -74,13 +76,16 @@ public:
 	};
 	
 	inline void SetSector( int s ){ sec = s; };
-	inline void SetTime( long t ){ td = t; };
+	inline void SetdETime( unsigned long long t ){ detime = t; };
+	inline void SetETime( unsigned long long t ){ etime = t; };
 
 	
-	inline unsigned int		GetDepth(){ return energy.size(); };
-	inline unsigned int		GetSector(){ return sec; };
-	inline unsigned long	GetTime(){ return td; };
-	
+	inline unsigned int			GetDepth(){ return energy.size(); };
+	inline unsigned int			GetSector(){ return sec; };
+	inline unsigned long long	GetTime(){ return detime; };
+	inline unsigned long long	GetdETime(){ return detime; };
+	inline unsigned long long	GetETime(){ return etime; };
+
 	inline std::vector<float>	GetEnergies(){ return energy; };
 	inline std::vector<int>		GetIDs(){ return id; };
 
@@ -108,7 +113,8 @@ private:
 	std::vector<float>		energy;	///< differential energy list, i.e. Silicon dE-E length = 2
 	std::vector<int>		id;		///< differential id list, i.e. dE = 0, E = 1, for example
 	int						sec;	///< sector of the recoil detector, i.e 0-3 for QQQ1 quadrants
-	long					td;		///< time difference of first recoil energy to first trigger in event
+	unsigned long long		detime;	///< time stamp of dE event
+	unsigned long long		etime;	///< time stamp of E event
 
 	ClassDef( RecoilEvt, 1 )
 
@@ -122,17 +128,17 @@ public:
 	ElumEvt();
 	~ElumEvt();
 	
-	void SetEvent( float myenergy, int myid, int mysec, long mytd );
+	void SetEvent( float myenergy, int myid, int mysec, long mytime );
 
 	inline void SetEnergy( float e ){ energy = e; };
 	inline void SetSector( int s ){ sec = s; };
 	inline void SetID( int i ){ id = i; };
-	inline void SetTime( long t ){ td = t; };
+	inline void SetTime( unsigned long long t ){ time = t; };
 
-	inline float			GetEnergy(){ return energy; };
-	inline unsigned int		GetID(){ return id; };
-	inline unsigned int		GetSector(){ return sec; };
-	inline unsigned long	GetTime(){ return td; };
+	inline float				GetEnergy(){ return energy; };
+	inline unsigned int			GetID(){ return id; };
+	inline unsigned int			GetSector(){ return sec; };
+	inline unsigned long long	GetTime(){ return time; };
 
 	
 private:
@@ -140,7 +146,7 @@ private:
 	float	energy;	///< Energy in the ELUM detector
 	int		id;		///< ID list, well, we only have one ELUM detector so it is always == 0
 	int		sec;	///< sector or quandrant of the ELUM detector, i.e. 0-3 when split into 4
-	long	td;		///< time difference between ELUM event and first trigger in event
+	unsigned long long	time;	///< time stamp of the ELUM event
 	
 	ClassDef( ElumEvt, 1 );
 
@@ -156,7 +162,7 @@ public:
 
 	void SetEvent( std::vector<float> myenergy,
 					std::vector<int> myid,
-					int mysec, long mytd );
+					int mysec, long mydetime, long myetime );
 	
 	void ClearEvent();
 
@@ -166,11 +172,14 @@ public:
 	};
 
 	inline void SetSector( int s ){ sec = s; };
-	inline void SetTime( long t ){ td = t; };
+	inline void SetdETime( unsigned long long t ){ detime = t; };
+	inline void SetETime( unsigned long long t ){ etime = t; };
 
-	inline unsigned int		GetDepth(){ return energy.size(); };
-	inline unsigned int		GetSector(){ return sec; };
-	inline unsigned long	GetTime(){ return td; };
+	inline unsigned int			GetDepth(){ return energy.size(); };
+	inline unsigned int			GetSector(){ return sec; };
+	inline unsigned long long	GetTime(){ return detime; };
+	inline unsigned long long	GetdETime(){ return detime; };
+	inline unsigned long long	GetETime(){ return etime; };
 
 	inline std::vector<float>	GetEnergies(){ return energy; };
 	inline std::vector<int>		GetIDs(){ return id; };
@@ -197,7 +206,8 @@ private:
 	std::vector<float>		energy;	///< differential energy list, i.e. Silicon dE-E length = 2
 	std::vector<int>		id;		///< differential id list, i.e. dE = 0, E = 1, for example
 	int						sec;	///< sector or quandrant of the ZeroDegree detector, i.e. 0 because we just have one
-	long					td;		///< time difference between ZeroDegree event and first trigger in event
+	unsigned long long		detime;	///< time stamp of ZeroDegree event
+	unsigned long long		etime;	///< time stamp of ZeroDegree event
 
 	ClassDef( ZeroDegreeEvt, 1 )
 
@@ -262,7 +272,7 @@ private:
 	std::vector<ElumEvt> elum_event;
 	std::vector<ZeroDegreeEvt> zd_event;
 
-	ClassDef( ISSEvts, 1 )
+	ClassDef( ISSEvts, 2 )
 	
 };
 
