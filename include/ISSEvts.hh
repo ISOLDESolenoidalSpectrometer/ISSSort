@@ -28,6 +28,7 @@ public:
 	inline float 	GetNEnergy(){ return nen; };
 	inline int	 	GetPID(){ return pid; };
 	inline int	 	GetNID(){ return nid; };
+	inline long	 	GetTime(){ return ptd; };
 	inline long	 	GetPTime(){ return ptd; };
 	inline long	 	GetNTime(){ return ntd; };
 	inline int		GetModule(){ return mod; };
