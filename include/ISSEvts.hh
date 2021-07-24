@@ -27,9 +27,9 @@ public:
 	inline float 	GetPEnergy(){ return pen; };
 	inline float 	GetNEnergy(){ return nen; };
 	inline int	 	GetPID(){ return pid; };
-	inline int	 	GetNID(){ return pid; };
+	inline int	 	GetNID(){ return nid; };
 	inline long	 	GetPTime(){ return ptd; };
-	inline long	 	GetNTime(){ return ptd; };
+	inline long	 	GetNTime(){ return ntd; };
 	inline int		GetModule(){ return mod; };
 
 	float		GetX();
