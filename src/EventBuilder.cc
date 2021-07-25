@@ -702,7 +702,8 @@ void EventBuilder::ArrayFinder() {
 			}
 			
 			// Multiplicty hist
-			pn_mult[i][j]->Fill( pindex.size(), nindex.size() );
+			if( pindex.size() || nindex.size() )
+				pn_mult[i][j]->Fill( pindex.size(), nindex.size() );
 
 			// Time difference hists
 			for( unsigned int k = 0; k < pindex.size(); ++k )
