@@ -139,7 +139,7 @@ float ArrayEvt::GetZ(){
 
 	//float z = Cal->GetTargetDist(); // not yet implemented
 	float z = -10.0; 				// just until it is in the cal file
-	float d = 128 - pid%128;		// take centre of the end strip
+	float d = 511.5 - pid;			// take centre of the end strip
 	d *= 0.95;						// p-side strip pitch = 0.95 mm
 	d += (3 - pid/128) * 3.9;		// inter wafer distance (to be confirmed)
 	d += 1.7;						// distance from wafer edge to active region
@@ -169,7 +169,7 @@ TVector2 ArrayEvt::GetPhiXY(){
 	// This vector can now be rotated to the correct position
 	TVector2 vec( x, y );
 	
-	vec = vec.Rotate( TMath::Pi() / 6. );		// start in the centre of first face
+	vec = vec.Rotate( 2. * TMath::Pi() / 6. );		// start in the centre of first face
 	vec = vec.Rotate( mod * 2. * TMath::Pi() / 3. );	// rotate for each module
 	
 	return vec;
