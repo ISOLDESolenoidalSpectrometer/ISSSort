@@ -31,9 +31,13 @@
 #ExternalTriggerCode: 14 
 #SyncCode: 4 
 #TimestampCode: 5
-#PulserModule: 1
-#PulserChannel: 13
-#PulserCode: 20
+#PulserModuleArray: 0
+#PulserAsicArray: 1
+#PulserChannelArray: 63
+#PulserCodeArray: 19
+#PulserModuleCAEN: 1
+#PulserChannelCAEN: 13
+#PulserCodeCAEN: 20
 #EBISModule: 1
 #EBISChannel: 14
 #EBISCode: 21

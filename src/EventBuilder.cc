@@ -298,11 +298,15 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			n_asic_data++;
 			
 			asic_data = in_data->GetAsicData();
-			myenergy = asic_data->GetEnergy();
 			mymod = asic_data->GetModule();
 			myside = asic_side.at( asic_data->GetAsic() );
 			myrow = array_row.at( asic_data->GetAsic() ).at( asic_data->GetChannel() );
-			
+			if( overwrite_cal )
+				myenergy = cal->AsicEnergy( mymod, asic_data->GetAsic(),
+										   mych, asic_data->GetAdcValue() );
+			else
+				myenergy = asic_data->GetEnergy();
+
 			// p-side event
 			if( myside == 0 ) {
 				
@@ -340,7 +344,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 
 			if( mymod == 0 && asic_data->GetAsic() == 1 && asic_data->GetChannel() == 63 ){
 
-				std::cout << mytime << std::endl;
+				//std::cout << mytime << std::endl;
 				asic_test_time = mytime;
 				asic_test_diff = (double)caen_time - (double)asic_test_time;
 				carls_test->Fill( asic_test_time, asic_test_diff );
@@ -361,7 +365,11 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			caen_data = in_data->GetCaenData();
 			mymod = caen_data->GetModule();
 			mych = caen_data->GetChannel();
-			myenergy = caen_data->GetEnergy();
+			if( overwrite_cal )
+				myenergy = cal->CaenEnergy( mymod, mych,
+									caen_data->GetQlong() );
+			else
+				myenergy = caen_data->GetEnergy();
 			
 			// Is it a recoil
 			if( set->IsRecoil( mymod, mych ) ) {
@@ -721,7 +729,7 @@ void EventBuilder::ArrayFinder() {
 				//					 nid_list.at( nindex.at(0) ),
 				//					 ptd_list.at( pindex.at(0) ),
 				//					 ntd_list.at( nindex.at(0) ),
-				//					 i );
+				//					 i, j );
 				//
 				//write_evts->AddEvt( array_evt );
 				//array_ctr++;
@@ -766,7 +774,7 @@ void EventBuilder::ArrayFinder() {
 									 nid_list.at( nmax_idx ),
 									 ptd_list.at( pmax_idx ),
 									 ntd_list.at( nmax_idx ),
-									 i );
+									 i, j );
 				
 				write_evts->AddEvt( array_evt );
 				array_ctr++;

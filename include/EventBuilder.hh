@@ -50,6 +50,11 @@ public:
 	void	Initialise();
 	void	MakeEventHists();
 	
+	inline void AddCalibration( Calibration *mycal ){
+		cal = mycal;
+		overwrite_cal = true;
+	};
+	
 	unsigned long	BuildEvents( unsigned long start_build = 0 );
 
 	// Resolve multiplicities etc
@@ -196,6 +201,10 @@ private:
 	
 	// ZeroDegree histograms
 	TH2F *zd;
+	
+	// Do calibration
+	Calibration *cal;
+	bool overwrite_cal;
 	
 };
 

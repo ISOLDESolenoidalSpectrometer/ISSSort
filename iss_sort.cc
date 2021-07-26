@@ -50,6 +50,7 @@ Settings *set;
 
 // Calibration file
 Calibration *cal;
+bool overwrite_cal = false;
 
 // Server and controls for the GUI
 THttpServer *serv;
@@ -245,6 +246,7 @@ int main( int argc, char *argv[] ){
 		
 		std::cout << "No calibration file provided. Using defaults." << std::endl;
 		name_cal_file = "dummy";
+		overwrite_cal = true;
 
 	}
 	
@@ -398,6 +400,9 @@ int main( int argc, char *argv[] ){
 	std::cout << "\n +++ ISS Analysis:: processing EventBuilder +++" << std::endl;
 
 	std::vector<string> name_event_files;
+	
+	// Update calibration file if given
+	if( overwrite_cal ) eb.AddCalibration( cal );
 
 	// We are going to chain all the files now
 	for( unsigned int i = 0; i < input_names.size(); i++ ){

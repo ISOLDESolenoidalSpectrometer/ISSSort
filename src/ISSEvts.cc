@@ -37,7 +37,8 @@ void ISSEvts::AddEvt( ArrayEvt *event ) {
 					   event->GetNID(),
 					   event->GetPTime(),
 					   event->GetNTime(),
-					   event->GetModule() );
+					   event->GetModule(),
+					   event->GetRow() );
 	
 	array_event.push_back( fill_evt );
 	
@@ -93,7 +94,7 @@ ArrayEvt::~ArrayEvt(){}
 void ArrayEvt::SetEvent( float mypen, float mynen,
 						 int mypid, int mynid,
 						 long myptime, long myntime,
-						 int mymod ) {
+						 int mymod, int myrow ) {
 	
 	pen = mypen;
 	ptime = myptime;
@@ -104,6 +105,7 @@ void ArrayEvt::SetEvent( float mypen, float mynen,
 	nid = mynid;
 	
 	mod = mymod;
+	row = myrow;
 
 	return;
 	
@@ -138,10 +140,11 @@ float ArrayEvt::GetZ(){
 	/// phi is positive in the clockwise direction, looking from the origin to positive z (beam direction)
 
 	//float z = Cal->GetTargetDist(); // not yet implemented
-	float z = -10.0; 				// just until it is in the cal file
-	float d = 511.5 - pid;			// take centre of the end strip
+	float z = -100.; 				// just until it is in the cal file
+	float d = 127.5 - pid;			// take centre of the end strip
+	d += 128 * row;					// move along to the correct row
 	d *= 0.95;						// p-side strip pitch = 0.95 mm
-	d += (3 - pid/128) * 3.9;		// inter wafer distance (to be confirmed)
+	d += (3 - row) * 3.9;			// inter wafer distance (to be confirmed)
 	d += 1.7;						// distance from wafer edge to active region
 
 	if( z > 0 ) z += d;	// forward direction (downstream)

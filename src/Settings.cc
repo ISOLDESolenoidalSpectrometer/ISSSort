@@ -37,9 +37,13 @@ void Settings::ReadSettings() {
 	thsb_code = config->GetValue( "TimestampCode", 5 );
 	pause_code = config->GetValue( "PauseCode", 2 );
 	resume_code = config->GetValue( "ResumeCode", 3 );
-	caen_pulser_mod = config->GetValue( "PulserModule", 1 );
-	caen_pulser_ch = config->GetValue( "PulserChannel", 13 );
-	pulser_code = config->GetValue( "PulserCode", 20 );
+	asic_pulser_mod = config->GetValue( "PulserModuleArray", 0 );
+	asic_pulser_asic = config->GetValue( "PulserAsicArray", 1 );
+	asic_pulser_ch = config->GetValue( "PulserChannelArray", 63 );
+	asic_pulser_code = config->GetValue( "PulserCodeArray", 19 );
+	caen_pulser_mod = config->GetValue( "PulserModuleCAEN", 1 );
+	caen_pulser_ch = config->GetValue( "PulserChannelCAEN", 13 );
+	caen_pulser_code = config->GetValue( "PulserCodeCAEN", 20 );
 	caen_ebis_mod = config->GetValue( "EBISModule", 1 );
 	caen_ebis_ch = config->GetValue( "EBISChannel", 14 );
 	ebis_code = config->GetValue( "EBISCode", 21 );

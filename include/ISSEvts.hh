@@ -21,7 +21,7 @@ public:
 	void SetEvent( float mypen, float mynen,
 				   int mypid, int mynid,
 				   long myptime, long myntime,
-				   int mymod );
+				   int mymod, int row );
 	
 	inline float 		GetEnergy(){ return pen; };
 	inline float 		GetPEnergy(){ return pen; };
@@ -32,6 +32,7 @@ public:
 	inline long long 	GetPTime(){ return ptime; };
 	inline long long 	GetNTime(){ return ntime; };
 	inline int			GetModule(){ return mod; };
+	inline int			GetRow(){ return row; };
 
 	float		GetX();
 	float		GetY();
@@ -44,6 +45,7 @@ private:
 
 	// variables for particle event
 	int	  mod;		///< module number
+	int	  row;		///< row number of the silicon
 	float pen;		///< p-side energy in keV
 	float nen;		///< n-side energy in keV
 	int	  pid;		///< p-side strip id, from 0 - 511, i.e along all 4 wafers
@@ -52,7 +54,7 @@ private:
 	unsigned long long  ntime;		///< n-side timestamp
 
 
-	ClassDef( ArrayEvt, 1 )
+	ClassDef( ArrayEvt, 2 )
 
 };
 
@@ -116,7 +118,7 @@ private:
 	unsigned long long		detime;	///< time stamp of dE event
 	unsigned long long		etime;	///< time stamp of E event
 
-	ClassDef( RecoilEvt, 1 )
+	ClassDef( RecoilEvt, 2 )
 
 };
 
@@ -148,7 +150,7 @@ private:
 	int		sec;	///< sector or quandrant of the ELUM detector, i.e. 0-3 when split into 4
 	unsigned long long	time;	///< time stamp of the ELUM event
 	
-	ClassDef( ElumEvt, 1 );
+	ClassDef( ElumEvt, 2 );
 
 };
 
@@ -209,7 +211,7 @@ private:
 	unsigned long long		detime;	///< time stamp of ZeroDegree event
 	unsigned long long		etime;	///< time stamp of ZeroDegree event
 
-	ClassDef( ZeroDegreeEvt, 1 )
+	ClassDef( ZeroDegreeEvt, 2 )
 
 };
 

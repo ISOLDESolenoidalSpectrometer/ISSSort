@@ -51,9 +51,14 @@ public:
 	inline unsigned int GetPauseCode(){ return pause_code;};
 	inline unsigned int GetResumeCode(){ return resume_code;};
 
+	inline unsigned int GetArrayPulserModule(){ return asic_pulser_mod; };
+	inline unsigned int GetArrayPulserAsic(){ return asic_pulser_asic; };
+	inline unsigned int GetArrayPulserChannel(){ return asic_pulser_ch; };
+	inline unsigned int GetArrayPulserCode(){ return asic_pulser_code; };
+	
 	inline unsigned int GetCAENPulserModule(){ return caen_pulser_mod; };
 	inline unsigned int GetCAENPulserChannel(){ return caen_pulser_ch; };
-	inline unsigned int GetCAENPulserCode(){ return pulser_code; };
+	inline unsigned int GetCAENPulserCode(){ return caen_pulser_code; };
 	
 	inline unsigned int GetEBISModule(){ return caen_ebis_mod; };
 	inline unsigned int GetEBISChannel(){ return caen_ebis_ch; };
@@ -120,9 +125,13 @@ private:
 	unsigned int thsb_code;			///< Highest significant bits of the timestamp are here
 	unsigned int pause_code;        ///< Info code when ISS acquisition has paused due to a full buffer
 	unsigned int resume_code;       ///< Info code when ISS acquisition has resumed after a pause.
+	unsigned int asic_pulser_mod;	///< Location of the pulser in the ASIC frontends (module)
+	unsigned int asic_pulser_asic;	///< Location of the pulser in the ASIC frontends (asic)
+	unsigned int asic_pulser_ch;	///< Location of the pulser in the ASIC frontends (channel)
+	unsigned int asic_pulser_code;	///< Info code when we have a pulser event in InfoData packets from ASICs
 	unsigned int caen_pulser_mod;	///< Location of the pulser in the CAEN system (module)
 	unsigned int caen_pulser_ch;	///< Location of the pulser in the CAEN system (channel) - Daresbury test
-	unsigned int pulser_code;		///< Info code when we have a pulser event in InfoData packets
+	unsigned int caen_pulser_code;	///< Info code when we have a pulser event in InfoData packets from CAEN
 	unsigned int caen_ebis_mod;		///< Location of the EBIS signal in the CAEN system (module)
 	unsigned int caen_ebis_ch;		///< Location of the EBIS signal in the CAEN system (channel)
 	unsigned int ebis_code;			///< Info code when we have an EBIS event in InfoData packets

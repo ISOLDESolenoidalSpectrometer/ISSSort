@@ -64,7 +64,7 @@ void Converter::MakeTree() {
 		output_tree = new TTree( "iss", "iss" );
 		data_packet = new DataPackets();
 		output_tree->Branch( "data", "DataPackets", &data_packet );
-		
+
 	}
 	
 	asic_data = new AsicData();
@@ -676,6 +676,21 @@ void Converter::ProcessASICData(){
 		std::cout << " ch_id=" << my_ch_id << std::endl;
 		
 	}
+	
+	// Pulser in a spare n-side channel should be counted as info data
+	else if( my_mod_id == set->GetArrayPulserModule() &&
+			 my_asic_id == set->GetArrayPulserAsic() &&
+			 my_ch_id == set->GetArrayPulserChannel() ) {
+		
+		info_data->SetModule( my_mod_id );
+		info_data->SetTime( my_tm_stp );
+		info_data->SetCode( set->GetArrayPulserCode() );
+		data_packet->SetData( info_data );
+		output_tree->Fill();
+		info_data->Clear();
+
+		
+	}
 
 	else {
 
@@ -854,6 +869,7 @@ void Converter::FinishCAENData(){
 		// If this is a timestamp, fill an info event
 		if( flag_caen_info ) {
 					
+			info_data->SetModule( caen_data->GetModule() );
 			info_data->SetTime( caen_data->GetTime() );
 			info_data->SetCode( my_info_code );
 			data_packet->SetData( info_data );
