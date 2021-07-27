@@ -55,7 +55,8 @@ public:
 	inline unsigned int GetArrayPulserAsic(){ return asic_pulser_asic; };
 	inline unsigned int GetArrayPulserChannel(){ return asic_pulser_ch; };
 	inline unsigned int GetArrayPulserCode(){ return asic_pulser_code; };
-	
+	inline unsigned int GetArrayPulserThreshold(){ return asic_pulser_thres; };
+
 	inline unsigned int GetCAENPulserModule(){ return caen_pulser_mod; };
 	inline unsigned int GetCAENPulserChannel(){ return caen_pulser_ch; };
 	inline unsigned int GetCAENPulserCode(){ return caen_pulser_code; };
@@ -129,6 +130,7 @@ private:
 	unsigned int asic_pulser_asic;	///< Location of the pulser in the ASIC frontends (asic)
 	unsigned int asic_pulser_ch;	///< Location of the pulser in the ASIC frontends (channel)
 	unsigned int asic_pulser_code;	///< Info code when we have a pulser event in InfoData packets from ASICs
+	unsigned int asic_pulser_thres;	///< Threshold on energy for the pulser event in InfoData packets from ASICs
 	unsigned int caen_pulser_mod;	///< Location of the pulser in the CAEN system (module)
 	unsigned int caen_pulser_ch;	///< Location of the pulser in the CAEN system (channel) - Daresbury test
 	unsigned int caen_pulser_code;	///< Info code when we have a pulser event in InfoData packets from CAEN

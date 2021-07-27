@@ -41,6 +41,7 @@ void Settings::ReadSettings() {
 	asic_pulser_asic = config->GetValue( "PulserAsicArray", 1 );
 	asic_pulser_ch = config->GetValue( "PulserChannelArray", 63 );
 	asic_pulser_code = config->GetValue( "PulserCodeArray", 19 );
+	asic_pulser_thres = config->GetValue( "PulserThresholdArray", 300 );
 	caen_pulser_mod = config->GetValue( "PulserModuleCAEN", 1 );
 	caen_pulser_ch = config->GetValue( "PulserChannelCAEN", 13 );
 	caen_pulser_code = config->GetValue( "PulserCodeCAEN", 20 );

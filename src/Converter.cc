@@ -268,6 +268,21 @@ void Converter::MakeHists() {
 	if( !output_file->GetDirectory( dirname.data() ) )
 		output_file->mkdir( dirname.data() );
 	output_file->cd( dirname.data() );
+	
+	// Energy histogram of pulser channel
+	if( output_file->GetListOfKeys()->Contains( "asic_pulser_energy" ) )
+		asic_pulser_energy = (TH1F*)output_file->Get( "asic_pulser_energy" );
+	
+	else {
+		
+		asic_pulser_energy = new TH1F( hname.data(), htitle.data(),
+								   4096, -0.5, 4095.5 );
+	
+		asic_pulser_energy->SetDirectory(
+				output_file->GetDirectory( dirname.data() ) );
+		
+	}
+
 
 	// Resize vectors
 	hasic_hit.resize( set->GetNumberOfArrayModules() );
@@ -680,7 +695,8 @@ void Converter::ProcessASICData(){
 	// Pulser in a spare n-side channel should be counted as info data
 	else if( my_mod_id == set->GetArrayPulserModule() &&
 			 my_asic_id == set->GetArrayPulserAsic() &&
-			 my_ch_id == set->GetArrayPulserChannel() ) {
+			 my_ch_id == set->GetArrayPulserChannel() &&
+			 my_adc_data > set->GetArrayPulserThreshold() ) {
 		
 		info_data->SetModule( my_mod_id );
 		info_data->SetTime( my_tm_stp );
@@ -688,7 +704,9 @@ void Converter::ProcessASICData(){
 		data_packet->SetData( info_data );
 		output_tree->Fill();
 		info_data->Clear();
-
+		
+		// Check energy to set threshold
+		asic_pulser_energy->Fill( my_adc_data );
 		
 	}
 

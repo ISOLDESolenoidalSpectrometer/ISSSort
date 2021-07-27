@@ -234,6 +234,9 @@ private:
 	std::vector<TProfile*> hasic_resume;
 	std::vector<TProfile*> hcaen_hit;
 	std::vector<TProfile*> hcaen_ext;
+	
+	// ASIC pulser for timing
+	TH1F *asic_pulser_energy;
 
 	std::vector<std::vector<TH2F*>> hasic;
 	std::vector<std::vector<TH2F*>> hasic_cal;
