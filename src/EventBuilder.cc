@@ -788,15 +788,27 @@ void EventBuilder::ArrayFinder() {
 			
 			// Just take the maximum energy instead for now
 			// But make sure that both p- and n-sides are good
-			if( pmax_idx >= 0 && nmax_idx >= 0 ){
-			
+//			if( pmax_idx >= 0 && nmax_idx >= 0 ){
+//
+//				array_evt->SetEvent( pen_list.at( pmax_idx ),
+//									 nen_list.at( nmax_idx ),
+//									 pid_list.at( pmax_idx ),
+//									 nid_list.at( nmax_idx ),
+//									 ptd_list.at( pmax_idx ),
+//									 ntd_list.at( nmax_idx ),
+//									 i, j );
+
+			// Add a bodge to ignore n-side events for now
+			if( pmax_idx >= 0 ){
+
 				array_evt->SetEvent( pen_list.at( pmax_idx ),
-									 nen_list.at( nmax_idx ),
+									 0,
 									 pid_list.at( pmax_idx ),
-									 nid_list.at( nmax_idx ),
+									 0,
 									 ptd_list.at( pmax_idx ),
-									 ntd_list.at( nmax_idx ),
+									 0,
 									 i, j );
+
 				
 				write_evts->AddEvt( array_evt );
 				array_ctr++;
