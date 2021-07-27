@@ -732,7 +732,7 @@ void Converter::ProcessASICData(){
 
 
 		// Make an AsicData item
-		asic_data->SetTime( my_tm_stp );
+		asic_data->SetTime( my_tm_stp + cal->AsicTime( my_mod_id, my_asic_id ) );
 		asic_data->SetAdcValue( my_adc_data );
 		asic_data->SetHitBit( my_hit );
 		asic_data->SetModule( my_mod_id );
@@ -891,9 +891,10 @@ void Converter::FinishCAENData(){
 
 		// If this is a timestamp, fill an info event
 		if( flag_caen_info ) {
-					
+				
+			// Add the time offset to this channel
+			info_data->SetTime( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
 			info_data->SetModule( caen_data->GetModule() );
-			info_data->SetTime( caen_data->GetTime() );
 			info_data->SetCode( my_info_code );
 			data_packet->SetData( info_data );
 			output_tree->Fill();
@@ -907,10 +908,12 @@ void Converter::FinishCAENData(){
 
 		}
 
-		// Otherwise it is real data, so fule is caen event
+		// Otherwise it is real data, so fill a caen event
 		else {
 			
 			// Set this data and fill event to tree
+			// Also add the time offset when we do this
+			caen_data->SetTime( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
 			data_packet->SetData( caen_data );
 			output_tree->Fill();
 			
