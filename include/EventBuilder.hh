@@ -119,7 +119,8 @@ private:
 	unsigned long long	time_prev, time_min, time_max, time_first;
 	unsigned long long  ebis_time, t1_time, ebis_prev, t1_prev;
 	unsigned long long	asic_time, fpga_time, caen_time, asic_prev, fpga_prev, caen_prev;
-	double asic_hz, fpga_hz, caen_hz, ebis_hz, t1_hz, daq_sync_diff, asic_sync_diff;
+	double asic_hz, fpga_hz, caen_hz, ebis_hz, t1_hz;
+	double fpga_tdiff, asic_tdiff;
 	std::vector<unsigned long long> pause_time, resume_time, asic_dead_time;
 	std::vector<unsigned long long> asic_time_start, asic_time_stop;
 	std::vector<unsigned long long> caen_time_start, caen_time_stop;

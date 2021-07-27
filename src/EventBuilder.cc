@@ -496,7 +496,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				}
 				
 				else
-					std::cerr << "Bad pause event in module " << info_data->GetModule() << std::endl;
+					std::cerr << "Bad pause event in module " << (int)info_data->GetModule() << std::endl;
 				
 			}
 			
@@ -533,10 +533,10 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			// If we a pulser event from both DAQs, fill time difference
 			if( flag_caen_pulser && flag_fpga_pulser ) {
 				
-				asic_sync_diff = (double)caen_time - (double)fpga_time;
+				fpga_tdiff = (double)caen_time - (double)fpga_time;
 				
-				asic_sync->Fill( fpga_time, daq_sync_diff );
-				fpga_freq_diff->Fill( fpga_time, asic_hz - caen_hz );
+				fpga_sync->Fill( fpga_time, fpga_tdiff );
+				fpga_freq_diff->Fill( fpga_time, fpga_hz - caen_hz );
 				fpga_pulser_loss->Fill( fpga_time, (int)n_fpga_pulser - (int)n_caen_pulser );
 				
 				flag_fpga_pulser = false;
@@ -547,9 +547,9 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			// If we a pulser event from the ASICs directly, fill time difference
 			if( flag_caen_pulser && flag_asic_pulser ) {
 				
-				asic_sync_diff = (double)caen_time - (double)asic_time;
+				asic_tdiff = (double)caen_time - (double)asic_time;
 				
-				asic_sync->Fill( asic_time, asic_sync_diff );
+				asic_sync->Fill( asic_time, asic_tdiff );
 				asic_freq_diff->Fill( asic_time, asic_hz - caen_hz );
 				asic_pulser_loss->Fill( asic_time, (int)n_asic_pulser - (int)n_caen_pulser );
 				
@@ -1035,7 +1035,7 @@ void EventBuilder::MakeEventHists(){
 	fpga_freq_diff = new TProfile( "fpga_freq_diff", "Frequency difference of pulser events in ISS/CAEN DAQs from FPGA as a function of time;time [ns];#Delta f [Hz]", 10.8e3, 0, 10.8e12 );
 
 	asic_freq = new TProfile( "asic_freq", "Frequency of pulser in ISS DAQ (ASICs) as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
-	asic_sync = new TProfile( "asic_test", "Time difference between ASIC and CAEN events as a function of time;time [ns];#Delta t [ns]", 10.8e3, 0, 10.8e12 );
+	asic_sync = new TProfile( "asic_sync", "Time difference between ASIC and CAEN events as a function of time;time [ns];#Delta t [ns]", 10.8e3, 0, 10.8e12 );
 	asic_pulser_loss = new TProfile( "asic_pulser_loss", "Number of missing/extra pulser events in ASICs as a function of time;time [ns];(-ive CAEN missing, +ive ISS missing)", 10.8e3, 0, 10.8e12 );
 	asic_freq_diff = new TProfile( "asic_freq_diff", "Frequency difference of pulser events in ISS/CAEN DAQs from ASICs as a function of time;time [ns];#Delta f [Hz]", 10.8e3, 0, 10.8e12 );
 
