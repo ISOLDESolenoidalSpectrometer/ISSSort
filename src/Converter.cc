@@ -275,7 +275,8 @@ void Converter::MakeHists() {
 	
 	else {
 		
-		asic_pulser_energy = new TH1F( hname.data(), htitle.data(),
+		asic_pulser_energy = new TH1F( "asic_pulser_energy",
+									  "ASIC energy for pulser event;ADC value;counts",
 								   4096, -0.5, 4095.5 );
 	
 		asic_pulser_energy->SetDirectory(
