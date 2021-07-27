@@ -695,18 +695,22 @@ void Converter::ProcessASICData(){
 	// Pulser in a spare n-side channel should be counted as info data
 	else if( my_mod_id == set->GetArrayPulserModule() &&
 			 my_asic_id == set->GetArrayPulserAsic() &&
-			 my_ch_id == set->GetArrayPulserChannel() &&
-			 my_adc_data > set->GetArrayPulserThreshold() ) {
-		
-		info_data->SetModule( my_mod_id );
-		info_data->SetTime( my_tm_stp );
-		info_data->SetCode( set->GetArrayPulserCode() );
-		data_packet->SetData( info_data );
-		output_tree->Fill();
-		info_data->Clear();
+			 my_ch_id == set->GetArrayPulserChannel() ) {
 		
 		// Check energy to set threshold
 		asic_pulser_energy->Fill( my_adc_data );
+		
+		// If it's above an energy threshold, then count it
+		if( my_adc_data > set->GetArrayPulserThreshold() ) {
+		   
+			info_data->SetModule( my_mod_id );
+			info_data->SetTime( my_tm_stp );
+			info_data->SetCode( set->GetArrayPulserCode() );
+			data_packet->SetData( info_data );
+			output_tree->Fill();
+			info_data->Clear();
+			
+		}
 		
 	}
 
