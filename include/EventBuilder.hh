@@ -109,17 +109,17 @@ private:
 
 	// Flags
 	bool flag_close_event;
+	bool flag_fpga_pulser;
 	bool flag_asic_pulser;
-	bool flag_caen_pulser;
+	bool flag_caen_pulser, flag_caen_pulser2;
 	std::vector<bool> flag_pause, flag_resume;
 
 	// Time variables
 	long		 		time_diff;
 	unsigned long long	time_prev, time_min, time_max, time_first;
 	unsigned long long  ebis_time, t1_time, ebis_prev, t1_prev;
-	unsigned long long	asic_time, caen_time, asic_prev, caen_prev;
-	unsigned long long	asic_test_time;
-	double asic_hz, caen_hz, ebis_hz, t1_hz, daq_sync_diff, asic_test_diff;
+	unsigned long long	asic_time, fpga_time, caen_time, asic_prev, fpga_prev, caen_prev;
+	double asic_hz, fpga_hz, caen_hz, ebis_hz, t1_hz, daq_sync_diff, asic_sync_diff;
 	std::vector<unsigned long long> pause_time, resume_time, asic_dead_time;
 	std::vector<unsigned long long> asic_time_start, asic_time_stop;
 	std::vector<unsigned long long> caen_time_start, caen_time_stop;
@@ -172,7 +172,7 @@ private:
 	unsigned int		hit_ctr, array_ctr, recoil_ctr, elum_ctr, zd_ctr;
 	unsigned long		n_asic_data, n_caen_data, n_info_data;
 	unsigned long long	n_entries;
-	unsigned long		n_caen_pulser, n_asic_pulser;
+	unsigned long		n_caen_pulser, n_fpga_pulser, n_asic_pulser;
 	unsigned long		n_ebis, n_t1;
 	std::vector<unsigned long>	n_asic_pause, n_asic_resume;
 
@@ -187,10 +187,11 @@ private:
 
 	// Timing histograms
 	TH1F *tdiff;
-	TProfile *daq_sync;
-	TProfile *caen_freq, *asic_freq, *freq_diff;
+	TProfile *fpga_sync, *asic_sync;
+	TProfile *caen_freq, *asic_freq, *fpga_freq;
+	TProfile *asic_freq_diff, *fpga_freq_diff;
 	TProfile *ebis_freq, *t1_freq;
-	TProfile *pulser_loss, *carls_test;
+	TProfile *asic_pulser_loss, *fpga_pulser_loss;
 
 	// Recoil histograms
 	std::vector<TH2F*> recoil_EdE;
