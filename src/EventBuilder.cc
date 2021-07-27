@@ -545,7 +545,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 			
 			// If we a pulser event from the ASICs directly, fill time difference
-			if( flag_caen_pulser && flag_asic_pulser ) {
+			if( flag_caen_pulser && flag_asic_pulser2 ) {
 				
 				asic_tdiff = (double)caen_time - (double)asic_time;
 				
