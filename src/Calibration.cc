@@ -41,7 +41,7 @@ void Calibration::ReadCalibration() {
 			fAsicGainQuadr[mod][asic].resize( set->GetNumberOfArrayChannels() );
 			fAsicThreshold[mod][asic].resize( set->GetNumberOfArrayChannels() );
 
-			fAsicTime[mod][asic] = config->GetValue( Form( "asic_%d_%d.Time", mod, asic ), 0. );
+			fAsicTime[mod][asic] = config->GetValue( Form( "asic_%d_%d.Time", mod, asic ), 0 );
 
 			for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
 				
@@ -71,8 +71,7 @@ void Calibration::ReadCalibration() {
 		fCaenGain[mod].resize( set->GetNumberOfCAENChannels() );
 		fCaenGainQuadr[mod].resize( set->GetNumberOfCAENChannels() );
 		fCaenThreshold[mod].resize( set->GetNumberOfCAENChannels() );
-
-		fCaenTime[mod] = config->GetValue( Form( "caen_%d.Time", mod ), 0. );
+		fCaenTime[mod].resize( set->GetNumberOfCAENChannels() );
 
 		for( unsigned int chan = 0; chan < set->GetNumberOfCAENChannels(); chan++ ){
 
@@ -80,6 +79,7 @@ void Calibration::ReadCalibration() {
 			fCaenGain[mod][chan] = config->GetValue( Form( "caen_%d_%d.Gain", mod, chan ), 1. );
 			fCaenGainQuadr[mod][chan] = config->GetValue( Form( "caen_%d_%d.GainQuadr", mod, chan ), 0. );
 			fCaenThreshold[mod][chan] = config->GetValue( Form( "caen_%d_%d.Threshold", mod, chan ), 0. );
+			fCaenTime[mod][chan] = config->GetValue( Form( "caen_%d_%d.Time", mod,  chan ), 0 );
 
 		}
 		
@@ -135,7 +135,7 @@ float Calibration::AsicThreshold( unsigned int mod, unsigned int asic, unsigned 
 	
 }
 
-float Calibration::AsicTime( unsigned int mod, unsigned int asic ){
+long Calibration::AsicTime( unsigned int mod, unsigned int asic ){
 	
 	if( mod < set->GetNumberOfArrayModules() &&
 	   asic < set->GetNumberOfArrayASICs() ) {
@@ -197,11 +197,12 @@ float Calibration::CaenThreshold( unsigned int mod, unsigned int chan ) {
 	
 }
 
-float Calibration::CaenTime( unsigned int mod ){
+long Calibration::CaenTime( unsigned int mod, unsigned int chan ){
 	
-	if( mod < set->GetNumberOfCAENModules() ) {
+	if( mod < set->GetNumberOfCAENModules() &&
+	   chan < set->GetNumberOfCAENChannels() ) {
 
-		return fCaenTime[mod];
+		return fCaenTime[mod][chan];
 		
 	}
 	

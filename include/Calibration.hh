@@ -39,10 +39,10 @@ public:
 	}
 	float AsicEnergy( unsigned int mod, unsigned int asic, unsigned int chan, unsigned short raw );
 	float AsicThreshold( unsigned int mod, unsigned int asic, unsigned int chan );
-	float AsicTime( unsigned int mod, unsigned int asic );
+	long AsicTime( unsigned int mod, unsigned int asic );
 	float CaenEnergy( unsigned int mod, unsigned int chan, unsigned short raw );
 	float CaenThreshold( unsigned int mod, unsigned int chan );
-	float CaenTime( unsigned int mod );
+	long CaenTime( unsigned int mod, unsigned int chan );
 	
 
 
@@ -56,13 +56,13 @@ private:
 	std::vector< std::vector< std::vector<float> > > fAsicGain;
 	std::vector< std::vector< std::vector<float> > > fAsicGainQuadr;
 	std::vector< std::vector< std::vector<float> > > fAsicThreshold;
-	std::vector< std::vector<float> > fAsicTime;
+	std::vector< std::vector<long> > fAsicTime;
 
 	std::vector< std::vector<float> > fCaenOffset;
 	std::vector< std::vector<float> > fCaenGain;
 	std::vector< std::vector<float> > fCaenGainQuadr;
 	std::vector< std::vector<float> > fCaenThreshold;
-	std::vector< float > fCaenTime;
+	std::vector< std::vector<long> > fCaenTime;
 
 	//ClassDef(Calibration, 1)
    
