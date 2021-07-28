@@ -188,7 +188,7 @@ private:
 
 	// Timing histograms
 	TH1F *tdiff;
-	TH1F *fpga_td, *asic_td, *caen_td;
+	TH1F *fpga_td, *asic_td;
 	TProfile *fpga_sync, *asic_sync;
 	TProfile *caen_freq, *asic_freq, *fpga_freq;
 	TProfile *asic_freq_diff, *fpga_freq_diff;

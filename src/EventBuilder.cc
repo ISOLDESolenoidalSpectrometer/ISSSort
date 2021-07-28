@@ -446,7 +446,6 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			if( info_data->GetCode() == set->GetCAENPulserCode() ) {
 				
 				caen_time = info_data->GetTime();
-				caen_td->Fill( (double)caen_time - (double)caen_prev );
 				caen_hz = 1e9 / ( (double)caen_time - (double)caen_prev );
 				if( caen_prev != 0 ) caen_freq->Fill( caen_time, caen_hz );
 
@@ -462,7 +461,6 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			    info_data->GetModule() == 0 ) {
 			   
 				fpga_time = info_data->GetTime();
-				fpga_td->Fill( (double)fpga_time - (double)fpga_prev );
 				fpga_hz = 1e9 / ( (double)fpga_time - (double)fpga_prev );
 				if( fpga_prev != 0 ) fpga_freq->Fill( fpga_time, fpga_hz );
 
@@ -477,7 +475,6 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			    info_data->GetModule() == 0 ) {
 			   
 				asic_time = info_data->GetTime();
-				asic_td->Fill( (double)asic_time - (double)asic_prev );
 				asic_hz = 1e9 / ( (double)asic_time - (double)asic_prev );
 				if( asic_prev != 0 ) asic_freq->Fill( asic_time, asic_hz );
 
@@ -538,6 +535,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				
 				fpga_tdiff = (double)caen_time - (double)fpga_time;
 				
+				fpga_td->Fill( fpga_tdiff );
 				fpga_sync->Fill( fpga_time, fpga_tdiff );
 				fpga_freq_diff->Fill( fpga_time, fpga_hz - caen_hz );
 				fpga_pulser_loss->Fill( fpga_time, (int)n_fpga_pulser - (int)n_caen_pulser );
@@ -552,6 +550,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				
 				asic_tdiff = (double)caen_time - (double)asic_time;
 				
+				asic_td->Fill( asic_tdiff );
 				asic_sync->Fill( asic_time, asic_tdiff );
 				asic_freq_diff->Fill( asic_time, asic_hz - caen_hz );
 				asic_pulser_loss->Fill( asic_time, (int)n_asic_pulser - (int)n_caen_pulser );
@@ -1042,16 +1041,15 @@ void EventBuilder::MakeEventHists(){
 
 	tdiff = new TH1F( "tdiff", "Time difference to first trigger;#Delta t [ns]", 2e4+1, -1, 2e5 );
 
-	caen_td = new TH1F( "caen_td", "Time difference between subsequent pulser events in the CAEN DAQ;Time [ns]", 6e6 , -1e6, 5e6 );
 	caen_freq = new TProfile( "caen_freq", "Frequency of pulser in CAEN DAQ as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
 
-	fpga_td = new TH1F( "fpga_td", "Time difference between subsequent pulser events in the FPGA;Time [ns]", 6e6 , -1e6, 5e6 );
+	fpga_td = new TH1F( "fpga_td", "Time difference between FPGA and CAEN pulser events;#Delta t [ns]", 6e6 , -1e6, 5e6 );
 	fpga_freq = new TProfile( "fpga_freq", "Frequency of pulser in ISS DAQ (FPGA) as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
 	fpga_sync = new TProfile( "fpga_sync", "Time difference between FPGA and CAEN events as a function of time;time [ns];#Delta t [ns]", 10.8e3, 0, 10.8e12 );
 	fpga_pulser_loss = new TProfile( "fpga_pulser_loss", "Number of missing/extra pulser events in FPGA as a function of time;time [ns];(-ive CAEN missing, +ive ISS missing)", 10.8e3, 0, 10.8e12 );
 	fpga_freq_diff = new TProfile( "fpga_freq_diff", "Frequency difference of pulser events in ISS/CAEN DAQs from FPGA as a function of time;time [ns];#Delta f [Hz]", 10.8e3, 0, 10.8e12 );
 
-	asic_td = new TH1F( "asic_td", "Time difference between subsequent pulser events in the ASICs;Time [ns]", 6e6 , -1e6, 5e6 );
+	asic_td = new TH1F( "asic_td", "Time difference between ASIC and CAEN pulser events;#Delta t [ns]", 6e6 , -1e6, 5e6 );
 	asic_freq = new TProfile( "asic_freq", "Frequency of pulser in ISS DAQ (ASICs) as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
 	asic_sync = new TProfile( "asic_sync", "Time difference between ASIC and CAEN events as a function of time;time [ns];#Delta t [ns]", 10.8e3, 0, 10.8e12 );
 	asic_pulser_loss = new TProfile( "asic_pulser_loss", "Number of missing/extra pulser events in ASICs as a function of time;time [ns];(-ive CAEN missing, +ive ISS missing)", 10.8e3, 0, 10.8e12 );
