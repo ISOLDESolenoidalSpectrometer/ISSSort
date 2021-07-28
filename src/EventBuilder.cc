@@ -1043,13 +1043,13 @@ void EventBuilder::MakeEventHists(){
 
 	caen_freq = new TProfile( "caen_freq", "Frequency of pulser in CAEN DAQ as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
 
-	fpga_td = new TH1F( "fpga_td", "Time difference between FPGA and CAEN pulser events;#Delta t [ns]", 6e6 , -1e6, 5e6 );
+	fpga_td = new TH1F( "fpga_td", "Time difference between FPGA and CAEN pulser events;#Delta t [ns]", 64e6 , -120e6, 200e6 );
 	fpga_freq = new TProfile( "fpga_freq", "Frequency of pulser in ISS DAQ (FPGA) as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
 	fpga_sync = new TProfile( "fpga_sync", "Time difference between FPGA and CAEN events as a function of time;time [ns];#Delta t [ns]", 10.8e3, 0, 10.8e12 );
 	fpga_pulser_loss = new TProfile( "fpga_pulser_loss", "Number of missing/extra pulser events in FPGA as a function of time;time [ns];(-ive CAEN missing, +ive ISS missing)", 10.8e3, 0, 10.8e12 );
 	fpga_freq_diff = new TProfile( "fpga_freq_diff", "Frequency difference of pulser events in ISS/CAEN DAQs from FPGA as a function of time;time [ns];#Delta f [Hz]", 10.8e3, 0, 10.8e12 );
 
-	asic_td = new TH1F( "asic_td", "Time difference between ASIC and CAEN pulser events;#Delta t [ns]", 6e6 , -1e6, 5e6 );
+	asic_td = new TH1F( "asic_td", "Time difference between ASIC and CAEN pulser events;#Delta t [ns]", 64e6 , -120e6, 200e6 );
 	asic_freq = new TProfile( "asic_freq", "Frequency of pulser in ISS DAQ (ASICs) as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
 	asic_sync = new TProfile( "asic_sync", "Time difference between ASIC and CAEN events as a function of time;time [ns];#Delta t [ns]", 10.8e3, 0, 10.8e12 );
 	asic_pulser_loss = new TProfile( "asic_pulser_loss", "Number of missing/extra pulser events in ASICs as a function of time;time [ns];(-ive CAEN missing, +ive ISS missing)", 10.8e3, 0, 10.8e12 );
@@ -1060,7 +1060,7 @@ void EventBuilder::MakeEventHists(){
 
 	
 	// ----------------- //
-	// Timing histograms //
+	// Recoil histograms //
 	// ----------------- //
 	dirname = "recoils";
 	if( !output_file->GetDirectory( dirname.data() ) )
