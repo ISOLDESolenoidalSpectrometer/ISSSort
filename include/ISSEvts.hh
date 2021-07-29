@@ -94,12 +94,12 @@ public:
 	inline std::vector<unsigned char>	GetIDs(){ return id; };
 
 	inline float GetEnergy( unsigned char i ){
-		if( i < energy.size() ) return energy.size();
+		if( i < energy.size() ) return energy.at(i);
 		else return 0;
 	};
 	
 	inline unsigned char GetID( unsigned char i ){
-		if( i < id.size() ) return id.size();
+		if( i < id.size() ) return id.at(i);
 		else return -1;
 	};
 
@@ -192,12 +192,12 @@ public:
 	inline std::vector<unsigned char>	GetIDs(){ return id; };
 
 	inline float GetEnergy( unsigned char i ){
-		if( i < energy.size() ) return energy.size();
+		if( i < energy.size() ) return energy.at(i);
 		else return 0;
 	};
 	
 	inline int GetID( unsigned char i ){
-		if( i < id.size() ) return id.size();
+		if( i < id.size() ) return id.at(i);
 		else return -1;
 	};
 
