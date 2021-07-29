@@ -184,7 +184,7 @@ private:
 	UInt_t header_DataLen; // 4 byte.
 	
 	// Interpretated variables
-	unsigned long my_tm_stp;
+	unsigned long long my_tm_stp;
 	unsigned long my_tm_stp_lsb;
 	unsigned long my_tm_stp_msb;
 	unsigned long my_tm_stp_hsb;
@@ -192,16 +192,15 @@ private:
 	unsigned long my_info_code;
 	unsigned long my_type;
 	unsigned long my_adc_data;
-	unsigned long my_hit;
-	unsigned long my_mod_id;
-	unsigned long my_ch_id;
-	unsigned long my_asic_id;
-	unsigned long my_data_id;
+	unsigned char my_hit;
+	unsigned char my_mod_id;
+	unsigned char my_ch_id;
+	unsigned char my_asic_id;
+	unsigned char my_data_id;
 	float my_energy;
 	
 	// Flags
 	bool ts_flag;
-	bool hsb_ready;
 
 	// For traces
 	unsigned int nsamples;
@@ -220,12 +219,12 @@ private:
 	TTree *output_tree;
 	
 	// Counters
-	std::vector<unsigned int> ctr_asic_hit;		// hits on each ISS module
-	std::vector<unsigned int> ctr_asic_ext;		// external (pulser) ISS timestamps
-	std::vector<unsigned int> ctr_asic_pause;   // pause acq for module
-	std::vector<unsigned int> ctr_asic_resume;  // resume acq for module
-	std::vector<unsigned int> ctr_caen_hit;		// hits on each CAEN module
-	std::vector<unsigned int> ctr_caen_ext;		// external (pulser) CAEN timestamps
+	std::vector<unsigned long> ctr_asic_hit;		// hits on each ISS module
+	std::vector<unsigned long> ctr_asic_ext;		// external (pulser) ISS timestamps
+	std::vector<unsigned long> ctr_asic_pause;   	// pause acq for module
+	std::vector<unsigned long> ctr_asic_resume;  	// resume acq for module
+	std::vector<unsigned long> ctr_caen_hit;		// hits on each CAEN module
+	std::vector<unsigned long> ctr_caen_ext;		// external (pulser) CAEN timestamps
 
 	// Histograms
 	std::vector<TProfile*> hasic_hit;

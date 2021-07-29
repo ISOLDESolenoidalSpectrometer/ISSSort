@@ -19,20 +19,21 @@ public:
 
 	// Event reconstruction
 	void SetEvent( float mypen, float mynen,
-				   int mypid, int mynid,
-				   long myptime, long myntime,
-				   int mymod, int row );
+				   unsigned char mypid, unsigned char mynid,
+				   unsigned long myptime, unsigned long myntime,
+				   unsigned char mymod, unsigned char row );
 	
-	inline float 		GetEnergy(){ return pen; };
-	inline float 		GetPEnergy(){ return pen; };
-	inline float 		GetNEnergy(){ return nen; };
-	inline int	 		GetPID(){ return pid; };
-	inline int	 		GetNID(){ return nid; };
-	inline long long	GetTime(){ return ptime; };
-	inline long long 	GetPTime(){ return ptime; };
-	inline long long 	GetNTime(){ return ntime; };
-	inline int			GetModule(){ return mod; };
-	inline int			GetRow(){ return row; };
+	inline float 			GetEnergy(){ return pen; };
+	inline float 			GetPEnergy(){ return pen; };
+	inline float 			GetNEnergy(){ return nen; };
+	inline unsigned char 	GetPID(){ return pid; };
+	inline unsigned char 	GetNID(){ return nid; };
+	inline unsigned long	GetTime(){ return ptime; };
+	inline double			GetTimeDouble(){ return (double)ptime; };
+	inline unsigned long	GetPTime(){ return ptime; };
+	inline unsigned long 	GetNTime(){ return ntime; };
+	inline unsigned char	GetModule(){ return mod; };
+	inline unsigned char	GetRow(){ return row; };
 
 	float		GetX();
 	float		GetY();
@@ -44,14 +45,14 @@ public:
 private:
 
 	// variables for particle event
-	int	  mod;		///< module number
-	int	  row;		///< row number of the silicon
-	float pen;		///< p-side energy in keV
-	float nen;		///< n-side energy in keV
-	int	  pid;		///< p-side strip id, from 0 - 511, i.e along all 4 wafers
-	int   nid;		///< n-side strip id, from 0 - 65, i.e. around all 6 sides
-	unsigned long long  ptime;		///< p-side timestamp
-	unsigned long long  ntime;		///< n-side timestamp
+	unsigned char	mod;	///< module number
+	unsigned char	row;	///< row number of the silicon
+	float			pen;	///< p-side energy in keV
+	float 			nen;	///< n-side energy in keV
+	unsigned char	pid;	///< p-side strip id, from 0 - 511, i.e along all 4 wafers
+	unsigned char	nid;	///< n-side strip id, from 0 - 65, i.e. around all 6 sides
+	unsigned long	ptime;	///< p-side timestamp
+	unsigned long	ntime;	///< n-side timestamp
 
 
 	ClassDef( ArrayEvt, 2 )
@@ -67,36 +68,37 @@ public:
 	~RecoilEvt();
 
 	void SetEvent( std::vector<float> myenergy,
-					std::vector<int> myid,
-					int mysec, long mydetime, long myetime );
+				   std::vector<unsigned char> myid, unsigned char mysec,
+				   unsigned long mydetime, unsigned long myetime );
 	
 	void ClearEvent();
 	
-	inline void AddRecoil( float myenergy, int myid ){
+	inline void AddRecoil( float myenergy, unsigned char myid ){
 		energy.push_back( myenergy );
 		id.push_back( myid );
 	};
 	
-	inline void SetSector( int s ){ sec = s; };
-	inline void SetdETime( unsigned long long t ){ detime = t; };
-	inline void SetETime( unsigned long long t ){ etime = t; };
+	inline void SetSector( unsigned char s ){ sec = s; };
+	inline void SetdETime( unsigned long t ){ detime = t; };
+	inline void SetETime( unsigned long t ){ etime = t; };
 
 	
-	inline unsigned int			GetDepth(){ return energy.size(); };
-	inline unsigned int			GetSector(){ return sec; };
-	inline unsigned long long	GetTime(){ return detime; };
-	inline unsigned long long	GetdETime(){ return detime; };
-	inline unsigned long long	GetETime(){ return etime; };
+	inline unsigned char	GetDepth(){ return energy.size(); };
+	inline unsigned char	GetSector(){ return sec; };
+	inline unsigned long	GetTime(){ return detime; };
+	inline double			GetTimeDouble(){ return (double)detime; };
+	inline unsigned long	GetdETime(){ return detime; };
+	inline unsigned long	GetETime(){ return etime; };
 
-	inline std::vector<float>	GetEnergies(){ return energy; };
-	inline std::vector<int>		GetIDs(){ return id; };
+	inline std::vector<float>			GetEnergies(){ return energy; };
+	inline std::vector<unsigned char>	GetIDs(){ return id; };
 
-	inline float GetEnergy( unsigned int i ){
+	inline float GetEnergy( unsigned char i ){
 		if( i < energy.size() ) return energy.size();
 		else return 0;
 	};
 	
-	inline int GetID( unsigned int i ){
+	inline unsigned char GetID( unsigned char i ){
 		if( i < id.size() ) return id.size();
 		else return -1;
 	};
@@ -112,11 +114,11 @@ public:
 private:
 
 	// variables for recoil events
-	std::vector<float>		energy;	///< differential energy list, i.e. Silicon dE-E length = 2
-	std::vector<int>		id;		///< differential id list, i.e. dE = 0, E = 1, for example
-	int						sec;	///< sector of the recoil detector, i.e 0-3 for QQQ1 quadrants
-	unsigned long long		detime;	///< time stamp of dE event
-	unsigned long long		etime;	///< time stamp of E event
+	std::vector<float>			energy;	///< differential energy list, i.e. Silicon dE-E length = 2
+	std::vector<unsigned char>	id;		///< differential id list, i.e. dE = 0, E = 1, for example
+	unsigned char				sec;	///< sector of the recoil detector, i.e 0-3 for QQQ1 quadrants
+	unsigned long				detime;	///< time stamp of dE event
+	unsigned long				etime;	///< time stamp of E event
 
 	ClassDef( RecoilEvt, 2 )
 
@@ -130,25 +132,27 @@ public:
 	ElumEvt();
 	~ElumEvt();
 	
-	void SetEvent( float myenergy, int myid, int mysec, long mytime );
+	void SetEvent( float myenergy, unsigned char myid,
+				   unsigned char mysec, unsigned long mytime );
 
 	inline void SetEnergy( float e ){ energy = e; };
-	inline void SetSector( int s ){ sec = s; };
-	inline void SetID( int i ){ id = i; };
-	inline void SetTime( unsigned long long t ){ time = t; };
+	inline void SetSector( unsigned char s ){ sec = s; };
+	inline void SetID( unsigned char i ){ id = i; };
+	inline void SetTime( unsigned long t ){ time = t; };
 
-	inline float				GetEnergy(){ return energy; };
-	inline unsigned int			GetID(){ return id; };
-	inline unsigned int			GetSector(){ return sec; };
-	inline unsigned long long	GetTime(){ return time; };
+	inline float			GetEnergy(){ return energy; };
+	inline unsigned char	GetID(){ return id; };
+	inline unsigned char	GetSector(){ return sec; };
+	inline unsigned long	GetTime(){ return time; };
+	inline double			GetTimeDouble(){ return (double)time; };
 
 	
 private:
 
-	float	energy;	///< Energy in the ELUM detector
-	int		id;		///< ID list, well, we only have one ELUM detector so it is always == 0
-	int		sec;	///< sector or quandrant of the ELUM detector, i.e. 0-3 when split into 4
-	unsigned long long	time;	///< time stamp of the ELUM event
+	float			energy;	///< Energy in the ELUM detector
+	unsigned char	id;		///< ID list, well, we only have one ELUM detector so it is always == 0
+	unsigned char	sec;	///< sector or quandrant of the ELUM detector, i.e. 0-3 when split into 4
+	unsigned long	time;	///< time stamp of the ELUM event
 	
 	ClassDef( ElumEvt, 2 );
 
@@ -163,35 +167,36 @@ public:
 	~ZeroDegreeEvt();
 
 	void SetEvent( std::vector<float> myenergy,
-					std::vector<int> myid,
-					int mysec, long mydetime, long myetime );
+				   std::vector<unsigned char> myid, unsigned char mysec,
+				   unsigned long mydetime, unsigned long myetime );
 	
 	void ClearEvent();
 
-	inline void AddZeroDegree( float myenergy, int myid ){
+	inline void AddZeroDegree( float myenergy, unsigned char myid ){
 		energy.push_back( myenergy );
 		id.push_back( myid );
 	};
 
-	inline void SetSector( int s ){ sec = s; };
-	inline void SetdETime( unsigned long long t ){ detime = t; };
-	inline void SetETime( unsigned long long t ){ etime = t; };
+	inline void SetSector( unsigned char s ){ sec = s; };
+	inline void SetdETime( unsigned long t ){ detime = t; };
+	inline void SetETime( unsigned long t ){ etime = t; };
 
-	inline unsigned int			GetDepth(){ return energy.size(); };
-	inline unsigned int			GetSector(){ return sec; };
-	inline unsigned long long	GetTime(){ return detime; };
-	inline unsigned long long	GetdETime(){ return detime; };
-	inline unsigned long long	GetETime(){ return etime; };
+	inline unsigned char	GetDepth(){ return energy.size(); };
+	inline unsigned char	GetSector(){ return sec; };
+	inline unsigned long	GetTime(){ return detime; };
+	inline double			GetTimeDouble(){ return (double)detime; };
+	inline unsigned long	GetdETime(){ return detime; };
+	inline unsigned long	GetETime(){ return etime; };
 
-	inline std::vector<float>	GetEnergies(){ return energy; };
-	inline std::vector<int>		GetIDs(){ return id; };
+	inline std::vector<float>			GetEnergies(){ return energy; };
+	inline std::vector<unsigned char>	GetIDs(){ return id; };
 
-	inline float GetEnergy( unsigned int i ){
+	inline float GetEnergy( unsigned char i ){
 		if( i < energy.size() ) return energy.size();
 		else return 0;
 	};
 	
-	inline int GetID( unsigned int i ){
+	inline int GetID( unsigned char i ){
 		if( i < id.size() ) return id.size();
 		else return -1;
 	};
@@ -205,11 +210,11 @@ public:
 
 private:
 
-	std::vector<float>		energy;	///< differential energy list, i.e. Silicon dE-E length = 2
-	std::vector<int>		id;		///< differential id list, i.e. dE = 0, E = 1, for example
-	int						sec;	///< sector or quandrant of the ZeroDegree detector, i.e. 0 because we just have one
-	unsigned long long		detime;	///< time stamp of ZeroDegree event
-	unsigned long long		etime;	///< time stamp of ZeroDegree event
+	std::vector<float>			energy;	///< differential energy list, i.e. Silicon dE-E length = 2
+	std::vector<unsigned char>	id;		///< differential id list, i.e. dE = 0, E = 1, for example
+	unsigned char				sec;	///< sector or quandrant of the ZeroDegree detector, i.e. 0 because we just have one
+	unsigned long				detime;	///< time stamp of ZeroDegree event
+	unsigned long				etime;	///< time stamp of ZeroDegree event
 
 	ClassDef( ZeroDegreeEvt, 2 )
 
@@ -256,18 +261,18 @@ public:
 	void ClearEvt();
 	
 	// ISOLDE timestamping
-	inline void SetEBIS( long t ){ ebis = t; return; };
-	inline void SetT1( long t ){ t1 = t; return; };
+	inline void SetEBIS( unsigned long t ){ ebis = t; return; };
+	inline void SetT1( unsigned long t ){ t1 = t; return; };
 	
-	inline long GetEBIS(){ return ebis; };
-	inline long GetT1(){ return t1; };
+	inline unsigned long GetEBIS(){ return ebis; };
+	inline unsigned long GetT1(){ return t1; };
 
 	
 private:
 	
 	// variables for timestamping
-	long ebis;		///< time difference between first trigger in event and previous EBIS pulse
-	long t1;		///< time difference between first trigger in event and previous proton pulse
+	unsigned long ebis;		///< absolute EBIS pulse time
+	unsigned long t1;		///< absolute proton pulse time
 
 	std::vector<ArrayEvt> array_event;
 	std::vector<RecoilEvt> recoil_event;

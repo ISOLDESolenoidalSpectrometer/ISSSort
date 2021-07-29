@@ -46,6 +46,7 @@ public:
 	// Info settings
 	inline unsigned int GetExternalTriggerCode(){ return extt_code; };
 	inline unsigned int GetSyncCode(){ return sync_code; };
+	inline unsigned int GetExtItemCode(){ return ext_item_code; };
 	inline unsigned int GetTimestampCode(){ return thsb_code; };
 
 	inline unsigned int GetPauseCode(){ return pause_code;};
@@ -123,6 +124,7 @@ private:
 	// Info code settings
 	unsigned int extt_code;			///< This is the info code for the external timestamp, 5 before 2019 and 14 after 2019 (This is ISS == 14)
 	unsigned int sync_code;			///< Medium significant bits of the timestamp are here
+	unsigned int ext_item_code;		///< Medium significant bits of the timestamp are here from the ASIC ADC
 	unsigned int thsb_code;			///< Highest significant bits of the timestamp are here
 	unsigned int pause_code;        ///< Info code when ISS acquisition has paused due to a full buffer
 	unsigned int resume_code;       ///< Info code when ISS acquisition has resumed after a pause.

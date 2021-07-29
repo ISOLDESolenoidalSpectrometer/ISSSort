@@ -268,7 +268,12 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 		mytime = in_data->GetTime();
 				
 		// check time stamp monotonically increases!
-		if( time_prev > mytime ) std::cout << "*t*";
+		if( time_prev > mytime ) {
+			
+			std::cout << "Out of order event in file ";
+			std::cout << input_tree->GetFile()->GetName() << std::endl;
+			
+		}
 			
 		// Sort out the timing for the event window
 		// but only if it isn't an info event, i.e only for real data

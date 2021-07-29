@@ -33,6 +33,7 @@ void Settings::ReadSettings() {
 	
 	// Info code initialisation
 	extt_code = config->GetValue( "ExternalTriggerCode", 14 );
+	ext_item_code = config->GetValue( "ExtItemCode", 7 );
 	sync_code = config->GetValue( "SyncCode", 4 );
 	thsb_code = config->GetValue( "TimestampCode", 5 );
 	pause_code = config->GetValue( "PauseCode", 2 );

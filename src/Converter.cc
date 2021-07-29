@@ -4,7 +4,7 @@ Converter::Converter( Settings *myset ) {
 
 	// We need to do initialise, but only after Settings are added
 	set = myset;
-	
+
 	my_tm_stp_msb = 0;
 	my_tm_stp_hsb = 0;
 
@@ -16,14 +16,13 @@ Converter::Converter( Settings *myset ) {
 		ctr_asic_pause.push_back(0);
 		ctr_asic_resume.push_back(0);
 
-		
 	}
 	
 	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
 				
 		ctr_caen_hit.push_back(0);	// hits on each module
 		ctr_caen_ext.push_back(0);	// external timestamps
-		
+
 	}
 
 }
@@ -679,9 +678,6 @@ void Converter::ProcessASICData(){
 	
 	my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  // 28 bits from 0
 	
-	// reconstruct time stamp= HSB+MSB+LSB
-	my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
-	
 	// Check things make sense
 	if( my_mod_id >= set->GetNumberOfArrayModules() ||
 		my_asic_id >= set->GetNumberOfArrayASICs() ||
@@ -691,12 +687,17 @@ void Converter::ProcessASICData(){
 		std::cout << " asic_id=" << my_asic_id;
 		std::cout << " ch_id=" << my_ch_id << std::endl;
 		
+		return;
+		
 	}
 	
+	// reconstruct time stamp= HSB+MSB+LSB
+	my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
+	
 	// Pulser in a spare n-side channel should be counted as info data
-	else if( my_mod_id == set->GetArrayPulserModule() &&
-			 my_asic_id == set->GetArrayPulserAsic() &&
-			 my_ch_id == set->GetArrayPulserChannel() ) {
+	if( my_mod_id == set->GetArrayPulserModule() &&
+		my_asic_id == set->GetArrayPulserAsic() &&
+		my_ch_id == set->GetArrayPulserChannel() ) {
 		
 		// Check energy to set threshold
 		asic_pulser_energy->Fill( my_adc_data );
@@ -749,10 +750,7 @@ void Converter::ProcessASICData(){
 		ctr_asic_hit[my_mod_id]++;
 
 	}
-	
-	// We need a new time stamps I think?
-	hsb_ready = false;
-	
+		
 	return;
 	
 }
@@ -771,13 +769,6 @@ void Converter::ProcessCAENData(){
 	my_data_id = (ADCchanIdent >> 6 ) & 0x0003; // 2 bits from 6
 	my_ch_id = ADCchanIdent & 0x003F; // 6 bits from 0
 	
-	// reconstruct time stamp= MSB+LSB
-	my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  // 28 bits from 0
-	my_tm_stp = ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
-	
-	// CAEN timestamps are 4 ns precision
-	my_tm_stp = my_tm_stp*4;
-
 	// Check things make sense
 	if( my_mod_id >= set->GetNumberOfCAENModules() ||
 		my_ch_id >= set->GetNumberOfCAENChannels() ) {
@@ -788,6 +779,13 @@ void Converter::ProcessCAENData(){
 		return;
 
 	}
+	
+	// reconstruct time stamp= MSB+LSB
+	my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  // 28 bits from 0
+	my_tm_stp = ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
+	
+	// CAEN timestamps are 4 ns precision
+	my_tm_stp = my_tm_stp*4;
 	
 	// First of the data items
 	if( !flag_caen_data0 && !flag_caen_data1 && !flag_caen_data3 ){
@@ -894,7 +892,7 @@ void Converter::FinishCAENData(){
 				
 			// Add the time offset to this channel
 			info_data->SetTime( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
-			info_data->SetModule( caen_data->GetModule() );
+			info_data->SetModule( caen_data->GetModule() + set->GetNumberOfArrayModules() );
 			info_data->SetCode( my_info_code );
 			data_packet->SetData( info_data );
 			output_tree->Fill();
@@ -963,17 +961,20 @@ void Converter::ProcessInfoData(){
 	
 	ts_flag = false;
 
-	// HSB of timstamp
+	// HSB of timestamp
 	if( my_info_code == set->GetTimestampCode() ) {
 		
 		my_tm_stp_hsb = my_info_field & 0x000FFFFF;
-		hsb_ready = true;
-	
+		ts_flag = true;
+
 	}
 	
 	// MSB of timstamp in sync pulse or CAEN extended time stamp
-	if( my_info_code == set->GetSyncCode() ) {
+	if( my_info_code == set->GetSyncCode() ||
+	    my_info_code == set->GetExtItemCode() ) {
 		
+		// We don't know yet if it's from CAEN or ISS
+		// but it seems ASIC data has info code 7 for extended timestamp
 		my_tm_stp_msb = my_info_field & 0x000FFFFF;
 		ts_flag = true;
 		
@@ -1010,18 +1011,9 @@ void Converter::ProcessInfoData(){
 	if( ts_flag ) {
 		
 		// reconstruct time stamp= HSB+MSB+LSB
-		if( hsb_ready )
-			my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | ( my_tm_stp_lsb & 0x0FFFFFFF );
-
-		// reconstruct time stamp= MSB+LSB
-		else
-			my_tm_stp = ( my_tm_stp_msb << 28 ) | ( my_tm_stp_lsb & 0x0FFFFFFF );
-		
-		hsb_ready = false;
+		my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | ( my_tm_stp_lsb & 0x0FFFFFFF );
 		
 	}
-	
-	else return;
 	
 	// Create an info event and fill the tree for external triggers and pause/resume
 	if( my_info_code == set->GetExternalTriggerCode() ||
@@ -1053,7 +1045,7 @@ void Converter::ProcessInfoData(){
 		// Fill histograms
 		hasic_pause[my_mod_id]->Fill( ctr_asic_pause[my_mod_id], my_tm_stp, 1 );
 
-		// Count external trigger event
+		// Count pause event
 		ctr_asic_pause[my_mod_id]++;
 
 	}
@@ -1063,7 +1055,7 @@ void Converter::ProcessInfoData(){
 		// Fill histograms
 		hasic_resume[my_mod_id]->Fill( ctr_asic_resume[my_mod_id], my_tm_stp, 1 );
 
-		// Count external trigger event
+		// Count resume event
 		ctr_asic_resume[my_mod_id]++;
 
 	}
