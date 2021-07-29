@@ -92,9 +92,9 @@ ArrayEvt::ArrayEvt(){}
 ArrayEvt::~ArrayEvt(){}
 
 void ArrayEvt::SetEvent( float mypen, float mynen,
-						 int mypid, int mynid,
-						 long myptime, long myntime,
-						 int mymod, int myrow ) {
+						 unsigned char mypid, unsigned char mynid,
+						 unsigned long myptime, unsigned long myntime,
+						 unsigned char mymod, unsigned char myrow ) {
 	
 	pen = mypen;
 	ptime = myptime;
@@ -196,8 +196,8 @@ RecoilEvt::RecoilEvt(){}
 RecoilEvt::~RecoilEvt(){}
 
 void RecoilEvt::SetEvent( std::vector<float> myenergy,
-						 std::vector<int> myid,
-						 int mysec, long mydetime, long myetime ) {
+						  std::vector<unsigned char> myid, unsigned char mysec,
+						  unsigned long mydetime, unsigned long myetime ) {
 	
 	energy = myenergy;
 	id = myid;
@@ -214,7 +214,7 @@ void RecoilEvt::ClearEvent(){
 	energy.clear();
 	id.clear();
 	std::vector<float>().swap(energy);
-	std::vector<int>().swap(id);
+	std::vector<unsigned char>().swap(id);
 
 }
 
@@ -224,8 +224,8 @@ void RecoilEvt::ClearEvent(){
 ElumEvt::ElumEvt(){}
 ElumEvt::~ElumEvt(){}
 
-void ElumEvt::SetEvent( float myenergy, int myid,
-						 int mysec, long mytime ) {
+void ElumEvt::SetEvent( float myenergy, unsigned char myid,
+						unsigned char mysec, unsigned long mytime ) {
 	
 	energy = myenergy;
 	id = myid;
@@ -244,8 +244,8 @@ ZeroDegreeEvt::ZeroDegreeEvt(){}
 ZeroDegreeEvt::~ZeroDegreeEvt(){}
 
 void ZeroDegreeEvt::SetEvent( std::vector<float> myenergy,
-						 std::vector<int> myid,
-						 int mysec, long mydetime, long myetime ) {
+							  std::vector<unsigned char> myid, unsigned char mysec,
+							  unsigned long mydetime, unsigned long myetime ) {
 	
 	energy = myenergy;
 	id = myid;
@@ -262,6 +262,6 @@ void ZeroDegreeEvt::ClearEvent(){
 	energy.clear();
 	id.clear();
 	std::vector<float>().swap(energy);
-	std::vector<int>().swap(id);
+	std::vector<unsigned char>().swap(id);
 
 }
