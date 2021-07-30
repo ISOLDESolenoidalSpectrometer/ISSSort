@@ -52,7 +52,6 @@ public:
 	inline unsigned int GetPauseCode(){ return pause_code;};
 	inline unsigned int GetResumeCode(){ return resume_code;};
 
-	inline unsigned int GetArrayPulserModule(){ return asic_pulser_mod; };
 	inline unsigned int GetArrayPulserAsic(){ return asic_pulser_asic; };
 	inline unsigned int GetArrayPulserChannel(){ return asic_pulser_ch; };
 	inline unsigned int GetArrayPulserCode(){ return asic_pulser_code; };
@@ -128,7 +127,6 @@ private:
 	unsigned int thsb_code;			///< Highest significant bits of the timestamp are here
 	unsigned int pause_code;        ///< Info code when ISS acquisition has paused due to a full buffer
 	unsigned int resume_code;       ///< Info code when ISS acquisition has resumed after a pause.
-	unsigned int asic_pulser_mod;	///< Location of the pulser in the ASIC frontends (module)
 	unsigned int asic_pulser_asic;	///< Location of the pulser in the ASIC frontends (asic)
 	unsigned int asic_pulser_ch;	///< Location of the pulser in the ASIC frontends (channel)
 	unsigned int asic_pulser_code;	///< Info code when we have a pulser event in InfoData packets from ASICs

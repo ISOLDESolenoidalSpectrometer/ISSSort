@@ -695,8 +695,7 @@ void Converter::ProcessASICData(){
 	my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
 	
 	// Pulser in a spare n-side channel should be counted as info data
-	if( my_mod_id == set->GetArrayPulserModule() &&
-		my_asic_id == set->GetArrayPulserAsic() &&
+	if( my_asic_id == set->GetArrayPulserAsic() &&
 		my_ch_id == set->GetArrayPulserChannel() ) {
 		
 		// Check energy to set threshold
