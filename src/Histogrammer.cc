@@ -330,6 +330,15 @@ void Histogrammer::FillHists() {
 
 		} // ELUM
 
+		if( i % 10000 == 0 || i+1 == n_entries ) {
+			
+			std::cout << " " << std::setw(8) << std::setprecision(4);
+			std::cout << (float)(i+1)*100.0/(float)n_entries << "%    \r";
+			std::cout.flush();
+			
+		}
+
+
 	} // all events
 	
 	output_file->Write();
