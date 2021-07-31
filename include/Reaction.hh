@@ -25,8 +25,8 @@ public:
 	
 	// Get properties
 	inline float	GetMass(){ return mass; }; // returns mass in u
-	inline int		GetA(){ return (int)(mass+0.499); };	// returns A instead
-	inline int		GetZ(){ return Z; };
+	inline int	GetA(){ return (int)(mass+0.499); };	// returns A instead
+	inline int	GetZ(){ return Z; };
 	inline float	GetEnergyCM(){ return Ecm; };
 	inline float	GetEnergyLab(){ return Elab; };
 	inline float	GetThetaCM(){ return ThetaCM; };
@@ -109,9 +109,8 @@ private:
 	
 	// Experimental info on the ejectile
 	TVector3 ejec_vec;	///< 3-vector for the ejectile at the point in intersects the detector array
-	float ejec_en; 		///< measured (laboratory) ejectile energy in keV
 	float rho;			///< Distance from the beam axis to the interaction point in the detector
-	float z;			///< projected z distance from target that ejectile interesect the beam axis
+	float z;				///< projected z distance from target that ejectile interesect the beam axis
 	
 	// Constants
 	const float u_mass = 931492.10142;	///< 1 atomic mass unit in keV/c^2

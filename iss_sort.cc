@@ -417,9 +417,9 @@ int main( int argc, char *argv[] ){
 	// Physics event builder //
 	//-----------------------//
 	EventBuilder eb( set );
-	eb.SetOutput( output_name );
 	std::cout << "\n +++ ISS Analysis:: processing EventBuilder +++" << std::endl;
 
+	eb.SetOutput( output_name );
 	std::vector<string> name_event_files;
 	
 	// Update calibration file if given
@@ -441,15 +441,21 @@ int main( int argc, char *argv[] ){
 	//------------------------------//
 	// Finally make some histograms //
 	//------------------------------//
-	Histogrammer hist( react );
-	std::string output_name_hists = output_name.substr( 0, output_name.find_last_of("/") );
-	output_name_hists += "_hists.root";
-	hist.SetOutput( output_name_hists.data() );
+	Histogrammer hist( react, set );
 	hist.SetInputTree( eb.GetTree() );
+
 	std::cout << "\n +++ ISS Analysis:: processing Histogrammer +++" << std::endl;
 
+	std::string output_name_hists = output_name.substr( 0, output_name.find_last_of("_") );
+	output_name_hists += "_hists.root";
+	hist.SetOutput( output_name_hists.data() );
+	hist.FillHists();
+	hist.CloseOutput();
+
 	
-	// Now we can close the event builder file
+	// Now we can close the event builder file...
+	// We need to keep it open during the histogramming
+	// because I am using a pointer to the tree in memory
 	eb.CloseOutput();
 	
 	cout << "Finished!\n";
