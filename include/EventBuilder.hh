@@ -26,15 +26,26 @@
 # include "Calibration.hh"
 #endif
 
+// Data packets header
+#ifndef __DATAPACKETS_hh
+# include "DataPackets.hh"
+#endif
+
 // ISS Events tree
 #ifndef __ISSEVTS_HH
 # include "ISSEvts.hh"
 #endif
 
-// Data packets header
-#ifndef _DataPackets_hh
-# include "DataPackets.hh"
+// Reaction header
+#ifndef __REACTION_HH
+# include "Reaction.hh"
 #endif
+
+// Histogram header
+#ifndef __HISTOGRAMMER_hh
+# include "Histogrammer.hh"
+#endif
+
 
 
 class EventBuilder {
@@ -93,8 +104,15 @@ private:
 	ElumEvt *elum_evt;
 	ZeroDegreeEvt *zd_evt;
 	
+	// Do calibration
+	Calibration *cal;
+	bool overwrite_cal;
+	
 	// Settings file
 	Settings *set;
+	
+	// Reaction information
+	Reaction *react;
 
 	
 	// These things should probably be in the settings file
@@ -204,10 +222,6 @@ private:
 	
 	// ZeroDegree histograms
 	TH2F *zd;
-	
-	// Do calibration
-	Calibration *cal;
-	bool overwrite_cal;
 	
 };
 

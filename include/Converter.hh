@@ -26,7 +26,7 @@
 #endif
 
 // Data packets header
-#ifndef _DataPackets_hh
+#ifndef __DATAPACKETS_hh
 # include "DataPackets.hh"
 #endif
 

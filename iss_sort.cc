@@ -1,9 +1,11 @@
 // My code include.
-#include "Converter.hh"
 #include "Settings.hh"
 #include "Calibration.hh"
-#include "EventBuilder.hh"
+#include "Converter.hh"
 #include "TimeSorter.hh"
+#include "EventBuilder.hh"
+#include "Reaction.hh"
+#include "Histogrammer.hh"
 
 // ROOT include.
 #include <TTree.h>
@@ -29,6 +31,7 @@ std::string output_name;
 std::string datadir_name = "/eos/experiment/isolde-iss/2021/";
 std::string name_set_file;
 std::string name_cal_file;
+std::string name_react_file;
 std::vector<std::string> input_names;
 
 // a flag at the input to force the conversion
@@ -51,6 +54,9 @@ Settings *set;
 // Calibration file
 Calibration *cal;
 bool overwrite_cal = false;
+
+// Reaction file
+Reaction *react;
 
 // Server and controls for the GUI
 THttpServer *serv;
@@ -181,6 +187,7 @@ int main( int argc, char *argv[] ){
 	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
 	interface->Add("-s", "Settings file", &name_set_file );
 	interface->Add("-c", "Calibration file", &name_cal_file );
+	interface->Add("-r", "Reaction file", &name_react_file );
 	interface->Add("-h", "Print this help", &help_flag );
 
 	interface->CheckFlags( argc, argv );
@@ -240,18 +247,32 @@ int main( int argc, char *argv[] ){
 	if( name_cal_file.length() > 0 ) {
 		
 		std::cout << "Calibration file: " << name_cal_file << std::endl;
-		
+		overwrite_cal = true;
+
 	}
 	else {
 		
 		std::cout << "No calibration file provided. Using defaults." << std::endl;
 		name_cal_file = "dummy";
-		overwrite_cal = true;
+
+	}
+	
+	// Check we have a reaction file
+	if( name_react_file.length() > 0 ) {
+		
+		std::cout << "Reaction file: " << name_react_file << std::endl;
+		
+	}
+	else {
+		
+		std::cout << "No reaction file provided. Using defaults." << std::endl;
+		name_react_file = "dummy";
 
 	}
 	
 	set = new Settings( name_set_file );
 	cal = new Calibration( name_cal_file, set );
+	react = new Reaction( name_react_file );
 
 
 	
@@ -415,7 +436,22 @@ int main( int argc, char *argv[] ){
 
 	// Then build events
 	eb.BuildEvents();
+	
+	
+	//------------------------------//
+	// Finally make some histograms //
+	//------------------------------//
+	Histogrammer hist( react );
+	std::string output_name_hists = output_name.substr( 0, output_name.find_last_of("/") );
+	output_name_hists += "_hists.root";
+	hist.SetOutput( output_name_hists.data() );
+	hist.SetInputTree( eb.GetTree() );
+	std::cout << "\n +++ ISS Analysis:: processing Histogrammer +++" << std::endl;
 
+	
+	// Now we can close the event builder file
+	eb.CloseOutput();
+	
 	cout << "Finished!\n";
 			
 	return 0;

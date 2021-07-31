@@ -1,5 +1,5 @@
-#ifndef _DataPackets_hh
-#define _DataPackets_hh
+#ifndef __DATAPACKETS_hh
+#define __DATAPACKETS_hh
 
 #include "TObject.h"
 

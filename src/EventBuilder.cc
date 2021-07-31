@@ -619,6 +619,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			    write_evts->GetElumMultiplicity() ||
 			    write_evts->GetZeroDegreeMultiplicity() ) output_tree->Fill();
 
+
 			//--------------------------------------------------
 			// clear values of arrays to store intermediate info
 			//--------------------------------------------------
@@ -670,6 +671,82 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 	output_file->Write( 0, TObject::kWriteDelete );
 	//output_file->Print();
 	//output_file->Close();
+	
+	// Clean up the histograms to save memory for later
+	for( unsigned int i = 0; i < pn_11.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_11.at(i).size(); j++ )
+			delete (pn_11[i][j]);
+		pn_11.clear();
+	}
+
+	for( unsigned int i = 0; i < pn_12.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_12.at(i).size(); j++ )
+			delete (pn_12[i][j]);
+		pn_12.clear();
+	}
+
+	for( unsigned int i = 0; i < pn_21.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_21.at(i).size(); j++ )
+			delete (pn_21[i][j]);
+		pn_21.clear();
+	}
+
+	for( unsigned int i = 0; i < pn_22.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_22.at(i).size(); j++ )
+			delete (pn_22[i][j]);
+		pn_22.clear();
+	}
+
+	for( unsigned int i = 0; i < pn_max.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_max.at(i).size(); j++ )
+			delete (pn_max[i][j]);
+		pn_max.clear();
+	}
+
+	for( unsigned int i = 0; i < pn_td.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_td.at(i).size(); j++ )
+			delete (pn_td[i][j]);
+		pn_td.clear();
+	}
+
+	for( unsigned int i = 0; i < pn_mult.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_mult.at(i).size(); j++ )
+			delete (pn_mult[i][j]);
+		pn_mult.clear();
+	}
+
+	for( unsigned int i = 0; i < recoil_EdE.size(); i++ )
+		delete (recoil_EdE[i]);
+	
+	for( unsigned int i = 0; i < recoil_dEsum.size(); i++ )
+		delete (recoil_dEsum[i]);
+
+	pn_12.clear();
+	pn_21.clear();
+	pn_22.clear();
+	pn_max.clear();
+	pn_td.clear();
+	pn_mult.clear();
+	recoil_EdE.clear();
+	recoil_dEsum.clear();
+	
+	delete elum;
+	delete zd;
+	
+	delete tdiff;
+	delete fpga_td;
+	delete asic_td;
+	delete fpga_sync;
+	delete asic_sync;
+	delete caen_freq;
+	delete asic_freq;
+	delete fpga_freq;
+	delete asic_freq_diff;
+	delete fpga_freq_diff;
+	delete ebis_freq;
+	delete t1_freq;
+	delete asic_pulser_loss;
+	delete fpga_pulser_loss;
 
 	return n_entries;
 	
@@ -795,34 +872,39 @@ void EventBuilder::ArrayFinder() {
 			
 			// Just take the maximum energy instead for now
 			// But make sure that both p- and n-sides are good
-//			if( pmax_idx >= 0 && nmax_idx >= 0 ){
-//
-//				array_evt->SetEvent( pen_list.at( pmax_idx ),
-//									 nen_list.at( nmax_idx ),
-//									 pid_list.at( pmax_idx ),
-//									 nid_list.at( nmax_idx ),
-//									 ptd_list.at( pmax_idx ),
-//									 ntd_list.at( nmax_idx ),
-//									 i, j );
-
-			// Add a bodge to ignore n-side events for now
-			if( pmax_idx >= 0 ){
+			if( pmax_idx >= 0 && nmax_idx >= 0 ){
 
 				array_evt->SetEvent( pen_list.at( pmax_idx ),
-									 0,
+									 nen_list.at( nmax_idx ),
 									 pid_list.at( pmax_idx ),
-									 0,
+									 nid_list.at( nmax_idx ),
 									 ptd_list.at( pmax_idx ),
-									 0,
+									 ntd_list.at( nmax_idx ),
 									 i, j );
-
 				
 				write_evts->AddEvt( array_evt );
 				array_ctr++;
 
-				pn_max[i][j]->Fill( pmax_en, nmax_en );
-			
 			}
+
+			// Add a bodge to ignore n-side events for now
+			//if( pmax_idx >= 0 ){
+			//
+			//	array_evt->SetEvent( pen_list.at( pmax_idx ),
+			//						 0,
+			//						 pid_list.at( pmax_idx ),
+			//						 0,
+			//						 ptd_list.at( pmax_idx ),
+			//						 0,
+			//						 i, j );
+			//
+			//
+			//	write_evts->AddEvt( array_evt );
+			//	array_ctr++;
+			//
+			//	pn_max[i][j]->Fill( pmax_en, nmax_en );
+			//
+			//}
 						
 		}
 

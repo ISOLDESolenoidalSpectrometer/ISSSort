@@ -17,4 +17,6 @@
 #pragma link C++ class AsicData+;
 #pragma link C++ class CaenData+;
 #pragma link C++ class InfoData+;
+#pragma link C++ class Reaction+;
+#pragma link C++ class Particle+;
 #endif
