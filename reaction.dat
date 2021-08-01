@@ -1,0 +1,35 @@
+# Reaction file for ISSSort
+#
+# pass this file to iss_sort with the -r flag
+#
+# Liam Gaffney - July 2021
+# liam.gaffney@liverpool.ac.uk
+#
+# Below are the default parameters that can be changed by uncommenting
+# and passing this file to iss_sort during the histogramming stage.
+#
+# This file is not required to run iss_sort, but if you want meaningfull
+# physics histograms at the end, then you should change the parameters
+# here to match your experiment. One can have multiple versions of this
+# file to sort different runs or apply different recoil gates, etc.
+
+
+## Reaction definition
+#BeamA: 30.		# this is actually the mass in u, not mass number (one day iss_sort will have mass tables)
+#BeamZ: 12		# yes, it is Z, the atomic number 
+#BeamE: 8500.		# the laboratory beam energy in keV/u (note, not the usual MeV/u)
+#TargetA: 2.		# same for target
+#TargetZ: 1		#  
+#EjectileA: 1.		# in (d,p) the ejectile is the proton
+#EjectileZ: 1		#  
+#RecoilA: 31.		# the recoil is the heavy ion
+#RecoilZ: 12		# 
+
+
+## Magnetic field settings
+#Mfield: 2.0		# Magnetic field strength in Tesla 
+
+
+## Recoil cut file
+#RecoilCutFile: NULL	# ROOT file containing the 2D recoil energy cut
+#RecoilCutName: cut	# name of the TCutG object inside the ROOT file
