@@ -93,9 +93,31 @@ public:
 	inline std::vector<float>			GetEnergies(){ return energy; };
 	inline std::vector<unsigned char>	GetIDs(){ return id; };
 
+	
 	inline float GetEnergy( unsigned char i ){
 		if( i < energy.size() ) return energy.at(i);
 		else return 0;
+	};
+	
+	inline float GetEnergyLoss( unsigned char i = 0 ){
+		float total = 0;
+		for( unsigned int j = 0; j < energy.size(); ++j )
+			if( GetID(j) <= i ) total += energy.at(j);
+		return total;
+	};
+
+	inline float GetEnergyRest( unsigned char i = 1 ){
+		float total = 0;
+		for( unsigned int j = i; j < energy.size(); ++j )
+			if( GetID(j) >= i ) total += energy.at(j);
+		return total;
+	};
+	
+	inline float GetEnergyTotal(){
+		float total = 0;
+		for( unsigned int i = 0; i < energy.size(); ++i )
+			total += energy.at(i);
+		return total;
 	};
 	
 	inline unsigned char GetID( unsigned char i ){
@@ -103,12 +125,6 @@ public:
 		else return -1;
 	};
 
-	inline float GetTotalEnergy(){
-		float total = 0;
-		for( unsigned int i = 0; i < energy.size(); ++i )
-			total += energy.at(i);
-		return total;
-	};
 
 	
 private:
@@ -196,16 +212,30 @@ public:
 		else return 0;
 	};
 	
-	inline int GetID( unsigned char i ){
-		if( i < id.size() ) return id.at(i);
-		else return -1;
+	inline float GetEnergyLoss( unsigned char i = 0 ){
+		float total = 0;
+		for( unsigned int j = 0; j < energy.size(); ++j )
+			if( GetID(j) <= i ) total += energy.at(j);
+		return total;
 	};
 
-	inline float GetTotalEnergy(){
+	inline float GetEnergyRest( unsigned char i = 1 ){
+		float total = 0;
+		for( unsigned int j = i; j < energy.size(); ++j )
+			if( GetID(j) >= i ) total += energy.at(j);
+		return total;
+	};
+	
+	inline float GetEnergyTotal(){
 		float total = 0;
 		for( unsigned int i = 0; i < energy.size(); ++i )
 			total += energy.at(i);
 		return total;
+	};
+
+	inline int GetID( unsigned char i ){
+		if( i < id.size() ) return id.at(i);
+		else return -1;
 	};
 
 private:

@@ -11,8 +11,7 @@ EventBuilder::EventBuilder( Settings *myset ){
 	build_window = set->GetEventWindow();
 	
 	time_prev = 0;
-	asic_prev = 0;
-	fpga_prev = 0;
+	caen_time = 0;
 	caen_prev = 0;
 	ebis_prev = 0;
 	t1_prev = 0;
@@ -21,9 +20,7 @@ EventBuilder::EventBuilder( Settings *myset ){
 	n_caen_data	= 0;
 	n_info_data	= 0;
 
-	n_caen_pulser	= 0;
-	n_asic_pulser	= 0;
-	n_fpga_pulser	= 0;
+	n_caen_pulser = 0;
 
 	n_ebis	= 0;
 	n_t1	= 0;
@@ -35,6 +32,8 @@ EventBuilder::EventBuilder( Settings *myset ){
 	
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 	
+		n_fpga_pulser.push_back( 0 );
+		n_asic_pulser.push_back( 0 );
 		n_asic_pause.push_back( 0 );
 		n_asic_resume.push_back( 0 );
 		flag_pause.push_back( false );
@@ -44,6 +43,10 @@ EventBuilder::EventBuilder( Settings *myset ){
 		asic_dead_time.push_back( 0 );
 		asic_time_start.push_back( 0 );
 		asic_time_stop.push_back( 0 );
+		asic_time.push_back( 0 );
+		asic_prev.push_back( 0 );
+		fpga_time.push_back( 0 );
+		fpga_prev.push_back( 0 );
 
 	}
 	
@@ -55,10 +58,7 @@ EventBuilder::EventBuilder( Settings *myset ){
 	}
 	
 	// Some flags must be false to start
-	flag_asic_pulser = false;
-	flag_fpga_pulser = false;
 	flag_caen_pulser = false;
-	flag_caen_pulser2 = false;
 
 	
 	// p-side = 0; n-side = 1;
@@ -455,37 +455,34 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				if( caen_prev != 0 ) caen_freq->Fill( caen_time, caen_hz );
 
 				flag_caen_pulser = true;
-				flag_caen_pulser2 = true;
 				n_caen_pulser++;
 				caen_prev = caen_time;
 
 			}
 
-			// Update ISS pulser time in FPGA - only for module 0
-			if( info_data->GetCode() == set->GetExternalTriggerCode() &&
-			    info_data->GetModule() == 0 ) {
+			// Update ISS pulser time in FPGA
+			if( info_data->GetCode() == set->GetExternalTriggerCode() ) {
 			   
-				fpga_time = info_data->GetTime();
-				fpga_hz = 1e9 / ( (double)fpga_time - (double)fpga_prev );
-				if( fpga_prev != 0 ) fpga_freq->Fill( fpga_time, fpga_hz );
+				fpga_time[info_data->GetModule()] = info_data->GetTime();
 
-				flag_fpga_pulser = true;
-				n_fpga_pulser++;
-				fpga_prev = fpga_time;
+				if( fpga_prev[info_data->GetModule()] != 0 )
+					fpga_freq[info_data->GetModule()]->Fill( fpga_time[info_data->GetModule()], fpga_hz );
+
+				n_fpga_pulser[info_data->GetModule()]++;
+				fpga_prev[info_data->GetModule()] = fpga_time[info_data->GetModule()];
 
 			}
 			
-			// Update ISS pulser time in ASICs - only for module 0
-			if( info_data->GetCode() == set->GetArrayPulserCode() &&
-			    info_data->GetModule() == 0 ) {
+			// Update ISS pulser time in ASICs
+			if( info_data->GetCode() == set->GetArrayPulserCode() ) {
 			   
-				asic_time = info_data->GetTime();
-				asic_hz = 1e9 / ( (double)asic_time - (double)asic_prev );
-				if( asic_prev != 0 ) asic_freq->Fill( asic_time, asic_hz );
+				asic_time[info_data->GetModule()] = info_data->GetTime();
 
-				flag_asic_pulser = true;
-				n_asic_pulser++;
-				asic_prev = asic_time;
+				if( asic_prev[info_data->GetModule()] != 0 )			
+					asic_freq[info_data->GetModule()]->Fill( asic_time[info_data->GetModule()], asic_hz );
+
+				n_asic_pulser[info_data->GetModule()]++;
+				asic_prev[info_data->GetModule()] = asic_time[info_data->GetModule()];
 
 			}
 			
@@ -535,36 +532,33 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				
 			}
 
-			// If we a pulser event from both DAQs, fill time difference
-			if( flag_caen_pulser && flag_fpga_pulser ) {
+			// If we a pulser event from the CAEN DAQs, fill time difference
+			if( flag_caen_pulser ) {
+			
+				for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 				
-				fpga_tdiff = (double)caen_time - (double)fpga_time;
-				
-				fpga_td->Fill( fpga_tdiff );
-				fpga_sync->Fill( fpga_time, fpga_tdiff );
-				fpga_freq_diff->Fill( fpga_time, fpga_hz - caen_hz );
-				fpga_pulser_loss->Fill( fpga_time, (int)n_fpga_pulser - (int)n_caen_pulser );
-				
-				flag_fpga_pulser = false;
+					fpga_hz = 1e9 / ( (double)fpga_time[i] - (double)fpga_prev[i] );
+					asic_hz = 1e9 / ( (double)asic_time[i] - (double)asic_prev[i] );
+
+					fpga_tdiff = (double)caen_time - (double)fpga_time[i];
+					asic_tdiff = (double)caen_time - (double)asic_time[i];
+					
+					fpga_td[i]->Fill( fpga_tdiff );
+					fpga_sync[i]->Fill( fpga_time[i], fpga_tdiff );
+					fpga_freq_diff[i]->Fill( fpga_time[i], fpga_hz - caen_hz );
+					fpga_pulser_loss[i]->Fill( fpga_time[i], (int)n_fpga_pulser[i] - (int)n_caen_pulser );
+					
+					asic_td[i]->Fill( asic_tdiff );
+					asic_sync[i]->Fill( asic_time[i], asic_tdiff );
+					asic_freq_diff[i]->Fill( asic_time[i], asic_hz - caen_hz );
+					asic_pulser_loss[i]->Fill( asic_time[i], (int)n_asic_pulser[i] - (int)n_caen_pulser );	
+
+				}
+
 				flag_caen_pulser = false;
 
 			}
-			
-			// If we a pulser event from the ASICs directly, fill time difference
-			if( flag_caen_pulser2 && flag_asic_pulser ) {
-				
-				asic_tdiff = (double)caen_time - (double)asic_time;
-				
-				asic_td->Fill( asic_tdiff );
-				asic_sync->Fill( asic_time, asic_tdiff );
-				asic_freq_diff->Fill( asic_time, asic_hz - caen_hz );
-				asic_pulser_loss->Fill( asic_time, (int)n_asic_pulser - (int)n_caen_pulser );
-				
-				flag_asic_pulser = false;
-				flag_caen_pulser2 = false;
-
-			}
-			
+						
 		}
 
 		
@@ -662,8 +656,12 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 	std::cout << "   ELUM events = " << elum_ctr << std::endl;
 	std::cout << "   ZeroDegree events = " << zd_ctr << std::endl;
 	std::cout << "   CAEN pulser = " << n_caen_pulser << std::endl;
-	std::cout << "   FPGA pulser = " << n_fpga_pulser << std::endl;
-	std::cout << "   ASIC pulser = " << n_asic_pulser << std::endl;
+	std::cout << "   FPGA pulser" << std::endl;
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i )
+		std::cout << "    Module " << i << " = " << n_fpga_pulser[i] << std::endl;
+	std::cout << "   ASIC pulser" << std::endl;
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i )
+		std::cout << "    Module " << i << " = " << n_asic_pulser[i] << std::endl;
 	std::cout << "   EBIS events = " << n_ebis << std::endl;
 	std::cout << "   T1 events = " << n_t1 << std::endl;
 	std::cout << "  Tree entries = " << output_tree->GetEntries() << std::endl;
@@ -672,82 +670,6 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 	//output_file->Print();
 	//output_file->Close();
 	
-	// Clean up the histograms to save memory for later
-	for( unsigned int i = 0; i < pn_11.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_11.at(i).size(); j++ )
-			delete (pn_11[i][j]);
-		pn_11.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_12.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_12.at(i).size(); j++ )
-			delete (pn_12[i][j]);
-		pn_12.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_21.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_21.at(i).size(); j++ )
-			delete (pn_21[i][j]);
-		pn_21.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_22.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_22.at(i).size(); j++ )
-			delete (pn_22[i][j]);
-		pn_22.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_max.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_max.at(i).size(); j++ )
-			delete (pn_max[i][j]);
-		pn_max.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_td.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_td.at(i).size(); j++ )
-			delete (pn_td[i][j]);
-		pn_td.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_mult.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_mult.at(i).size(); j++ )
-			delete (pn_mult[i][j]);
-		pn_mult.clear();
-	}
-
-	for( unsigned int i = 0; i < recoil_EdE.size(); i++ )
-		delete (recoil_EdE[i]);
-	
-	for( unsigned int i = 0; i < recoil_dEsum.size(); i++ )
-		delete (recoil_dEsum[i]);
-
-	pn_12.clear();
-	pn_21.clear();
-	pn_22.clear();
-	pn_max.clear();
-	pn_td.clear();
-	pn_mult.clear();
-	recoil_EdE.clear();
-	recoil_dEsum.clear();
-	
-	delete elum;
-	delete zd;
-	
-	delete tdiff;
-	delete fpga_td;
-	delete asic_td;
-	delete fpga_sync;
-	delete asic_sync;
-	delete caen_freq;
-	delete asic_freq;
-	delete fpga_freq;
-	delete asic_freq_diff;
-	delete fpga_freq_diff;
-	delete ebis_freq;
-	delete t1_freq;
-	delete asic_pulser_loss;
-	delete fpga_pulser_loss;
-
 	return n_entries;
 	
 }
@@ -1045,6 +967,88 @@ void EventBuilder::MakeEventHists(){
 	std::string hname, htitle;
 	std::string dirname, maindirname, subdirname;
 	
+	// ----------------- //
+	// Timing histograms //
+	// ----------------- //
+	dirname =  "timing";
+	if( !output_file->GetDirectory( dirname.data() ) )
+		output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+
+	tdiff = new TH1F( "tdiff", "Time difference to first trigger;#Delta t [ns]", 1e3, -10, 1e5 );
+
+	caen_freq = new TProfile( "caen_freq", "Frequency of pulser in CAEN DAQ as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
+
+	asic_td.resize( set->GetNumberOfArrayModules() );
+	asic_freq.resize( set->GetNumberOfArrayModules() );
+	asic_sync.resize( set->GetNumberOfArrayModules() );
+	asic_pulser_loss.resize( set->GetNumberOfArrayModules() );
+	asic_freq_diff.resize( set->GetNumberOfArrayModules() );
+	fpga_td.resize( set->GetNumberOfArrayModules() );
+	fpga_freq.resize( set->GetNumberOfArrayModules() );
+	fpga_sync.resize( set->GetNumberOfArrayModules() );
+	fpga_pulser_loss.resize( set->GetNumberOfArrayModules() );
+	fpga_freq_diff.resize( set->GetNumberOfArrayModules() );
+	
+	// Loop over ISS modules
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
+
+		hname = "asic_td_" + std::to_string(i);
+		htitle = "Time difference between ASIC and CAEN pulser events in module ";
+		htitle += std::to_string(i) + ";#Delta t [ns]";
+		asic_td[i] = new TH1F( hname.data(), htitle.data(), 16e3 , -400e3, 400e3 );
+		
+		hname = "asic_freq_" + std::to_string(i);
+		htitle = "Frequency of pulser in ISS DAQ (ASICs) as a function of time in module ";
+		htitle += std::to_string(i) + ";time [ns];f [Hz]";
+		asic_freq[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+		
+		hname = "asic_sync_" + std::to_string(i);
+		htitle = "Time difference between ASIC and CAEN events as a function of time in module ";
+		htitle += std::to_string(i) + ";time [ns];#Delta t [ns]";
+		asic_sync[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+		
+		hname = "asic_pulser_loss_" + std::to_string(i);
+		htitle = "Number of missing/extra pulser events in ASICs as a function of time in module ";
+		htitle += std::to_string(i) + ";time [ns];(-ive CAEN missing, +ive ISS missing)";
+		asic_pulser_loss[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+		
+		hname = "asic_freq_diff_" + std::to_string(i);
+		htitle = "Frequency difference of pulser events in ISS/CAEN DAQs from ASICs as a function of time in module ";
+		htitle += std::to_string(i) + ";#time [ns];#Delta f [Hz]";
+		asic_freq_diff[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+
+		hname = "fpga_td_" + std::to_string(i);
+		htitle = "Time difference between FPGA and CAEN pulser events in module ";
+		htitle += std::to_string(i) + ";#Delta t [ns]";
+		fpga_td[i] = new TH1F( hname.data(), htitle.data(), 16e3 , -400e3, 400e3 );
+
+		hname = "fpga_freq_" + std::to_string(i);
+		htitle = "Frequency of pulser in ISS DAQ (FPGA) as a function of time in module ";
+		htitle += std::to_string(i) + ";time [ns];f [Hz]";
+		fpga_freq[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+
+		hname = "fpga_sync_" + std::to_string(i);
+		htitle = "Number of missing/extra pulser events in FPGA as a function of time in module ";
+		htitle += std::to_string(i) + ";time [ns];(-ive CAEN missing, +ive ISS missing)";
+		fpga_sync[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+
+		hname = "fpga_pulser_loss_" + std::to_string(i);
+		htitle = "Frequency difference of pulser events in ISS/CAEN DAQs from FPGA as a function of time in module ";
+		htitle += std::to_string(i) + ";#time [ns];#Delta f [Hz]";
+		fpga_pulser_loss[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+
+		hname = "fpga_freq_diff_" + std::to_string(i);
+		htitle = "Time difference between FPGA and CAEN pulser events in module ";
+		htitle += std::to_string(i) + ";#Delta t [ns]";
+		fpga_freq_diff[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+
+	}
+
+	ebis_freq = new TProfile( "ebis_freq", "Frequency of EBIS events as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
+	t1_freq = new TProfile( "t1_freq", "Frequency of T1 events (p+ on ISOLDE target) as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
+
+	
 	// Make directories
 	maindirname = "array";
 
@@ -1107,7 +1111,7 @@ void EventBuilder::MakeEventHists(){
 			hname = "pn_td_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side vs. n-side time difference (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];counts";
-			pn_td[i][j] = new TH1F( hname.data(), htitle.data(), 10e3, -5e4, 5e4 );
+			pn_td[i][j] = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()+20, set->GetEventWindow()+20 );
 			
 			hname = "pn_mult_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side vs. n-side multiplicity (module ";
@@ -1117,34 +1121,6 @@ void EventBuilder::MakeEventHists(){
 		}
 		
 	}
-	
-	// ----------------- //
-	// Timing histograms //
-	// ----------------- //
-	dirname =  "timing";
-	if( !output_file->GetDirectory( dirname.data() ) )
-		output_file->mkdir( dirname.data() );
-	output_file->cd( dirname.data() );
-
-	tdiff = new TH1F( "tdiff", "Time difference to first trigger;#Delta t [ns]", 2e4+1, -1, 2e5 );
-
-	caen_freq = new TProfile( "caen_freq", "Frequency of pulser in CAEN DAQ as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
-
-	fpga_td = new TH1F( "fpga_td", "Time difference between FPGA and CAEN pulser events;#Delta t [ns]", 64e6 , -120e6, 200e6 );
-	fpga_freq = new TProfile( "fpga_freq", "Frequency of pulser in ISS DAQ (FPGA) as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
-	fpga_sync = new TProfile( "fpga_sync", "Time difference between FPGA and CAEN events as a function of time;time [ns];#Delta t [ns]", 10.8e3, 0, 10.8e12 );
-	fpga_pulser_loss = new TProfile( "fpga_pulser_loss", "Number of missing/extra pulser events in FPGA as a function of time;time [ns];(-ive CAEN missing, +ive ISS missing)", 10.8e3, 0, 10.8e12 );
-	fpga_freq_diff = new TProfile( "fpga_freq_diff", "Frequency difference of pulser events in ISS/CAEN DAQs from FPGA as a function of time;time [ns];#Delta f [Hz]", 10.8e3, 0, 10.8e12 );
-
-	asic_td = new TH1F( "asic_td", "Time difference between ASIC and CAEN pulser events;#Delta t [ns]", 64e6 , -120e6, 200e6 );
-	asic_freq = new TProfile( "asic_freq", "Frequency of pulser in ISS DAQ (ASICs) as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
-	asic_sync = new TProfile( "asic_sync", "Time difference between ASIC and CAEN events as a function of time;time [ns];#Delta t [ns]", 10.8e3, 0, 10.8e12 );
-	asic_pulser_loss = new TProfile( "asic_pulser_loss", "Number of missing/extra pulser events in ASICs as a function of time;time [ns];(-ive CAEN missing, +ive ISS missing)", 10.8e3, 0, 10.8e12 );
-	asic_freq_diff = new TProfile( "asic_freq_diff", "Frequency difference of pulser events in ISS/CAEN DAQs from ASICs as a function of time;time [ns];#Delta f [Hz]", 10.8e3, 0, 10.8e12 );
-
-	ebis_freq = new TProfile( "ebis_freq", "Frequency of EBIS events as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
-	t1_freq = new TProfile( "t1_freq", "Frequency of T1 events (p+ on ISOLDE target) as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
-
 	
 	// ----------------- //
 	// Recoil histograms //
@@ -1197,5 +1173,101 @@ void EventBuilder::MakeEventHists(){
 
 	return;
 	
+}
+
+void EventBuilder::CleanHists() {
+
+	// Clean up the histograms to save memory for later
+	for( unsigned int i = 0; i < pn_11.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_11.at(i).size(); j++ )
+			delete (pn_11[i][j]);
+		pn_11.clear();
+	}
+
+	for( unsigned int i = 0; i < pn_12.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_12.at(i).size(); j++ )
+			delete (pn_12[i][j]);
+		pn_12.clear();
+	}
+
+	for( unsigned int i = 0; i < pn_21.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_21.at(i).size(); j++ )
+			delete (pn_21[i][j]);
+		pn_21.clear();
+	}
+
+	for( unsigned int i = 0; i < pn_22.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_22.at(i).size(); j++ )
+			delete (pn_22[i][j]);
+		pn_22.clear();
+	}
+
+	for( unsigned int i = 0; i < pn_max.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_max.at(i).size(); j++ )
+			delete (pn_max[i][j]);
+		pn_max.clear();
+	}
+
+	for( unsigned int i = 0; i < pn_td.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_td.at(i).size(); j++ )
+			delete (pn_td[i][j]);
+		pn_td.clear();
+	}
+
+	for( unsigned int i = 0; i < pn_mult.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_mult.at(i).size(); j++ )
+			delete (pn_mult[i][j]);
+		pn_mult.clear();
+	}
+
+	for( unsigned int i = 0; i < recoil_EdE.size(); i++ )
+		delete (recoil_EdE[i]);
+	
+	for( unsigned int i = 0; i < recoil_dEsum.size(); i++ )
+		delete (recoil_dEsum[i]);
+
+	pn_12.clear();
+	pn_21.clear();
+	pn_22.clear();
+	pn_max.clear();
+	pn_td.clear();
+	pn_mult.clear();
+	recoil_EdE.clear();
+	recoil_dEsum.clear();
+	
+	delete elum;
+	delete zd;
+
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
+		delete (fpga_td[i]);
+		delete (fpga_sync[i]);
+		delete (fpga_freq[i]);
+		delete (fpga_freq_diff[i]);
+		delete (fpga_pulser_loss[i]);
+		delete (asic_td[i]);
+		delete (asic_sync[i]);
+		delete (asic_freq[i]);
+		delete (asic_freq_diff[i]);
+		delete (asic_pulser_loss[i]);
+	}
+		
+	fpga_td.clear();
+	fpga_sync.clear();
+	fpga_freq.clear();
+	fpga_freq_diff.clear();
+	fpga_pulser_loss.clear();
+	asic_td.clear();
+	asic_sync.clear();
+	asic_freq.clear();
+	asic_freq_diff.clear();
+	asic_pulser_loss.clear();
+	
+	delete tdiff;
+	delete caen_freq;
+	delete ebis_freq;
+	delete t1_freq;
+
+	return;
+
 }
 

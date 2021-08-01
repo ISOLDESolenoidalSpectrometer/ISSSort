@@ -182,7 +182,7 @@ TVector2 ArrayEvt::GetPhiXY(){
 
 TVector3 ArrayEvt::GetPosition(){
 	
-	TVector3 pos;
+	TVector3 pos( GetX(), GetY(), GetZ() );
 	
 	return pos;
 	

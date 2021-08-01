@@ -84,6 +84,7 @@ public:
 	inline void CloseOutput(){
 		output_file->Close();
 	};
+	void CleanHists();
 
 
 private:
@@ -127,18 +128,18 @@ private:
 
 	// Flags
 	bool flag_close_event;
-	bool flag_fpga_pulser;
-	bool flag_asic_pulser;
-	bool flag_caen_pulser, flag_caen_pulser2;
+	bool flag_caen_pulser;
 	std::vector<bool> flag_pause, flag_resume;
 
 	// Time variables
 	long		 		time_diff;
 	unsigned long long	time_prev, time_min, time_max, time_first;
 	unsigned long long  ebis_time, t1_time, ebis_prev, t1_prev;
-	unsigned long long	asic_time, fpga_time, caen_time, asic_prev, fpga_prev, caen_prev;
+	unsigned long long	caen_time, caen_prev;
 	double asic_hz, fpga_hz, caen_hz, ebis_hz, t1_hz;
 	double fpga_tdiff, asic_tdiff;
+	std::vector<unsigned long long> fpga_time, fpga_prev;
+	std::vector<unsigned long long> asic_time, asic_prev;
 	std::vector<unsigned long long> pause_time, resume_time, asic_dead_time;
 	std::vector<unsigned long long> asic_time_start, asic_time_stop;
 	std::vector<unsigned long long> caen_time_start, caen_time_stop;
@@ -191,9 +192,10 @@ private:
 	unsigned int		hit_ctr, array_ctr, recoil_ctr, elum_ctr, zd_ctr;
 	unsigned long		n_asic_data, n_caen_data, n_info_data;
 	unsigned long long	n_entries;
-	unsigned long		n_caen_pulser, n_fpga_pulser, n_asic_pulser;
+	unsigned long		n_caen_pulser;
 	unsigned long		n_ebis, n_t1;
-	std::vector<unsigned long>	n_asic_pause, n_asic_resume;
+	std::vector<unsigned long>	n_fpga_pulser;
+	std::vector<unsigned long>	n_asic_pause, n_asic_resume, n_asic_pulser;
 
 	// Array Histograms
 	std::vector<std::vector<TH2F*>> pn_11;
@@ -206,12 +208,12 @@ private:
 
 	// Timing histograms
 	TH1F *tdiff;
-	TH1F *fpga_td, *asic_td;
-	TProfile *fpga_sync, *asic_sync;
-	TProfile *caen_freq, *asic_freq, *fpga_freq;
-	TProfile *asic_freq_diff, *fpga_freq_diff;
-	TProfile *ebis_freq, *t1_freq;
-	TProfile *asic_pulser_loss, *fpga_pulser_loss;
+	TProfile *caen_freq, *ebis_freq, *t1_freq;
+	std::vector<TH1F*> fpga_td, asic_td;
+	std::vector<TProfile*> fpga_pulser_loss, fpga_freq_diff;
+	std::vector<TProfile*> fpga_freq, fpga_sync;
+	std::vector<TProfile*> asic_pulser_loss, asic_freq_diff;
+	std::vector<TProfile*> asic_freq, asic_sync;
 
 	// Recoil histograms
 	std::vector<TH2F*> recoil_EdE;

@@ -9,8 +9,14 @@
 #include "TEnv.h"
 #include "TMath.h"
 #include "TObject.h"
+#include "TFile.h"
+#include "TCutG.h"
 
 #include "TVector3.h"
+
+#define u_mass 931492.10142f;	///< 1 atomic mass unit in keV/c^2
+#define c_mm_ns 0.299792458f;	///< speed of light in mm/ns
+
 
 /// A class to read in the reaction file in ROOT's TConfig format.
 /// And also to do the physics stuff for the reaction
@@ -24,8 +30,9 @@ public:
 	~Particle();
 	
 	// Get properties
-	inline float	GetMass(){ return mass; }; // returns mass in u
-	inline int	GetA(){ return (int)(mass+0.499); };	// returns A instead
+	inline float	GetMass_u(){ return A; };			// returns mass in u
+	inline float	GetMass(){ return A*u_mass; };		// returns mass in keV/c^2
+	inline int	GetA(){ return (int)(A+0.499); };	// returns mass number
 	inline int	GetZ(){ return Z; };
 	inline float	GetEnergyCM(){ return Ecm; };
 	inline float	GetEnergyLab(){ return Elab; };
@@ -35,7 +42,7 @@ public:
 	inline float	GetQ(){ return Q; };
 
 	// Set properties
-	inline void		SetMass( float mymass ){ mass = mymass; };
+	inline void		SetA( float myA ){ A = myA; };
 	inline void		SetZ( int myZ ){ Z = myZ; };
 	inline void		SetEnergyCM( float myEcm ){ Ecm = myEcm; };
 	inline void		SetEnergyLab( float myElab ){ Elab = myElab; };
@@ -48,7 +55,7 @@ public:
 private:
 	
 	// Properties of reaction particles
-	float	mass;		///< mass in atomic units, u
+	float	A;			///< mass in atomic units, u
 	int		Z; 			///< The Z of the particle, obviously
 	float	Elab;		///< energy in the laboratory system
 	float	Ecm;		///< energy in the centre of mass frame
@@ -87,12 +94,20 @@ public:
 	
 	// Get values
 	inline float GetField(){ return Mfield; };
-	inline float GetThetaCM(){ return Recoil.GetThetaCM(); };
+	inline float GetField_corr(){ return Mfield*c_mm_ns; };
+	inline float GetThetaCM(){ return Ejectile.GetThetaCM(); };
 	inline float GetZ(){ return z; };
 	inline float GetEx(){ return Recoil.GetEx(); };
 
 	// Set values
 	inline void	SetField( float m ){ Mfield = m; };
+	
+	// Get cuts
+	unsigned int ncuts;
+	inline TCutG* GetRecoilCut( unsigned int i ){
+		if( i < ncuts ) return recoil_cut.at(i);
+		else return nullptr;
+	};
 	
 private:
 
@@ -112,8 +127,10 @@ private:
 	float rho;			///< Distance from the beam axis to the interaction point in the detector
 	float z;				///< projected z distance from target that ejectile interesect the beam axis
 	
-	// Constants
-	const float u_mass = 931492.10142;	///< 1 atomic mass unit in keV/c^2
+	// Cuts
+	std::vector<std::string> cutfile, cutname;
+	TFile *recoil_file;
+	std::vector<TCutG*> recoil_cut;
 	
 };
 

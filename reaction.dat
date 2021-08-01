@@ -30,6 +30,13 @@
 #Mfield: 2.0		# Magnetic field strength in Tesla 
 
 
-## Recoil cut file
-#RecoilCutFile: NULL	# ROOT file containing the 2D recoil energy cut
-#RecoilCutName: cut	# name of the TCutG object inside the ROOT file
+## Recoil cut files
+#NumberOfRecoilCuts: 4	# this should be equal to the number of sectors of the recoil detector for now
+#RecoilCut_0.File: NULL	# ROOT file containing the 2D recoil energy cut for sector 0
+#RecoilCut_0.Name: CUTG	# name of the TCutG object inside the ROOT file for sector 0
+#RecoilCut_1.File: NULL	# sector 1
+#RecoilCut_1.Name: CUTG	# sector 1
+#RecoilCut_2.File: NULL	# sector 2
+#RecoilCut_2.Name: CUTG	# sector 2
+#RecoilCut_3.File: NULL	# sector 3
+#RecoilCut_3.Name: CUTG	# sector 3

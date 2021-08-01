@@ -4,8 +4,9 @@ Histogrammer::Histogrammer( Reaction *myreact, Settings *myset ){
 	
 	react = myreact;
 	set = myset;
-	
+		
 }
+
 Histogrammer::~Histogrammer(){}
 
 
@@ -86,22 +87,22 @@ void Histogrammer::MakeHists() {
 		
 		hname = "Ex_" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
-		htitle += ";#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
+		htitle += ";Excitation energy [keV];Counts per mm per 20 keV";
 		Ex_mod[j] = new TH1F( hname.data(), htitle.data(), 800, 0, 16000 );
 
 		hname = "Ex_ebis_" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
-		htitle += " gated by EBIS;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
+		htitle += " gated by EBIS;Excitation energy [keV];Counts per mm per 20 keV";
 		Ex_ebis_mod[j] = new TH1F( hname.data(), htitle.data(), 800, 0, 16000 );
 		
 		hname = "Ex_recoil_" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
-		htitle += " gated by recoils;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
+		htitle += " gated by recoils;Excitation energy [keV];Counts per mm per 20 keV";
 		Ex_recoil_mod[j] = new TH1F( hname.data(), htitle.data(), 800, 0, 16000 );
 		
 		hname = "Ex_recoilT_" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
-		htitle += " with a time gate on all recoils;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
+		htitle += " with a time gate on all recoils;Excitation energy [keV];Counts per mm per 20 keV";
 		Ex_recoilT_mod[j] = new TH1F( hname.data(), htitle.data(), 800, 0, 16000 );
 		
 		hname = "Ex_vs_theta_" + std::to_string(j);
@@ -213,18 +214,31 @@ void Histogrammer::MakeHists() {
 	
 }
 
-void Histogrammer::FillHists() {
+unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 	
 	/// Main function to fill the histograms
 	n_entries = input_tree->GetEntries();
 
-	std::cout << " Filling physics histograms: number of entries in event tree = ";
+	std::cout << " Histogrammer: number of entries in event tree = ";
 	std::cout << n_entries << std::endl;
+	
+	if( start_fill == n_entries ){
+	
+		std::cout << " Histogrammer: Nothing to do..." << std::endl;
+		return n_entries;
+	
+	}
+	else {
+	
+		std::cout << " Histogrammer: Start filling at event #";
+		std::cout << std::to_string( start_fill ) << std::endl;
+	
+	}
 	
 	// ------------------------------------------------------------------------ //
 	// Main loop over TTree to find events
 	// ------------------------------------------------------------------------ //
-	for( unsigned int i = 0; i < n_entries; ++i ){
+	for( unsigned int i = start_fill; i < n_entries; ++i ){
 
 		// Current event data
 		input_tree->GetEntry(i);
@@ -276,13 +290,26 @@ void Histogrammer::FillHists() {
 				// Check for prompt events with recoils
 				if( PromptCoincidence( recoil_evt, array_evt ) ){
 				
-					E_vs_z_recoil->Fill( array_evt->GetZ(), array_evt->GetEnergy() );
-					E_vs_z_recoil_mod[array_evt->GetModule()]->Fill( array_evt->GetZ(), array_evt->GetEnergy() );
-					Ex_recoil->Fill( react->GetEx() );
-					Ex_recoil_mod[array_evt->GetModule()]->Fill( react->GetEx() );
-					Ex_vs_theta_recoil->Fill( react->GetThetaCM(), react->GetEx() );
-					Ex_vs_theta_recoil_mod[array_evt->GetModule()]->Fill( react->GetThetaCM(), react->GetEx() );
+					E_vs_z_recoilT->Fill( array_evt->GetZ(), array_evt->GetEnergy() );
+					E_vs_z_recoilT_mod[array_evt->GetModule()]->Fill( array_evt->GetZ(), array_evt->GetEnergy() );
+					Ex_recoilT->Fill( react->GetEx() );
+					Ex_recoilT_mod[array_evt->GetModule()]->Fill( react->GetEx() );
+					Ex_vs_theta_recoilT->Fill( react->GetThetaCM(), react->GetEx() );
+					Ex_vs_theta_recoilT_mod[array_evt->GetModule()]->Fill( react->GetThetaCM(), react->GetEx() );
 
+					// Add an energy gate
+					if( RecoilCut( recoil_evt ) ) {
+					
+						E_vs_z_recoil->Fill( array_evt->GetZ(), array_evt->GetEnergy() );
+						E_vs_z_recoil_mod[array_evt->GetModule()]->Fill( array_evt->GetZ(), array_evt->GetEnergy() );
+						Ex_recoil->Fill( react->GetEx() );
+						Ex_recoil_mod[array_evt->GetModule()]->Fill( react->GetEx() );
+						Ex_vs_theta_recoil->Fill( react->GetThetaCM(), react->GetEx() );
+						Ex_vs_theta_recoil_mod[array_evt->GetModule()]->Fill( react->GetThetaCM(), react->GetEx() );
+						
+					
+					} // energy cuts
+								
 				} // prompt	
 
 			} // recoils		
@@ -321,8 +348,16 @@ void Histogrammer::FillHists() {
 				// Check for prompt events with recoils
 				if( PromptCoincidence( recoil_evt, elum_evt ) ){
 				
-					elum_recoil->Fill( elum_evt->GetEnergy() );
-					elum_recoil_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
+					elum_recoilT->Fill( elum_evt->GetEnergy() );
+					elum_recoilT_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
+					
+					// Add an energy gate
+					if( RecoilCut( recoil_evt ) ) {
+					
+						elum_recoil->Fill( elum_evt->GetEnergy() );
+						elum_recoil_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );						
+					
+					} // energy cuts			
 				
 				} // prompt	
 
@@ -343,7 +378,7 @@ void Histogrammer::FillHists() {
 	
 	output_file->Write();
 	
-	return;
+	return n_entries;
 	
 }
 

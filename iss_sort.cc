@@ -28,7 +28,7 @@
 
 // Default parameters and name
 std::string output_name;
-std::string datadir_name = "/eos/experiment/isolde-iss/2021/";
+std::string datadir_name = "/eos/experiment/isolde-iss/2021/ISS";
 std::string name_set_file;
 std::string name_cal_file;
 std::string name_react_file;
@@ -62,7 +62,7 @@ Reaction *react;
 THttpServer *serv;
 Bool_t bRunMon = kTRUE;
 Bool_t bFirstRun = kTRUE;
-string curFileMon;
+std::string curFileMon;
 int port_num = 8030;
 
 // Function to call the monitoring loop
@@ -73,6 +73,7 @@ void* monitor_run( void* ptr ){
 	Converter conv_mon( set );
 	TimeSorter sort_mon;
 	EventBuilder eb_mon( set );
+	Histogrammer hist_mon( react, set );
 
 	// Data/Event counters
 	int start_block = 0;
@@ -83,6 +84,8 @@ void* monitor_run( void* ptr ){
 	unsigned long nsort = 0;
 	unsigned long start_build = 0;
 	unsigned long nbuild = 0;
+	unsigned long start_fill = 0;
+	unsigned long nfill = 0;
 
 	// Converter setup
 	curFileMon = input_names.at(0); // maybe change in GUI later?
@@ -116,6 +119,14 @@ void* monitor_run( void* ptr ){
 		nbuild = eb_mon.BuildEvents( start_build );
 		start_build = nbuild;
 		
+		// Histogrammer
+		if( bFirstRun ) {
+			hist_mon.SetInputTree( eb_mon.GetTree() );
+			hist_mon.SetOutput( "monitor_hists.root" );
+		}
+		nfill = hist_mon.FillHists( start_fill );
+		start_fill = nfill;
+		
 		// If this was the first time we ran, do stuff?
 		if( bFirstRun ) {
 			
@@ -136,9 +147,9 @@ void* monitor_run( void* ptr ){
 	}
 	
 	conv_mon.CloseOutput();
-	//calib_mon.CloseOutput();
 	sort_mon.CloseOutput();
 	eb_mon.CloseOutput();
+	hist_mon.CloseOutput();
 
 	return 0;
 	
@@ -148,7 +159,7 @@ void* monitor_run( void* ptr ){
 void start_http(){
 
 	// Server for JSROOT
-	string server_name = "http:" + to_string(port_num) + "?top=ISSDAQMonitoring";
+	std::string server_name = "http:" + std::to_string(port_num) + "?top=ISSDAQMonitoring";
 	serv = new THttpServer( server_name.data() );
 	serv->SetReadOnly(kFALSE);
 
@@ -420,7 +431,7 @@ int main( int argc, char *argv[] ){
 	std::cout << "\n +++ ISS Analysis:: processing EventBuilder +++" << std::endl;
 
 	eb.SetOutput( output_name );
-	std::vector<string> name_event_files;
+	std::vector<std::string> name_event_files;
 	
 	// Update calibration file if given
 	if( overwrite_cal ) eb.AddCalibration( cal );
@@ -436,6 +447,8 @@ int main( int argc, char *argv[] ){
 
 	// Then build events
 	eb.BuildEvents();
+	eb.CleanHists();
+
 	
 	
 	//------------------------------//
@@ -446,7 +459,7 @@ int main( int argc, char *argv[] ){
 
 	std::cout << "\n +++ ISS Analysis:: processing Histogrammer +++" << std::endl;
 
-	std::string output_name_hists = output_name.substr( 0, output_name.find_last_of("_") );
+	std::string output_name_hists = output_name.substr( 0, output_name.find_last_of(".") );
 	output_name_hists += "_hists.root";
 	hist.SetOutput( output_name_hists.data() );
 	hist.FillHists();
@@ -458,7 +471,7 @@ int main( int argc, char *argv[] ){
 	// because I am using a pointer to the tree in memory
 	eb.CloseOutput();
 	
-	cout << "Finished!\n";
+	std::cout << "Finished!\n";
 			
 	return 0;
 	
