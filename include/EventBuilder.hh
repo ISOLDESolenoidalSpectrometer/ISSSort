@@ -55,10 +55,12 @@ public:
 	EventBuilder( Settings *myset );
 	virtual ~EventBuilder();
 
+	void	SetInputFile( std::string input_file_name );
 	void	SetInputFile( std::vector<std::string> input_file_names );
 	void	SetInputTree( TTree* user_tree );
 	void	SetOutput( std::string output_file_name );
-	void	Initialise();
+	void	StartFile();	///< called for every file
+	void	Initialise();	///< called for every event
 	void	MakeEventHists();
 	
 	inline void AddCalibration( Calibration *mycal ){

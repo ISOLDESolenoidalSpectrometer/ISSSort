@@ -9,58 +9,25 @@ EventBuilder::EventBuilder( Settings *myset ){
 	// Initialise variables and flags
 	// ------------------------------------------------------------------------ //
 	build_window = set->GetEventWindow();
-	
-	time_prev = 0;
-	caen_time = 0;
-	caen_prev = 0;
-	ebis_prev = 0;
-	t1_prev = 0;
 
-	n_asic_data	= 0;
-	n_caen_data	= 0;
-	n_info_data	= 0;
+	n_fpga_pulser.resize( set->GetNumberOfArrayModules() );
+	n_asic_pulser.resize( set->GetNumberOfArrayModules() );
+	n_asic_pause.resize( set->GetNumberOfArrayModules() );
+	n_asic_resume.resize( set->GetNumberOfArrayModules() );
+	flag_pause.resize( set->GetNumberOfArrayModules() );
+	flag_resume.resize( set->GetNumberOfArrayModules() );
+	pause_time.resize( set->GetNumberOfArrayModules() );
+	resume_time.resize( set->GetNumberOfArrayModules() );
+	asic_dead_time.resize( set->GetNumberOfArrayModules() );
+	asic_time_start.resize( set->GetNumberOfArrayModules() );
+	asic_time_stop.resize( set->GetNumberOfArrayModules() );
+	asic_time.resize( set->GetNumberOfArrayModules() );
+	asic_prev.resize( set->GetNumberOfArrayModules() );
+	fpga_time.resize( set->GetNumberOfArrayModules() );
+	fpga_prev.resize( set->GetNumberOfArrayModules() );
+	caen_time_start.resize( set->GetNumberOfCAENModules() );
+	caen_time_stop.resize( set->GetNumberOfCAENModules() );
 
-	n_caen_pulser = 0;
-
-	n_ebis	= 0;
-	n_t1	= 0;
-
-	array_ctr	= 0;
-	recoil_ctr	= 0;
-	elum_ctr	= 0;
-	zd_ctr		= 0;
-	
-	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
-	
-		n_fpga_pulser.push_back( 0 );
-		n_asic_pulser.push_back( 0 );
-		n_asic_pause.push_back( 0 );
-		n_asic_resume.push_back( 0 );
-		flag_pause.push_back( false );
-		flag_resume.push_back( false );
-		pause_time.push_back( 0 );
-		resume_time.push_back( 0 );
-		asic_dead_time.push_back( 0 );
-		asic_time_start.push_back( 0 );
-		asic_time_stop.push_back( 0 );
-		asic_time.push_back( 0 );
-		asic_prev.push_back( 0 );
-		fpga_time.push_back( 0 );
-		fpga_prev.push_back( 0 );
-
-	}
-	
-	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
-
-		caen_time_start.push_back( 0 );
-		caen_time_stop.push_back( 0 );
-
-	}
-	
-	// Some flags must be false to start
-	flag_caen_pulser = false;
-
-	
 	// p-side = 0; n-side = 1;
 	asic_side.push_back(0); // asic 0 = p-side
 	asic_side.push_back(1); // asic 1 = n-side
@@ -152,9 +119,67 @@ EventBuilder::~EventBuilder(){
 
 }
 
+void EventBuilder::StartFile(){
+	
+	// Call for every new file
+	// Reset counters etc.
+	
+	time_prev = 0;
+	caen_time = 0;
+	caen_prev = 0;
+	ebis_prev = 0;
+	t1_prev = 0;
+
+	n_asic_data	= 0;
+	n_caen_data	= 0;
+	n_info_data	= 0;
+
+	n_caen_pulser = 0;
+
+	n_ebis	= 0;
+	n_t1	= 0;
+
+	array_ctr	= 0;
+	recoil_ctr	= 0;
+	elum_ctr	= 0;
+	zd_ctr		= 0;
+	
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
+	
+		n_fpga_pulser[i] = 0;
+		n_asic_pulser[i] = 0;
+		n_asic_pause[i] = 0;
+		n_asic_resume[i] = 0;
+		flag_pause[i] = false;
+		flag_resume[i] = false;
+		pause_time[i] = 0;
+		resume_time[i] = 0;
+		asic_dead_time[i] = 0;
+		asic_time_start[i] = 0;
+		asic_time_stop[i] = 0;
+		asic_time[i] = 0;
+		asic_prev[i] = 0;
+		fpga_time[i] = 0;
+		fpga_prev[i] = 0;
+
+	}
+	
+	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
+
+		caen_time_start[i] = 0;
+		caen_time_stop[i] = 0;
+
+	}
+	
+	// Some flags must be false to start
+	flag_caen_pulser = false;
+
+	
+}
+
 void EventBuilder::SetInputFile( std::vector<std::string> input_file_names ) {
 	
-	/// Overlaoded function for a single file or multiple files
+	/// Overloaded function for a single file or multiple files
 	input_tree = new TChain( "iss_sort" );
 	for( unsigned int i = 0; i < input_file_names.size(); i++ ) {
 	
@@ -162,6 +187,21 @@ void EventBuilder::SetInputFile( std::vector<std::string> input_file_names ) {
 		
 	}
 	input_tree->SetBranchAddress( "data", &in_data );
+	
+	StartFile();
+
+	return;
+	
+}
+
+void EventBuilder::SetInputFile( std::string input_file_name ) {
+	
+	/// Overloaded function for a single file or multiple files
+	input_tree = new TChain( "iss_sort" );
+	input_tree->Add( input_file_name.data() );
+	input_tree->SetBranchAddress( "data", &in_data );
+
+	StartFile();
 
 	return;
 	
@@ -172,6 +212,8 @@ void EventBuilder::SetInputTree( TTree *user_tree ){
 	// Find the tree and set branch addresses
 	input_tree = (TChain*)user_tree;
 	input_tree->SetBranchAddress( "data", &in_data );
+
+	StartFile();
 
 	return;
 	
@@ -669,6 +711,8 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 	output_file->Write( 0, TObject::kWriteDelete );
 	//output_file->Print();
 	//output_file->Close();
+	
+	std::cout << std::endl;
 	
 	return n_entries;
 	

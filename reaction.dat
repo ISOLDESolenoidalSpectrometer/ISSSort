@@ -31,7 +31,6 @@
 
 
 ## Recoil cut files
-#NumberOfRecoilCuts: 4	# this should be equal to the number of sectors of the recoil detector for now
 #RecoilCut_0.File: NULL	# ROOT file containing the 2D recoil energy cut for sector 0
 #RecoilCut_0.Name: CUTG	# name of the TCutG object inside the ROOT file for sector 0
 #RecoilCut_1.File: NULL	# sector 1

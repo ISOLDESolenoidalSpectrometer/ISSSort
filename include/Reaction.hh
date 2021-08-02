@@ -16,6 +16,12 @@
 #include "Math/RootFinderAlgorithms.h"
 #include "Math/Functor.h"
 
+// Settings header
+#ifndef __SETTINGS_HH
+# include "Settings.hh"
+#endif
+
+
 #define u_mass 931492.10142f;	///< 1 atomic mass unit in keV/c^2
 #define c_mm_ns 299.792458f;	///< speed of light in mm/ns
 
@@ -35,8 +41,8 @@ public:
 	// Get properties
 	inline float	GetMass_u(){ return A; };			// returns mass in u
 	inline float	GetMass(){ return A*u_mass; };		// returns mass in keV/c^2
-	inline int	GetA(){ return (int)(A+0.499); };	// returns mass number
-	inline int	GetZ(){ return Z; };
+	inline int		GetA(){ return (int)(A+0.499); };	// returns mass number
+	inline int		GetZ(){ return Z; };
 	inline float	GetEnergyCM(){ return Ecm; };
 	inline float	GetEnergyLab(){ return Elab; };
 	inline float	GetThetaCM(){ return ThetaCM; };
@@ -77,7 +83,7 @@ class Reaction {
 public:
 	
 	// setup functions
-	Reaction( std::string filename );
+	Reaction( std::string filename, Settings *myset );
 	~Reaction();
 	
 	// Main functions
@@ -115,6 +121,9 @@ public:
 private:
 
 	std::string fInputFile;
+	
+	// Settings file
+	Settings *set;
 
 	// Stuff with the magnet
 	float Mfield; ///< Magnetic field strength in Telsa
@@ -128,7 +137,7 @@ private:
 	// Experimental info on the ejectile
 	TVector3 ejec_vec;	///< 3-vector for the ejectile at the point in intersects the detector array
 	float rho;			///< Distance from the beam axis to the interaction point in the detector
-	float z;				///< projected z distance from target that ejectile interesect the beam axis
+	float z;			///< projected z distance from target that ejectile interesect the beam axis
 	
 	// Cuts
 	std::vector<std::string> cutfile, cutname;

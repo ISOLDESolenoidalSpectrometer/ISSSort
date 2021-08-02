@@ -36,10 +36,12 @@ std::vector<std::string> input_names;
 
 // a flag at the input to force the conversion
 bool flag_convert = false;
+bool flag_events = false;
 
 // select what steps of the analysis to be forced
 std::vector<bool> force_convert;
 bool force_sort = false;
+bool force_events = false;
 
 // Flag for somebody needing help on command line
 bool help_flag = false;
@@ -193,9 +195,10 @@ int main( int argc, char *argv[] ){
 	interface->Add("-i", "List of input files", &input_names );
 	interface->Add("-m", "Monitor input file every X seconds", &mon_time );
 	interface->Add("-p", "Port number for web server (default 8030)", &port_num );
-	interface->Add("-o", "Output file for events tree", &output_name );
+	interface->Add("-o", "Output file for histogram file", &output_name );
 	interface->Add("-d", "Data directory to add to the monitor", &datadir_name );
 	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
+	interface->Add("-e", "Flag to force new event builder (new calibration)", &flag_events );
 	interface->Add("-s", "Settings file", &name_set_file );
 	interface->Add("-c", "Calibration file", &name_cal_file );
 	interface->Add("-r", "Reaction file", &name_react_file );
@@ -236,8 +239,8 @@ int main( int argc, char *argv[] ){
 	// Check the ouput file name
 	if( output_name.length() == 0 ) {
 	
-		if( input_names.size() == 1 ) output_name = input_names.at(0) + "_events.root";
-		else output_name = input_names.at(0).substr( 0, input_names.at(0).find_last_of("/") ) + "_events.root";
+		if( input_names.size() == 1 ) output_name = input_names.at(0) + "_hists.root";
+		else output_name = input_names.at(0).substr( 0, input_names.at(0).find_last_of("/") ) + "output_hists.root";
 		
 	}
 	
@@ -283,7 +286,7 @@ int main( int argc, char *argv[] ){
 	
 	set = new Settings( name_set_file );
 	cal = new Calibration( name_cal_file, set );
-	react = new Reaction( name_react_file );
+	react = new Reaction( name_react_file, set );
 
 
 	
@@ -384,7 +387,6 @@ int main( int argc, char *argv[] ){
 		name_input_file = input_names.at(i) + ".root";
 		name_output_file = input_names.at(i) + "_sort.root";
 
-
 		// We need to time sort it if we just converted it
 		if( flag_convert || force_convert.at(i) )
 			force_sort = true;
@@ -429,49 +431,79 @@ int main( int argc, char *argv[] ){
 	//-----------------------//
 	EventBuilder eb( set );
 	std::cout << "\n +++ ISS Analysis:: processing EventBuilder +++" << std::endl;
-
-	eb.SetOutput( output_name );
-	std::vector<std::string> name_event_files;
 	
 	// Update calibration file if given
 	if( overwrite_cal ) eb.AddCalibration( cal );
 
-	// We are going to chain all the files now
+	// Do event builder for each file individually
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 			
 		name_input_file = input_names.at(i) + "_sort.root";
-		name_event_files.push_back( name_input_file );
-	
+		name_output_file = input_names.at(i) + "_events.root";
+
+		// We need to time sort it if we just converted it
+		// specific request to do new event build with -e
+		// this is useful if you need to add a new calibration
+		if( flag_convert || force_convert.at(i) || flag_events )
+			force_events = true;
+
+		// If it doesn't exist, we have to sort it anyway
+		else {
+			
+			ftest.open( name_output_file.data() );
+			if( !ftest.is_open() ) force_events = true;
+			else {
+				
+				ftest.close();
+				rtest = new TFile( name_output_file.data() );
+				if( rtest->IsZombie() ) force_events = true;
+				if( !force_events )
+					std::cout << name_output_file << " already sorted" << std::endl;
+				rtest->Close();
+				
+			}
+			
+		}
+		
+		if( force_events ) {
+
+			std::cout << name_input_file << " --> ";
+			std::cout << name_output_file << std::endl;
+
+			eb.SetInputFile( name_input_file );
+			eb.SetOutput( name_output_file );
+			eb.BuildEvents();
+			eb.CloseOutput();
+		
+			force_events = false;
+			
+		}
+		
 	}
-	eb.SetInputFile( name_event_files );
-
-	// Then build events
-	eb.BuildEvents();
-	eb.CleanHists();
-
 	
 	
 	//------------------------------//
 	// Finally make some histograms //
 	//------------------------------//
 	Histogrammer hist( react, set );
-	hist.SetInputTree( eb.GetTree() );
-
 	std::cout << "\n +++ ISS Analysis:: processing Histogrammer +++" << std::endl;
 
-	std::string output_name_hists = output_name.substr( 0, output_name.find_last_of(".") );
-	output_name_hists += "_hists.root";
-	hist.SetOutput( output_name_hists.data() );
+	hist.SetOutput( output_name );
+	std::vector<std::string> name_hist_files;
+	
+	// We are going to chain all the event files now
+	for( unsigned int i = 0; i < input_names.size(); i++ ){
+
+		name_output_file = input_names.at(i) + "_events.root";
+		name_hist_files.push_back( name_output_file );
+		
+	}
+
+	hist.SetInputFile( name_hist_files );
 	hist.FillHists();
 	hist.CloseOutput();
-
 	
-	// Now we can close the event builder file...
-	// We need to keep it open during the histogramming
-	// because I am using a pointer to the tree in memory
-	eb.CloseOutput();
-	
-	std::cout << "Finished!\n";
+	std::cout << "\n\nFinished!\n";
 			
 	return 0;
 	

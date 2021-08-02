@@ -26,16 +26,17 @@ double newton_function( double *x, double *params ){
 
 
 // Reaction things
-Reaction::Reaction( std::string filename ){
+Reaction::Reaction( std::string filename, Settings *myset ){
 		
 	// Get the info from the user input
+	set = myset;
 	SetFile( filename );
 	ReadReaction();
 	
 }
 Reaction::~Reaction(){
 
-	for( unsigned int i; i < recoil_cut.size(); ++i )
+	for( unsigned int i = 0; i < recoil_cut.size(); ++i )
 		delete (recoil_cut[i]);
 	recoil_cut.clear();
 	//recoil_file->Close();
@@ -68,7 +69,7 @@ void Reaction::ReadReaction() {
 	Recoil.SetZ( config->GetValue( "RecoilZ", 12 ) );
 	
 	// Get recoil energy cut
-	ncuts = config->GetValue( "NumberOfRecoilCuts", 4 );
+	ncuts = set->GetNumberOfRecoilSectors();
 	recoil_cut.resize( ncuts );
 	cutfile.resize( ncuts );
 	cutname.resize( ncuts );
