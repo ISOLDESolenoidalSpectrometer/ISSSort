@@ -11,11 +11,14 @@
 #include "TObject.h"
 #include "TFile.h"
 #include "TCutG.h"
-
 #include "TVector3.h"
+#include "TF1.h"
+#include "Math/RootFinderAlgorithms.h"
+#include "Math/Functor.h"
 
 #define u_mass 931492.10142f;	///< 1 atomic mass unit in keV/c^2
-#define c_mm_ns 0.299792458f;	///< speed of light in mm/ns
+#define c_mm_ns 299.792458f;	///< speed of light in mm/ns
+
 
 
 /// A class to read in the reaction file in ROOT's TConfig format.

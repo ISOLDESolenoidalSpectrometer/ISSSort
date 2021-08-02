@@ -88,42 +88,42 @@ void Histogrammer::MakeHists() {
 		hname = "Ex_" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
 		htitle += ";Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_mod[j] = new TH1F( hname.data(), htitle.data(), 800, 0, 16000 );
+		Ex_mod[j] = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
 
 		hname = "Ex_ebis_" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
 		htitle += " gated by EBIS;Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_ebis_mod[j] = new TH1F( hname.data(), htitle.data(), 800, 0, 16000 );
+		Ex_ebis_mod[j] = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
 		
 		hname = "Ex_recoil_" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
 		htitle += " gated by recoils;Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_recoil_mod[j] = new TH1F( hname.data(), htitle.data(), 800, 0, 16000 );
+		Ex_recoil_mod[j] = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
 		
 		hname = "Ex_recoilT_" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
 		htitle += " with a time gate on all recoils;Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_recoilT_mod[j] = new TH1F( hname.data(), htitle.data(), 800, 0, 16000 );
+		Ex_recoilT_mod[j] = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
 		
 		hname = "Ex_vs_theta_" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += ";#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_theta_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, 0, 16000 );
+		Ex_vs_theta_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
 
 		hname = "Ex_vs_theta_ebis_" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += " gated by EBIS;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_theta_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, 0, 16000 );
+		Ex_vs_theta_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
 		
 		hname = "Ex_vs_theta_recoil_" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += " gated by recoils;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_theta_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, 0, 16000 );
+		Ex_vs_theta_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
 	
 		hname = "Ex_vs_theta_recoilT_" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += " with a time gate on all recoils;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_theta_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, 0, 16000 );
+		Ex_vs_theta_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
 	
 	} // Array
 	
@@ -145,35 +145,35 @@ void Histogrammer::MakeHists() {
 	
 	hname = "Ex";
 	htitle = "Excitation energy;Excitation energy [keV];Counts per mm per 20 keV";
-	Ex = new TH1F( hname.data(), htitle.data(), 800, 0, 16000 );
+	Ex = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
 
 	hname = "Ex_ebis";
 	htitle = "Excitation energy gated by EBIS;Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_ebis = new TH1F( hname.data(), htitle.data(), 800, 0, 16000 );
+	Ex_ebis = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
 	
 	hname = "Ex_recoil";
 	htitle = "Excitation energy gated by recoils;Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_recoil = new TH1F( hname.data(), htitle.data(), 800, 0, 16000 );
+	Ex_recoil = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
 	
 	hname = "Ex_recoilT";
 	htitle = "Excitation energy with a time gate on all recoils;Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_recoilT = new TH1F( hname.data(), htitle.data(), 800, 0, 16000 );
+	Ex_recoilT = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
 	
 	hname = "Ex_vs_theta";
 	htitle = "Excitation energy vs. centre of mass angle;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_theta = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, 0, 16000 );
+	Ex_vs_theta = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
 
 	hname = "Ex_vs_theta_ebis";
 	htitle = "Excitation energy vs. centre of mass angle gated by EBIS;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_theta_ebis = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, 0, 16000 );
+	Ex_vs_theta_ebis = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
 	
 	hname = "Ex_vs_theta_recoil";
 	htitle = "Excitation energy vs. centre of mass angle gated by recoils;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_theta_recoil = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, 0, 16000 );
+	Ex_vs_theta_recoil = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
 	
 	hname = "Ex_vs_theta_recoilT";
 	htitle = "Excitation energy vs. centre of mass angle with a time gate on all recoils;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_theta_recoilT = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, 0, 16000 );
+	Ex_vs_theta_recoilT = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
 	
 	
 	// For ELUM sectors
