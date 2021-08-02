@@ -35,7 +35,7 @@ use iss_sort with following flags:
         [-i <vector<string>>: List of input files]
         [-m <int           >: Monitor input file every X seconds]
         [-p <int           >: Port number for web server (default 8030)]
-        [-o <string        >: Output file for events tree]
+        [-o <string        >: Output file for histograms file]
         [-d <string        >: Data directory to add to the monitor]
         [-f                 : Flag to force new ROOT conversion]
         [-e                 : Flag to force new event builder (new calibration)]

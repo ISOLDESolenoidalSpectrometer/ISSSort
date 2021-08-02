@@ -301,7 +301,8 @@ int main( int argc, char *argv[] ){
 
 		// Start the HTTP server from the main thread (should usually do this)
 		start_http();
-		
+		gSystem->ProcessEvents();
+
 		// Thread for the monitor process
 		TThread *th = new TThread( "monitor", monitor_run, (void*)nullptr );
 		th->Run();
