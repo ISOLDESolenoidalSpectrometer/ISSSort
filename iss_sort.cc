@@ -97,7 +97,11 @@ void* monitor_run( void* ptr ){
 	conv_mon.MakeHists();
 	
 	// Update server settings
-	serv->SetItemField("/", "_toptitle", curFileMon.data() );    // title of web page, shown when browser off
+	// title of web page
+	serv->SetItemField("/", "_toptitle",
+			curFileMon.substr( curFileMon.find_last_of("/")+1,
+							   curFileMon.length()-curFileMon.find_last_of("/")-1
+							  ).data() );
 
 
 	while( bRunMon ) {
