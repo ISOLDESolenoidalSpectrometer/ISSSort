@@ -498,7 +498,6 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 
 				flag_caen_pulser = true;
 				n_caen_pulser++;
-				caen_prev = caen_time;
 
 			}
 
@@ -511,7 +510,6 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 					fpga_freq[info_data->GetModule()]->Fill( fpga_time[info_data->GetModule()], fpga_hz );
 
 				n_fpga_pulser[info_data->GetModule()]++;
-				fpga_prev[info_data->GetModule()] = fpga_time[info_data->GetModule()];
 
 			}
 			
@@ -524,7 +522,6 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 					asic_freq[info_data->GetModule()]->Fill( asic_time[info_data->GetModule()], asic_hz );
 
 				n_asic_pulser[info_data->GetModule()]++;
-				asic_prev[info_data->GetModule()] = asic_time[info_data->GetModule()];
 
 			}
 			
@@ -585,6 +582,12 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 					fpga_tdiff = (double)caen_time - (double)fpga_time[i];
 					asic_tdiff = (double)caen_time - (double)asic_time[i];
 					
+					// If diff is greater than 5 ms, we have the wrong pair
+					if( fpga_tdiff > 5e6 ) fpga_tdiff = (double)caen_prev - (double)fpga_time[i];
+					else if( fpga_tdiff < -5e6 ) fpga_tdiff = (double)caen_time - (double)fpga_prev[i];
+					if( asic_tdiff > 5e6 ) asic_tdiff = (double)caen_prev - (double)asic_time[i];
+					else if( asic_tdiff < -5e6 ) asic_tdiff = (double)caen_time - (double)asic_prev[i];
+
 					fpga_td[i]->Fill( fpga_tdiff );
 					fpga_sync[i]->Fill( fpga_time[i], fpga_tdiff );
 					fpga_freq_diff[i]->Fill( fpga_time[i], fpga_hz - caen_hz );
@@ -600,6 +603,15 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				flag_caen_pulser = false;
 
 			}
+			
+			// Now reset previous timestamps
+			if( info_data->GetCode() == set->GetCAENPulserCode() )
+				caen_prev = caen_time;
+			if( info_data->GetCode() == set->GetExternalTriggerCode() )
+				fpga_prev[info_data->GetModule()] = fpga_time[info_data->GetModule()];
+			if( info_data->GetCode() == set->GetArrayPulserCode() )
+				asic_prev[info_data->GetModule()] = asic_time[info_data->GetModule()];
+
 						
 		}
 
