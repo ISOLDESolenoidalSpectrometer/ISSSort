@@ -95,6 +95,10 @@ void* monitor_run( void* ptr ){
 	conv_mon.SetOutput( "monitor_singles.root" );
 	conv_mon.MakeTree();
 	conv_mon.MakeHists();
+	
+	// Update server settings
+	serv->SetItemField("/", "_toptitle", curFileMon.data() );    // title of web page, shown when browser off
+
 
 	while( bRunMon ) {
 		
@@ -109,10 +113,11 @@ void* monitor_run( void* ptr ){
 		if( bFirstRun ) {
 			sort_mon.SetInputTree( conv_mon.GetTree() );
 			sort_mon.SetOutput( "monitor_sort.root" );
+			serv->Hide("/Files/monitor_sort.root");
 		}
 		nsort = sort_mon.SortFile( start_sort );
 		start_sort = nsort;
-		
+
 		// Event builder
 		if( bFirstRun ) {
 			eb_mon.SetInputTree( sort_mon.GetTree() );
@@ -168,9 +173,9 @@ void start_http(){
 	// enable monitoring and
 	// specify items to draw when page is opened
 	serv->SetItemField("/","_monitoring","5000");
-	serv->SetItemField("/","_layout","grid2x2");
+	//serv->SetItemField("/","_layout","grid2x2");
 	//serv->SetItemField("/","_drawitem","[hpxpy,hpx,Debug]");
-	//serv->SetItemField("/","_drawopt","col");
+	serv->SetItemField("/","drawopt","[colz,hist]");
 	
 	// register simple start/stop commands
 	serv->RegisterCommand("/Start", "bRunMon=kTRUE;", "button;/usr/share/root/icons/ed_execute.png");
@@ -179,7 +184,7 @@ void start_http(){
 	// hide commands so the only show as buttons
 	serv->Hide("/Start");
 	serv->Hide("/Stop");
-
+		
 	// Add data directory
 	if( datadir_name.size() > 0 ) serv->AddLocation( "data/", datadir_name.data() );
 	

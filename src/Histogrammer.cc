@@ -245,7 +245,6 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 		
 		// tdiff variable
 		double tdiff;
-	
 			
 		// Loop over array events
 		for( unsigned int j = 0; j < read_evts->GetArrayMultiplicity(); ++j ){
