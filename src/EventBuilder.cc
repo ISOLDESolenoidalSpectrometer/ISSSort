@@ -528,7 +528,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			// Check the pause events for each module
 			if( info_data->GetCode() == set->GetPauseCode() ) {
 				
-				if( info_data->GetModule() >= set->GetNumberOfArrayModules() ) {
+				if( info_data->GetModule() < set->GetNumberOfArrayModules() ) {
 				
 					n_asic_pause[info_data->GetModule()]++;
 					flag_pause[info_data->GetModule()] = true;
@@ -544,7 +544,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			// Check the resume events for each module
 			if( info_data->GetCode() == set->GetResumeCode() ) {
 				
-				if( info_data->GetModule() >= set->GetNumberOfArrayModules() ) {
+				if( info_data->GetModule() < set->GetNumberOfArrayModules() ) {
 				
 					n_asic_resume[info_data->GetModule()]++;
 					flag_resume[info_data->GetModule()] = true;
@@ -567,7 +567,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				}
 				
 				else
-					std::cerr << "Bad resume event in module " << info_data->GetModule() << std::endl;
+					std::cerr << "Bad resume event in module " << (int)info_data->GetModule() << std::endl;
 				
 			}
 
@@ -1172,7 +1172,7 @@ void EventBuilder::MakeEventHists(){
 			hname = "pn_mult_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side vs. n-side multiplicity (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");mult p-side;mult n-side";
-			pn_mult[i][j] = new TProfile( hname.data(), htitle.data(), 20, 0, 20, 0, 20 );
+			pn_mult[i][j] = new TProfile( hname.data(), htitle.data(), 20, -0.5, 19.5 );
 		
 		}
 		
