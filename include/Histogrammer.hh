@@ -43,6 +43,7 @@ public:
 	void Terminate();
 	
 	void SetInputFile( std::vector<std::string> input_file_names );
+	void SetInputFile( std::string input_file_name );
 	void SetInputTree( TTree* user_tree );
 
 	inline void SetOutput( std::string output_file_name ){
@@ -114,7 +115,6 @@ private:
 	Settings *set;
 	
 	/// Input tree
-	TFile *input_file;
 	TChain *input_tree;
 	ISSEvts *read_evts;
 	ArrayEvt *array_evt;
@@ -122,10 +122,6 @@ private:
 	ElumEvt *elum_evt;
 	ZeroDegreeEvt *zd_evt;
 	
-	
-	// Cuts
-	TCutG *recoil_cut;
-
 	/// Output file
 	TFile *output_file;
 	
@@ -133,14 +129,19 @@ private:
 	// Counters
 	unsigned long n_entries;
 	
-	////////////////
+	//------------//
 	// Histograms //
-	////////////////
+	//------------//
 	
 	// Timing
 	std::vector<std::vector<TH1F*>> recoil_array_td;
 	std::vector<std::vector<TH1F*>> recoil_elum_td;
 	TH2F *recoil_array_tw;
+
+	// Recoils
+	std::vector<TH2F*> recoil_EdE;
+	std::vector<TH2F*> recoil_EdE_cut;
+	std::vector<TH2F*> recoil_EdE_array;
 
 	// Array - E vs. z
 	std::vector<TH2F*> E_vs_z_mod;

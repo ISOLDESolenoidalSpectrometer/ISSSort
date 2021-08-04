@@ -13,135 +13,23 @@ Histogrammer::~Histogrammer(){}
 void Histogrammer::MakeHists() {
 
 	std::string hname, htitle;
-	
-	// For recoil sectors
-	recoil_array_td.resize( set->GetNumberOfRecoilSectors() );
-	recoil_elum_td.resize( set->GetNumberOfRecoilSectors() );
-	
-	for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
-	
-		recoil_array_td[i].resize( set->GetNumberOfArrayModules() );
-		recoil_elum_td[i].resize( set->GetNumberOfELUMSectors() );
-	
-		// For array modules
-		for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
-		
-			hname = "td_recoil_array_" + std::to_string(i) + "_" + std::to_string(j);
-			recoil_array_td[i][j] = new TH1F( hname.data(), htitle.data(),
-						set->GetEventWindow(), -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow() );
-		
-		}		
 
-		// For ELUM sectors
-		for( unsigned int j = 0; j < set->GetNumberOfELUMSectors(); ++j ) {
-		
-			hname = "td_recoil_elum_" + std::to_string(i) + "_" + std::to_string(j);
-			recoil_elum_td[i][j] = new TH1F( hname.data(), htitle.data(),
-						set->GetEventWindow(), -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow() );
-		
-		}
-			
-	} // Recoils
-	
-	// Recoil-array time walk
-	recoil_array_tw = new TH2F( "recoil_array_tw",
-						"Time-walk histogram for array-recoil coincidences;#Delta{t} [ns];Array energy [keV];Counts",
-						set->GetEventWindow()*2, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-						800, 0, 16000 );
-					
-	// For array modules
-	E_vs_z_mod.resize( set->GetNumberOfArrayModules() );
-	E_vs_z_ebis_mod.resize( set->GetNumberOfArrayModules() );
-	E_vs_z_recoil_mod.resize( set->GetNumberOfArrayModules() );
-	E_vs_z_recoilT_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_ebis_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_recoil_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_recoilT_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_vs_theta_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_vs_theta_ebis_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_vs_theta_recoil_mod.resize( set->GetNumberOfArrayModules() );		
-	Ex_vs_theta_recoilT_mod.resize( set->GetNumberOfArrayModules() );		
-	
-	for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
-	
-		hname = "E_vs_z_" + std::to_string(j);
-		htitle = "Energy vs. z distance for module " + std::to_string(j);
-		htitle += ";z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_mod[j] = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );
-		
-		hname = "E_vs_z_ebis_" + std::to_string(j);
-		htitle = "Energy vs. z distance for module " + std::to_string(j);
-		htitle += " gated on EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";	
-		E_vs_z_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );
-		
-		hname = "E_vs_z_recoil_" + std::to_string(j);
-		htitle = "Energy vs. z distance for module " + std::to_string(j);
-		htitle += " gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );	
-		
-		hname = "E_vs_z_recoilT_" + std::to_string(j);
-		htitle = "Energy vs. z distance for module " + std::to_string(j);
-		htitle += " with a time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );	
-		
-		hname = "Ex_" + std::to_string(j);
-		htitle = "Excitation energy for module " + std::to_string(j);
-		htitle += ";Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_mod[j] = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
-
-		hname = "Ex_ebis_" + std::to_string(j);
-		htitle = "Excitation energy for module " + std::to_string(j);
-		htitle += " gated by EBIS;Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_ebis_mod[j] = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
-		
-		hname = "Ex_recoil_" + std::to_string(j);
-		htitle = "Excitation energy for module " + std::to_string(j);
-		htitle += " gated by recoils;Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_recoil_mod[j] = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
-		
-		hname = "Ex_recoilT_" + std::to_string(j);
-		htitle = "Excitation energy for module " + std::to_string(j);
-		htitle += " with a time gate on all recoils;Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_recoilT_mod[j] = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
-		
-		hname = "Ex_vs_theta_" + std::to_string(j);
-		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
-		htitle += ";#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_theta_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
-
-		hname = "Ex_vs_theta_ebis_" + std::to_string(j);
-		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
-		htitle += " gated by EBIS;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_theta_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
-		
-		hname = "Ex_vs_theta_recoil_" + std::to_string(j);
-		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
-		htitle += " gated by recoils;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_theta_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
-	
-		hname = "Ex_vs_theta_recoilT_" + std::to_string(j);
-		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
-		htitle += " with a time gate on all recoils;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_theta_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
-	
-	} // Array
-	
+	// Array physics histograms
 	hname = "E_vs_z";
 	htitle = "Energy vs. z distance;z [mm];Energy [keV];Counts per mm per 20 keV";
 	E_vs_z = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );
 	
 	hname = "E_vs_z_ebis";
-	htitle = "Energy vs. z distance gated on EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";	
+	htitle = "Energy vs. z distance gated on EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
 	E_vs_z_ebis = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );
 	
 	hname = "E_vs_z_recoil";
 	htitle = "Energy vs. z distance gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_recoil = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );	
+	E_vs_z_recoil = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );
 	
 	hname = "E_vs_z_recoilT";
 	htitle = "Energy vs. z distance with a time gate on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );	
+	E_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );
 	
 	hname = "Ex";
 	htitle = "Excitation energy;Excitation energy [keV];Counts per mm per 20 keV";
@@ -174,7 +62,150 @@ void Histogrammer::MakeHists() {
 	hname = "Ex_vs_theta_recoilT";
 	htitle = "Excitation energy vs. centre of mass angle with a time gate on all recoils;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
 	Ex_vs_theta_recoilT = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
+
+	// For each array module
+	E_vs_z_mod.resize( set->GetNumberOfArrayModules() );
+	E_vs_z_ebis_mod.resize( set->GetNumberOfArrayModules() );
+	E_vs_z_recoil_mod.resize( set->GetNumberOfArrayModules() );
+	E_vs_z_recoilT_mod.resize( set->GetNumberOfArrayModules() );
+	Ex_mod.resize( set->GetNumberOfArrayModules() );
+	Ex_ebis_mod.resize( set->GetNumberOfArrayModules() );
+	Ex_recoil_mod.resize( set->GetNumberOfArrayModules() );
+	Ex_recoilT_mod.resize( set->GetNumberOfArrayModules() );
+	Ex_vs_theta_mod.resize( set->GetNumberOfArrayModules() );
+	Ex_vs_theta_ebis_mod.resize( set->GetNumberOfArrayModules() );
+	Ex_vs_theta_recoil_mod.resize( set->GetNumberOfArrayModules() );		
+	Ex_vs_theta_recoilT_mod.resize( set->GetNumberOfArrayModules() );		
 	
+	for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
+	
+		hname = "E_vs_z_mod" + std::to_string(j);
+		htitle = "Energy vs. z distance for module " + std::to_string(j);
+		htitle += ";z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_mod[j] = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );
+		
+		hname = "E_vs_z_ebis_mod" + std::to_string(j);
+		htitle = "Energy vs. z distance for module " + std::to_string(j);
+		htitle += " gated on EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";	
+		E_vs_z_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );
+		
+		hname = "E_vs_z_recoil_mod" + std::to_string(j);
+		htitle = "Energy vs. z distance for module " + std::to_string(j);
+		htitle += " gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );	
+		
+		hname = "E_vs_z_recoilT_mod" + std::to_string(j);
+		htitle = "Energy vs. z distance for module " + std::to_string(j);
+		htitle += " with a time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );	
+		
+		hname = "Ex_mod" + std::to_string(j);
+		htitle = "Excitation energy for module " + std::to_string(j);
+		htitle += ";Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_mod[j] = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
+
+		hname = "Ex_ebis_mod" + std::to_string(j);
+		htitle = "Excitation energy for module " + std::to_string(j);
+		htitle += " gated by EBIS;Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_ebis_mod[j] = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
+		
+		hname = "Ex_recoil_mod" + std::to_string(j);
+		htitle = "Excitation energy for module " + std::to_string(j);
+		htitle += " gated by recoils;Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_recoil_mod[j] = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
+		
+		hname = "Ex_recoilT_mod" + std::to_string(j);
+		htitle = "Excitation energy for module " + std::to_string(j);
+		htitle += " with a time gate on all recoils;Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_recoilT_mod[j] = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
+		
+		hname = "Ex_vs_theta_mod" + std::to_string(j);
+		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
+		htitle += ";#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_theta_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
+
+		hname = "Ex_vs_theta_ebis_mod" + std::to_string(j);
+		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
+		htitle += " gated by EBIS;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_theta_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
+		
+		hname = "Ex_vs_theta_recoil_mod" + std::to_string(j);
+		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
+		htitle += " gated by recoils;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_theta_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
+	
+		hname = "Ex_vs_theta_recoilT_mod" + std::to_string(j);
+		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
+		htitle += " with a time gate on all recoils;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_theta_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
+	
+	} // Array
+	
+	// For recoil sectors
+	recoil_array_td.resize( set->GetNumberOfRecoilSectors() );
+	recoil_elum_td.resize( set->GetNumberOfRecoilSectors() );
+	recoil_EdE.resize( set->GetNumberOfRecoilSectors() );
+	recoil_EdE_cut.resize( set->GetNumberOfRecoilSectors() );
+	recoil_EdE_array.resize( set->GetNumberOfRecoilSectors() );
+
+	// Loop over each recoil sector
+	for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
+	
+		// Recoil energy plots
+		hname = "recoil_EdE_sec" + std::to_string(i);
+		htitle = "Recoil dE-E plot for sector " + std::to_string(i);
+		htitle += " - singles;Rest energy, E [keV];Energy loss, dE [keV];Counts";
+		recoil_EdE[i] = new TH2F( hname.data(), htitle.data(),
+									2000, 0, 200000, 2000, 0, 200000 );
+
+		hname = "recoil_EdE_cut_sec" + std::to_string(i);
+		htitle = "Recoil dE-E plot for sector " + std::to_string(i);
+		htitle += " - with energy cut;Rest energy, E [keV];Energy loss, dE [keV];Counts";
+		recoil_EdE_cut[i] = new TH2F( hname.data(), htitle.data(),
+									2000, 0, 200000, 2000, 0, 200000 );
+
+		hname = "recoil_EdE_array_sec" + std::to_string(i);
+		htitle = "Recoil dE-E plot for sector " + std::to_string(i);
+		htitle += " - in coincidence with array;Rest energy, E [keV];Energy loss, dE [keV];Counts";
+		recoil_EdE_array[i] = new TH2F( hname.data(), htitle.data(),
+									2000, 0, 200000, 2000, 0, 200000 );
+
+		// Timing plots
+		recoil_array_td[i].resize( set->GetNumberOfArrayModules() );
+		recoil_elum_td[i].resize( set->GetNumberOfELUMSectors() );
+	
+		// For array modules
+		for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
+		
+			hname = "td_recoil_array_sec" + std::to_string(i) + "_mod" + std::to_string(j);
+			htitle = "Time difference between array module " + std::to_string(i);
+			htitle += " and recoil sector " + std::to_string(j);
+			htitle += ";#Delta t;Counts";
+			recoil_array_td[i][j] = new TH1F( hname.data(), htitle.data(),
+						1000, -1.0*set->GetEventWindow()-50, 1.0*set->GetEventWindow()+50 );
+		
+		}
+
+		// For ELUM sectors
+		for( unsigned int j = 0; j < set->GetNumberOfELUMSectors(); ++j ) {
+		
+			hname = "td_recoil_elum_sec" + std::to_string(i) + "_mod" + std::to_string(j);
+			htitle = "Time difference between array module " + std::to_string(i);
+			htitle += " and ELUM sector " + std::to_string(j);
+			htitle += ";#Delta t;Counts";
+			recoil_elum_td[i][j] = new TH1F( hname.data(), htitle.data(),
+						1000, -1.0*set->GetEventWindow()-50, 1.0*set->GetEventWindow()+50 );
+		
+		}
+			
+	} // Recoils
+	
+	// Recoil-array time walk
+	recoil_array_tw = new TH2F( "tw_recoil_array",
+						"Time-walk histogram for array-recoil coincidences;#Delta{t} [ns];Array energy [keV];Counts",
+						1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
+						800, 0, 16000 );
+
 	
 	// For ELUM sectors
 	elum_sec.resize( set->GetNumberOfELUMSectors() );
@@ -296,6 +327,9 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 					Ex_vs_theta_recoilT->Fill( react->GetThetaCM(), react->GetEx() );
 					Ex_vs_theta_recoilT_mod[array_evt->GetModule()]->Fill( react->GetThetaCM(), react->GetEx() );
 
+					// Recoils in coincidence with an array event
+					recoil_EdE_array[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest(), recoil_evt->GetEnergyLoss() );
+
 					// Add an energy gate
 					if( RecoilCut( recoil_evt ) ) {
 					
@@ -363,6 +397,22 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 			} // recoils
 
 		} // ELUM
+		
+
+		// Loop over recoil events
+		for( unsigned int i = 0; i < read_evts->GetRecoilMultiplicity(); ++i ){
+
+			// Get recoil event
+			recoil_evt = read_evts->GetRecoilEvt(i);
+			
+			// Energy EdE plot, unconditioned
+			recoil_EdE[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest(), recoil_evt->GetEnergyLoss() );
+			
+			// Energy EdE plot, after cut
+			if( RecoilCut( recoil_evt ) )
+				recoil_EdE_cut[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest(), recoil_evt->GetEnergyLoss() );
+			
+		} // recoils
 
 		if( i % 10000 == 0 || i+1 == n_entries ) {
 			
@@ -390,13 +440,24 @@ void Histogrammer::Terminate() {
 
 void Histogrammer::SetInputFile( std::vector<std::string> input_file_names ) {
 	
-	/// Overlaoded function for a single file or multiple files
+	/// Overlaaded function for a single file or multiple files
 	input_tree = new TChain( "evt_tree" );
 	for( unsigned int i = 0; i < input_file_names.size(); i++ ) {
 	
 		input_tree->Add( input_file_names[i].data() );
 		
 	}
+	input_tree->SetBranchAddress( "ISSEvts", &read_evts );
+
+	return;
+	
+}
+
+void Histogrammer::SetInputFile( std::string input_file_name ) {
+	
+	/// Overloaded function for a single file or multiple files
+	input_tree = new TChain( "evt_tree" );
+	input_tree->Add( input_file_name.data() );
 	input_tree->SetBranchAddress( "ISSEvts", &read_evts );
 
 	return;

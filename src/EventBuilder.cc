@@ -553,7 +553,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 					// Work out the dead time
 					asic_dead_time[info_data->GetModule()] += resume_time[info_data->GetModule()];
 					asic_dead_time[info_data->GetModule()] -= pause_time[info_data->GetModule()];
-					
+
 					// If we have didn't get the pause, module was stuck at start of run
 					if( !flag_pause[info_data->GetModule()] ) {
 

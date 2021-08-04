@@ -692,7 +692,7 @@ void Converter::ProcessASICData(){
 	}
 	
 	// reconstruct time stamp= HSB+MSB+LSB
-	my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
+	my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb_asic << 28 ) | my_tm_stp_lsb;
 	
 	// Pulser in a spare n-side channel should be counted as info data
 	if( my_asic_id == set->GetArrayPulserAsic() &&
@@ -957,63 +957,64 @@ void Converter::ProcessInfoData(){
 	my_info_field = word_0 & 0x000FFFFF; //bits 0:19
 	my_info_code = (word_0 >> 20) & 0x0000000F; //bits 20:23
 	my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  //bits 0:27
-	
-	ts_flag = false;
 
 	// HSB of timestamp
 	if( my_info_code == set->GetTimestampCode() ) {
 		
 		my_tm_stp_hsb = my_info_field & 0x000FFFFF;
-		ts_flag = true;
 
 	}
 	
-	// MSB of timstamp in sync pulse or CAEN extended time stamp
-	if( my_info_code == set->GetSyncCode() ||
-	    my_info_code == set->GetExtItemCode() ) {
+	// MSB of timestamp in sync pulse or CAEN extended time stamp
+	if( my_info_code == set->GetSyncCode() ) {
 		
 		// We don't know yet if it's from CAEN or ISS
-		// but it seems ASIC data has info code 7 for extended timestamp
+		// In CAEN this would be the extended timestamp
+		// In ISS it is the Sync100 pulses
 		my_tm_stp_msb = my_info_field & 0x000FFFFF;
-		ts_flag = true;
+		my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | ( my_tm_stp_lsb & 0x0FFFFFFF );
+
+	}
+	
+	// MSB of timestamp in ASIC data
+	if( my_info_code == set->GetExtItemCode() ) {
 		
+		// ASIC data has info code 7 for extended timestamp
+		my_tm_stp_msb_asic = my_info_field & 0x000FFFFF;
+		my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb_asic << 28 ) | ( my_tm_stp_lsb & 0x0FFFFFFF );
+
 	}
 	
 	// External trigger
 	if( my_info_code == set->GetExternalTriggerCode() ) {
 		
 		my_tm_stp_msb = my_info_field & 0x000FFFFF;
-		ts_flag = true;
+		my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | ( my_tm_stp_lsb & 0x0FFFFFFF );
+		hasic_ext[my_mod_id]->Fill( ctr_asic_ext[my_mod_id], my_tm_stp, 1 );
+		ctr_asic_ext[my_mod_id]++;
 
 	}
 
 	// Pause
     if( my_info_code == set->GetPauseCode() ) {
          
-        my_tm_stp_msb = my_info_field & 0x000FFFFF;
-        ts_flag = true;
-        ctr_asic_pause[my_mod_id]++;
+		my_tm_stp_msb = my_info_field & 0x000FFFFF;
+		my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | ( my_tm_stp_lsb & 0x0FFFFFFF );
+		hasic_pause[my_mod_id]->Fill( ctr_asic_pause[my_mod_id], my_tm_stp, 1 );
+		ctr_asic_pause[my_mod_id]++;
 
     }
-
 
 	// Resume
 	if( my_info_code == set->GetResumeCode() ) {
          
-       my_tm_stp_msb = my_info_field & 0x000FFFFF;
-       ts_flag = true;
-       ctr_asic_resume[my_mod_id]++;
+		my_tm_stp_msb = my_info_field & 0x000FFFFF;
+		my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | ( my_tm_stp_lsb & 0x0FFFFFFF );
+		hasic_resume[my_mod_id]->Fill( ctr_asic_resume[my_mod_id], my_tm_stp, 1 );
+		ctr_asic_resume[my_mod_id]++;
 
     }
 
-	// Check what to do with this
-	if( ts_flag ) {
-		
-		// reconstruct time stamp= HSB+MSB+LSB
-		my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | ( my_tm_stp_lsb & 0x0FFFFFFF );
-		
-	}
-	
 	// Create an info event and fill the tree for external triggers and pause/resume
 	if( my_info_code == set->GetExternalTriggerCode() ||
 	    my_info_code == set->GetPauseCode() ||
@@ -1027,38 +1028,7 @@ void Converter::ProcessInfoData(){
 		info_data->Clear();
 
 	}
-	
-	// Histogramming
-	if( my_info_code == set->GetExternalTriggerCode() ) {
 
-	   // Fill histograms
-		hasic_ext[my_mod_id]->Fill( ctr_asic_ext[my_mod_id], my_tm_stp, 1 );
-
-		// Count external trigger event
-		ctr_asic_ext[my_mod_id]++;
-
-	}
-	
-	if( my_info_code == set->GetPauseCode() ) {
-
-		// Fill histograms
-		hasic_pause[my_mod_id]->Fill( ctr_asic_pause[my_mod_id], my_tm_stp, 1 );
-
-		// Count pause event
-		ctr_asic_pause[my_mod_id]++;
-
-	}
-	
-	if( my_info_code == set->GetResumeCode() ) {
-
-		// Fill histograms
-		hasic_resume[my_mod_id]->Fill( ctr_asic_resume[my_mod_id], my_tm_stp, 1 );
-
-		// Count resume event
-		ctr_asic_resume[my_mod_id]++;
-
-	}
-	
 	return;
 	
 }

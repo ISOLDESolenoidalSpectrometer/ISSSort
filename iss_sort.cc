@@ -98,10 +98,10 @@ void* monitor_run( void* ptr ){
 	
 	// Update server settings
 	// title of web page
-	serv->SetItemField("/", "_toptitle",
-			curFileMon.substr( curFileMon.find_last_of("/")+1,
-							   curFileMon.length()-curFileMon.find_last_of("/")-1
-							  ).data() );
+	std::string toptitle = curFileMon.substr( curFileMon.find_last_of("/")+1,
+							curFileMon.length()-curFileMon.find_last_of("/")-1 );
+	toptitle += " (" + std::to_string( mon_time ) + " s)";
+	serv->SetItemField("/", "_toptitle", toptitle.data() );
 
 
 	while( bRunMon ) {

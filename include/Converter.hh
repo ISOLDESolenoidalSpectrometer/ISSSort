@@ -187,6 +187,7 @@ private:
 	unsigned long long my_tm_stp;
 	unsigned long my_tm_stp_lsb;
 	unsigned long my_tm_stp_msb;
+	unsigned long my_tm_stp_msb_asic;
 	unsigned long my_tm_stp_hsb;
 	unsigned long my_info_field;
 	unsigned long my_info_code;
@@ -198,9 +199,6 @@ private:
 	unsigned char my_asic_id;
 	unsigned char my_data_id;
 	float my_energy;
-	
-	// Flags
-	bool ts_flag;
 
 	// For traces
 	unsigned int nsamples;
