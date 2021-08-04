@@ -897,11 +897,15 @@ void Converter::FinishCAENData(){
 			output_tree->Fill();
 			info_data->Clear();
 
-			// Fill histograms
-			hcaen_ext[caen_data->GetModule()]->Fill( ctr_caen_ext[caen_data->GetModule()], caen_data->GetTime(), 1 );
+			// Fill histograms for external trigger
+			if( my_info_code == set->GetCAENPulserCode() ) {
+				
+				hcaen_ext[caen_data->GetModule()]->Fill( ctr_caen_ext[caen_data->GetModule()], caen_data->GetTime(), 1 );
 
-			// Count external trigger event
-			ctr_caen_ext[caen_data->GetModule()]++;
+				// Count external trigger event
+				ctr_caen_ext[caen_data->GetModule()]++;
+					
+			}
 
 		}
 
