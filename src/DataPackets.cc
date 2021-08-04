@@ -7,9 +7,9 @@ ClassImp(DataPackets)
 
 AsicData::AsicData(){}
 AsicData::~AsicData(){}
-AsicData::AsicData( unsigned long t, unsigned short adc, unsigned char h,
-					unsigned char m, unsigned char a, unsigned char c ) :
-					time(t), adc_value(adc), hit_bit(h), mod(m), asic(a), ch(c) {}
+AsicData::AsicData( unsigned long t, unsigned short adc, unsigned char m,
+					unsigned char a, unsigned char c, bool h, float e ) :
+					time(t), adc_value(adc), mod(m), asic(a), ch(c), hit_bit(h), energy(e) {}
 
 CaenData::CaenData(){}
 CaenData::~CaenData(){}

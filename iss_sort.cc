@@ -451,7 +451,7 @@ int main( int argc, char *argv[] ){
 		name_input_file = input_names.at(i) + "_sort.root";
 		name_output_file = input_names.at(i) + "_events.root";
 
-		// We need to time sort it if we just converted it
+		// We need to do event builder if we just converted it
 		// specific request to do new event build with -e
 		// this is useful if you need to add a new calibration
 		if( flag_convert || force_convert.at(i) || flag_events )

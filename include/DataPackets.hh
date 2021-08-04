@@ -8,24 +8,24 @@ class AsicData : public TObject {
 public:
 
 	AsicData();
-	AsicData( unsigned long t, unsigned short adc, unsigned char h,
-			 unsigned char m, unsigned char a, unsigned char c );
+	AsicData( unsigned long t, unsigned short adc, unsigned char m,
+			 unsigned char a, unsigned char c, bool h, float e );
 	~AsicData();
 	
 	inline unsigned long	GetTime() { return time; };
 	inline unsigned short	GetAdcValue() { return adc_value; };
-	inline unsigned char	GetHitBit() { return hit_bit; };
 	inline unsigned char	GetModule() { return mod; };
 	inline unsigned char	GetAsic() { return asic; };
 	inline unsigned char	GetChannel() { return ch; };
+	inline bool				GetHitBit() { return hit_bit; };
 	inline float			GetEnergy() { return energy; };
 
 	inline void SetTime( unsigned long t ){ time = t; };
 	inline void SetAdcValue( unsigned short adc ){ adc_value = adc; };
-	inline void SetHitBit( unsigned char h ){ hit_bit = h; };
 	inline void SetModule( unsigned char m ){ mod = m; };
 	inline void SetAsic( unsigned char a ){ asic = a; };
 	inline void SetChannel( unsigned char c ){ ch = c; };
+	inline void SetHitBit( bool h ){ hit_bit = h; };
 	inline void SetEnergy( float e ){ energy = e; };
 
 	void ClearData();
@@ -34,14 +34,14 @@ protected:
 	
 	unsigned long	time;
 	unsigned short	adc_value;
-	unsigned char	hit_bit;
 	unsigned char	mod;
 	unsigned char	asic;
 	unsigned char	ch;
+	bool			hit_bit;
 	float			energy;
 
 	
-	ClassDef( AsicData, 1 )
+	ClassDef( AsicData, 2 )
 	
 };
 

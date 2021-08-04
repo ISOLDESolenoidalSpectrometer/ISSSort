@@ -193,11 +193,11 @@ private:
 	unsigned long my_info_code;
 	unsigned long my_type;
 	unsigned long my_adc_data;
-	unsigned char my_hit;
 	unsigned char my_mod_id;
 	unsigned char my_ch_id;
 	unsigned char my_asic_id;
 	unsigned char my_data_id;
+	bool my_hit;
 	float my_energy;
 
 	// For traces
