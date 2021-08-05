@@ -1,6 +1,7 @@
 #include "ISSEvts.hh"
 
 ClassImp(ArrayEvt)
+ClassImp(ArrayPEvt)
 ClassImp(RecoilEvt)
 ClassImp(ElumEvt)
 ClassImp(ZeroDegreeEvt)
@@ -16,6 +17,7 @@ ISSEvts::~ISSEvts(){}
 void ISSEvts::ClearEvt() {
 	
 	array_event.clear();
+	arrayp_event.clear();
 	recoil_event.clear();
 	elum_event.clear();
 	zd_event.clear();
@@ -41,6 +43,23 @@ void ISSEvts::AddEvt( ArrayEvt *event ) {
 					   event->GetRow() );
 	
 	array_event.push_back( fill_evt );
+	
+}
+
+void ISSEvts::AddEvt( ArrayPEvt *event ) {
+	
+	// Make a copy of the event and push it back
+	ArrayPEvt fill_evt;
+	fill_evt.SetEvent( event->GetPEnergy(),
+					   event->GetNEnergy(),
+					   event->GetPID(),
+					   event->GetNID(),
+					   event->GetPTime(),
+					   event->GetNTime(),
+					   event->GetModule(),
+					   event->GetRow() );
+
+	arrayp_event.push_back( fill_evt );
 	
 }
 
@@ -187,6 +206,12 @@ TVector3 ArrayEvt::GetPosition(){
 	return pos;
 	
 }
+
+// ------------------- //
+// Array p-side events //
+// ------------------- //
+ArrayPEvt::ArrayPEvt(){}
+ArrayPEvt::~ArrayPEvt(){}
 
 
 // ------------- //

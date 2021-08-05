@@ -59,6 +59,21 @@ private:
 
 };
 
+class ArrayPEvt : public ArrayEvt {
+
+public:
+	
+	// setup functions
+	ArrayPEvt();
+	~ArrayPEvt();
+
+private:
+
+
+	ClassDef( ArrayPEvt, 1 )
+
+};
+
 class RecoilEvt : public TObject {
 
 public:
@@ -262,17 +277,23 @@ public:
 	~ISSEvts();
 	
 	void AddEvt( ArrayEvt *event );
+	void AddEvt( ArrayPEvt *event );
 	void AddEvt( RecoilEvt *event );
 	void AddEvt( ElumEvt *event );
 	void AddEvt( ZeroDegreeEvt *event );
 	
 	inline unsigned int GetArrayMultiplicity(){ return array_event.size(); };
+	inline unsigned int GetArrayPMultiplicity(){ return arrayp_event.size(); };
 	inline unsigned int GetRecoilMultiplicity(){ return recoil_event.size(); };
 	inline unsigned int GetElumMultiplicity(){ return elum_event.size(); };
 	inline unsigned int GetZeroDegreeMultiplicity(){ return zd_event.size(); };
 	
 	inline ArrayEvt* GetArrayEvt( unsigned int i ){
 		if( i < array_event.size() ) return &array_event.at(i);
+		else return nullptr;
+	};
+	inline ArrayPEvt* GetArrayPEvt( unsigned int i ){
+		if( i < arrayp_event.size() ) return &arrayp_event.at(i);
 		else return nullptr;
 	};
 	inline RecoilEvt* GetRecoilEvt( unsigned int i ){
@@ -305,6 +326,7 @@ private:
 	unsigned long t1;		///< absolute proton pulse time
 
 	std::vector<ArrayEvt> array_event;
+	std::vector<ArrayPEvt> arrayp_event;
 	std::vector<RecoilEvt> recoil_event;
 	std::vector<ElumEvt> elum_event;
 	std::vector<ZeroDegreeEvt> zd_event;

@@ -140,6 +140,7 @@ void EventBuilder::StartFile(){
 	n_t1	= 0;
 
 	array_ctr	= 0;
+	arrayp_ctr	= 0;
 	recoil_ctr	= 0;
 	elum_ctr	= 0;
 	zd_ctr		= 0;
@@ -224,6 +225,7 @@ void EventBuilder::SetOutput( std::string output_file_name ) {
 	// These are the branches we need
 	write_evts = new ISSEvts();
 	array_evt = new ArrayEvt();
+	arrayp_evt = new ArrayPEvt();
 	recoil_evt = new RecoilEvt();
 	elum_evt = new ElumEvt();
 	zd_evt = new ZeroDegreeEvt();
@@ -360,7 +362,10 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 
 			// p-side event
 			if( myside == 0 ) {
-				
+			
+			// test here about hit bit value
+			//if( myside == 0 && !asic_data->GetHitBit() ) {
+
 				mystrip = array_pid.at( asic_data->GetChannel() );
 				
 				pen_list.push_back( myenergy );
@@ -372,8 +377,11 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 
 			// n-side event
-			else {
-				
+			else if( myside == 1 ) {
+
+			// test here about hit bit value
+			//else if( myside == 1 && asic_data->GetHitBit() ) {
+
 				mystrip = array_nid.at( asic_data->GetChannel() );
 				
 				nen_list.push_back( myenergy );
@@ -389,7 +397,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			if( asic_time_start.at( mymod ) == 0 )
 				asic_time_start.at( mymod ) = mytime;
 			
-			// or is it the end event (we don't know so keep updating
+			// or is it the end event (we don't know so keep updating)
 			asic_time_stop.at( mymod ) = mytime;
 			
 		}
@@ -663,6 +671,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			write_evts->SetEBIS( ebis_time );
 			write_evts->SetT1( t1_time );
 			if( write_evts->GetArrayMultiplicity() ||
+			    write_evts->GetArrayPMultiplicity() ||
 			    write_evts->GetRecoilMultiplicity() ||
 			    write_evts->GetElumMultiplicity() ||
 			    write_evts->GetZeroDegreeMultiplicity() ) output_tree->Fill();
@@ -705,7 +714,8 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 		std::cout << " s" << std::endl;
 	}
 	std::cout << "  Info data packets = " << n_info_data << std::endl;
-	std::cout << "   Array events = " << array_ctr << std::endl;
+	std::cout << "   Array p/n-side correlated events = " << array_ctr << std::endl;
+	std::cout << "   Array p-side only events = " << arrayp_ctr << std::endl;
 	std::cout << "   Recoil events = " << recoil_ctr << std::endl;
 	std::cout << "   ELUM events = " << elum_ctr << std::endl;
 	std::cout << "   ZeroDegree events = " << zd_ctr << std::endl;
@@ -806,21 +816,7 @@ void EventBuilder::ArrayFinder() {
 			// Easy case, 1p vs 1n
 			if( pindex.size() == 1 && nindex.size() == 1 ) {
 				
-				// This works without neighbour mode
-				//array_evt->SetEvent( pen_list.at( pindex.at(0) ),
-				//					 nen_list.at( nindex.at(0) ),
-				//					 pid_list.at( pindex.at(0) ),
-				//					 nid_list.at( nindex.at(0) ),
-				//					 ptd_list.at( pindex.at(0) ),
-				//					 ntd_list.at( nindex.at(0) ),
-				//					 i, j );
-				//
-				//write_evts->AddEvt( array_evt );
-				//array_ctr++;
-
 				pn_11[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(0) ) );
-				//write_evts->AddEvt( array_evt );
-				//array_ctr++;
 				
 			}
 			
@@ -866,24 +862,26 @@ void EventBuilder::ArrayFinder() {
 			}
 
 			// Add a bodge to ignore n-side events for now
-			//if( pmax_idx >= 0 ){
-			//
-			//	array_evt->SetEvent( pen_list.at( pmax_idx ),
-			//						 0,
-			//						 pid_list.at( pmax_idx ),
-			//						 0,
-			//						 ptd_list.at( pmax_idx ),
-			//						 0,
-			//						 i, j );
-			//
-			//
-			//	write_evts->AddEvt( array_evt );
-			//	array_ctr++;
-			//
-			//	pn_max[i][j]->Fill( pmax_en, nmax_en );
-			//
-			//}
-						
+			// use the ArrayPEvt class
+			if( pmax_idx >= 0 ){
+			
+				arrayp_evt->SetEvent( pen_list.at( pmax_idx ),
+									 0,
+									 pid_list.at( pmax_idx ),
+									 5,
+									 ptd_list.at( pmax_idx ),
+									 0,
+									 i, j );
+			
+			
+				write_evts->AddEvt( arrayp_evt );
+				arrayp_ctr++;
+				
+			}
+			
+			// Histogram for n vs p-side max energies
+			pn_max[i][j]->Fill( pmax_en, nmax_en );
+			
 		}
 
 	}
@@ -1167,7 +1165,7 @@ void EventBuilder::MakeEventHists(){
 			hname = "pn_td_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side vs. n-side time difference (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];counts";
-			pn_td[i][j] = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()+20, set->GetEventWindow()+20 );
+			pn_td[i][j] = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
 			
 			hname = "pn_mult_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side vs. n-side multiplicity (module ";

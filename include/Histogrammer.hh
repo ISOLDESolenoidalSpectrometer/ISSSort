@@ -118,6 +118,7 @@ private:
 	TChain *input_tree;
 	ISSEvts *read_evts;
 	ArrayEvt *array_evt;
+	ArrayPEvt *arrayp_evt;
 	RecoilEvt *recoil_evt;
 	ElumEvt *elum_evt;
 	ZeroDegreeEvt *zd_evt;

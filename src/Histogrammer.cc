@@ -278,10 +278,16 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 		double tdiff;
 			
 		// Loop over array events
+		// if you want the p-side only events, use GetArrayPMultiplicity
+		// if you want the "normal" mode using p/n-coincidences, use GetArrayMultiplicity
 		for( unsigned int j = 0; j < read_evts->GetArrayMultiplicity(); ++j ){
-			
-			// Get array event
+		//for( unsigned int j = 0; j < read_evts->GetArrayPMultiplicity(); ++j ){
+
+			// Get array event (uncomment the option you want)
+			// GetArrayEvt is "normal" mode
+			// GetArrayPEvt is p-side only events
 			array_evt = read_evts->GetArrayEvt(j);
+			//array_evt = read_evts->GetArrayPEvt(j);
 			
 			// Do the reaction
 			react->MakeReaction( array_evt->GetPosition(), array_evt->GetEnergy() );		

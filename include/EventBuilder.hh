@@ -103,6 +103,7 @@ private:
 	TTree *output_tree;
 	ISSEvts *write_evts;
 	ArrayEvt *array_evt;
+	ArrayPEvt *arrayp_evt;
 	RecoilEvt *recoil_evt;
 	ElumEvt *elum_evt;
 	ZeroDegreeEvt *zd_evt;
@@ -191,7 +192,7 @@ private:
 	std::vector<int>	zid_list;	///< list of ZeroDegree IDs/layers for ELUMFinder
 
 	// Counters
-	unsigned int		hit_ctr, array_ctr, recoil_ctr, elum_ctr, zd_ctr;
+	unsigned int		hit_ctr, array_ctr, arrayp_ctr, recoil_ctr, elum_ctr, zd_ctr;
 	unsigned long		n_asic_data, n_caen_data, n_info_data;
 	unsigned long long	n_entries;
 	unsigned long		n_caen_pulser;
