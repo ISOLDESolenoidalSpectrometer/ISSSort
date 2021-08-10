@@ -13,7 +13,7 @@
 #include "TCutG.h"
 #include "TVector3.h"
 #include "TF1.h"
-#include "Math/RootFinderAlgorithms.h"
+#include "Math/RootFinder.h"
 #include "Math/Functor.h"
 
 // Settings header
@@ -23,8 +23,7 @@
 
 
 #define u_mass 931492.10142f;	///< 1 atomic mass unit in keV/c^2
-#define c_mm_ns 299.792458f;	///< speed of light in mm/ns
-
+#define kg_mm_s 299.79245572f;	/// 1 keV/c in kg•mm/s
 
 
 /// A class to read in the reaction file in ROOT's TConfig format.
@@ -39,39 +38,48 @@ public:
 	~Particle();
 	
 	// Get properties
-	inline float	GetMass_u(){ return A; };			// returns mass in u
-	inline float	GetMass(){ return A*u_mass; };		// returns mass in keV/c^2
+	inline double	GetMass_u(){ return A; };			// returns mass in u
+	inline double	GetMass(){ return A*u_mass; };		// returns mass in keV/c^2
 	inline int		GetA(){ return (int)(A+0.499); };	// returns mass number
 	inline int		GetZ(){ return Z; };
-	inline float	GetEnergyCM(){ return Ecm; };
-	inline float	GetEnergyLab(){ return Elab; };
-	inline float	GetThetaCM(){ return ThetaCM; };
-	inline float	GetThetaLab(){ return ThetaLab; };
-	inline float	GetEx(){ return Ex; };
-	inline float	GetQ(){ return Q; };
+	inline double	GetEnergyLab(){ return Elab; };
+	inline double	GetEnergyTotLab(){
+		return TMath::Sqrt( TMath::Power( GetMass(), 2.0 ) + TMath::Power( GetMomentumLab(), 2.0 ) );
+	};
+	inline double	GetEnergyTotCM(){ return Ecm_tot; };
+	inline double	GetMomentumLab(){
+		return TMath::Sqrt( GetMass() * GetEnergyLab() * 2.0 );
+	};
+	inline double	GetMomentumCM(){
+		return TMath::Sqrt( TMath::Power( GetEnergyTotCM(), 2.0 ) - TMath::Power( GetMass(), 2.0 ) );
+	};
+	inline double	GetThetaCM(){ return ThetaCM; };
+	inline double	GetThetaLab(){ return ThetaLab; };
+	inline double	GetEx(){ return Ex; };
+	//inline double	GetQ(){ return Q; };
 
 	// Set properties
-	inline void		SetA( float myA ){ A = myA; };
+	inline void		SetA( double myA ){ A = myA; };
 	inline void		SetZ( int myZ ){ Z = myZ; };
-	inline void		SetEnergyCM( float myEcm ){ Ecm = myEcm; };
-	inline void		SetEnergyLab( float myElab ){ Elab = myElab; };
-	inline void		SetThetaCM( float mytheta ){ ThetaCM = mytheta; };
-	inline void		SetThetaLab( float mytheta ){ ThetaLab = mytheta; };
-	inline void		SetEx( float myEx ){ Ex = myEx; };
-	inline void		SetQ( float myQ ){ Q = myQ; };
+	inline void		SetEnergyLab( double myElab ){ Elab = myElab; };
+	inline void		SetEnergyTotCM( double myEcm ){ Ecm_tot = myEcm; };
+	inline void		SetThetaCM( double mytheta ){ ThetaCM = mytheta; };
+	inline void		SetThetaLab( double mytheta ){ ThetaLab = mytheta; };
+	inline void		SetEx( double myEx ){ Ex = myEx; };
+	//inline void		SetQ( double myQ ){ Q = myQ; };
 
 
 private:
 	
 	// Properties of reaction particles
-	float	A;			///< mass in atomic units, u
+	double	A;			///< mass in atomic units, u
 	int		Z; 			///< The Z of the particle, obviously
-	float	Elab;		///< energy in the laboratory system
-	float	Ecm;		///< energy in the centre of mass frame
-	float	ThetaCM;	///< theta in the laboratory system in radians
-	float	ThetaLab;	///< theta in the centre of mass frame in radians
-	float	Ex;			///< Excitation energy in keV
-	float	Q;			///< Q-values in keV
+	double	Ecm_tot;	///< total  energy in the centre of mass frame
+	double	Elab;		///< energy in the laboratory system
+	double	ThetaCM;	///< theta in the centre of mass frame in radians
+	double	ThetaLab;	///< theta in the laboratory system in radians
+	double	Ex;			///< Excitation energy in keV
+	//double	Q;			///< Q-values in keV
 
 	
 	ClassDef( Particle, 1 )
@@ -96,20 +104,35 @@ public:
 	}
 	
 	// This is the function called event-by-event
-	void	MakeReaction( TVector3 vec, float en );
+	void	MakeReaction( TVector3 vec, double en );
 	
 	// Some extra calculation steps
 	void	CalculateZ();
+
 	
 	// Get values
-	inline float GetField(){ return Mfield; };
-	inline float GetField_corr(){ return Mfield*c_mm_ns; };
-	inline float GetThetaCM(){ return Ejectile.GetThetaCM(); };
-	inline float GetZ(){ return z; };
-	inline float GetEx(){ return Recoil.GetEx(); };
+	inline double GetField(){ return Mfield; };
+	inline double GetField_corr(){ return Mfield*kg_mm_s; };
+	inline double GetThetaCM(){ return Ejectile.GetThetaCM(); };
+	inline double GetZ(){ return z; };
+	inline double GetEx(){ return Ex; };
+	inline double GetEnergyTotLab(){
+		return Beam.GetEnergyTotLab() + Target.GetEnergyTotLab();
+	};
+	inline double GetEnergyTotCM(){
+		return GetEnergyTotLab() / GetGamma();
+	};
+	inline double GetBeta(){
+		double beta = TMath::Power( Beam.GetEnergyTotLab(), 2.0 ) - TMath::Power( Beam.GetMass(), 2.0 );
+		beta = Beam.GetMomentumLab() / GetEnergyTotLab();
+		return beta;
+	};
+	inline double GetGamma(){
+		return 1.0 / TMath::Sqrt( 1.0 - TMath::Power( GetBeta(), 2.0 ) );
+	};
 
 	// Set values
-	inline void	SetField( float m ){ Mfield = m; };
+	inline void	SetField( double m ){ Mfield = m; };
 	
 	// Get cuts
 	unsigned int ncuts;
@@ -126,18 +149,26 @@ private:
 	Settings *set;
 
 	// Stuff with the magnet
-	float Mfield; ///< Magnetic field strength in Telsa
+	double Mfield; ///< Magnetic field strength in Telsa
 	
 	// Reaction partners
 	Particle Beam, Target, Ejectile, Recoil;
 	
 	// Initial properties from file
-	float Eb;		///< laboratory beam energy in keV/u
+	double Eb;		///< laboratory beam energy in keV/u
+	
+	// Stuff for the Ex calculation
+	TF1 *fa;
+	double alpha;
+	double params[4];
+	double e3_cm;
+	double Ex;
+	double theta_cm;
 	
 	// Experimental info on the ejectile
 	TVector3 ejec_vec;	///< 3-vector for the ejectile at the point in intersects the detector array
-	float rho;			///< Distance from the beam axis to the interaction point in the detector
-	float z;			///< projected z distance from target that ejectile interesect the beam axis
+	double rho;			///< Distance from the beam axis to the interaction point in the detector
+	double z;			///< projected z distance from target that ejectile interesect the beam axis
 	
 	// Cuts
 	std::vector<std::string> cutfile, cutname;
