@@ -185,14 +185,15 @@ TVector2 ArrayEvt::GetPhiXY(){
 	
 	// Start with a flat wafer pointing to the sky
 	float x = 53.5 / 2.0; 	// diameter is 53.5 mm
-	float y = nid - 4.5;	// take strip relative to centre (11 strips)
+	float y = nid%11 - 5.0;	// take strip relative to centre (11 strips)
 	y *= 2.0;				// n-side strip pitch = 2.0 mm
 
 	// This vector can now be rotated to the correct position
 	TVector2 vec( x, y );
 	
-	vec = vec.Rotate( 2. * TMath::Pi() / 6. );		// start in the centre of first face
-	vec = vec.Rotate( mod * 2. * TMath::Pi() / 3. );	// rotate for each module
+	vec = vec.Rotate( -1.0 * TMath::Pi() / 6. );		// first face is at -30˚
+	vec = vec.Rotate( nid%2 * 2. * TMath::Pi() / 6. );	// rotate 60˚ for each face
+	vec = vec.Rotate( mod * 2. * TMath::Pi() / 3. );	// rotate 120˚ for each module
 	
 	return vec;
 
