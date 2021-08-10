@@ -44,11 +44,11 @@ public:
 	inline int		GetZ(){ return Z; };
 	inline double	GetEnergyLab(){ return Elab; };
 	inline double	GetEnergyTotLab(){
-		return TMath::Sqrt( TMath::Power( GetMass(), 2.0 ) + TMath::Power( GetMomentumLab(), 2.0 ) );
+		return GetMass() + GetEnergyLab();
 	};
 	inline double	GetEnergyTotCM(){ return Ecm_tot; };
 	inline double	GetMomentumLab(){
-		return TMath::Sqrt( GetMass() * GetEnergyLab() * 2.0 );
+		return TMath::Sqrt( TMath::Power( GetEnergyTotLab(), 2.0 ) - TMath::Power( GetMass(), 2.0 ) );
 	};
 	inline double	GetMomentumCM(){
 		return TMath::Sqrt( TMath::Power( GetEnergyTotCM(), 2.0 ) - TMath::Power( GetMass(), 2.0 ) );
@@ -56,7 +56,6 @@ public:
 	inline double	GetThetaCM(){ return ThetaCM; };
 	inline double	GetThetaLab(){ return ThetaLab; };
 	inline double	GetEx(){ return Ex; };
-	//inline double	GetQ(){ return Q; };
 
 	// Set properties
 	inline void		SetA( double myA ){ A = myA; };
@@ -66,7 +65,6 @@ public:
 	inline void		SetThetaCM( double mytheta ){ ThetaCM = mytheta; };
 	inline void		SetThetaLab( double mytheta ){ ThetaLab = mytheta; };
 	inline void		SetEx( double myEx ){ Ex = myEx; };
-	//inline void		SetQ( double myQ ){ Q = myQ; };
 
 
 private:
@@ -79,7 +77,6 @@ private:
 	double	ThetaCM;	///< theta in the centre of mass frame in radians
 	double	ThetaLab;	///< theta in the laboratory system in radians
 	double	Ex;			///< Excitation energy in keV
-	//double	Q;			///< Q-values in keV
 
 	
 	ClassDef( Particle, 1 )
@@ -105,27 +102,25 @@ public:
 	
 	// This is the function called event-by-event
 	void	MakeReaction( TVector3 vec, double en );
-	
-	// Some extra calculation steps
-	void	CalculateZ();
-
-	
+		
 	// Get values
 	inline double GetField(){ return Mfield; };
 	inline double GetField_corr(){ return Mfield*kg_mm_s; };
-	inline double GetThetaCM(){ return Ejectile.GetThetaCM(); };
-	inline double GetZ(){ return z; };
-	inline double GetEx(){ return Ex; };
+	inline double GetThetaCM(){ return Recoil.GetThetaCM(); };
+	inline double GetDistance(){ return z; };
+	inline double GetEx(){ return Recoil.GetEx(); };
 	inline double GetEnergyTotLab(){
 		return Beam.GetEnergyTotLab() + Target.GetEnergyTotLab();
 	};
 	inline double GetEnergyTotCM(){
-		return GetEnergyTotLab() / GetGamma();
+		double etot = TMath::Power( Beam.GetMass(), 2.0 );
+		etot += TMath::Power( Target.GetMass(), 2.0 );
+		etot += 2.0 * Beam.GetEnergyTotLab() * Target.GetMass();
+		etot = TMath::Sqrt( etot );
+		return etot;
 	};
 	inline double GetBeta(){
-		double beta = TMath::Power( Beam.GetEnergyTotLab(), 2.0 ) - TMath::Power( Beam.GetMass(), 2.0 );
-		beta = Beam.GetMomentumLab() / GetEnergyTotLab();
-		return beta;
+		return TMath::Sqrt( 2.0 * Beam.GetEnergyLab() / Beam.GetMass() );
 	};
 	inline double GetGamma(){
 		return 1.0 / TMath::Sqrt( 1.0 - TMath::Power( GetBeta(), 2.0 ) );

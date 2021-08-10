@@ -16,9 +16,9 @@ double alpha_function( double *x, double *params ){
 	double p = params[2];
 	double gqb = params[3];
 	
-	double root = gqb * z;
-	root += p * TMath::Sin(alpha);
+	double root = p * TMath::Sin(alpha);
 	root -= gqb * rho * TMath::Tan(alpha);
+	root += gqb * z;
 
 	return root;
 
@@ -112,45 +112,46 @@ void Reaction::ReadReaction() {
 
 }
 
-void Reaction::CalculateZ(){
-	
-	// Sharpy's projection from detector to axis of z
-	z = ejec_vec.Z();
-	
-	
-}
-
 void Reaction::MakeReaction( TVector3 vec, double en ){
 	
 	// Set the input parameters, might use them in another function
 	ejec_vec = vec;				// 3-vector of detected ejectile
 	Ejectile.SetEnergyLab(en);	// ejectile energy in keV
+	z = ejec_vec.Z();			// measured z in mm
 	rho	= ejec_vec.Perp();		// perpenicular distance from beam axis to interaction point
-	CalculateZ();				// get the real z value at beam axis
     
     ////////////////////
     // EX calculation //
     ////////////////////
-	params[0] = ejec_vec.Z();	// z in mm
-	params[1] = ejec_vec.Perp();	// rho in mm
-	params[2] = Ejectile.GetMomentumLab(); // p
-	params[3] = GetBeta() * GetGamma() * GetField_corr() / ( TMath::Pi() * 2.0 ); // gqb
-	params[3] /=  TMath::Pi() / 2.0; // gqb/2pi
+	params[0] = z;									// z in mm
+	params[1] = rho;								// rho in mm
+	params[2] = Ejectile.GetMomentumLab();			// p
+	params[3] = Ejectile.GetZ() * GetField_corr(); 	// qb
+	params[3] *= GetGamma() / TMath::TwoPi(); 		// γqb/2pi
 
 	// RootFinder algorithm
 	fa->SetParameters( params );
-	ROOT::Math::RootFinder rf( ROOT::Math::RootFinder::kGSL_NEWTON );
+	ROOT::Math::RootFinder rf( ROOT::Math::RootFinder::kGSL_NEWTON ); // with derivatives
+	//ROOT::Math::RootFinder rf( ROOT::Math::RootFinder::kBRENT ); // without derivatives
  	ROOT::Math::GradFunctor1D wf( *fa );
-	rf.SetFunction( wf, TMath::Pi()/4.0 );
-	rf.Solve( 100, 1e-5, 1e-6 );
-	alpha = rf.Root();
+	rf.SetFunction( wf, 0.2 * TMath::Pi() ); // with derivatives
+	//rf.SetFunction( wf, 0.0, TMath::PiOver2() ); // without derivatives
+	rf.Solve( 500, 1e-5, 1e-6 );
+	if( rf.Status() ) alpha = TMath::QuietNaN();
+	else alpha = rf.Root();
 	
+	// Get the real z value at beam axis and lab angle
+	if( z < 0 ) z -= rho * TMath::Tan( alpha );
+	else z += rho * TMath::Tan( alpha );
+	Ejectile.SetThetaLab( TMath::PiOver2() - alpha );
+
 	// Total energy of ejectile in centre of mass
 	e3_cm = Ejectile.GetEnergyTotLab();
 	e3_cm -= GetBeta() * Ejectile.GetMomentumLab() * TMath::Sin( alpha );
 	e3_cm *= GetGamma();
 	Ejectile.SetEnergyTotCM( e3_cm );
-	
+	Recoil.SetEnergyTotCM( GetEnergyTotCM() - e3_cm );
+
 	// Theta_CM
 	theta_cm  = GetGamma() * Ejectile.GetEnergyTotCM();
 	theta_cm -= Ejectile.GetEnergyTotLab();
@@ -160,17 +161,23 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	Ejectile.SetThetaCM( TMath::Pi() - theta_cm );
 	
 	// Ex
-	Ex  = TMath::Power( GetEnergyTotCM() - Ejectile.GetEnergyTotCM(), 2.0 );
+	Ex  = TMath::Power( Recoil.GetEnergyTotCM(), 2.0 );
 	Ex -= TMath::Power( Ejectile.GetMomentumCM(), 2.0 );
 	Ex  = TMath::Sqrt( Ex ) - Recoil.GetMass();
     Recoil.SetEx( Ex );
+    Ejectile.SetEx( 0.0 );
 
   	
-	//std::cout << "-----------------------" << std::endl;
-	//std::cout << "   alpha = " <<    alpha << std::endl;
-	//std::cout << "   e3_cm = " <<    e3_cm << std::endl;
-	//std::cout << "theta_cm = " << theta_cm << std::endl;
-	//std::cout << "      Ex = " <<       Ex << std::endl;
+	std::cout << "-----------------------" << std::endl;
+	std::cout << "  z_meas = " << ejec_vec.Z() << " mm" << std::endl;
+	std::cout << "     rho = " << rho << " mm" << std::endl;
+	std::cout << "       z = " << z << " mm" << std::endl;
+	std::cout << "    beta = " << GetBeta() << std::endl;
+	std::cout << "   gamma = " << GetGamma() << std::endl;
+	std::cout << "   alpha = " << alpha*TMath::RadToDeg() << " deg" << std::endl;
+	std::cout << "   e3_cm = " << e3_cm*1e-3 << " MeV" << std::endl;
+	std::cout << "theta_cm = " << theta_cm*TMath::RadToDeg() << " deg" << std::endl;
+	std::cout << "      Ex = " << Ex*1e-3 << " MeV" << std::endl;
 
 	
   	return;	
