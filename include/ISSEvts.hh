@@ -171,7 +171,7 @@ public:
 	inline void SetID( unsigned char i ){ id = i; };
 	inline void SetTime( unsigned long t ){ time = t; };
 
-	inline float				GetEnergy(){ return energy; };
+	inline float			GetEnergy(){ return energy; };
 	inline unsigned char	GetID(){ return id; };
 	inline unsigned char	GetSector(){ return sec; };
 	inline unsigned long	GetTime(){ return time; };
