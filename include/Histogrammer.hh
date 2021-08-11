@@ -59,23 +59,23 @@ public:
 	// Coincidence conditions (to be put in settings file eventually)
 	// Time walk corrections can also be added here
 	inline bool	PromptCoincidence( RecoilEvt *r, ArrayEvt *a ){
-		if( (double)r->GetTime() - (double)a->GetTime() > -3000 &&
-			(double)r->GetTime() - (double)a->GetTime() < 3000 ) return true;
+		if( (double)r->GetTime() - (double)a->GetTime() > -1100 &&
+			(double)r->GetTime() - (double)a->GetTime() < 400 ) return true;
 		else return false;
 	};
 	inline bool	RandomCoincidence( RecoilEvt *r, ArrayEvt *a ){
-		if( (double)r->GetTime() - (double)a->GetTime() > 5000 &&
-			(double)r->GetTime() - (double)a->GetTime() < 10000 ) return true;
+		if( (double)r->GetTime() - (double)a->GetTime() > 2000 &&
+			(double)r->GetTime() - (double)a->GetTime() < 5000 ) return true;
 		else return false;
 	};
 	inline bool	PromptCoincidence( RecoilEvt *r, ElumEvt *e ){
-		if( (double)r->GetTime() - (double)e->GetTime() > -3000 &&
-			(double)r->GetTime() - (double)e->GetTime() < 3000 ) return true;
+		if( (double)r->GetTime() - (double)e->GetTime() > -400 &&
+			(double)r->GetTime() - (double)e->GetTime() < 100 ) return true;
 		else return false;
 	};
 	inline bool	RandomCoincidence( RecoilEvt *r, ElumEvt *e ){
-		if( (double)r->GetTime() - (double)e->GetTime() > 5000 &&
-			(double)r->GetTime() - (double)e->GetTime() < 10000 ) return true;
+		if( (double)r->GetTime() - (double)e->GetTime() > 500 &&
+			(double)r->GetTime() - (double)e->GetTime() < 1500 ) return true;
 		else return false;
 	};
 	inline bool	OnBeam( RecoilEvt *r ){
