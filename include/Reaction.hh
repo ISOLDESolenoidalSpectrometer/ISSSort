@@ -13,6 +13,7 @@
 #include "TCutG.h"
 #include "TVector3.h"
 #include "TF1.h"
+#include "TError.h"
 #include "Math/RootFinder.h"
 #include "Math/Functor.h"
 

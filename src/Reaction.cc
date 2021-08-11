@@ -138,10 +138,12 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
  	ROOT::Math::GradFunctor1D wf( *fa );
 	rf.SetFunction( wf, 0.2 * TMath::Pi() ); // with derivatives
 	//rf.SetFunction( wf, 0.0, TMath::PiOver2() ); // without derivatives
+	gErrorIgnoreLevel = kError; // suppress warnings
 	rf.Solve( 500, 1e-5, 1e-6 );
 	if( rf.Status() ) alpha = TMath::QuietNaN();
 	else alpha = rf.Root();
-	
+	gErrorIgnoreLevel = kInfo; // print warnings again
+
 	// Get the real z value at beam axis and lab angle
 	if( z < 0 ) z -= rho * TMath::Tan( alpha );
 	else z += rho * TMath::Tan( alpha );
