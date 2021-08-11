@@ -171,17 +171,17 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
     Ejectile.SetEx( 0.0 );
 
   	
-	std::cout << "-----------------------" << std::endl;
-	std::cout << "  z_meas = " << vec.Z() << " mm" << std::endl;
-	std::cout << "     rho = " << rho << " mm" << std::endl;
-	std::cout << "       z = " << z << " mm" << std::endl;
-	std::cout << "    beta = " << GetBeta() << std::endl;
-	std::cout << "   gamma = " << GetGamma() << std::endl;
-	std::cout << "   alpha = " << alpha*TMath::RadToDeg() << " deg" << std::endl;
-	std::cout << "    e_cm = " << GetEnergyTotCM()*1e-3 << " MeV" << std::endl;
-	std::cout << "   e3_cm = " << e3_cm*1e-3 << " MeV" << std::endl;
-	std::cout << "theta_cm = " << theta_cm*TMath::RadToDeg() << " deg" << std::endl;
-	std::cout << "      Ex = " << Ex*1e-3 << " MeV" << std::endl;
+	//std::cout << "-----------------------" << std::endl;
+	//std::cout << "  z_meas = " << vec.Z() << " mm" << std::endl;
+	//std::cout << "     rho = " << rho << " mm" << std::endl;
+	//std::cout << "       z = " << z << " mm" << std::endl;
+	//std::cout << "    beta = " << GetBeta() << std::endl;
+	//std::cout << "   gamma = " << GetGamma() << std::endl;
+	//std::cout << "   alpha = " << alpha*TMath::RadToDeg() << " deg" << std::endl;
+	//std::cout << "    e_cm = " << GetEnergyTotCM()*1e-3 << " MeV" << std::endl;
+	//std::cout << "   e3_cm = " << e3_cm*1e-3 << " MeV" << std::endl;
+	//std::cout << "theta_cm = " << theta_cm*TMath::RadToDeg() << " deg" << std::endl;
+	//std::cout << "      Ex = " << Ex*1e-3 << " MeV" << std::endl;
 
 	
   	return;	
