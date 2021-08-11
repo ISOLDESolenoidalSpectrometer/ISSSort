@@ -185,7 +185,7 @@ TVector2 ArrayEvt::GetPhiXY(){
 	
 	// Start with a flat wafer pointing to the sky
 	float x = 53.5 / 2.0; 	// diameter is 53.5 mm
-	float y = nid%11 - 5.0;	// take strip relative to centre (11 strips)
+	float y = nid%11 - 5.0;	// take strip relative to centre (11 strips per face: 22 strips per module)
 	y *= 2.0;				// n-side strip pitch = 2.0 mm
 
 	// This vector can now be rotated to the correct position

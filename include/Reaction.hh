@@ -53,6 +53,9 @@ public:
 	inline double	GetMomentumCM(){
 		return TMath::Sqrt( TMath::Power( GetEnergyTotCM(), 2.0 ) - TMath::Power( GetMass(), 2.0 ) );
 	};
+	inline double	GetGamma(){
+		return GetEnergyTotLab() / GetMass();
+	};
 	inline double	GetThetaCM(){ return ThetaCM; };
 	inline double	GetThetaLab(){ return ThetaLab; };
 	inline double	GetEx(){ return Ex; };
@@ -161,7 +164,6 @@ private:
 	double theta_cm;
 	
 	// Experimental info on the ejectile
-	TVector3 ejec_vec;	///< 3-vector for the ejectile at the point in intersects the detector array
 	double rho;			///< Distance from the beam axis to the interaction point in the detector
 	double z;			///< projected z distance from target that ejectile interesect the beam axis
 	
