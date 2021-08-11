@@ -117,8 +117,6 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	// Set the input parameters, might use them in another function
 	Ejectile.SetEnergyLab(en);	// ejectile energy in keV
 	z = vec.Z();			// measured z in mm
-	//Ejectile.SetEnergyLab( 4387. );
-	//z = -300.;
 	rho	= vec.Perp();		// perpenicular distance from beam axis to interaction point
     
     //----------------//
@@ -138,11 +136,11 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
  	ROOT::Math::GradFunctor1D wf( *fa );
 	rf.SetFunction( wf, 0.2 * TMath::Pi() ); // with derivatives
 	//rf.SetFunction( wf, 0.0, TMath::PiOver2() ); // without derivatives
-	gErrorIgnoreLevel = kError; // suppress warnings
+	gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
 	rf.Solve( 500, 1e-5, 1e-6 );
 	if( rf.Status() ) alpha = TMath::QuietNaN();
 	else alpha = rf.Root();
-	gErrorIgnoreLevel = kInfo; // print warnings again
+	gErrorIgnoreLevel = kInfo; // print info and above again
 
 	// Get the real z value at beam axis and lab angle
 	if( z < 0 ) z -= rho * TMath::Tan( alpha );
