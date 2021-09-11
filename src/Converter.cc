@@ -732,16 +732,19 @@ void Converter::ProcessASICData(){
 
 
 		// Make an AsicData item
-		asic_data->SetTime( my_tm_stp
-						   + cal->AsicTime( my_mod_id, my_asic_id )
-						   - cal->AsicWalk( my_mod_id, my_asic_id, my_energy )
-						   );
+		asic_data->SetTime( my_tm_stp + cal->AsicTime( my_mod_id, my_asic_id ) );
+		asic_data->SetWalk( cal->AsicWalk( my_mod_id, my_asic_id, my_energy ) );
 		asic_data->SetAdcValue( my_adc_data );
 		asic_data->SetHitBit( my_hit );
 		asic_data->SetModule( my_mod_id );
 		asic_data->SetAsic( my_asic_id );
 		asic_data->SetChannel( my_ch_id );
 		asic_data->SetEnergy( my_energy );
+		
+		// Check if it's over threshold
+		if( my_adc_data > cal->AsicThreshold( my_mod_id, my_asic_id, my_ch_id ) )
+			asic_data->SetThreshold( true );
+		else asic_data->SetThreshold( false );
 		
 		// Set this data and fill event to tree
 		data_packet->SetData( asic_data );
@@ -828,6 +831,12 @@ void Converter::ProcessCAENData(){
 		
 		caen_data->SetQlong( my_adc_data );
 		caen_data->SetEnergy( my_energy );
+
+		// Check if it's over threshold
+		if( my_adc_data > cal->CaenThreshold( my_mod_id, my_ch_id ) )
+			caen_data->SetThreshold( true );
+		else caen_data->SetThreshold( false );
+
 		flag_caen_data0 = true;
 
 	}

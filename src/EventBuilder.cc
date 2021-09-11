@@ -354,14 +354,28 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			mymod = asic_data->GetModule();
 			myside = asic_side.at( asic_data->GetAsic() );
 			myrow = array_row.at( asic_data->GetAsic() ).at( asic_data->GetChannel() );
-			if( overwrite_cal )
+			if( overwrite_cal ) {
+			
 				myenergy = cal->AsicEnergy( mymod, asic_data->GetAsic(),
 										   mych, asic_data->GetAdcValue() );
-			else
+				mywalk = cal->AsicWalk( mymod, asic_data->GetAsic(), myenergy );
+			
+				if( asic_data->GetAdcValue() > cal->AsicThreshold( mymod, asic_data->GetAsic(), mych ) )
+					mythres = true;
+				else mythres = false;
+				
+			}
+			
+			else {
+				
 				myenergy = asic_data->GetEnergy();
-
+				mywalk = asic_data->GetWalk();
+				mythres = asic_data->IsOverThreshold();
+			
+			}
+			
 			// p-side event
-			if( myside == 0 ) {
+			if( myside == 0 && mythres ) {
 			
 			// test here about hit bit value
 			//if( myside == 0 && !asic_data->GetHitBit() ) {
@@ -369,7 +383,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				mystrip = array_pid.at( asic_data->GetChannel() );
 				
 				pen_list.push_back( myenergy );
-				ptd_list.push_back( mytime );
+				ptd_list.push_back( mytime + mywalk );
 				pmod_list.push_back( mymod );
 				pid_list.push_back( mystrip );
 				prow_list.push_back( myrow );
@@ -377,7 +391,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 
 			// n-side event
-			else if( myside == 1 ) {
+			else if( myside == 1 && mythres ) {
 
 			// test here about hit bit value
 			//else if( myside == 1 && asic_data->GetHitBit() ) {
@@ -385,7 +399,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				mystrip = array_nid.at( asic_data->GetChannel() );
 				
 				nen_list.push_back( myenergy );
-				ntd_list.push_back( mytime );
+				ntd_list.push_back( mytime + mywalk );
 				nmod_list.push_back( mymod );
 				nid_list.push_back( mystrip );
 				nrow_list.push_back( myrow );
@@ -413,14 +427,26 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			caen_data = in_data->GetCaenData();
 			mymod = caen_data->GetModule();
 			mych = caen_data->GetChannel();
-			if( overwrite_cal )
+			if( overwrite_cal ) {
+				
 				myenergy = cal->CaenEnergy( mymod, mych,
 									caen_data->GetQlong() );
-			else
+				
+				if( caen_data->GetQlong() > cal->CaenThreshold( mymod, mych ) )
+					mythres = true;
+				else mythres = false;
+
+			}
+			
+			else {
+				
 				myenergy = caen_data->GetEnergy();
+				mythres = caen_data->IsOverThreshold();
+
+			}
 			
 			// Is it a recoil
-			if( set->IsRecoil( mymod, mych ) ) {
+			if( set->IsRecoil( mymod, mych ) && mythres ) {
 				
 				mysector = set->GetRecoilSector( mymod, mych );
 				mylayer = set->GetRecoilLayer( mymod, mych );
@@ -433,7 +459,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 			
 			// Is it an ELUM?
-			if( set->IsELUM( mymod, mych ) ) {
+			if( set->IsELUM( mymod, mych ) && mythres ) {
 				
 				mysector = set->GetELUMSector( mymod, mych );
 				
@@ -444,7 +470,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 
 			// Is it a ZeroDegree?
-			if( set->IsZD( mymod, mych ) ) {
+			if( set->IsZD( mymod, mych ) && mythres ) {
 				
 				mylayer = set->GetZDLayer( mymod, mych );
 				

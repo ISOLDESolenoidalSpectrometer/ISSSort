@@ -8,8 +8,10 @@ class AsicData : public TObject {
 public:
 
 	AsicData();
-	AsicData( unsigned long t, unsigned short adc, unsigned char m,
-			 unsigned char a, unsigned char c, bool h, float e );
+	AsicData( unsigned long t, unsigned short adc,
+			  unsigned char m, unsigned char a,
+			  unsigned char c, bool h, bool th,
+			  float e, int w );
 	~AsicData();
 	
 	inline unsigned long	GetTime() { return time; };
@@ -19,15 +21,19 @@ public:
 	inline unsigned char	GetChannel() { return ch; };
 	inline bool				GetHitBit() { return hit_bit; };
 	inline float			GetEnergy() { return energy; };
+	inline int				GetWalk() { return walk; };
+	inline bool				IsOverThreshold() { return thres; };
 
 	inline void SetTime( unsigned long t ){ time = t; };
+	inline void SetWalk( int w ){ walk = w; };
 	inline void SetAdcValue( unsigned short adc ){ adc_value = adc; };
 	inline void SetModule( unsigned char m ){ mod = m; };
 	inline void SetAsic( unsigned char a ){ asic = a; };
 	inline void SetChannel( unsigned char c ){ ch = c; };
 	inline void SetHitBit( bool h ){ hit_bit = h; };
 	inline void SetEnergy( float e ){ energy = e; };
-
+	inline void SetThreshold( bool t ){ thres = t; };
+	
 	void ClearData();
 
 protected:
@@ -38,7 +44,9 @@ protected:
 	unsigned char	asic;
 	unsigned char	ch;
 	bool			hit_bit;
+	bool			thres;		///< is the energy over threshold?
 	float			energy;
+	int				walk;
 
 	
 	ClassDef( AsicData, 2 )
@@ -53,7 +61,8 @@ public:
 	CaenData( unsigned long t, unsigned short f,
 			  std::vector<unsigned short> tr,
 			  unsigned short ql, unsigned short qs,
-			  unsigned char m, unsigned char c );
+			  unsigned char m, unsigned char c,
+			  bool th );
 	~CaenData();
 
 	inline unsigned long	GetTime() { return time; };
@@ -69,6 +78,7 @@ public:
 	inline unsigned char	GetModule() { return mod; };
 	inline unsigned char	GetChannel() { return ch; };
 	inline float			GetEnergy() { return energy; };
+	inline bool				IsOverThreshold() { return thres; };
 
 	inline void	SetTime( unsigned long t ) { time = t; };
 	inline void	SetFineTime( unsigned short t ) { finetime = t; };
@@ -79,6 +89,7 @@ public:
 	inline void	SetModule( unsigned char m ) { mod = m; };
 	inline void	SetChannel( unsigned char c ) { ch = c; };
 	inline void SetEnergy( float e ){ energy = e; };
+	inline void SetThreshold( bool t ){ thres = t; };
 
 	inline void ClearTrace() { trace.clear(); };
 	void ClearData();
@@ -92,6 +103,7 @@ protected:
 	unsigned short				Qshort;
 	unsigned char				mod;
 	unsigned char				ch;
+	bool						thres;		///< is the energy over threshold?
 	float						energy;
 
 	

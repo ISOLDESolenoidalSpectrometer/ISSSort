@@ -45,8 +45,9 @@ void Calibration::ReadCalibration() {
 
 			fAsicTime[mod][asic] = config->GetValue( Form( "asic_%d_%d.Time", mod, asic ), 0 );
 
+			fAsicWalk[mod][asic].resize( 5 );
 			for( unsigned int i = 0; i < 5; i++ )
-				fAsicWalk[mod][asic].push_back( config->GetValue( Form( "asic_%d_%d.Walk%d", mod, asic, i ), 0.0 ) );
+				fAsicWalk[mod][asic][i] = config->GetValue( Form( "asic_%d_%d.Walk%d", mod, asic, i ), 0.0 );
 
 			for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
 				

@@ -152,7 +152,9 @@ private:
 	unsigned char		mych;		///< channel number
 	unsigned long long	mytime;		///< absolute timestamp
 	float 				myenergy;	///< calibrated energy
-	
+	int 				mywalk;		///< time walk correction
+	bool				mythres;	///< above threshold?
+
 	// Data variables - Array
 	unsigned char		myside;		///< p-side = 0; n-side = 1
 	unsigned char		myrow;		///< 4 wafers along array, 2 dE-E, 13 for gas

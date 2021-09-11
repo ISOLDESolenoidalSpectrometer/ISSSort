@@ -8,16 +8,17 @@ ClassImp(DataPackets)
 AsicData::AsicData(){}
 AsicData::~AsicData(){}
 AsicData::AsicData( unsigned long t, unsigned short adc, unsigned char m,
-					unsigned char a, unsigned char c, bool h, float e ) :
-					time(t), adc_value(adc), mod(m), asic(a), ch(c), hit_bit(h), energy(e) {}
+					unsigned char a, unsigned char c, bool h, bool th, float e, int w ) :
+					time(t), adc_value(adc), mod(m), asic(a), ch(c), hit_bit(h), thres(th), energy(e), walk(w) {}
 
 CaenData::CaenData(){}
 CaenData::~CaenData(){}
 CaenData::CaenData( unsigned long t, unsigned short f,
 				    std::vector<unsigned short> tr,
 					unsigned short ql, unsigned short qs,
-					unsigned char m, unsigned char c ) :
-					time(t), finetime(f), trace(tr), Qlong(ql), Qshort(qs), mod(m), ch(c) {}
+					unsigned char m, unsigned char c,
+				    bool th ) :
+					time(t), finetime(f), trace(tr), Qlong(ql), Qshort(qs), mod(m), ch(c), thres(th) {}
 
 InfoData::InfoData(){}
 InfoData::~InfoData(){}
@@ -34,6 +35,7 @@ void DataPackets::SetData( AsicData *data ){
 	// Make a copy of the input data and push it back
 	AsicData fill_data;
 	fill_data.SetTime( data->GetTime() );
+	fill_data.SetWalk( data->GetWalk() );
 	fill_data.SetAdcValue( data->GetAdcValue() );
 	fill_data.SetHitBit( data->GetHitBit() );
 	fill_data.SetModule( data->GetModule() );
@@ -126,7 +128,7 @@ void CaenData::ClearData(){
 	mod = 255;
 	ch = 255;
 	energy = -999.;
-	
+
 	return;
 	
 }
@@ -134,6 +136,7 @@ void CaenData::ClearData(){
 void AsicData::ClearData(){
 	
 	time = 0;
+	walk = 0;
 	adc_value = 0;
 	hit_bit = 2;  ///< valid values are 0 and 1, so reset to 2
 	mod = 255;
