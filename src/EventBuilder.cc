@@ -357,7 +357,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			if( overwrite_cal ) {
 			
 				myenergy = cal->AsicEnergy( mymod, asic_data->GetAsic(),
-										   mych, asic_data->GetAdcValue() );
+									 asic_data->GetChannel(), asic_data->GetAdcValue() );
 				mywalk = cal->AsicWalk( mymod, asic_data->GetAsic(), myenergy );
 			
 				if( asic_data->GetAdcValue() > cal->AsicThreshold( mymod, asic_data->GetAsic(), mych ) )
