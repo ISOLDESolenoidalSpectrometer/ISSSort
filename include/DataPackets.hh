@@ -49,7 +49,7 @@ protected:
 	int				walk;
 
 	
-	ClassDef( AsicData, 2 )
+	ClassDef( AsicData, 3 )
 	
 };
 
@@ -107,7 +107,7 @@ protected:
 	float						energy;
 
 	
-	ClassDef( CaenData, 1 )
+	ClassDef( CaenData, 2 )
 	
 };
 
