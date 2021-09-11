@@ -163,7 +163,7 @@ float Calibration::AsicWalk( unsigned int mod, unsigned int asic, float energy )
 
 		// p - q*exp(-r*x)
 		walk = TMath::Exp( -1.0 * fAsicWalk[mod][asic][2] * energy );
-		walk *= fAsicWalk[mod][asic][1];
+		walk *= -1.0 * fAsicWalk[mod][asic][1];
 		walk += fAsicWalk[mod][asic][0];
 		
 		return walk;
