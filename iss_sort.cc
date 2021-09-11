@@ -246,12 +246,8 @@ int main( int argc, char *argv[] ){
 	}
 	
 	// Check the ouput file name
-	if( output_name.length() == 0 ) {
-	
-		if( input_names.size() == 1 ) output_name = input_names.at(0) + "_hists.root";
-		else output_name = input_names.at(0).substr( 0, input_names.at(0).find_last_of("/") ) + "/output_hists.root";
-		
-	}
+	if( output_name.length() == 0 )
+		output_name = input_names.at(0) + "_hists.root";
 	
 	// Check we have a Settings file
 	if( name_set_file.length() > 0 ) {
