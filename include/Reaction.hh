@@ -110,6 +110,7 @@ public:
 	// Get values
 	inline double GetField(){ return Mfield; };
 	inline double GetField_corr(){ return Mfield*kg_mm_s; };
+	inline double GetArrayDistance(){ return z0; };
 	inline double GetThetaCM(){ return Recoil.GetThetaCM(); };
 	inline double GetDistance(){ return z; };
 	inline double GetEx(){ return Recoil.GetEx(); };
@@ -132,7 +133,8 @@ public:
 
 	// Set values
 	inline void	SetField( double m ){ Mfield = m; };
-	
+	inline void	SetArrayDistance( double d ){ z0 = d; };
+
 	// Get cuts
 	unsigned int ncuts;
 	inline TCutG* GetRecoilCut( unsigned int i ){
@@ -147,8 +149,9 @@ private:
 	// Settings file
 	Settings *set;
 
-	// Stuff with the magnet
-	double Mfield; ///< Magnetic field strength in Telsa
+	// Stuff with the magnet and detectors
+	double Mfield;	///< Magnetic field strength in Telsa
+	double z0;		///< Distance between the array and first silicon wafer
 	
 	// Reaction partners
 	Particle Beam, Target, Ejectile, Recoil;

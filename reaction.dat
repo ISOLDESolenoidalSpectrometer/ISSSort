@@ -30,6 +30,10 @@
 #Mfield: 2.0		# Magnetic field strength in Tesla 
 
 
+## Detector distances
+#ArrayDistance: -100.0	# Target to array distance in mm (edge of first wafer; negative upstream; positive downstream)
+
+
 ## Recoil cut files
 #RecoilCut_0.File: NULL	# ROOT file containing the 2D recoil energy cut for sector 0
 #RecoilCut_0.Name: CUTG	# name of the TCutG object inside the ROOT file for sector 0

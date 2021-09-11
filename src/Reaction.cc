@@ -54,6 +54,9 @@ void Reaction::ReadReaction() {
 	// Magnetic field stuff
 	Mfield = config->GetValue( "Mfield", 2.0 );
 	
+	// Detector to target distances
+	z0 = config->GetValue( "ArrayDistance", 100.0 );
+	
 	// Get particle properties
 	Beam.SetA( config->GetValue( "BeamA", 29.98394686 ) );
 	Beam.SetZ( config->GetValue( "BeamZ", 12 ) );
@@ -116,8 +119,10 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	
 	// Set the input parameters, might use them in another function
 	Ejectile.SetEnergyLab(en);	// ejectile energy in keV
-	z = vec.Z();			// measured z in mm
-	rho	= vec.Perp();		// perpenicular distance from beam axis to interaction point
+	z = vec.Z();				// measured z in mm
+	if( z0 < 0 ) z = z0 - z;	// upstream
+	else z += z0;				// downstream
+	rho	= vec.Perp();			// perpenicular distance from beam axis to interaction point
     
     //----------------//
     // EX calculation //
@@ -172,7 +177,7 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 
   	
 	//std::cout << "-----------------------" << std::endl;
-	//std::cout << "  z_meas = " << vec.Z() << " mm" << std::endl;
+	//std::cout << "  z_meas = " << z << " mm" << std::endl;
 	//std::cout << "     rho = " << rho << " mm" << std::endl;
 	//std::cout << "       z = " << z << " mm" << std::endl;
 	//std::cout << "    beta = " << GetBeta() << std::endl;

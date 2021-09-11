@@ -153,23 +153,18 @@ float ArrayEvt::GetZ(){
 	/// Get the z position of the interaction
 	/// Note that there is no radial correction yet implemented
 	/// the origin is at the target position
-	/// z is positive in the beam direction
+	/// z is positive in the beam direction relative to silicon edge
 	/// x is positive in the vertical direction towards the sky
 	/// y is positive in the horizontal direction towards XT03 (right)
 	/// phi is positive in the clockwise direction, looking from the origin to positive z (beam direction)
 
-	//float z = Cal->GetTargetDist(); // not yet implemented
-	float z = -100.; 				// just until it is in the cal file
 	float d = 127.5 - pid;			// take centre of the end strip
 	d += 128 * (3 - row);			// move along to the correct row
 	d *= 0.95;						// p-side strip pitch = 0.95 mm
 	d += (3 - row) * 3.9;			// inter wafer distance (to be confirmed)
 	d += 1.7;						// distance from wafer edge to active region
-
-	if( z > 0 ) z += d;	// forward direction (downstream)
-	else z -= d;		// backward direction (upstream)
 		
-	return z; // in mm
+	return d; // in mm
 	
 }
 
