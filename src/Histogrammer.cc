@@ -13,23 +13,33 @@ Histogrammer::~Histogrammer(){}
 void Histogrammer::MakeHists() {
 
 	std::string hname, htitle;
+	
+	float zmax, zmin = react->GetArrayDistance();
+	if( zmin < 0 ) { // upstream
+		zmax = zmin + 10;
+		zmin -= 520;
+	}
+	else { //downstream
+		zmax = zmin + 520;
+		zmin -= 10;
+	}
 
 	// Array physics histograms
 	hname = "E_vs_z";
 	htitle = "Energy vs. z distance;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );
+	E_vs_z = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
 	
 	hname = "E_vs_z_ebis";
 	htitle = "Energy vs. z distance gated on EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_ebis = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );
+	E_vs_z_ebis = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
 	
 	hname = "E_vs_z_recoil";
 	htitle = "Energy vs. z distance gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_recoil = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );
+	E_vs_z_recoil = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
 	
 	hname = "E_vs_z_recoilT";
 	htitle = "Energy vs. z distance with a time gate on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), 3000, -1500, 1500, 800, 0, 16000 );
+	E_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
 	
 	hname = "Ex";
 	htitle = "Excitation energy;Excitation energy [keV];Counts per mm per 20 keV";
@@ -76,16 +86,6 @@ void Histogrammer::MakeHists() {
 	Ex_vs_theta_ebis_mod.resize( set->GetNumberOfArrayModules() );
 	Ex_vs_theta_recoil_mod.resize( set->GetNumberOfArrayModules() );		
 	Ex_vs_theta_recoilT_mod.resize( set->GetNumberOfArrayModules() );		
-	
-	float zmax, zmin = react->GetArrayDistance();
-	if( zmin < 0 ) { // upstream
-		zmax = zmin + 10;
-		zmin -= 520;
-	}
-	else { //downstream
-		zmax = zmin + 520;
-		zmin -= 10;
-	}
 	
 	for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
 	
@@ -300,11 +300,11 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 			//array_evt = read_evts->GetArrayPEvt(j);
 			
 			// Do the reaction
-			react->MakeReaction( array_evt->GetPosition(), array_evt->GetEnergy() );		
-		
+			react->MakeReaction( array_evt->GetPosition(), array_evt->GetEnergy() );
+			
 			// Singles
-			E_vs_z->Fill( array_evt->GetZ(), array_evt->GetEnergy() );
-			E_vs_z_mod[array_evt->GetModule()]->Fill( array_evt->GetZ(), array_evt->GetEnergy() );
+			E_vs_z->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+			E_vs_z_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 			Ex->Fill( react->GetEx() );
 			Ex_mod[array_evt->GetModule()]->Fill( react->GetEx() );
 			Ex_vs_theta->Fill( react->GetThetaCM(), react->GetEx() );
@@ -313,8 +313,8 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 			// Check for events in the EBIS on-beam window
 			if( OnBeam( array_evt ) ){
 				
-				E_vs_z_ebis->Fill( array_evt->GetZ(), array_evt->GetEnergy() );
-				E_vs_z_ebis_mod[array_evt->GetModule()]->Fill( array_evt->GetZ(), array_evt->GetEnergy() );
+				E_vs_z_ebis->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+				E_vs_z_ebis_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 				Ex_ebis->Fill( react->GetEx() );
 				Ex_ebis_mod[array_evt->GetModule()]->Fill( react->GetEx() );
 				Ex_vs_theta_ebis->Fill( react->GetThetaCM(), react->GetEx() );
@@ -336,8 +336,8 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 				// Check for prompt events with recoils
 				if( PromptCoincidence( recoil_evt, array_evt ) ){
 				
-					E_vs_z_recoilT->Fill( array_evt->GetZ(), array_evt->GetEnergy() );
-					E_vs_z_recoilT_mod[array_evt->GetModule()]->Fill( array_evt->GetZ(), array_evt->GetEnergy() );
+					E_vs_z_recoilT->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+					E_vs_z_recoilT_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 					Ex_recoilT->Fill( react->GetEx() );
 					Ex_recoilT_mod[array_evt->GetModule()]->Fill( react->GetEx() );
 					Ex_vs_theta_recoilT->Fill( react->GetThetaCM(), react->GetEx() );
@@ -349,8 +349,8 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 					// Add an energy gate
 					if( RecoilCut( recoil_evt ) ) {
 					
-						E_vs_z_recoil->Fill( array_evt->GetZ(), array_evt->GetEnergy() );
-						E_vs_z_recoil_mod[array_evt->GetModule()]->Fill( array_evt->GetZ(), array_evt->GetEnergy() );
+						E_vs_z_recoil->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+						E_vs_z_recoil_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 						Ex_recoil->Fill( react->GetEx() );
 						Ex_recoil_mod[array_evt->GetModule()]->Fill( react->GetEx() );
 						Ex_vs_theta_recoil->Fill( react->GetThetaCM(), react->GetEx() );

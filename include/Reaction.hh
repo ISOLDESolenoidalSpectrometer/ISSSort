@@ -130,6 +130,8 @@ public:
 	inline double GetGamma(){
 		return 1.0 / TMath::Sqrt( 1.0 - TMath::Power( GetBeta(), 2.0 ) );
 	};
+	inline double GetZmeasured(){ return z_meas; };
+	inline double GetZprojected(){ return z; };
 
 	// Set values
 	inline void	SetField( double m ){ Mfield = m; };
@@ -169,8 +171,9 @@ private:
 	
 	// Experimental info on the ejectile
 	double rho;			///< Distance from the beam axis to the interaction point in the detector
+	double z_meas;		///< measured z distance from target that ejectile interesect the silicon detector
 	double z;			///< projected z distance from target that ejectile interesect the beam axis
-	
+
 	// Cuts
 	std::vector<std::string> cutfile, cutname;
 	TFile *recoil_file;

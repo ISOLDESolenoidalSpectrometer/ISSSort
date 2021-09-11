@@ -118,16 +118,16 @@ void Reaction::ReadReaction() {
 void Reaction::MakeReaction( TVector3 vec, double en ){
 	
 	// Set the input parameters, might use them in another function
-	Ejectile.SetEnergyLab(en);	// ejectile energy in keV
-	z = vec.Z();				// measured z in mm
-	if( z0 < 0 ) z = z0 - z;	// upstream
-	else z += z0;				// downstream
-	rho	= vec.Perp();			// perpenicular distance from beam axis to interaction point
+	Ejectile.SetEnergyLab(en);			// ejectile energy in keV
+	z_meas = vec.Z();					// measured z in mm
+	if( z0 < 0 ) z_meas = z0 - z_meas;	// upstream
+	else z_meas += z0;					// downstream
+	rho	= vec.Perp();					// perpenicular distance from beam axis to interaction point
     
     //----------------//
     // EX calculation //
     //----------------//
-	params[0] = z;									// z in mm
+	params[0] = z_meas;								// z in mm
 	params[1] = rho;								// rho in mm
 	params[2] = Ejectile.GetMomentumLab();			// p
 	params[3] = Ejectile.GetZ() * GetField_corr(); 	// qb
@@ -148,8 +148,8 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	gErrorIgnoreLevel = kInfo; // print info and above again
 
 	// Get the real z value at beam axis and lab angle
-	if( z < 0 ) z -= rho * TMath::Tan( alpha );
-	else z += rho * TMath::Tan( alpha );
+	if( z_meas < 0 ) z = z_meas - rho * TMath::Tan( alpha );
+	else z = z_meas + rho * TMath::Tan( alpha );
 	Ejectile.SetThetaLab( TMath::PiOver2() - alpha );
 
 	// Total energy of ejectile in centre of mass
