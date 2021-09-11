@@ -24,6 +24,7 @@ void Calibration::ReadCalibration() {
 	fAsicGainQuadr.resize( set->GetNumberOfArrayModules() );
 	fAsicThreshold.resize( set->GetNumberOfArrayModules() );
 	fAsicTime.resize( set->GetNumberOfArrayModules() );
+	fAsicWalk.resize( set->GetNumberOfArrayModules() );
 	
 	// ASIC parameter read
 	for( unsigned int mod = 0; mod < set->GetNumberOfArrayModules(); mod++ ){
@@ -33,7 +34,8 @@ void Calibration::ReadCalibration() {
 		fAsicGainQuadr[mod].resize( set->GetNumberOfArrayASICs() );
 		fAsicThreshold[mod].resize( set->GetNumberOfArrayASICs() );
 		fAsicTime[mod].resize( set->GetNumberOfArrayASICs() );
-		
+		fAsicWalk[mod].resize( set->GetNumberOfArrayASICs() );
+
 		for( unsigned int asic = 0; asic < set->GetNumberOfArrayASICs(); asic++ ){
 
 			fAsicOffset[mod][asic].resize( set->GetNumberOfArrayChannels() );
@@ -42,6 +44,9 @@ void Calibration::ReadCalibration() {
 			fAsicThreshold[mod][asic].resize( set->GetNumberOfArrayChannels() );
 
 			fAsicTime[mod][asic] = config->GetValue( Form( "asic_%d_%d.Time", mod, asic ), 0 );
+
+			for( unsigned int i = 0; i < 5; i++ )
+				fAsicWalk[mod][asic].push_back( config->GetValue( Form( "asic_%d_%d.Walk%d", mod, asic, i ), 0.0 ) );
 
 			for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
 				
@@ -141,6 +146,24 @@ long Calibration::AsicTime( unsigned int mod, unsigned int asic ){
 	   asic < set->GetNumberOfArrayASICs() ) {
 
 		return fAsicTime[mod][asic];
+		
+	}
+	
+	return 0;
+	
+}
+
+float Calibration::AsicWalk( unsigned int mod, unsigned int asic, float energy ){
+	
+	float walk = 0;
+	
+	if( mod < set->GetNumberOfArrayModules() &&
+	   asic < set->GetNumberOfArrayASICs() ) {
+
+		for( unsigned int i = 0; i < 5; i++ )
+			walk += fAsicWalk[mod][asic][i] * TMath::Power( energy, (float)i );
+		
+		return walk;
 		
 	}
 	

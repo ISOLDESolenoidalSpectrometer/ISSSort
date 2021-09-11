@@ -468,7 +468,7 @@ int main( int argc, char *argv[] ){
 				rtest = new TFile( name_output_file.data() );
 				if( rtest->IsZombie() ) force_events = true;
 				if( !force_events )
-					std::cout << name_output_file << " already sorted" << std::endl;
+					std::cout << name_output_file << " already built" << std::endl;
 				rtest->Close();
 				
 			}

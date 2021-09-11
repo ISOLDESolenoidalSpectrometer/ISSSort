@@ -732,7 +732,10 @@ void Converter::ProcessASICData(){
 
 
 		// Make an AsicData item
-		asic_data->SetTime( my_tm_stp + cal->AsicTime( my_mod_id, my_asic_id ) );
+		asic_data->SetTime( my_tm_stp
+						   + cal->AsicTime( my_mod_id, my_asic_id )
+						   - cal->AsicWalk( my_mod_id, my_asic_id, my_energy )
+						   );
 		asic_data->SetAdcValue( my_adc_data );
 		asic_data->SetHitBit( my_hit );
 		asic_data->SetModule( my_mod_id );
