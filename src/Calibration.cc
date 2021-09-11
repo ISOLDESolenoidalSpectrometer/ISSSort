@@ -161,8 +161,10 @@ float Calibration::AsicWalk( unsigned int mod, unsigned int asic, float energy )
 	if( mod < set->GetNumberOfArrayModules() &&
 	   asic < set->GetNumberOfArrayASICs() ) {
 
-		for( unsigned int i = 0; i < 5; i++ )
-			walk += fAsicWalk[mod][asic][i] * TMath::Power( energy, (float)i );
+		// p - q*exp(-r*x)
+		walk = TMath::Exp( -1.0 * fAsicWalk[mod][asic][2] * energy );
+		walk *= fAsicWalk[mod][asic][1];
+		walk += fAsicWalk[mod][asic][0];
 		
 		return walk;
 		
@@ -171,8 +173,6 @@ float Calibration::AsicWalk( unsigned int mod, unsigned int asic, float energy )
 	return 0;
 	
 }
-
-
 
 float Calibration::CaenEnergy( unsigned int mod, unsigned int chan, unsigned short raw ) {
 	
