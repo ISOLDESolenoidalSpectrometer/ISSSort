@@ -59,13 +59,13 @@ public:
 	// Coincidence conditions (to be put in settings file eventually)
 	// Time walk corrections can also be added here
 	inline bool	PromptCoincidence( RecoilEvt *r, ArrayEvt *a ){
-		if( (double)r->GetTime() - (double)a->GetTime() > -1100 &&
-			(double)r->GetTime() - (double)a->GetTime() < 400 ) return true;
+		if( (double)r->GetTime() - (double)a->GetTime() > -350 &&
+			(double)r->GetTime() - (double)a->GetTime() < 250 ) return true;
 		else return false;
 	};
 	inline bool	RandomCoincidence( RecoilEvt *r, ArrayEvt *a ){
-		if( (double)r->GetTime() - (double)a->GetTime() > 2000 &&
-			(double)r->GetTime() - (double)a->GetTime() < 5000 ) return true;
+		if( (double)r->GetTime() - (double)a->GetTime() > 600 &&
+			(double)r->GetTime() - (double)a->GetTime() < 1200 ) return true;
 		else return false;
 	};
 	inline bool	PromptCoincidence( RecoilEvt *r, ElumEvt *e ){
