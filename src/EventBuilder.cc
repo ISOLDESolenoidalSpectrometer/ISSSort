@@ -539,6 +539,8 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			if( info_data->GetCode() == set->GetExternalTriggerCode() ) {
 			   
 				fpga_time[info_data->GetModule()] = info_data->GetTime();
+				fpga_hz = 1e9 / ( (double)fpga_time[i] - (double)fpga_prev[i] );
+				fpga_tdiff = (double)caen_time - (double)fpga_time[i];
 
 				if( fpga_prev[info_data->GetModule()] != 0 )
 					fpga_freq[info_data->GetModule()]->Fill( fpga_time[info_data->GetModule()], fpga_hz );
@@ -551,8 +553,10 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			if( info_data->GetCode() == set->GetArrayPulserCode() ) {
 			   
 				asic_time[info_data->GetModule()] = info_data->GetTime();
+				asic_hz = 1e9 / ( (double)asic_time[i] - (double)asic_prev[i] );
+				asic_tdiff = (double)caen_time - (double)asic_time[i];
 
-				if( asic_prev[info_data->GetModule()] != 0 )			
+				if( asic_prev[info_data->GetModule()] != 0 )
 					asic_freq[info_data->GetModule()]->Fill( asic_time[info_data->GetModule()], asic_hz );
 
 				n_asic_pulser[info_data->GetModule()]++;
@@ -610,12 +614,6 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			
 				for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 				
-					fpga_hz = 1e9 / ( (double)fpga_time[i] - (double)fpga_prev[i] );
-					asic_hz = 1e9 / ( (double)asic_time[i] - (double)asic_prev[i] );
-
-					fpga_tdiff = (double)caen_time - (double)fpga_time[i];
-					asic_tdiff = (double)caen_time - (double)asic_time[i];
-					
 					// If diff is greater than 5 ms, we have the wrong pair
 					if( fpga_tdiff > 5e6 ) fpga_tdiff = (double)caen_prev - (double)fpga_time[i];
 					else if( fpga_tdiff < -5e6 ) fpga_tdiff = (double)caen_time - (double)fpga_prev[i];
@@ -1057,7 +1055,7 @@ void EventBuilder::MakeEventHists(){
 
 	tdiff = new TH1F( "tdiff", "Time difference to first trigger;#Delta t [ns]", 1e3, -10, 1e5 );
 
-	caen_freq = new TProfile( "caen_freq", "Frequency of pulser in CAEN DAQ as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
+	caen_freq = new TProfile( "caen_freq", "Frequency of pulser in CAEN DAQ as a function of time;time [ns];f [Hz]", 10.8e4, 0, 10.8e12 );
 
 	asic_td.resize( set->GetNumberOfArrayModules() );
 	asic_freq.resize( set->GetNumberOfArrayModules() );
@@ -1081,22 +1079,22 @@ void EventBuilder::MakeEventHists(){
 		hname = "asic_freq_" + std::to_string(i);
 		htitle = "Frequency of pulser in ISS DAQ (ASICs) as a function of time in module ";
 		htitle += std::to_string(i) + ";time [ns];f [Hz]";
-		asic_freq[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+		asic_freq[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
 		
 		hname = "asic_sync_" + std::to_string(i);
 		htitle = "Time difference between ASIC and CAEN events as a function of time in module ";
 		htitle += std::to_string(i) + ";time [ns];#Delta t [ns]";
-		asic_sync[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+		asic_sync[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
 		
 		hname = "asic_pulser_loss_" + std::to_string(i);
 		htitle = "Number of missing/extra pulser events in ASICs as a function of time in module ";
 		htitle += std::to_string(i) + ";time [ns];(-ive CAEN missing, +ive ISS missing)";
-		asic_pulser_loss[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+		asic_pulser_loss[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
 		
 		hname = "asic_freq_diff_" + std::to_string(i);
 		htitle = "Frequency difference of pulser events in ISS/CAEN DAQs from ASICs as a function of time in module ";
 		htitle += std::to_string(i) + ";#time [ns];#Delta f [Hz]";
-		asic_freq_diff[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+		asic_freq_diff[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
 
 		hname = "fpga_td_" + std::to_string(i);
 		htitle = "Time difference between FPGA and CAEN pulser events in module ";
@@ -1106,27 +1104,27 @@ void EventBuilder::MakeEventHists(){
 		hname = "fpga_freq_" + std::to_string(i);
 		htitle = "Frequency of pulser in ISS DAQ (FPGA) as a function of time in module ";
 		htitle += std::to_string(i) + ";time [ns];f [Hz]";
-		fpga_freq[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+		fpga_freq[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
 
 		hname = "fpga_sync_" + std::to_string(i);
 		htitle = "Number of missing/extra pulser events in FPGA as a function of time in module ";
 		htitle += std::to_string(i) + ";time [ns];(-ive CAEN missing, +ive ISS missing)";
-		fpga_sync[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+		fpga_sync[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
 
 		hname = "fpga_pulser_loss_" + std::to_string(i);
 		htitle = "Frequency difference of pulser events in ISS/CAEN DAQs from FPGA as a function of time in module ";
 		htitle += std::to_string(i) + ";#time [ns];#Delta f [Hz]";
-		fpga_pulser_loss[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+		fpga_pulser_loss[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
 
 		hname = "fpga_freq_diff_" + std::to_string(i);
 		htitle = "Time difference between FPGA and CAEN pulser events in module ";
 		htitle += std::to_string(i) + ";#Delta t [ns]";
-		fpga_freq_diff[i] = new TProfile( hname.data(), htitle.data(), 10.8e3, 0, 10.8e12 );
+		fpga_freq_diff[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
 
 	}
 
-	ebis_freq = new TProfile( "ebis_freq", "Frequency of EBIS events as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
-	t1_freq = new TProfile( "t1_freq", "Frequency of T1 events (p+ on ISOLDE target) as a function of time;time [ns];f [Hz]", 10.8e3, 0, 10.8e12 );
+	ebis_freq = new TProfile( "ebis_freq", "Frequency of EBIS events as a function of time;time [ns];f [Hz]", 10.8e4, 0, 10.8e12 );
+	t1_freq = new TProfile( "t1_freq", "Frequency of T1 events (p+ on ISOLDE target) as a function of time;time [ns];f [Hz]", 10.8e4, 0, 10.8e12 );
 
 	
 	// Make directories
