@@ -540,7 +540,6 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			   
 				fpga_time[info_data->GetModule()] = info_data->GetTime();
 				fpga_hz = 1e9 / ( (double)fpga_time[i] - (double)fpga_prev[i] );
-				fpga_tdiff = (double)caen_time - (double)fpga_time[i];
 
 				if( fpga_prev[info_data->GetModule()] != 0 )
 					fpga_freq[info_data->GetModule()]->Fill( fpga_time[info_data->GetModule()], fpga_hz );
@@ -554,7 +553,6 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			   
 				asic_time[info_data->GetModule()] = info_data->GetTime();
 				asic_hz = 1e9 / ( (double)asic_time[i] - (double)asic_prev[i] );
-				asic_tdiff = (double)caen_time - (double)asic_time[i];
 
 				if( asic_prev[info_data->GetModule()] != 0 )
 					asic_freq[info_data->GetModule()]->Fill( asic_time[info_data->GetModule()], asic_hz );
@@ -614,6 +612,9 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			
 				for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 				
+					fpga_tdiff = (double)caen_time - (double)fpga_time[i];
+					asic_tdiff = (double)caen_time - (double)asic_time[i];
+
 					// If diff is greater than 5 ms, we have the wrong pair
 					if( fpga_tdiff > 5e6 ) fpga_tdiff = (double)caen_prev - (double)fpga_time[i];
 					else if( fpga_tdiff < -5e6 ) fpga_tdiff = (double)caen_time - (double)fpga_prev[i];
@@ -629,6 +630,11 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 					asic_sync[i]->Fill( asic_time[i], asic_tdiff );
 					asic_freq_diff[i]->Fill( asic_time[i], asic_hz - caen_hz );
 					asic_pulser_loss[i]->Fill( asic_time[i], (int)n_asic_pulser[i] - (int)n_caen_pulser );	
+
+					std::cout << "ASIC time: " << asic_time[info_data->GetModule()] << std::endl;
+					std::cout << "ASIC-CAEN tdiff: " << asic_tdiff << std::endl;
+					std::cout << "ASIC-ASIC tdiff: " << (double)asic_time[i] - (double)asic_prev[i] << std::endl;
+					std::cout << "ASIC freq: " << asic_hz << std::endl;
 
 				}
 
