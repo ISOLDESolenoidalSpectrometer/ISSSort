@@ -60,6 +60,15 @@ bool overwrite_cal = false;
 // Reaction file
 Reaction *react;
 
+// Struct for passing to the thread
+typedef struct thptr {
+	
+	Calibration *cal;
+	Settings *set;
+	Reaction *react;
+	
+} thread_data;
+
 // Server and controls for the GUI
 THttpServer *serv;
 Bool_t bRunMon = kTRUE;
@@ -72,10 +81,10 @@ void* monitor_run( void* ptr ){
 //void monitor_run(){
 	
 	// This function is called to run when monitoring
-	Converter conv_mon( set );
+	Converter conv_mon( ((thptr*)ptr)->set );
 	TimeSorter sort_mon;
-	EventBuilder eb_mon( set );
-	Histogrammer hist_mon( react, set );
+	EventBuilder eb_mon( ((thptr*)ptr)->set );
+	Histogrammer hist_mon( ((thptr*)ptr)->react, ((thptr*)ptr)->set );
 
 	// Data/Event counters
 	int start_block = 0;
@@ -91,7 +100,7 @@ void* monitor_run( void* ptr ){
 
 	// Converter setup
 	curFileMon = input_names.at(0); // maybe change in GUI later?
-	conv_mon.AddCalibration( cal );
+	conv_mon.AddCalibration( ((thptr*)ptr)->cal );
 	conv_mon.SetOutput( "monitor_singles.root" );
 	conv_mon.MakeTree();
 	conv_mon.MakeHists();
@@ -303,13 +312,19 @@ int main( int argc, char *argv[] ){
 		// Thread for the HTTP server
 		//TThread *th = new TThread( "http_server", start_http, (void*)nullptr );
 		//th->Run();
+		
+		// Make some data for the thread
+		thread_data data;
+		data.cal = cal;
+		data.set = set;
+		data.react = react;
 
 		// Start the HTTP server from the main thread (should usually do this)
 		start_http();
 		gSystem->ProcessEvents();
 
 		// Thread for the monitor process
-		TThread *th = new TThread( "monitor", monitor_run, (void*)nullptr );
+		TThread *th = new TThread( "monitor", monitor_run, &data );
 		th->Run();
 		
 		// Just call monitor process without threading

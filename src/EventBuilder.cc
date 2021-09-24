@@ -631,11 +631,6 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 					asic_freq_diff[i]->Fill( asic_time[i], asic_hz - caen_hz );
 					asic_pulser_loss[i]->Fill( asic_time[i], (int)n_asic_pulser[i] - (int)n_caen_pulser );	
 
-					std::cout << "ASIC time: " << asic_time[info_data->GetModule()] << std::endl;
-					std::cout << "ASIC-CAEN tdiff: " << asic_tdiff << std::endl;
-					std::cout << "ASIC-ASIC tdiff: " << (double)asic_time[i] - (double)asic_prev[i] << std::endl;
-					std::cout << "ASIC freq: " << asic_hz << std::endl;
-
 				}
 
 				flag_caen_pulser = false;
