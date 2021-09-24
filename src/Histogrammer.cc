@@ -30,8 +30,16 @@ void Histogrammer::MakeHists() {
 	E_vs_z = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
 	
 	hname = "E_vs_z_ebis";
-	htitle = "Energy vs. z distance gated on EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
+	htitle = "Energy vs. z distance gated on EBIS and off beam subtracted;z [mm];Energy [keV];Counts per mm per 20 keV";
 	E_vs_z_ebis = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+	
+	hname = "E_vs_z_ebis_on";
+	htitle = "Energy vs. z distance gated on EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
+	E_vs_z_ebis_on = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+	
+	hname = "E_vs_z_ebis_off";
+	htitle = "Energy vs. z distance gated off EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
+	E_vs_z_ebis_off = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
 	
 	hname = "E_vs_z_recoil";
 	htitle = "Energy vs. z distance gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
@@ -46,8 +54,16 @@ void Histogrammer::MakeHists() {
 	Ex = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
 
 	hname = "Ex_ebis";
-	htitle = "Excitation energy gated by EBIS;Excitation energy [keV];Counts per mm per 20 keV";
+	htitle = "Excitation energy gated by EBIS and off beam subtracted;Excitation energy [keV];Counts per mm per 20 keV";
 	Ex_ebis = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
+	
+	hname = "Ex_ebis_on";
+	htitle = "Excitation energy gated on EBIS;Excitation energy [keV];Counts per mm per 20 keV";
+	Ex_ebis_on = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
+	
+	hname = "Ex_ebis_off";
+	htitle = "Excitation energy gated off EBIS;Excitation energy [keV];Counts per mm per 20 keV";
+	Ex_ebis_off = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
 	
 	hname = "Ex_recoil";
 	htitle = "Excitation energy gated by recoils;Excitation energy [keV];Counts per mm per 20 keV";
@@ -62,8 +78,16 @@ void Histogrammer::MakeHists() {
 	Ex_vs_theta = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
 
 	hname = "Ex_vs_theta_ebis";
-	htitle = "Excitation energy vs. centre of mass angle gated by EBIS;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
+	htitle = "Excitation energy vs. centre of mass angle gated by EBIS and off beam subtracted;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
 	Ex_vs_theta_ebis = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
+	
+	hname = "Ex_vs_theta_ebis_on";
+	htitle = "Excitation energy vs. centre of mass angle gated on EBIS;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
+	Ex_vs_theta_ebis_on = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
+	
+	hname = "Ex_vs_theta_ebis_off";
+	htitle = "Excitation energy vs. centre of mass angle gated off EBIS;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
+	Ex_vs_theta_ebis_off = new TH2F( hname.data(), htitle.data(), 314, 0, TMath::Pi(), 800, -1000, 15000 );
 	
 	hname = "Ex_vs_theta_recoil";
 	htitle = "Excitation energy vs. centre of mass angle gated by recoils;#theta_{CM} [rad.];Excitation energy [keV];Counts per mm per 20 keV";
@@ -227,31 +251,31 @@ void Histogrammer::MakeHists() {
 		
 		hname = "elum_sec" + std::to_string(j);
 		htitle = "ELUM singles for sector " + std::to_string(j);
-		htitle += ";Energy [keV];Counts 100 keV";
-		elum_sec[j] = new TH1F( hname.data(), htitle.data(), 4096, 0, 409600 );
+		htitle += ";Energy [keV];Counts 5 keV";
+		elum_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
 
 		hname = "elum_ebis_sec" + std::to_string(j);
 		htitle = "ELUM events for sector " + std::to_string(j);
-		htitle += " gated on EBIS;Energy [keV];Counts 100 keV";
-		elum_ebis_sec[j] = new TH1F( hname.data(), htitle.data(), 4096, 0, 409600 );
+		htitle += " gated on EBIS;Energy [keV];Counts 5 keV";
+		elum_ebis_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
 
 		hname = "elum_recoil_sec" + std::to_string(j);
 		htitle = "ELUM singles for sector " + std::to_string(j);
-		htitle += " gated on recoils;Energy [keV];Counts 100 keV";
-		elum_recoil_sec[j] = new TH1F( hname.data(), htitle.data(), 4096, 0, 409600 );
+		htitle += " gated on recoils;Energy [keV];Counts 5 keV";
+		elum_recoil_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
 
 		hname = "elum_recoilT_sec" + std::to_string(j);
 		htitle = "ELUM singles for sector " + std::to_string(j);
-		htitle += " with a time gate on all recoils;Energy [keV];Counts 100 keV";
-		elum_recoilT_sec[j] = new TH1F( hname.data(), htitle.data(), 4096, 0, 409600 );
+		htitle += " with a time gate on all recoils;Energy [keV];Counts 5 keV";
+		elum_recoilT_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
 		
 		
 	} // ELUM
 	
-	elum = new TH1F( "elum", "ELUM singles", 4096, 0, 409600 );
-	elum_ebis = new TH1F( "elum_ebis", "ELUM gated on EBIS", 4096, 0, 409600 );
-	elum_recoil = new TH1F( "elum_recoil", "ELUM gate on recoils", 4096, 0, 409600 );
-	elum_recoilT = new TH1F( "elum_recoilT", "ELUM with time gate on all recoils", 4096, 0, 409600 );
+	elum = new TH1F( "elum", "ELUM singles;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
+	elum_ebis = new TH1F( "elum_ebis", "ELUM gated on EBIS;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
+	elum_recoil = new TH1F( "elum_recoil", "ELUM gate on recoils;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
+	elum_recoilT = new TH1F( "elum_recoilT", "ELUM with time gate on all recoils;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
 	
 }
 
@@ -314,13 +338,27 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 			if( OnBeam( array_evt ) ){
 				
 				E_vs_z_ebis->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+				E_vs_z_ebis_on->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 				E_vs_z_ebis_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 				Ex_ebis->Fill( react->GetEx() );
+				Ex_ebis_on->Fill( react->GetEx() );
 				Ex_ebis_mod[array_evt->GetModule()]->Fill( react->GetEx() );
 				Ex_vs_theta_ebis->Fill( react->GetThetaCM(), react->GetEx() );
+				Ex_vs_theta_ebis_on->Fill( react->GetThetaCM(), react->GetEx() );
 				Ex_vs_theta_ebis_mod[array_evt->GetModule()]->Fill( react->GetThetaCM(), react->GetEx() );
 				
-			} // ebis	
+			} // ebis
+			
+			else if( OffBeam( array_evt ) ){
+				
+				E_vs_z_ebis->Fill( react->GetZmeasured(), array_evt->GetEnergy(), -0.2 );
+				Ex_ebis->Fill( react->GetEx(), -0.2 );
+				Ex_vs_theta_ebis->Fill( react->GetThetaCM(), react->GetEx(), -0.2 );
+				E_vs_z_ebis_off->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+				Ex_ebis_off->Fill( react->GetEx() );
+				Ex_vs_theta_ebis_off->Fill( react->GetThetaCM(), react->GetEx() );
+
+			}
 			
 			// Loop over recoil events
 			for( unsigned int k = 0; k < read_evts->GetRecoilMultiplicity(); ++k ){

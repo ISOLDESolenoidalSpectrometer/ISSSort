@@ -98,7 +98,27 @@ public:
 			(double)z->GetTime() - (double)read_evts->GetEBIS() < 1200000 ) return true;
 		else return false;
 	};
-	
+	inline bool	OffBeam( RecoilEvt *r ){
+		if( (double)r->GetTime() - (double)read_evts->GetEBIS() > 1200000 &&
+			(double)r->GetTime() - (double)read_evts->GetEBIS() < 6000000 ) return true;
+		else return false;
+	};
+	inline bool	OffBeam( ElumEvt *e ){
+		if( (double)e->GetTime() - (double)read_evts->GetEBIS() > 1200000 &&
+			(double)e->GetTime() - (double)read_evts->GetEBIS() < 6000000 ) return true;
+		else return false;
+	};
+	inline bool	OffBeam( ArrayEvt *a ){
+		if( (double)a->GetTime() - (double)read_evts->GetEBIS() > 1200000 &&
+			(double)a->GetTime() - (double)read_evts->GetEBIS() < 6000000 ) return true;
+		else return false;
+	};
+	inline bool	OffBeam( ZeroDegreeEvt *z ){
+		if( (double)z->GetTime() - (double)read_evts->GetEBIS() > 1200000 &&
+			(double)z->GetTime() - (double)read_evts->GetEBIS() < 6000000 ) return true;
+		else return false;
+	};
+
 	// Recoil energy gate
 	inline bool RecoilCut( RecoilEvt *r ){
 		if( react->GetRecoilCut( r->GetSector() )->IsInside( r->GetEnergyRest(), r->GetEnergyLoss() ) )
@@ -149,21 +169,24 @@ private:
 	std::vector<TH2F*> E_vs_z_ebis_mod;
 	std::vector<TH2F*> E_vs_z_recoil_mod;
 	std::vector<TH2F*> E_vs_z_recoilT_mod;
-	TH2F *E_vs_z, *E_vs_z_ebis, *E_vs_z_recoil, *E_vs_z_recoilT;
+	TH2F *E_vs_z, *E_vs_z_ebis, *E_vs_z_ebis_on, *E_vs_z_ebis_off;
+	TH2F *E_vs_z_recoil, *E_vs_z_recoilT;
 	
 	// Array - Ex vs. thetaCM
 	std::vector<TH2F*> Ex_vs_theta_mod;
 	std::vector<TH2F*> Ex_vs_theta_ebis_mod;
 	std::vector<TH2F*> Ex_vs_theta_recoil_mod;
 	std::vector<TH2F*> Ex_vs_theta_recoilT_mod;
-	TH2F *Ex_vs_theta, *Ex_vs_theta_ebis, *Ex_vs_theta_recoil, *Ex_vs_theta_recoilT;
+	TH2F *Ex_vs_theta, *Ex_vs_theta_ebis, *Ex_vs_theta_ebis_on, *Ex_vs_theta_ebis_off;
+	TH2F *Ex_vs_theta_recoil, *Ex_vs_theta_recoilT;
 		
 	// Array - Ex
 	std::vector<TH1F*> Ex_mod;
 	std::vector<TH1F*> Ex_ebis_mod;
 	std::vector<TH1F*> Ex_recoil_mod;
 	std::vector<TH1F*> Ex_recoilT_mod;
-	TH1F *Ex, *Ex_ebis, *Ex_recoil, *Ex_recoilT;
+	TH1F *Ex, *Ex_ebis, *Ex_ebis_on, *Ex_ebis_off;
+	TH1F *Ex_recoil, *Ex_recoilT;
 		
 	// ELUM
 	std::vector<TH1F*> elum_sec;
