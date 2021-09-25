@@ -79,43 +79,43 @@ public:
 		else return false;
 	};
 	inline bool	OnBeam( RecoilEvt *r ){
-		if( (double)r->GetTime() - (double)read_evts->GetEBIS() > 0 &&
-			(double)r->GetTime() - (double)read_evts->GetEBIS() < 1200000 ) return true;
+		if( (double)r->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
+			(double)r->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
 	inline bool	OnBeam( ElumEvt *e ){
-		if( (double)e->GetTime() - (double)read_evts->GetEBIS() > 0 &&
-			(double)e->GetTime() - (double)read_evts->GetEBIS() < 1200000 ) return true;
+		if( (double)e->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
+			(double)e->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
 	inline bool	OnBeam( ArrayEvt *a ){
-		if( (double)a->GetTime() - (double)read_evts->GetEBIS() > 0 &&
-			(double)a->GetTime() - (double)read_evts->GetEBIS() < 1200000 ) return true;
+		if( (double)a->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
+			(double)a->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
 	inline bool	OnBeam( ZeroDegreeEvt *z ){
-		if( (double)z->GetTime() - (double)read_evts->GetEBIS() > 0 &&
-			(double)z->GetTime() - (double)read_evts->GetEBIS() < 1200000 ) return true;
+		if( (double)z->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
+			(double)z->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
 	inline bool	OffBeam( RecoilEvt *r ){
-		if( (double)r->GetTime() - (double)read_evts->GetEBIS() > 1200000 &&
-			(double)r->GetTime() - (double)read_evts->GetEBIS() < 6000000 ) return true;
+		if( (double)r->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
+			(double)r->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
 	inline bool	OffBeam( ElumEvt *e ){
-		if( (double)e->GetTime() - (double)read_evts->GetEBIS() > 1200000 &&
-			(double)e->GetTime() - (double)read_evts->GetEBIS() < 6000000 ) return true;
+		if( (double)e->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
+			(double)e->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
 	inline bool	OffBeam( ArrayEvt *a ){
-		if( (double)a->GetTime() - (double)read_evts->GetEBIS() > 1200000 &&
-			(double)a->GetTime() - (double)read_evts->GetEBIS() < 6000000 ) return true;
+		if( (double)a->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
+			(double)a->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
 	inline bool	OffBeam( ZeroDegreeEvt *z ){
-		if( (double)z->GetTime() - (double)read_evts->GetEBIS() > 1200000 &&
-			(double)z->GetTime() - (double)read_evts->GetEBIS() < 6000000 ) return true;
+		if( (double)z->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
+			(double)z->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
 
@@ -158,6 +158,7 @@ private:
 	std::vector<std::vector<TH1F*>> recoil_array_td;
 	std::vector<std::vector<TH1F*>> recoil_elum_td;
 	TH2F *recoil_array_tw;
+	TH1F *ebis_td_recoil, *ebis_td_array;
 
 	// Recoils
 	std::vector<TH2F*> recoil_EdE;

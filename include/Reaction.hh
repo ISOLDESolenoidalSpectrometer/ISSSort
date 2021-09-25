@@ -132,6 +132,9 @@ public:
 	};
 	inline double GetZmeasured(){ return z_meas; };
 	inline double GetZprojected(){ return z; };
+	inline double GetEBISOnTime(){ return EBIS_On; };
+	inline double GetEBISOffTime(){ return EBIS_Off; };
+	inline double GetEBISRatio(){ return EBIS_On / ( EBIS_Off - EBIS_On ); };
 
 	// Set values
 	inline void	SetField( double m ){ Mfield = m; };
@@ -168,6 +171,10 @@ private:
 	double e3_cm;
 	double Ex;
 	double theta_cm;
+	
+	// EBIS time windows
+	double EBIS_On;		///< beam on max time in ns
+	double EBIS_Off;	///< beam off max time in ns
 	
 	// Experimental info on the ejectile
 	double rho;			///< Distance from the beam axis to the interaction point in the detector

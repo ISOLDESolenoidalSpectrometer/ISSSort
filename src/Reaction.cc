@@ -110,6 +110,10 @@ void Reaction::ReadReaction() {
 	
 	}
 	
+	// EBIS time window
+	EBIS_On = config->GetValue( "EBIS_On", 1.2e6 );		// normally 1.2 ms in slow extraction
+	EBIS_Off = config->GetValue( "EBIS_Off", 2.52e7 );	// this allows a off window 20 times bigger than on
+
 	// Finished
 	delete config;
 
