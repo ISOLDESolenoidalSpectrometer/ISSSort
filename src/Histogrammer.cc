@@ -377,7 +377,8 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 				// Time differences
 				tdiff = (double)recoil_evt->GetTime() - (double)array_evt->GetTime();
 				recoil_array_td[recoil_evt->GetSector()][array_evt->GetModule()]->Fill( tdiff );		
-				recoil_array_tw->Fill( tdiff, array_evt->GetEnergy() );		
+				recoil_array_tw->Fill( tdiff, array_evt->GetEnergy() );
+				recoil_array_tw_prof->Fill( array_evt->GetEnergy(), tdiff );
 
 				// Check for prompt events with recoils
 				if( PromptCoincidence( recoil_evt, array_evt ) ){
