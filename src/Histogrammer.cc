@@ -239,7 +239,8 @@ void Histogrammer::MakeHists() {
 						"Time-walk histogram for array-recoil coincidences;#Deltat [ns];Array energy [keV];Counts",
 						1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
 						800, 0, 16000 );
-	
+	recoil_array_tw_prof = new TProfile( "tw_recoil_array_prof", "Time-walk profile for recoil-array coincidences;Array energy;#Delta t", 2000, 0, 60000 );
+
 	// EBIS time windows
 	ebis_td_recoil = new TH1F( "ebis_td_recoil", "Recoil time with respect to EBIS;#Deltat;Counts per 20 #mus", 5e3, 0, 1e8  );
 	ebis_td_array = new TH1F( "ebis_td_array", "Array time with respect to EBIS;#Deltat;Counts per 20 #mus", 5e3, 0, 1e8  );
