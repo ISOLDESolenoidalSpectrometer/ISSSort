@@ -142,6 +142,7 @@ void EventBuilder::StartFile(){
 	array_ctr	= 0;
 	arrayp_ctr	= 0;
 	recoil_ctr	= 0;
+	mwpc_ctr	= 0;
 	elum_ctr	= 0;
 	zd_ctr		= 0;
 	
@@ -227,6 +228,7 @@ void EventBuilder::SetOutput( std::string output_file_name ) {
 	array_evt = new ArrayEvt();
 	arrayp_evt = new ArrayPEvt();
 	recoil_evt = new RecoilEvt();
+	mwpc_evt = new MwpcEvt();
 	elum_evt = new ElumEvt();
 	zd_evt = new ZeroDegreeEvt();
 
@@ -266,6 +268,11 @@ void EventBuilder::Initialise(){
 	rid_list.clear();
 	rsec_list.clear();
 	
+	mwpctac_list.clear();
+	mwpctd_list.clear();
+	mwpcaxis_list.clear();
+	mwpcid_list.clear();
+
 	een_list.clear();
 	etd_list.clear();
 	esec_list.clear();
@@ -445,7 +452,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 
 			}
 			
-			// Is it a recoil
+			// Is it a recoil?
 			if( set->IsRecoil( mymod, mych ) && mythres ) {
 				
 				mysector = set->GetRecoilSector( mymod, mych );
@@ -455,6 +462,21 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				rtd_list.push_back( mytime );
 				rid_list.push_back( mylayer );
 				rsec_list.push_back( mysector );
+
+			}
+			
+			// Is it an MWPC?
+			if( set->IsMWPC( mymod, mych ) && mythres ) {
+				
+				// Check for properly integrated TAC signals
+				if( caen_data->GetQlong() > caen_data->GetQshort() ) {
+				
+					mwpctac_list.push_back( caen_data->GetTAC() );
+					mwpctd_list.push_back( mytime );
+					mwpcaxis_list.push_back( set->GetMWPCAxis( mymod, mych ) );
+					mwpcid_list.push_back( set->GetMWPCID( mymod, mych ) );
+					
+				}
 
 			}
 			
@@ -687,6 +709,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			//----------------------------------
 			ArrayFinder();		// add an ArrayEvt for each n/p pair
 			RecoilFinder();		// add a RecoilEvt for each dE-E
+			MwpcFinder();		// add an MwpcEvt for pair of TAC events
 			ElumFinder();		// add an ElumEvt for each S1 event
 			ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
 
@@ -698,6 +721,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			if( write_evts->GetArrayMultiplicity() ||
 			    write_evts->GetArrayPMultiplicity() ||
 			    write_evts->GetRecoilMultiplicity() ||
+			    write_evts->GetMwpcMultiplicity() ||
 			    write_evts->GetElumMultiplicity() ||
 			    write_evts->GetZeroDegreeMultiplicity() ) output_tree->Fill();
 
@@ -742,6 +766,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 	std::cout << "   Array p/n-side correlated events = " << array_ctr << std::endl;
 	std::cout << "   Array p-side only events = " << arrayp_ctr << std::endl;
 	std::cout << "   Recoil events = " << recoil_ctr << std::endl;
+	std::cout << "   MWPC events = " << mwpc_ctr << std::endl;
 	std::cout << "   ELUM events = " << elum_ctr << std::endl;
 	std::cout << "   ZeroDegree events = " << zd_ctr << std::endl;
 	std::cout << "   CAEN pulser = " << n_caen_pulser << std::endl;
@@ -945,8 +970,8 @@ void EventBuilder::RecoilFinder() {
 				if( i != j && rid_list[j] != 0 && !flag_skip &&
 				    rsec_list[i] == rsec_list[j] ){
 					
-					sum_energy += ren_list[j];
 					index.push_back(j);
+					sum_energy += ren_list[j];
 					recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
 					if( rid_list[j] == 1 ) recoil_evt->SetETime( rtd_list[j] );
 					
@@ -965,6 +990,63 @@ void EventBuilder::RecoilFinder() {
 			recoil_ctr++;
 			
 		}
+		
+	}
+	
+}
+
+void EventBuilder::MwpcFinder() {
+
+	// Checks to prevent re-using events
+	std::vector<unsigned int> index;
+	bool flag_skip;
+	int tac_diff;
+
+	// Loop over MWPC events
+	for( unsigned int i = 0; i < mwpctac_list.size(); ++i ) {
+
+		// TAC singles spectra
+		mwpc_tac_axis[mwpcaxis_list[i]][mwpcid_list[i]]->Fill( mwpctac_list[i] );
+
+		// Get first TAC of the axis
+		if( mwpcid_list[i] == 0 ){
+
+			// Look for matching pair
+			for( unsigned int j = 0; j < mwpctac_list.size(); ++j ) {
+
+				// Check if we already used this hit
+				flag_skip = false;
+				for( unsigned int k = 0; k < index.size(); ++k )
+					if( index[k] == j ) flag_skip = true;
+
+				// Found a match
+				if( i != j && mwpcid_list[j] == 1 && !flag_skip &&
+				    mwpcaxis_list[i] == mwpcaxis_list[j] ){
+					
+					index.push_back(j);
+					tac_diff = (int)mwpctac_list[i] - (int)mwpctac_list[j];
+					mwpc_evt->SetEvent( tac_diff, mwpcaxis_list[i], mwpctd_list[i] );
+					
+					// MWPC profiles, i.e TAC difference spectra
+					mwpc_hit_axis[mwpcaxis_list[i]]->Fill( tac_diff );
+					
+				}
+				
+			}
+			
+			// Write event to tree
+			write_evts->AddEvt( mwpc_evt );
+			mwpc_ctr++;
+
+		}
+
+	}
+	
+	// If we have a 2 axis system, do an x-y plot
+	if( write_evts->GetMwpcMultiplicity() == 2 ) {
+		
+		mwpc_pos->Fill( write_evts->GetMwpcEvt(0)->GetTacDiff(),
+					    write_evts->GetMwpcEvt(1)->GetTacDiff() );
 		
 	}
 	
@@ -1231,6 +1313,39 @@ void EventBuilder::MakeEventHists(){
 		
 	}
 	
+	// ---------------- //
+	// MWPC histograms //
+	// ---------------- //
+	dirname = "mwpc";
+	if( !output_file->GetDirectory( dirname.data() ) )
+		output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+	
+	mwpc_tac_axis.resize( set->GetNumberOfMWPCAxes() );
+	mwpc_hit_axis.resize( set->GetNumberOfMWPCAxes() );
+
+	// Loop over number of recoil sectors
+	for( unsigned int i = 0; i < set->GetNumberOfMWPCAxes(); ++i ) {
+
+		hname = "mwpc_hit_axis" + std::to_string(i);
+		htitle = "MWPC TAC difference for axis " + std::to_string(i) + ";TAC difference;Counts";
+		mwpc_hit_axis[i] = new TH1F( hname.data(), htitle.data(), 8192, -65536, 65536 );
+
+		mwpc_tac_axis[i].resize( 2 );
+		for( unsigned int j = 0; j < 2; ++j ) {
+
+			hname = "mwpc_tac" + std::to_string(j) + "_axis" + std::to_string(i);
+			htitle = "MWPC TAC" + std::to_string(j) + " time for axis " + std::to_string(i) + ";TAC time;Counts";
+			mwpc_tac_axis[i][j] = new TH1F( hname.data(), htitle.data(), 65536, 0, 65536 );
+			
+		}
+		
+	}
+	
+	hname = "mwpc_pos";
+	htitle = "MWPC x-y TAC difference;x;y;Counts";
+	mwpc_pos = new TH2F( hname.data(), htitle.data(), 8192, -65536, 65536, 8192, -65536, 65536 );
+
 	
 	// ---------------- //
 	// ELUM histograms //
@@ -1314,6 +1429,17 @@ void EventBuilder::CleanHists() {
 	recoil_EdE.clear();
 	recoil_dEsum.clear();
 	
+	for( unsigned int i = 0; i < mwpc_tac_axis.size(); i++ ) {
+		for( unsigned int j = 0; j < mwpc_tac_axis.at(i).size(); j++ )
+			delete (mwpc_tac_axis[i][j]);
+		mwpc_tac_axis.clear();
+	}
+
+	for( unsigned int i = 0; i < mwpc_hit_axis.size(); i++ )
+		delete (mwpc_hit_axis[i]);
+	mwpc_hit_axis.clear();
+	
+	delete mwpc_pos;
 	delete elum;
 	delete zd;
 

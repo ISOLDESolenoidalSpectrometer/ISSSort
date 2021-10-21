@@ -83,6 +83,19 @@
 #Recoil_3_1.Channel: 7	# R3-E, sector 3, layer 1
 
 
+#---------------#
+# MWPC Detector #
+#---------------#
+#NumberOfMWPCAxes: 2	# x = 0 and y = 1
+#MWPC_0_0.Module: 1	# MWPC axis 0 TAC 0
+#MWPC_0_0.Channel: 8	#
+#MWPC_0_1.Module: 1	# MWPC axis 0 TAC 1
+#MWPC_0_1.Channel: 9	#
+#MWPC_1_0.Module: 1	# MWPC axis 1 TAC 0
+#MWPC_1_0.Channel: 10	#
+#MWPC_1_1.Module: 1	# MWPC axis 1 TAC 1
+#MWPC_1_1.Channel: 11	#
+
 
 #---------------#
 # ELUM Detector #

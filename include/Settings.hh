@@ -87,6 +87,12 @@ public:
 	int GetRecoilSector( unsigned int mod, unsigned int ch );
 	int GetRecoilLayer( unsigned int mod, unsigned int ch );
 	bool IsRecoil( unsigned int mod, unsigned int ch );
+	
+	// MWPC
+	inline unsigned int GetNumberOfMWPCAxes(){ return n_mwpc_axes; };
+	int GetMWPCAxis( unsigned int mod, unsigned int ch );
+	int GetMWPCID( unsigned int mod, unsigned int ch );
+	bool IsMWPC( unsigned int mod, unsigned int ch );
 
 	// ELUM detector
 	inline unsigned int GetNumberOfELUMSectors(){ return n_elum_sector; };
@@ -158,6 +164,14 @@ private:
 	std::vector<std::vector<unsigned int>> recoil_ch;	///< A list of channel numbers for each recoil detector sector and layer
 	std::vector<std::vector<int>> recoil_sector;		///< A channel map for the recoil sectors (-1 if not a recoil)
 	std::vector<std::vector<int>> recoil_layer;			///< A channel map for the recoil layers (-1 if not a recoil)
+
+	
+	// MWPC
+	unsigned int n_mwpc_axes;							///< Number of MWPC axes (usually 2: x and y). Two TACs per axis
+	std::vector<std::vector<unsigned int>> mwpc_mod;	///< Module number of each TAC input of each axis of the MWPC
+	std::vector<std::vector<unsigned int>> mwpc_ch;		///< Channel number of each TAC input of each axis of the MWPC
+	std::vector<std::vector<int>> mwpc_axis;			///< A channel map for the MWPC axes (-1 if not an MWPC)
+	std::vector<std::vector<int>> mwpc_tac;				///< A channel map for the MWPC TACs (-1 if not an MWPC)
 
 	
 	// ELUM detector

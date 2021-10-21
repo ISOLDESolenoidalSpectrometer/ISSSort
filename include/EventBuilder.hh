@@ -73,6 +73,7 @@ public:
 	// Resolve multiplicities etc
 	void ArrayFinder();
 	void RecoilFinder();
+	void MwpcFinder();
 	void ElumFinder();
 	void ZeroDegreeFinder();
 	//void GammaFinder(); // in the future :-)
@@ -105,6 +106,7 @@ private:
 	ArrayEvt *array_evt;
 	ArrayPEvt *arrayp_evt;
 	RecoilEvt *recoil_evt;
+	MwpcEvt *mwpc_evt;
 	ElumEvt *elum_evt;
 	ZeroDegreeEvt *zd_evt;
 	
@@ -160,7 +162,7 @@ private:
 	unsigned char		myrow;		///< 4 wafers along array, 2 dE-E, 13 for gas
 	int					mystrip;	///< strip number for DSSSD
 	
-	// Data variables - Recoil / ELUM / ZeroDegree
+	// Data variables - Recoil / ELUM / ZeroDegree / MWPC
 	unsigned char		mysector;	///< 4 quadrants of the recoil, for example
 	unsigned char		mylayer;	///< 2 layers for the dE-E, for example
 
@@ -183,6 +185,12 @@ private:
 	std::vector<int>	rid_list;	///< list of recoil IDs/layers for RecoilFinder
 	std::vector<int>	rsec_list;	///< list of recoil sectors for RecoilFinder
 	
+	// MWPC variables
+	std::vector<unsigned short>	mwpctac_list;	///< TAC time from the MWPC
+	std::vector<long>			mwpctd_list;	///< list of ELUM time differences for ELUMFinder
+	std::vector<int>			mwpcaxis_list;	///< list of axis IDs for the MWPC
+	std::vector<int>			mwpcid_list;	///< list of TAC IDs for the MWPC
+
 	// ELUM variables
 	std::vector<float>	een_list;	///< list of ELUM energies for ELUMFinder
 	std::vector<long>	etd_list;	///< list of ELUM time differences for ELUMFinder
@@ -194,7 +202,7 @@ private:
 	std::vector<int>	zid_list;	///< list of ZeroDegree IDs/layers for ELUMFinder
 
 	// Counters
-	unsigned int		hit_ctr, array_ctr, arrayp_ctr, recoil_ctr, elum_ctr, zd_ctr;
+	unsigned int		hit_ctr, array_ctr, arrayp_ctr, recoil_ctr, mwpc_ctr, elum_ctr, zd_ctr;
 	unsigned long		n_asic_data, n_caen_data, n_info_data;
 	unsigned long long	n_entries;
 	unsigned long		n_caen_pulser;
@@ -223,6 +231,11 @@ private:
 	// Recoil histograms
 	std::vector<TH2F*> recoil_EdE;
 	std::vector<TH2F*> recoil_dEsum;
+
+	// MWPC histograms
+	std::vector<std::vector<TH1F*>> mwpc_tac_axis;
+	std::vector<TH1F*> mwpc_hit_axis;
+	TH2F *mwpc_pos;
 
 	// ELUM histograms
 	TH2F *elum;

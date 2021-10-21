@@ -110,6 +110,52 @@ void Settings::ReadSettings() {
 		
 	}
 	
+	// MWPC
+	n_mwpc_axes = config->GetValue( "NumberOfMWPCAxes", 2 ); // x and y usually
+
+	mwpc_mod.resize( n_mwpc_axes );
+	mwpc_ch.resize( n_mwpc_axes );
+	mwpc_axis.resize( n_caen_mod );
+	mwpc_tac.resize( n_caen_mod );
+
+	for( unsigned int i = 0; i < n_caen_mod; ++i ){
+		
+		for( unsigned int j = 0; j < n_caen_ch; ++j ){
+		
+			mwpc_axis[i].push_back( -1 );
+			mwpc_tac[i].push_back( -1 );
+		
+		}
+	
+	}
+	
+	for( unsigned int i = 0; i < n_mwpc_axes; ++i ){
+	
+		mwpc_mod[i].resize( 2 );
+		mwpc_ch[i].resize( 2 );
+	
+		for( unsigned int j = 0; j < 2; ++j ){ // two TACs per axis
+
+			mwpc_mod[i][j] = config->GetValue( Form( "MWPC_%d_%d.Module", i, j ), 1 );
+			mwpc_ch[i][j] = config->GetValue( Form( "MWPC_%d_%d.Channel", i, j ), 8+(int)i*2+(int)j );
+
+			if( mwpc_mod[i][j] < n_caen_mod && mwpc_ch[i][j] < n_caen_ch ){
+				
+				mwpc_axis[mwpc_mod[i][j]][mwpc_ch[i][j]] = i;
+				mwpc_tac[mwpc_mod[i][j]][mwpc_ch[i][j]] = j;
+
+			}
+
+			else {
+				
+				std::cerr << "Dodgy MWPC settings: module = " << mwpc_mod[i][j];
+				std::cerr << " channel = " << mwpc_ch[i][j] << std::endl;
+				
+			}
+		}
+		
+	}
+	
 	// ELUM detector
 	n_elum_sector = config->GetValue( "NumberOfELUMSectors", 4 );
 	
@@ -207,6 +253,46 @@ int Settings::GetRecoilLayer( unsigned int mod, unsigned int ch ) {
 	else {
 		
 		std::cerr << "Bad recoil event: module = " << mod;
+		std::cerr << " channel = " << ch << std::endl;
+		return -1;
+		
+	}
+	
+}
+
+bool Settings::IsMWPC( unsigned int mod, unsigned int ch ) {
+	
+	/// Return true if this is a MWPC event
+	if( mwpc_axis[mod][ch] >= 0 && mwpc_axis[mod][ch] < (int)n_mwpc_axes ) return true;
+	else return false;
+	
+}
+
+int Settings::GetMWPCAxis( unsigned int mod, unsigned int ch ) {
+	
+	/// Return the axis number of an MWPC event by module and channel number
+	if( mod < n_caen_mod && ch < n_caen_ch )
+		return mwpc_axis[mod][ch];
+	
+	else {
+		
+		std::cerr << "Bad MWPC event: module = " << mod;
+		std::cerr << " channel = " << ch << std::endl;
+		return -1;
+		
+	}
+	
+}
+
+int Settings::GetMWPCID( unsigned int mod, unsigned int ch ) {
+	
+	/// Return the TAC number of an MWPC event by module and channel number
+	if( mod < n_caen_mod && ch < n_caen_ch )
+		return mwpc_tac[mod][ch];
+	
+	else {
+		
+		std::cerr << "Bad MWPC event: module = " << mod;
 		std::cerr << " channel = " << ch << std::endl;
 		return -1;
 		

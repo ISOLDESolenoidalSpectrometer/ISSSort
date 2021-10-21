@@ -155,6 +155,37 @@ private:
 
 };
 
+class MwpcEvt : public TObject {
+
+public:
+		
+	// setup functions
+	MwpcEvt();
+	~MwpcEvt();
+	
+	void SetEvent( int mytacdiff, unsigned char myaxis,
+				   unsigned long mytime );
+
+	inline void SetTacDiff( int t ){ tacdiff = t; };
+	inline void SetAxis( unsigned char a ){ axis = a; };
+	inline void SetTime( unsigned long t ){ time = t; };
+
+	inline int				GetTacDiff(){ return tacdiff; };
+	inline unsigned char	GetAxis(){ return axis; };
+	inline unsigned long	GetTime(){ return time; };
+	inline double			GetTimeDouble(){ return (double)time; };
+
+	
+private:
+
+	int				tacdiff;	///< TAC differences
+	unsigned char	axis;		///< axis ID, usually just x=0 and y=1
+	unsigned long	time;		///< time stamp of the MWPC event
+	
+	ClassDef( MwpcEvt, 1 );
+
+};
+
 class ElumEvt : public TObject {
 
 public:
@@ -279,12 +310,14 @@ public:
 	void AddEvt( ArrayEvt *event );
 	void AddEvt( ArrayPEvt *event );
 	void AddEvt( RecoilEvt *event );
+	void AddEvt( MwpcEvt *event );
 	void AddEvt( ElumEvt *event );
 	void AddEvt( ZeroDegreeEvt *event );
 	
 	inline unsigned int GetArrayMultiplicity(){ return array_event.size(); };
 	inline unsigned int GetArrayPMultiplicity(){ return arrayp_event.size(); };
 	inline unsigned int GetRecoilMultiplicity(){ return recoil_event.size(); };
+	inline unsigned int GetMwpcMultiplicity(){ return mwpc_event.size(); };
 	inline unsigned int GetElumMultiplicity(){ return elum_event.size(); };
 	inline unsigned int GetZeroDegreeMultiplicity(){ return zd_event.size(); };
 	
@@ -298,6 +331,10 @@ public:
 	};
 	inline RecoilEvt* GetRecoilEvt( unsigned int i ){
 		if( i < recoil_event.size() ) return &recoil_event.at(i);
+		else return nullptr;
+	};
+	inline MwpcEvt* GetMwpcEvt( unsigned int i ){
+		if( i < mwpc_event.size() ) return &mwpc_event.at(i);
 		else return nullptr;
 	};
 	inline ElumEvt* GetElumEvt( unsigned int i ){
@@ -328,10 +365,11 @@ private:
 	std::vector<ArrayEvt> array_event;
 	std::vector<ArrayPEvt> arrayp_event;
 	std::vector<RecoilEvt> recoil_event;
+	std::vector<MwpcEvt> mwpc_event;
 	std::vector<ElumEvt> elum_event;
 	std::vector<ZeroDegreeEvt> zd_event;
 
-	ClassDef( ISSEvts, 2 )
+	ClassDef( ISSEvts, 3 )
 	
 };
 

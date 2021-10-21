@@ -77,6 +77,7 @@ public:
 	inline unsigned short	GetQshort() { return Qshort; };
 	inline unsigned char	GetModule() { return mod; };
 	inline unsigned char	GetChannel() { return ch; };
+	inline unsigned short	GetTAC() { return (int)Qlong-(int)Qshort; };
 	inline float			GetEnergy() { return energy; };
 	inline bool				IsOverThreshold() { return thres; };
 

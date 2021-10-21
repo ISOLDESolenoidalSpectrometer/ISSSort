@@ -11,10 +11,10 @@
 #include <TTree.h>
 #include <TMath.h>
 #include <TChain.h>
+#include <TProfile.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TCutG.h>
-#include <TProfile.h>
 
 // Reaction header
 #ifndef __REACTION_HH

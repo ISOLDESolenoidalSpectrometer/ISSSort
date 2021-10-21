@@ -3,6 +3,7 @@
 ClassImp(ArrayEvt)
 ClassImp(ArrayPEvt)
 ClassImp(RecoilEvt)
+ClassImp(MwpcEvt)
 ClassImp(ElumEvt)
 ClassImp(ZeroDegreeEvt)
 ClassImp(ISSEvts)
@@ -19,6 +20,7 @@ void ISSEvts::ClearEvt() {
 	array_event.clear();
 	arrayp_event.clear();
 	recoil_event.clear();
+	mwpc_event.clear();
 	elum_event.clear();
 	zd_event.clear();
 	
@@ -74,6 +76,18 @@ void ISSEvts::AddEvt( RecoilEvt *event ) {
 					   event->GetETime() );
 
 	recoil_event.push_back( fill_evt );
+	
+}
+
+void ISSEvts::AddEvt( MwpcEvt *event ) {
+	
+	// Make a copy of the event and push it back
+	MwpcEvt fill_evt;
+	fill_evt.SetEvent( event->GetTacDiff(),
+					   event->GetAxis(),
+					   event->GetTime() );
+	
+	mwpc_event.push_back( fill_evt );
 	
 }
 
@@ -238,6 +252,24 @@ void RecoilEvt::ClearEvent(){
 	std::vector<unsigned char>().swap(id);
 
 }
+
+// ----------- //
+// MWPC events //
+// ----------- //
+MwpcEvt::MwpcEvt(){}
+MwpcEvt::~MwpcEvt(){}
+
+void MwpcEvt::SetEvent( int mytacdiff, unsigned char myaxis,
+						unsigned long mytime ) {
+	
+	tacdiff = mytacdiff;
+	axis = myaxis;
+	time = mytime;
+	
+	return;
+	
+}
+
 
 // ----------- //
 // Elum events //

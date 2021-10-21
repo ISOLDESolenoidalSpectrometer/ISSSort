@@ -12,6 +12,7 @@
 #pragma link C++ class ArrayEvt+;
 #pragma link C++ class ArrayPEvt+;
 #pragma link C++ class RecoilEvt+;
+#pragma link C++ class MwpcEvt+;
 #pragma link C++ class ElumEvt+;
 #pragma link C++ class ZeroDegreeEvt+;
 #pragma link C++ class DataPackets+;
