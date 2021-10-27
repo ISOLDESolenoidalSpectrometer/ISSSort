@@ -65,7 +65,8 @@ void Settings::ReadSettings() {
 	// Recoil detector
 	n_recoil_sector = config->GetValue( "NumberOfRecoilSectors", 4 );
 	n_recoil_layer  = config->GetValue( "NumberOfRecoilLayers", 2 );
-	
+	recoil_eloss_depth = config->GetValue( "RecoilEnergyLossDepth", 1 );
+
 	recoil_mod.resize( n_recoil_sector );
 	recoil_ch.resize( n_recoil_sector );
 	recoil_sector.resize( n_caen_mod );

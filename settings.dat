@@ -65,6 +65,7 @@
 #-----------------#
 #NumberOfRecoilSectors: 4 # 4 quadrants for Si dE-E, or just 1 for the ionisation chamber
 #NumberOfRecoilLayers: 2 # 2 layers of Si in the dE-E, or 13 anodes for the ionisation chamber
+#RecoilEnergyLossDepth: 1	# Number of layers to summed for energy loss, others are E rest
 #Recoil_0_0.Module: 0	# R0-dE, sector 0, layer 0
 #Recoil_0_0.Channel: 0	# R0-dE, sector 0, layer 0
 #Recoil_0_1.Module: 0	# R0-E, sector 0, layer 1

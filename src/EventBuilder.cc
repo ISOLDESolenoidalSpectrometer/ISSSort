@@ -943,7 +943,7 @@ void EventBuilder::RecoilFinder() {
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
 	bool flag_skip;
-	float sum_energy;
+	float sum_energy = 0;
 	
 	// Loop over recoil events
 	for( unsigned int i = 0; i < ren_list.size(); ++i ) {
@@ -974,16 +974,16 @@ void EventBuilder::RecoilFinder() {
 					sum_energy += ren_list[j];
 					recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
 					if( rid_list[j] == 1 ) recoil_evt->SetETime( rtd_list[j] );
-					
-					// All vs. dE
-					recoil_EdE[rsec_list[i]]->Fill( ren_list[j], ren_list[i] );
-					
+										
 				}
 				
 			}
 			
 			// Histogram the recoils
-			recoil_dEsum[rsec_list[i]]->Fill( sum_energy, ren_list[i] );
+			recoil_EdE[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyLossDepth() ),
+								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
+			recoil_dEsum[rsec_list[i]]->Fill( recoil_evt->GetEnergyTotal(),
+								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
 			
 			// Fill the tree and get ready for next recoil event
 			write_evts->AddEvt( recoil_evt );
@@ -1310,7 +1310,7 @@ void EventBuilder::MakeEventHists(){
 		htitle = "Recoil dE vs Esum for sector " + std::to_string(i);
 		htitle += ";Total energy, Esum [keV];Energy loss, dE [keV];Counts";
 		recoil_dEsum[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 200000, 2000, 0, 200000 );
-		
+			
 	}
 	
 	// ---------------- //

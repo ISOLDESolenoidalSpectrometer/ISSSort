@@ -84,6 +84,7 @@ public:
 	inline unsigned int GetNumberOfRecoilSectors(){ return n_recoil_sector; };
 	inline unsigned int GetNumberOfRecoilLayers(){ return n_recoil_layer; };
 	inline unsigned int GetNumberOfRecoilElements(){ return n_recoil_sector * n_recoil_layer; };
+	inline unsigned int GetRecoilEnergyLossDepth(){ return recoil_eloss_depth; };
 	int GetRecoilSector( unsigned int mod, unsigned int ch );
 	int GetRecoilLayer( unsigned int mod, unsigned int ch );
 	bool IsRecoil( unsigned int mod, unsigned int ch );
@@ -160,6 +161,7 @@ private:
 	// Recoil detectors
 	unsigned int n_recoil_sector;						///< Number of recoil detector sectors or quadrants; 1 for gas and 4 for Si
 	unsigned int n_recoil_layer;						///< Number of recoil detector layers; 13 for gas and 2 for Si
+	unsigned int recoil_eloss_depth;					///< Number of layers summed for energy loss, 1 for Silicon, about 5 for gas.
 	std::vector<std::vector<unsigned int>> recoil_mod;	///< A list of module numbers for each recoil detector sector and layer
 	std::vector<std::vector<unsigned int>> recoil_ch;	///< A list of channel numbers for each recoil detector sector and layer
 	std::vector<std::vector<int>> recoil_sector;		///< A channel map for the recoil sectors (-1 if not a recoil)
