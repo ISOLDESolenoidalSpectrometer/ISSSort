@@ -1277,7 +1277,7 @@ void EventBuilder::MakeEventHists(){
 			hname = "pn_mult_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side vs. n-side multiplicity (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");mult p-side;mult n-side";
-			pn_mult[i][j] = new TProfile( hname.data(), htitle.data(), 20, -0.5, 19.5 );
+			pn_mult[i][j] = new TH2F( hname.data(), htitle.data(), 6, -0.5, 5.5, 6, -0.5, 5.5 );
 		
 		}
 		

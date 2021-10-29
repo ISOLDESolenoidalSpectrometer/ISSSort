@@ -217,7 +217,7 @@ private:
 	std::vector<std::vector<TH2F*>> pn_22;
 	std::vector<std::vector<TH2F*>> pn_max;
 	std::vector<std::vector<TH1F*>> pn_td;
-	std::vector<std::vector<TProfile*>> pn_mult;
+	std::vector<std::vector<TH2F*>> pn_mult;
 
 	// Timing histograms
 	TH1F *tdiff;
