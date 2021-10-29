@@ -878,15 +878,17 @@ void Converter::FinishCAENData(){
 		    caen_data->GetChannel() == set->GetCAENPulserChannel() ){
 			
 			flag_caen_info = true;
-			my_info_code = set->GetCAENPulserCode();
-			
+			//my_info_code = set->GetCAENPulserCode();
+			my_info_code = 20; // CAEN pulser is always 20 (defined here)
+
 		}
 		
 		else if( caen_data->GetModule() == set->GetEBISModule() &&
 		    caen_data->GetChannel() == set->GetEBISChannel() ){
 			
 			flag_caen_info = true;
-			my_info_code = set->GetEBISCode();
+			//my_info_code = set->GetEBISCode();
+			my_info_code = 21; // CAEN EBIS is always 21 (defined here), Array EBIS is 15
 			
 		}
 		
@@ -894,7 +896,8 @@ void Converter::FinishCAENData(){
 		    caen_data->GetChannel() == set->GetT1Channel() ){
 			
 			flag_caen_info = true;
-			my_info_code = set->GetT1Code();
+			//my_info_code = set->GetT1Code();
+			my_info_code = 22; // CAEN T1 is always 22 (defined here)
 			
 		}
 
