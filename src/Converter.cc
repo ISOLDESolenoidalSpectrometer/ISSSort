@@ -1037,7 +1037,8 @@ void Converter::ProcessInfoData(){
 	// Create an info event and fill the tree for external triggers and pause/resume
 	if( my_info_code == set->GetExternalTriggerCode() ||
 	    my_info_code == set->GetPauseCode() ||
-	    my_info_code == set->GetResumeCode() ) {
+	    my_info_code == set->GetResumeCode() ||
+	    my_info_code == 15 ) {
 
 		info_data->SetModule( my_mod_id );
 		info_data->SetTime( my_tm_stp );
