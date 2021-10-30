@@ -1004,13 +1004,21 @@ void Converter::ProcessInfoData(){
 
 	}
 	
-	// External trigger
+	// External trigger 1
 	if( my_info_code == set->GetExternalTriggerCode() ) {
 		
 		my_tm_stp_msb = my_info_field & 0x000FFFFF;
 		my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | ( my_tm_stp_lsb & 0x0FFFFFFF );
 		hasic_ext[my_mod_id]->Fill( ctr_asic_ext[my_mod_id], my_tm_stp, 1 );
 		ctr_asic_ext[my_mod_id]++;
+
+	}
+
+	// External trigger 2
+	if( my_info_code == 15 ) {
+		
+		my_tm_stp_msb = my_info_field & 0x000FFFFF;
+		my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | ( my_tm_stp_lsb & 0x0FFFFFFF );
 
 	}
 
