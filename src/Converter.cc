@@ -720,6 +720,9 @@ void Converter::ProcessASICData(){
 		// Calibrate
 		my_energy = cal->AsicEnergy( my_mod_id, my_asic_id, my_ch_id, my_adc_data );
 		
+		// Is it disabled?
+		if( cal->AsicEnabled( my_mod_id, my_asic_id ) ) return;
+		
 		// Fill histograms
 		hasic[my_mod_id][my_asic_id]->Fill( my_ch_id, my_adc_data );
 		hasic_cal[my_mod_id][my_asic_id]->Fill( my_ch_id, my_energy );
@@ -1089,11 +1092,11 @@ int Converter::ConvertFile( std::string input_file_name,
 	int FILE_SIZE = size_end - size_beg;
 	
 	// Calculate the number of blocks in the file.
-	int BLOCKS_NUM = FILE_SIZE / BLOCK_SIZE;
+	int BLOCKS_NUM = FILE_SIZE / DATA_BLOCK_SIZE;
 	
 	//a sanity check for file size...
 	//QQQ: add more strict test?
-	if( FILE_SIZE % BLOCK_SIZE != 0 ){
+	if( FILE_SIZE % DATA_BLOCK_SIZE != 0 ){
 		
 		std::cout << " *WARNING* " << __PRETTY_FUNCTION__;
 		std::cout << "\tMissing data blocks?" << std::endl;
@@ -1101,7 +1104,7 @@ int Converter::ConvertFile( std::string input_file_name,
 	}
 	
 	sslogs << "\t File size = " << FILE_SIZE << std::endl;
-	sslogs << "\tBlock size = " << BLOCK_SIZE << std::endl;
+	sslogs << "\tBlock size = " << DATA_BLOCK_SIZE << std::endl;
 	sslogs << "\t  N blocks = " << BLOCKS_NUM << std::endl;
 
 	std::cout << sslogs.str() << std::endl;

@@ -30,13 +30,6 @@
 # include "DataPackets.hh"
 #endif
 
-// Uncomment for ASIC only data prior to June 2021
-//#define ASIC_ONLY
-
-// Uncomment for CAEN only data prior to June 2021
-//#define CAEN_ONLY
-
-
 class Converter {
 
 public:
@@ -138,12 +131,9 @@ private:
 	
 	// Set the size of the block and its components.
 	static const int HEADER_SIZE = 24; // Size of header in bytes
-#ifdef CAEN_ONLY
-	static const int BLOCK_SIZE = 0x20000; // Block size for CAEN data = 128 kB prior to June 2021
-#else
-	static const int BLOCK_SIZE = 0x10000; // Block size for ISS/ASIC data = 64 kB, also CAEN data from June 2021 onwards
-#endif
-	static const int MAIN_SIZE = BLOCK_SIZE - HEADER_SIZE;
+	//static const int DATA_BLOCK_SIZE = 0x20000; // Block size for CAEN data = 128 kB prior to June 2021
+	static const int DATA_BLOCK_SIZE = 0x10000; // Block size for ISS/ASIC data = 64 kB, also CAEN data from June 2021 onwards
+	static const int MAIN_SIZE = DATA_BLOCK_SIZE - HEADER_SIZE;
 	static const int WORD_SIZE = MAIN_SIZE / sizeof(ULong64_t);
 
 	// Set the arrays for the block components.

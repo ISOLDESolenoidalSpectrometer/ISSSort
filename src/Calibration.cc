@@ -34,6 +34,7 @@ void Calibration::ReadCalibration() {
 		fAsicGainQuadr[mod].resize( set->GetNumberOfArrayASICs() );
 		fAsicThreshold[mod].resize( set->GetNumberOfArrayASICs() );
 		fAsicTime[mod].resize( set->GetNumberOfArrayASICs() );
+		fAsicEnabled[mod].resize( set->GetNumberOfArrayASICs() );
 		fAsicWalk[mod].resize( set->GetNumberOfArrayASICs() );
 
 		for( unsigned int asic = 0; asic < set->GetNumberOfArrayASICs(); asic++ ){
@@ -44,6 +45,7 @@ void Calibration::ReadCalibration() {
 			fAsicThreshold[mod][asic].resize( set->GetNumberOfArrayChannels() );
 
 			fAsicTime[mod][asic] = config->GetValue( Form( "asic_%d_%d.Time", mod, asic ), 0 );
+			fAsicEnabled[mod][asic] = config->GetValue( Form( "asic_%d_%d.Enabled", mod, asic ), true );
 
 			fAsicWalk[mod][asic].resize( 3 );
 			for( unsigned int i = 0; i < 3; i++ )
@@ -147,6 +149,19 @@ long Calibration::AsicTime( unsigned int mod, unsigned int asic ){
 	   asic < set->GetNumberOfArrayASICs() ) {
 
 		return fAsicTime[mod][asic];
+		
+	}
+	
+	return 0;
+	
+}
+
+bool Calibration::AsicEnabled( unsigned int mod, unsigned int asic ){
+	
+	if( mod < set->GetNumberOfArrayModules() &&
+	   asic < set->GetNumberOfArrayASICs() ) {
+
+		return fAsicEnabled[mod][asic];
 		
 	}
 	

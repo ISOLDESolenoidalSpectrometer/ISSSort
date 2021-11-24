@@ -40,6 +40,7 @@ public:
 	float AsicEnergy( unsigned int mod, unsigned int asic, unsigned int chan, unsigned short raw );
 	float AsicThreshold( unsigned int mod, unsigned int asic, unsigned int chan );
 	long AsicTime( unsigned int mod, unsigned int asic );
+	bool AsicEnabled( unsigned int mod, unsigned int asic );
 	float AsicWalk( unsigned int mod, unsigned int asic, float energy );
 	float CaenEnergy( unsigned int mod, unsigned int chan, unsigned short raw );
 	float CaenThreshold( unsigned int mod, unsigned int chan );
@@ -58,6 +59,7 @@ private:
 	std::vector< std::vector< std::vector<float> > > fAsicGainQuadr;
 	std::vector< std::vector< std::vector<float> > > fAsicThreshold;
 	std::vector< std::vector<long> > fAsicTime;
+	std::vector< std::vector<bool> > fAsicEnabled;
 	std::vector< std::vector< std::vector<float> > > fAsicWalk;
 
 	std::vector< std::vector<float> > fCaenOffset;

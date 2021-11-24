@@ -914,16 +914,33 @@ void EventBuilder::ArrayFinder() {
 			// Add a bodge to ignore n-side events for now
 			// use the ArrayPEvt class
 			if( pmax_idx >= 0 ){
+				
+				// if we have an n-side event, let's use it
+				if( nmax_idx >= 0  ) {
 			
-				arrayp_evt->SetEvent( pen_list.at( pmax_idx ),
-									 0,
-									 pid_list.at( pmax_idx ),
-									 5,
-									 ptd_list.at( pmax_idx ),
-									 0,
-									 i, j );
-			
-			
+					arrayp_evt->SetEvent( pen_list.at( pmax_idx ),
+										  nen_list.at( nmax_idx ),
+										  pid_list.at( pmax_idx ),
+										  nid_list.at( nmax_idx ),
+										  ptd_list.at( pmax_idx ),
+										  ntd_list.at( nmax_idx ),
+										  i, j );
+
+				}
+				
+				// else just assume it is in the centre of either wafer
+				else {
+					
+					arrayp_evt->SetEvent( pen_list.at( pmax_idx ),
+										  0,
+										  pid_list.at( pmax_idx ),
+										  5,
+										  ptd_list.at( pmax_idx ),
+										  0,
+										  i, j );
+
+				}
+				
 				write_evts->AddEvt( arrayp_evt );
 				arrayp_ctr++;
 				
@@ -943,19 +960,17 @@ void EventBuilder::RecoilFinder() {
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
 	bool flag_skip;
-	float sum_energy = 0;
 	
 	// Loop over recoil events
 	for( unsigned int i = 0; i < ren_list.size(); ++i ) {
 		
 		// Find the dE event, usually the trigger
-		if( rid_list[i] == 0 ){
+		if( rid_list[i] == 0 || set->GetNumberOfRecoilLayers() == 13 ){
 			
-			sum_energy = ren_list[i];
 			recoil_evt->ClearEvent();
 			recoil_evt->SetdETime( rtd_list[i] );
 			recoil_evt->SetSector( rsec_list[i] );
-			recoil_evt->AddRecoil( ren_list[i], 0 );
+			recoil_evt->AddRecoil( ren_list[i], rid_list[i] );
 
 			// Look for matching dE events
 			for( unsigned int j = 0; j < ren_list.size(); ++j ) {
@@ -971,7 +986,6 @@ void EventBuilder::RecoilFinder() {
 				    rsec_list[i] == rsec_list[j] ){
 					
 					index.push_back(j);
-					sum_energy += ren_list[j];
 					recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
 					if( rid_list[j] == 1 ) recoil_evt->SetETime( rtd_list[j] );
 										
@@ -1029,6 +1043,9 @@ void EventBuilder::MwpcFinder() {
 					
 					// MWPC profiles, i.e TAC difference spectra
 					mwpc_hit_axis[mwpcaxis_list[i]]->Fill( tac_diff );
+					
+					// Only make one TAC event for a given pair
+					break;
 					
 				}
 				

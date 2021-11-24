@@ -11,6 +11,7 @@
 # asic_<mod>_<asic>_<ch>.GainQuadr:	// energy calibration quadratic term (default = 0.0)
 # asic_<mod>_<asic>_<ch>.Threshold:	// software threshold in adc units (default = 0)
 # asic_<mod>_<asic>.Time:			// time offset in ns (default = 0)
+# asic_<mod>_<asic>.Enabled:		// enabled (true or 1) or disable (false or 0) ASIC by ASIC (default = 1)
 # asic_<mod>_<asic>.WalkN:			// time walk parameters in function = [0] + [1] * exp( -1.0 * [2] * x )
 #
 # Format - CAEN calibration
