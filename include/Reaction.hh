@@ -23,8 +23,8 @@
 #endif
 
 
-#define u_mass 931492.10142f;	///< 1 atomic mass unit in keV/c^2
-#define kg_mm_s 299.79245572f;	/// 1 keV/c in kg•mm/s
+#define u_mass 931494.10242f;	///< 1 atomic mass unit in keV/c^2
+#define kg_mm_s 299.792458f;	/// 1 keV/c in kg•mm/s
 
 
 /// A class to read in the reaction file in ROOT's TConfig format.
