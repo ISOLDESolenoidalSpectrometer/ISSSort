@@ -359,8 +359,9 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			
 			asic_data = in_data->GetAsicData();
 			mymod = asic_data->GetModule();
+			mych = asic_data->GetChannel();
 			myside = asic_side.at( asic_data->GetAsic() );
-			myrow = array_row.at( asic_data->GetAsic() ).at( asic_data->GetChannel() );
+			myrow = array_row.at( asic_data->GetAsic() ).at( mych );
 			if( overwrite_cal ) {
 			
 				myenergy = cal->AsicEnergy( mymod, asic_data->GetAsic(),
