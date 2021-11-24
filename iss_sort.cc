@@ -51,21 +51,21 @@ bool flag_monitor = false;
 int mon_time = -1; // update time in seconds
 
 // Settings file
-Settings *set;
+Settings *myset;
 
 // Calibration file
-Calibration *cal;
+Calibration *mycal;
 bool overwrite_cal = false;
 
 // Reaction file
-Reaction *react;
+Reaction *myreact;
 
 // Struct for passing to the thread
 typedef struct thptr {
 	
-	Calibration *cal;
-	Settings *set;
-	Reaction *react;
+	Calibration *mycal;
+	Settings *myset;
+	Reaction *myreact;
 	
 } thread_data;
 
@@ -81,10 +81,10 @@ void* monitor_run( void* ptr ){
 //void monitor_run(){
 	
 	// This function is called to run when monitoring
-	Converter conv_mon( ((thptr*)ptr)->set );
+	Converter conv_mon( ((thptr*)ptr)->myset );
 	TimeSorter sort_mon;
-	EventBuilder eb_mon( ((thptr*)ptr)->set );
-	Histogrammer hist_mon( ((thptr*)ptr)->react, ((thptr*)ptr)->set );
+	EventBuilder eb_mon( ((thptr*)ptr)->myset );
+	Histogrammer hist_mon( ((thptr*)ptr)->myreact, ((thptr*)ptr)->myset );
 
 	// Data/Event counters
 	int start_block = 0;
@@ -100,7 +100,7 @@ void* monitor_run( void* ptr ){
 
 	// Converter setup
 	curFileMon = input_names.at(0); // maybe change in GUI later?
-	conv_mon.AddCalibration( ((thptr*)ptr)->cal );
+	conv_mon.AddCalibration( ((thptr*)ptr)->mycal );
 	conv_mon.SetOutput( "monitor_singles.root" );
 	conv_mon.MakeTree();
 	conv_mon.MakeHists();
@@ -298,9 +298,9 @@ int main( int argc, char *argv[] ){
 
 	}
 	
-	set = new Settings( name_set_file );
-	cal = new Calibration( name_cal_file, set );
-	react = new Reaction( name_react_file, set );
+	myset = new Settings( name_set_file );
+	mycal = new Calibration( name_cal_file, myset );
+	myreact = new Reaction( name_react_file, myset );
 
 
 	
@@ -315,9 +315,9 @@ int main( int argc, char *argv[] ){
 		
 		// Make some data for the thread
 		thread_data data;
-		data.cal = cal;
-		data.set = set;
-		data.react = react;
+		data.mycal = mycal;
+		data.myset = myset;
+		data.myreact = myreact;
 
 		// Start the HTTP server from the main thread (should usually do this)
 		start_http();
@@ -348,7 +348,7 @@ int main( int argc, char *argv[] ){
 	//------------------------//
 	// Run conversion to ROOT //
 	//------------------------//
-	Converter conv( set );
+	Converter conv( myset );
 	std::cout << "\n +++ ISS Analysis:: processing Converter +++" << std::endl;
 
 	TFile *rtest;
@@ -387,7 +387,7 @@ int main( int argc, char *argv[] ){
 			conv.SetOutput( name_output_file );
 			conv.MakeTree();
 			conv.MakeHists();
-			conv.AddCalibration( cal );
+			conv.AddCalibration( mycal );
 			conv.ConvertFile( name_input_file );
 			conv.CloseOutput();
 
@@ -450,11 +450,11 @@ int main( int argc, char *argv[] ){
 	//-----------------------//
 	// Physics event builder //
 	//-----------------------//
-	EventBuilder eb( set );
+	EventBuilder eb( myset );
 	std::cout << "\n +++ ISS Analysis:: processing EventBuilder +++" << std::endl;
 	
 	// Update calibration file if given
-	if( overwrite_cal ) eb.AddCalibration( cal );
+	if( overwrite_cal ) eb.AddCalibration( mycal );
 
 	// Do event builder for each file individually
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
@@ -506,7 +506,7 @@ int main( int argc, char *argv[] ){
 	//------------------------------//
 	// Finally make some histograms //
 	//------------------------------//
-	Histogrammer hist( react, set );
+	Histogrammer hist( myreact, myset );
 	std::cout << "\n +++ ISS Analysis:: processing Histogrammer +++" << std::endl;
 
 	hist.SetOutput( output_name );
