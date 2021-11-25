@@ -24,6 +24,7 @@ void Calibration::ReadCalibration() {
 	fAsicGainQuadr.resize( set->GetNumberOfArrayModules() );
 	fAsicThreshold.resize( set->GetNumberOfArrayModules() );
 	fAsicTime.resize( set->GetNumberOfArrayModules() );
+	fAsicEnabled.resize( set->GetNumberOfArrayModules() );
 	fAsicWalk.resize( set->GetNumberOfArrayModules() );
 	
 	// ASIC parameter read
