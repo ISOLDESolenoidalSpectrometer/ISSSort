@@ -796,8 +796,8 @@ void EventBuilder::ArrayFinder() {
 	
 	std::vector<unsigned int> pindex;
 	std::vector<unsigned int> nindex;
-	int pmax_idx, nmax_idx;
-	float pmax_en, nmax_en;
+	int pmax_idx, nmax_idx, psum_idx, nsum_idx;
+	float pmax_en, nmax_en, psum_en, nsum_en;
 
 	// Do each module and row individually
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {

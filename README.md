@@ -35,13 +35,13 @@ use iss_sort with following flags:
         [-i <vector<string>>: List of input files]
         [-m <int           >: Monitor input file every X seconds]
         [-p <int           >: Port number for web server (default 8030)]
-        [-o <string        >: Output file for histograms file]
+        [-o <string        >: Output file for histogram file]
         [-d <string        >: Data directory to add to the monitor]
         [-f                 : Flag to force new ROOT conversion]
         [-e                 : Flag to force new event builder (new calibration)]
-        [-s                 : Flag to sort file by time]
-        [-e                 : Flag to build physics events]
+        [-s <string        >: Settings file]
         [-c <string        >: Calibration file]
+        [-r <string        >: Reaction file]
         [-h                 : Print this help]
 ```
 
