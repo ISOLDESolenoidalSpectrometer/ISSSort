@@ -721,7 +721,7 @@ void Converter::ProcessASICData(){
 		my_energy = cal->AsicEnergy( my_mod_id, my_asic_id, my_ch_id, my_adc_data );
 		
 		// Is it disabled?
-		if( cal->AsicEnabled( my_mod_id, my_asic_id ) ) return;
+		if( !cal->AsicEnabled( my_mod_id, my_asic_id ) ) return;
 		
 		// Fill histograms
 		hasic[my_mod_id][my_asic_id]->Fill( my_ch_id, my_adc_data );
