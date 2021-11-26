@@ -144,6 +144,23 @@ void ArrayEvt::SetEvent( float mypen, float mynen,
 	
 }
 
+void ArrayEvt::CopyEvent( ArrayEvt *in ){
+	
+	pen 	= in->GetPEnergy();
+	ptime	= in->GetPTime();
+	pid		= in->GetPID();
+	
+	nen		= in->GetNEnergy();
+	ntime	= in->GetNTime();
+	nid		= in->GetNID();
+	
+	mod		= in->GetModule();
+	row		= in->GetRow();
+
+	return;
+	
+}
+
 float ArrayEvt::GetX(){
 	
 	return GetPhiXY().X();

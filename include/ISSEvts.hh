@@ -23,6 +23,10 @@ public:
 				   unsigned long myptime, unsigned long myntime,
 				   unsigned char mymod, unsigned char row );
 	
+	// Copy event
+	void CopyEvent( ArrayEvt *in );
+	
+	// Return functions
 	inline float 			GetEnergy(){ return pen; };
 	inline float 			GetPEnergy(){ return pen; };
 	inline float 			GetNEnergy(){ return nen; };

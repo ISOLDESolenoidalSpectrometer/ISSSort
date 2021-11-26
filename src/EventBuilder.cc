@@ -796,8 +796,10 @@ void EventBuilder::ArrayFinder() {
 	
 	std::vector<unsigned int> pindex;
 	std::vector<unsigned int> nindex;
-	int pmax_idx, nmax_idx, psum_idx, nsum_idx;
-	float pmax_en, nmax_en, psum_en, nsum_en;
+	int pmax_idx, nmax_idx;
+	int ptmp_idx, ntmp_idx;
+	float pmax_en, nmax_en;
+	float psum_en, nsum_en;
 
 	// Do each module and row individually
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
@@ -811,6 +813,7 @@ void EventBuilder::ArrayFinder() {
 			std::vector<unsigned int>().swap(nindex);
 			pmax_idx = nmax_idx = -1;
 			pmax_en = nmax_en = -1;
+			psum_en = nsum_en = 0;
 
 			// Loop over p-side events
 			for( unsigned int k = 0; k < pen_list.size(); ++k ) {
@@ -864,40 +867,346 @@ void EventBuilder::ArrayFinder() {
 					pn_td[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ) );
 
 			
-			// Easy case, 1p vs 1n
+			// Easy case, p == 1 vs n == 1
 			if( pindex.size() == 1 && nindex.size() == 1 ) {
 				
 				pn_11[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(0) ) );
 				
+				// Fill single event as a nice p/n correlation
+				array_evt->SetEvent( pen_list.at( pindex.at(0) ),
+									 nen_list.at( nindex.at(0) ),
+									 pid_list.at( pindex.at(0) ),
+									 nid_list.at( nindex.at(0) ),
+									 ptd_list.at( pindex.at(0) ),
+									 ntd_list.at( nindex.at(0) ),
+									 i, j );
+				
+				write_evts->AddEvt( array_evt );
+				array_ctr++;
+
+				// High n-side threshold situation, fill p-only event
+				arrayp_evt->CopyEvent( array_evt );
+				write_evts->AddEvt( arrayp_evt );
+				arrayp_ctr++;
+
 			}
 			
-			// Others too, but who can be arsed at the moment
-			if( pindex.size() == 2 && nindex.size() == 1 ) {
+			// p == 1 vs n == 0
+			else if( pindex.size() == 1 && nindex.size() == 0 ) {
+				
+				// High n-side threshold situation, fill p-only event
+				arrayp_evt->SetEvent( pen_list.at( pindex.at(0) ),
+									  0,
+									  pid_list.at( pindex.at(0) ),
+									  5,
+									  ptd_list.at( pindex.at(0) ),
+									  0,
+									  i, j );
+
+				write_evts->AddEvt( arrayp_evt );
+				arrayp_ctr++;
+
+			}
+			
+			// p == 2 vs n == 1
+			else if( pindex.size() == 2 && nindex.size() == 1 ) {
 
 				pn_21[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(0) ) );
 				pn_21[i][j]->Fill( pen_list.at( pindex.at(1) ), nen_list.at( nindex.at(0) ) );
 				
+				// Neighbour strips
+				if( TMath::Abs( pid_list.at( pindex.at(0) ) - pid_list.at( pindex.at(1) ) ) == 1 ) {
+					
+					// Simple sum of both energies, cross-talk not included yet
+					psum_en  = pen_list.at( pindex.at(0) );
+					psum_en += pen_list.at( pindex.at(1) );
+
+					// Fill the addback event
+					array_evt->SetEvent( psum_en,
+										 nen_list.at( nindex.at(0) ),
+										 pid_list.at( pmax_idx ),
+										 nid_list.at( nindex.at(0) ),
+										 ptd_list.at( pmax_idx ),
+										 ntd_list.at( nindex.at(0) ),
+										 i, j );
+					
+					write_evts->AddEvt( array_evt );
+					array_ctr++;
+				
+					// High n-side threshold situation, fill p-only event
+					arrayp_evt->CopyEvent( array_evt );
+					write_evts->AddEvt( arrayp_evt );
+					arrayp_ctr++;
+
+				}
+				
+				// Non-neighbour strips
+				else {
+					
+					// Fill the maximum energy event
+					array_evt->SetEvent( pen_list.at( pmax_idx ),
+										 nen_list.at( nindex.at(0) ),
+										 pid_list.at( pmax_idx ),
+										 nid_list.at( nindex.at(0) ),
+										 ptd_list.at( pmax_idx ),
+										 ntd_list.at( nindex.at(0) ),
+										 i, j );
+					
+					write_evts->AddEvt( array_evt );
+					array_ctr++;
+					
+					// High n-side threshold situation, fill p-only event
+					arrayp_evt->CopyEvent( array_evt );
+					write_evts->AddEvt( arrayp_evt );
+					arrayp_ctr++;
+
+				}
+				
 			}
 			
-			if( pindex.size() == 1 && nindex.size() == 2 ) {
+			// p == 1 vs n == 2
+			else if( pindex.size() == 1 && nindex.size() == 2 ) {
 
 				pn_12[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(0) ) );
 				pn_12[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(1) ) );
 				
+				// Neighbour strips
+				if( TMath::Abs( nid_list.at( nindex.at(0) ) - nid_list.at( nindex.at(1) ) ) == 1 ) {
+						
+					// Simple sum of both energies, cross-talk not included yet
+					nsum_en  = nen_list.at( nindex.at(0) );
+					nsum_en += nen_list.at( nindex.at(1) );
+
+					// Fill the addback event
+					array_evt->SetEvent( pen_list.at( pindex.at(0) ),
+										 nsum_en,
+										 pid_list.at( pindex.at(0) ),
+										 nid_list.at( nmax_idx ),
+										 ptd_list.at( pindex.at(0) ),
+										 ntd_list.at( nmax_idx ),
+										 i, j );
+					
+					write_evts->AddEvt( array_evt );
+					array_ctr++;
+				
+					// High n-side threshold situation, fill p-only event
+					arrayp_evt->CopyEvent( array_evt );
+					write_evts->AddEvt( arrayp_evt );
+					arrayp_ctr++;
+
+				}
+				
+				// Non-neighbour strips
+				else {
+					
+					// Fill the maximum energy event
+					array_evt->SetEvent( pen_list.at( pindex.at(0) ),
+										 nen_list.at( nmax_idx ),
+										 pid_list.at( pindex.at(0) ),
+										 nid_list.at( nmax_idx ),
+										 ptd_list.at( pindex.at(0) ),
+										 ntd_list.at( nmax_idx ),
+										 i, j );
+
+					write_evts->AddEvt( array_evt );
+					array_ctr++;
+					
+					// High n-side threshold situation, fill p-only event
+					arrayp_evt->CopyEvent( array_evt );
+					write_evts->AddEvt( arrayp_evt );
+					arrayp_ctr++;
+
+				}
+
 			}
 			
-			if( pindex.size() == 2 && nindex.size() == 2 ) {
+			// p == 2 vs n == 2
+			else if( pindex.size() == 2 && nindex.size() == 2 ) {
 
 				pn_22[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(0) ) );
 				pn_22[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(1) ) );
 				pn_22[i][j]->Fill( pen_list.at( pindex.at(1) ), nen_list.at( nindex.at(0) ) );
 				pn_22[i][j]->Fill( pen_list.at( pindex.at(1) ), nen_list.at( nindex.at(1) ) );
 				
+				// Neighbour strips for both p and n
+				if( TMath::Abs( pid_list.at( pindex.at(0) ) - pid_list.at( pindex.at(1) ) ) == 1 &&
+				    TMath::Abs( nid_list.at( nindex.at(0) ) - nid_list.at( nindex.at(1) ) ) == 1 ) {
+						
+					// Simple sum of both energies, cross-talk not included yet
+					psum_en  = pen_list.at( pindex.at(0) );
+					psum_en += pen_list.at( pindex.at(1) );
+					nsum_en  = nen_list.at( nindex.at(0) );
+					nsum_en += nen_list.at( nindex.at(1) );
+
+					// Fill the addback event
+					array_evt->SetEvent( psum_en,
+										 nsum_en,
+										 pid_list.at( pmax_idx ),
+										 nid_list.at( nmax_idx ),
+										 ptd_list.at( pmax_idx ),
+										 ntd_list.at( nmax_idx ),
+										 i, j );
+					
+					write_evts->AddEvt( array_evt );
+					array_ctr++;
+				
+					// High n-side threshold situation, fill p-only event
+					arrayp_evt->CopyEvent( array_evt );
+					write_evts->AddEvt( arrayp_evt );
+					arrayp_ctr++;
+
+				}
+				
+				// Neighbour strips - p-side only
+				else if( TMath::Abs( pid_list.at( pindex.at(0) ) - pid_list.at( pindex.at(1) ) ) == 1 ) {
+					
+					// Simple sum of both energies, cross-talk not included yet
+					psum_en  = pen_list.at( pindex.at(0) );
+					psum_en += pen_list.at( pindex.at(1) );
+
+					// Fill the addback event for p-side, but max for n-side
+					array_evt->SetEvent( psum_en,
+										 nen_list.at( nmax_idx ),
+										 pid_list.at( pmax_idx ),
+										 nid_list.at( nmax_idx ),
+										 ptd_list.at( nmax_idx ),
+										 ntd_list.at( nmax_idx ),
+										 i, j );
+					
+					write_evts->AddEvt( array_evt );
+					array_ctr++;
+	
+					// High n-side threshold situation, fill p-only event
+					arrayp_evt->CopyEvent( array_evt );
+					write_evts->AddEvt( arrayp_evt );
+					arrayp_ctr++;
+
+				}
+
+				// Neighbour strips - n-side only
+				else if( TMath::Abs( nid_list.at( nindex.at(0) ) - nid_list.at( nindex.at(1) ) ) == 1 ) {
+						
+					// Simple sum of both energies, cross-talk not included yet
+					nsum_en  = nen_list.at( nindex.at(0) );
+					nsum_en += nen_list.at( nindex.at(1) );
+
+					// Fill the addback event for n-side, but max for p-side
+					array_evt->SetEvent( pen_list.at( pmax_idx ),
+										 nsum_en,
+										 pid_list.at( pmax_idx ),
+										 nid_list.at( nmax_idx ),
+										 ptd_list.at( pmax_idx ),
+										 ntd_list.at( nmax_idx ),
+										 i, j );
+					
+					write_evts->AddEvt( array_evt );
+					array_ctr++;
+				
+					// High n-side threshold situation, fill p-only event
+					arrayp_evt->CopyEvent( array_evt );
+					write_evts->AddEvt( arrayp_evt );
+					arrayp_ctr++;
+
+				}
+				
+				// Non-neighbour strips, maybe two events?
+				else {
+					
+					// Pairing [0,0] because energy difference is smaller than [1,0]
+					if( TMath::Abs( pen_list.at( pindex.at(0) ) - nen_list.at( nindex.at(0) ) ) <
+					    TMath::Abs( pen_list.at( pindex.at(1) ) - nen_list.at( nindex.at(0) ) ) ) {
+											
+						// Fill the [0,0]
+						ptmp_idx = 0;
+						ntmp_idx = 0;
+						array_evt->SetEvent( pen_list.at( ptmp_idx ),
+											 nen_list.at( ntmp_idx ),
+											 pid_list.at( ptmp_idx ),
+											 nid_list.at( ntmp_idx ),
+											 ptd_list.at( ptmp_idx ),
+											 ntd_list.at( ntmp_idx ),
+											 i, j );
+
+						write_evts->AddEvt( array_evt );
+						array_ctr++;
+							
+						// High n-side threshold situation, fill p-only event
+						arrayp_evt->CopyEvent( array_evt );
+						write_evts->AddEvt( arrayp_evt );
+						arrayp_ctr++;
+
+						// Then fill the [1,1]
+						ptmp_idx = 0;
+						ntmp_idx = 0;
+						array_evt->SetEvent( pen_list.at( ptmp_idx ),
+											 nen_list.at( ntmp_idx ),
+											 pid_list.at( ptmp_idx ),
+											 nid_list.at( ntmp_idx ),
+											 ptd_list.at( ptmp_idx ),
+											 ntd_list.at( ntmp_idx ),
+											 i, j );
+
+						write_evts->AddEvt( array_evt );
+						array_ctr++;
+						
+						// High n-side threshold situation, fill p-only event
+						arrayp_evt->CopyEvent( array_evt );
+						write_evts->AddEvt( arrayp_evt );
+						arrayp_ctr++;
+
+					}
+					
+					// If not, pair [0,1]
+					else {
+						
+						// Fill the [0,1]
+						ptmp_idx = 0;
+						ntmp_idx = 1;
+						array_evt->SetEvent( pen_list.at( ptmp_idx ),
+											 nen_list.at( ntmp_idx ),
+											 pid_list.at( ptmp_idx ),
+											 nid_list.at( ntmp_idx ),
+											 ptd_list.at( ptmp_idx ),
+											 ntd_list.at( ntmp_idx ),
+											 i, j );
+
+						write_evts->AddEvt( array_evt );
+						array_ctr++;
+							
+						// High n-side threshold situation, fill p-only event
+						arrayp_evt->CopyEvent( array_evt );
+						write_evts->AddEvt( arrayp_evt );
+						arrayp_ctr++;
+
+						// Then fill the [1,0]
+						ptmp_idx = 1;
+						ntmp_idx = 0;
+						array_evt->SetEvent( pen_list.at( ptmp_idx ),
+											 nen_list.at( ntmp_idx ),
+											 pid_list.at( ptmp_idx ),
+											 nid_list.at( ntmp_idx ),
+											 ptd_list.at( ptmp_idx ),
+											 ntd_list.at( ntmp_idx ),
+											 i, j );
+
+						write_evts->AddEvt( array_evt );
+						array_ctr++;
+							
+						// High n-side threshold situation, fill p-only event
+						arrayp_evt->CopyEvent( array_evt );
+						write_evts->AddEvt( arrayp_evt );
+						arrayp_ctr++;
+
+					}
+
+				}
+
 			}
 			
-			// Just take the maximum energy instead for now
+			// Higher multiplicities need to be dealt with
+			// For now, we bodge!! Just take the maximum energy
 			// But make sure that both p- and n-sides are good
-			if( pmax_idx >= 0 && nmax_idx >= 0 ){
+			else if( pmax_idx >= 0 && nmax_idx >= 0 ){
 
 				array_evt->SetEvent( pen_list.at( pmax_idx ),
 									 nen_list.at( nmax_idx ),
@@ -910,41 +1219,6 @@ void EventBuilder::ArrayFinder() {
 				write_evts->AddEvt( array_evt );
 				array_ctr++;
 
-			}
-
-			// Add a bodge to ignore n-side events for now
-			// use the ArrayPEvt class
-			if( pmax_idx >= 0 ){
-				
-				// if we have an n-side event, let's use it
-				if( nmax_idx >= 0  ) {
-			
-					arrayp_evt->SetEvent( pen_list.at( pmax_idx ),
-										  nen_list.at( nmax_idx ),
-										  pid_list.at( pmax_idx ),
-										  nid_list.at( nmax_idx ),
-										  ptd_list.at( pmax_idx ),
-										  ntd_list.at( nmax_idx ),
-										  i, j );
-
-				}
-				
-				// else just assume it is in the centre of either wafer
-				else {
-					
-					arrayp_evt->SetEvent( pen_list.at( pmax_idx ),
-										  0,
-										  pid_list.at( pmax_idx ),
-										  5,
-										  ptd_list.at( pmax_idx ),
-										  0,
-										  i, j );
-
-				}
-				
-				write_evts->AddEvt( arrayp_evt );
-				arrayp_ctr++;
-				
 			}
 			
 			// Histogram for n vs p-side max energies
