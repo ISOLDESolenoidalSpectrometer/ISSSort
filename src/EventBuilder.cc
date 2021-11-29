@@ -81,7 +81,7 @@ EventBuilder::EventBuilder( Settings *myset ){
 
 			}
 			
-			// n-side: 11 channels per ASIC 1/3A
+			// n-side: 11 channels per ASIC 1/3B
 			else if( j >= 89 && j <= 99 ) {
 				
 				mystrip = j - 89 + set->GetNumberOfArrayNstrips();
@@ -90,7 +90,7 @@ EventBuilder::EventBuilder( Settings *myset ){
 
 			}
 			
-			// n-side: 11 channels per ASIC 1/3B
+			// n-side: 11 channels per ASIC 1/3A
 			else if( j >= 106 && j <= 116 ) {
 				
 				mystrip = 116 - j;
@@ -249,6 +249,7 @@ void EventBuilder::Initialise(){
 	/// This is called at the end of every execution/loop
 	
 	flag_close_event = false;
+	noise_flag = false;
 
 	hit_ctr = 0;
 	
@@ -338,8 +339,15 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				time_first	= mytime;
 				
 			}
-			hit_ctr++; // increase counter for bits of data included in this event
 			
+			// Check if first event was noise
+			// Reset the build window if so
+			if( noise_flag && hit_ctr == 1 )
+				time_first = mytime;
+
+			noise_flag = false; // reset noise flag
+			hit_ctr++; // increase counter for bits of data included in this event
+
 			// record time of this event
 			time_prev = mytime;
 			
@@ -360,15 +368,16 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			asic_data = in_data->GetAsicData();
 			mymod = asic_data->GetModule();
 			mych = asic_data->GetChannel();
-			myside = asic_side.at( asic_data->GetAsic() );
-			myrow = array_row.at( asic_data->GetAsic() ).at( mych );
+			myasic = asic_data->GetAsic();
+			myside = asic_side.at( myasic );
+			myrow = array_row.at( myasic ).at( mych );
 			if( overwrite_cal ) {
 			
-				myenergy = cal->AsicEnergy( mymod, asic_data->GetAsic(),
-									 asic_data->GetChannel(), asic_data->GetAdcValue() );
-				mywalk = cal->AsicWalk( mymod, asic_data->GetAsic(), myenergy );
+				myenergy = cal->AsicEnergy( mymod, myasic,
+									 mych, asic_data->GetAdcValue() );
+				mywalk = cal->AsicWalk( mymod, myasic, myenergy );
 			
-				if( asic_data->GetAdcValue() > cal->AsicThreshold( mymod, asic_data->GetAsic(), mych ) )
+				if( asic_data->GetAdcValue() > cal->AsicThreshold( mymod, myasic, mych ) )
 					mythres = true;
 				else mythres = false;
 				
@@ -382,8 +391,14 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			
 			}
 			
+			// If it's below zero in energy, consider it below threshold
+			if( myenergy < 0 ) mythres = false;
+			
+			// If it's below threshold do not use as window opener
+			if( !mythres ) noise_flag = true;
+			
 			// p-side event
-			if( myside == 0 && mythres ) {
+			else if( myside == 0 ) {
 			
 			// test here about hit bit value
 			//if( myside == 0 && !asic_data->GetHitBit() ) {
@@ -399,7 +414,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 
 			// n-side event
-			else if( myside == 1 && mythres ) {
+			else if( myside == 1 ) {
 
 			// test here about hit bit value
 			//else if( myside == 1 && asic_data->GetHitBit() ) {
@@ -453,8 +468,11 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 
 			}
 			
+			// If it's below threshold do not use as window opener
+			if( !mythres ) noise_flag = true;
+
 			// Is it a recoil?
-			if( set->IsRecoil( mymod, mych ) && mythres ) {
+			else if( set->IsRecoil( mymod, mych ) && mythres ) {
 				
 				mysector = set->GetRecoilSector( mymod, mych );
 				mylayer = set->GetRecoilLayer( mymod, mych );
@@ -467,7 +485,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 			
 			// Is it an MWPC?
-			if( set->IsMWPC( mymod, mych ) && mythres ) {
+			else if( set->IsMWPC( mymod, mych ) && mythres ) {
 				
 				// Check for properly integrated TAC signals
 				if( caen_data->GetQlong() > caen_data->GetQshort() ) {
@@ -482,7 +500,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 			
 			// Is it an ELUM?
-			if( set->IsELUM( mymod, mych ) && mythres ) {
+			else if( set->IsELUM( mymod, mych ) && mythres ) {
 				
 				mysector = set->GetELUMSector( mymod, mych );
 				
@@ -493,7 +511,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 
 			// Is it a ZeroDegree?
-			if( set->IsZD( mymod, mych ) && mythres ) {
+			else if( set->IsZD( mymod, mych ) && mythres ) {
 				
 				mylayer = set->GetZDLayer( mymod, mych );
 				
@@ -509,7 +527,6 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			
 			// or is it the end event (we don't know so keep updating
 			caen_time_stop.at( mymod ) = mytime;
-
 
 		}
 		
@@ -562,7 +579,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			if( info_data->GetCode() == set->GetExternalTriggerCode() ) {
 			   
 				fpga_time[info_data->GetModule()] = info_data->GetTime();
-				fpga_hz = 1e9 / ( (double)fpga_time[i] - (double)fpga_prev[i] );
+				fpga_hz = 1e9 / ( (double)fpga_time[info_data->GetModule()] - (double)fpga_prev[info_data->GetModule()] );
 
 				if( fpga_prev[info_data->GetModule()] != 0 )
 					fpga_freq[info_data->GetModule()]->Fill( fpga_time[info_data->GetModule()], fpga_hz );
@@ -575,7 +592,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			if( info_data->GetCode() == set->GetArrayPulserCode() ) {
 			   
 				asic_time[info_data->GetModule()] = info_data->GetTime();
-				asic_hz = 1e9 / ( (double)asic_time[i] - (double)asic_prev[i] );
+				asic_hz = 1e9 / ( (double)asic_time[info_data->GetModule()] - (double)asic_prev[info_data->GetModule()] );
 
 				if( asic_prev[info_data->GetModule()] != 0 )
 					asic_freq[info_data->GetModule()]->Fill( asic_time[info_data->GetModule()], asic_hz );
@@ -633,26 +650,26 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			// If we a pulser event from the CAEN DAQs, fill time difference
 			if( flag_caen_pulser ) {
 			
-				for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
+				for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
 				
-					fpga_tdiff = (double)caen_time - (double)fpga_time[i];
-					asic_tdiff = (double)caen_time - (double)asic_time[i];
+					fpga_tdiff = (double)caen_time - (double)fpga_time[j];
+					asic_tdiff = (double)caen_time - (double)asic_time[j];
 
 					// If diff is greater than 5 ms, we have the wrong pair
-					if( fpga_tdiff > 5e6 ) fpga_tdiff = (double)caen_prev - (double)fpga_time[i];
-					else if( fpga_tdiff < -5e6 ) fpga_tdiff = (double)caen_time - (double)fpga_prev[i];
-					if( asic_tdiff > 5e6 ) asic_tdiff = (double)caen_prev - (double)asic_time[i];
-					else if( asic_tdiff < -5e6 ) asic_tdiff = (double)caen_time - (double)asic_prev[i];
+					if( fpga_tdiff > 5e6 ) fpga_tdiff = (double)caen_prev - (double)fpga_time[j];
+					else if( fpga_tdiff < -5e6 ) fpga_tdiff = (double)caen_time - (double)fpga_prev[j];
+					if( asic_tdiff > 5e6 ) asic_tdiff = (double)caen_prev - (double)asic_time[j];
+					else if( asic_tdiff < -5e6 ) asic_tdiff = (double)caen_time - (double)asic_prev[j];
 
-					fpga_td[i]->Fill( fpga_tdiff );
-					fpga_sync[i]->Fill( fpga_time[i], fpga_tdiff );
-					fpga_freq_diff[i]->Fill( fpga_time[i], fpga_hz - caen_hz );
-					fpga_pulser_loss[i]->Fill( fpga_time[i], (int)n_fpga_pulser[i] - (int)n_caen_pulser );
+					fpga_td[j]->Fill( fpga_tdiff );
+					fpga_sync[j]->Fill( fpga_time[j], fpga_tdiff );
+					fpga_freq_diff[j]->Fill( fpga_time[j], fpga_hz - caen_hz );
+					fpga_pulser_loss[j]->Fill( fpga_time[j], (int)n_fpga_pulser[j] - (int)n_caen_pulser );
 					
-					asic_td[i]->Fill( asic_tdiff );
-					asic_sync[i]->Fill( asic_time[i], asic_tdiff );
-					asic_freq_diff[i]->Fill( asic_time[i], asic_hz - caen_hz );
-					asic_pulser_loss[i]->Fill( asic_time[i], (int)n_asic_pulser[i] - (int)n_caen_pulser );	
+					asic_td[j]->Fill( asic_tdiff );
+					asic_sync[j]->Fill( asic_time[j], asic_tdiff );
+					asic_freq_diff[j]->Fill( asic_time[j], asic_hz - caen_hz );
+					asic_pulser_loss[j]->Fill( asic_time[j], (int)n_asic_pulser[j] - (int)n_caen_pulser );
 
 				}
 
@@ -694,8 +711,13 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				flag_close_event = true; // set flag to close this event
 				
 			// Fill tdiff hist only for real data
-			if( !in_data->IsInfo() ) tdiff->Fill( time_diff );
-
+			if( !in_data->IsInfo() ) {
+				
+				tdiff->Fill( time_diff );
+				if( !noise_flag )
+					tdiff_clean->Fill( time_diff );
+			
+			}
 
 		} // if next entry beyond time window: close event!
 		
@@ -812,7 +834,7 @@ void EventBuilder::ArrayFinder() {
 			std::vector<unsigned int>().swap(pindex);
 			std::vector<unsigned int>().swap(nindex);
 			pmax_idx = nmax_idx = -1;
-			pmax_en = nmax_en = -1;
+			pmax_en = nmax_en = -99999.;
 			psum_en = nsum_en = 0;
 
 			// Loop over p-side events
@@ -844,7 +866,7 @@ void EventBuilder::ArrayFinder() {
 				
 					// Put in the index
 					nindex.push_back( l );
-
+					
 					// Check if it is max energy
 					if( nen_list.at(l) > nmax_en ){
 					
@@ -929,10 +951,10 @@ void EventBuilder::ArrayFinder() {
 										 ptd_list.at( pmax_idx ),
 										 ntd_list.at( nindex.at(0) ),
 										 i, j );
-					
+
 					write_evts->AddEvt( array_evt );
 					array_ctr++;
-				
+
 					// High n-side threshold situation, fill p-only event
 					arrayp_evt->CopyEvent( array_evt );
 					write_evts->AddEvt( arrayp_evt );
@@ -951,10 +973,10 @@ void EventBuilder::ArrayFinder() {
 										 ptd_list.at( pmax_idx ),
 										 ntd_list.at( nindex.at(0) ),
 										 i, j );
-					
+
 					write_evts->AddEvt( array_evt );
 					array_ctr++;
-					
+
 					// High n-side threshold situation, fill p-only event
 					arrayp_evt->CopyEvent( array_evt );
 					write_evts->AddEvt( arrayp_evt );
@@ -985,10 +1007,10 @@ void EventBuilder::ArrayFinder() {
 										 ptd_list.at( pindex.at(0) ),
 										 ntd_list.at( nmax_idx ),
 										 i, j );
-					
+
 					write_evts->AddEvt( array_evt );
 					array_ctr++;
-				
+
 					// High n-side threshold situation, fill p-only event
 					arrayp_evt->CopyEvent( array_evt );
 					write_evts->AddEvt( arrayp_evt );
@@ -998,7 +1020,7 @@ void EventBuilder::ArrayFinder() {
 				
 				// Non-neighbour strips
 				else {
-					
+
 					// Fill the maximum energy event
 					array_evt->SetEvent( pen_list.at( pindex.at(0) ),
 										 nen_list.at( nmax_idx ),
@@ -1010,9 +1032,52 @@ void EventBuilder::ArrayFinder() {
 
 					write_evts->AddEvt( array_evt );
 					array_ctr++;
-					
+
 					// High n-side threshold situation, fill p-only event
 					arrayp_evt->CopyEvent( array_evt );
+					write_evts->AddEvt( arrayp_evt );
+					arrayp_ctr++;
+
+				}
+
+			}
+			
+			// p == 2 vs n == 0 - p-side only
+			else if( pindex.size() == 2 && nindex.size() == 0 ) {
+				
+				// Neighbour strips
+				if( TMath::Abs( pid_list.at( pindex.at(0) ) - pid_list.at( pindex.at(1) ) ) == 1 ) {
+					
+					// Simple sum of both energies, cross-talk not included yet
+					psum_en  = pen_list.at( pindex.at(0) );
+					psum_en += pen_list.at( pindex.at(1) );
+
+					// Fill add back event
+					arrayp_evt->SetEvent( psum_en,
+										  0,
+										  pid_list.at( pmax_idx ),
+										  5,
+										  ptd_list.at( pmax_idx ),
+										  0,
+										  i, j );
+
+					write_evts->AddEvt( arrayp_evt );
+					arrayp_ctr++;
+
+				}
+				
+				// Non-neighbour strips
+				else {
+					
+					// Fill maximum energy only
+					arrayp_evt->SetEvent( pid_list.at( pmax_idx ),
+										  0,
+										  pid_list.at( pmax_idx ),
+										  5,
+										  ptd_list.at( pmax_idx ),
+										  0,
+										  i, j );
+
 					write_evts->AddEvt( arrayp_evt );
 					arrayp_ctr++;
 
@@ -1046,10 +1111,10 @@ void EventBuilder::ArrayFinder() {
 										 ptd_list.at( pmax_idx ),
 										 ntd_list.at( nmax_idx ),
 										 i, j );
-					
+
 					write_evts->AddEvt( array_evt );
 					array_ctr++;
-				
+
 					// High n-side threshold situation, fill p-only event
 					arrayp_evt->CopyEvent( array_evt );
 					write_evts->AddEvt( arrayp_evt );
@@ -1069,13 +1134,13 @@ void EventBuilder::ArrayFinder() {
 										 nen_list.at( nmax_idx ),
 										 pid_list.at( pmax_idx ),
 										 nid_list.at( nmax_idx ),
-										 ptd_list.at( nmax_idx ),
+										 ptd_list.at( pmax_idx ),
 										 ntd_list.at( nmax_idx ),
 										 i, j );
-					
+
 					write_evts->AddEvt( array_evt );
 					array_ctr++;
-	
+
 					// High n-side threshold situation, fill p-only event
 					arrayp_evt->CopyEvent( array_evt );
 					write_evts->AddEvt( arrayp_evt );
@@ -1098,10 +1163,10 @@ void EventBuilder::ArrayFinder() {
 										 ptd_list.at( pmax_idx ),
 										 ntd_list.at( nmax_idx ),
 										 i, j );
-					
+
 					write_evts->AddEvt( array_evt );
 					array_ctr++;
-				
+
 					// High n-side threshold situation, fill p-only event
 					arrayp_evt->CopyEvent( array_evt );
 					write_evts->AddEvt( arrayp_evt );
@@ -1111,68 +1176,68 @@ void EventBuilder::ArrayFinder() {
 				
 				// Non-neighbour strips, maybe two events?
 				else {
-					
+
 					// Pairing [0,0] because energy difference is smaller than [1,0]
 					if( TMath::Abs( pen_list.at( pindex.at(0) ) - nen_list.at( nindex.at(0) ) ) <
 					    TMath::Abs( pen_list.at( pindex.at(1) ) - nen_list.at( nindex.at(0) ) ) ) {
-											
+
 						// Fill the [0,0]
 						ptmp_idx = 0;
 						ntmp_idx = 0;
-						array_evt->SetEvent( pen_list.at( ptmp_idx ),
-											 nen_list.at( ntmp_idx ),
-											 pid_list.at( ptmp_idx ),
-											 nid_list.at( ntmp_idx ),
-											 ptd_list.at( ptmp_idx ),
-											 ntd_list.at( ntmp_idx ),
+						array_evt->SetEvent( pen_list.at( pindex.at( ptmp_idx ) ),
+											 nen_list.at( nindex.at( ntmp_idx ) ),
+											 pid_list.at( pindex.at( ptmp_idx ) ),
+											 nid_list.at( nindex.at( ntmp_idx ) ),
+											 ptd_list.at( pindex.at( ptmp_idx ) ),
+											 ntd_list.at( nindex.at( ntmp_idx ) ),
 											 i, j );
 
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
-							
+
 						// High n-side threshold situation, fill p-only event
 						arrayp_evt->CopyEvent( array_evt );
 						write_evts->AddEvt( arrayp_evt );
 						arrayp_ctr++;
 
 						// Then fill the [1,1]
-						ptmp_idx = 0;
-						ntmp_idx = 0;
-						array_evt->SetEvent( pen_list.at( ptmp_idx ),
-											 nen_list.at( ntmp_idx ),
-											 pid_list.at( ptmp_idx ),
-											 nid_list.at( ntmp_idx ),
-											 ptd_list.at( ptmp_idx ),
-											 ntd_list.at( ntmp_idx ),
+						ptmp_idx = 1;
+						ntmp_idx = 1;
+						array_evt->SetEvent( pen_list.at( pindex.at( ptmp_idx ) ),
+											 nen_list.at( nindex.at( ntmp_idx ) ),
+											 pid_list.at( pindex.at( ptmp_idx ) ),
+											 nid_list.at( nindex.at( ntmp_idx ) ),
+											 ptd_list.at( pindex.at( ptmp_idx ) ),
+											 ntd_list.at( nindex.at( ntmp_idx ) ),
 											 i, j );
 
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
-						
+
 						// High n-side threshold situation, fill p-only event
 						arrayp_evt->CopyEvent( array_evt );
 						write_evts->AddEvt( arrayp_evt );
 						arrayp_ctr++;
 
 					}
-					
+
 					// If not, pair [0,1]
 					else {
-						
+
 						// Fill the [0,1]
 						ptmp_idx = 0;
 						ntmp_idx = 1;
-						array_evt->SetEvent( pen_list.at( ptmp_idx ),
-											 nen_list.at( ntmp_idx ),
-											 pid_list.at( ptmp_idx ),
-											 nid_list.at( ntmp_idx ),
-											 ptd_list.at( ptmp_idx ),
-											 ntd_list.at( ntmp_idx ),
+						array_evt->SetEvent( pen_list.at( pindex.at( ptmp_idx ) ),
+											 nen_list.at( nindex.at( ntmp_idx ) ),
+											 pid_list.at( pindex.at( ptmp_idx ) ),
+											 nid_list.at( nindex.at( ntmp_idx ) ),
+											 ptd_list.at( pindex.at( ptmp_idx ) ),
+											 ntd_list.at( nindex.at( ntmp_idx ) ),
 											 i, j );
 
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
-							
+
 						// High n-side threshold situation, fill p-only event
 						arrayp_evt->CopyEvent( array_evt );
 						write_evts->AddEvt( arrayp_evt );
@@ -1181,17 +1246,17 @@ void EventBuilder::ArrayFinder() {
 						// Then fill the [1,0]
 						ptmp_idx = 1;
 						ntmp_idx = 0;
-						array_evt->SetEvent( pen_list.at( ptmp_idx ),
-											 nen_list.at( ntmp_idx ),
-											 pid_list.at( ptmp_idx ),
-											 nid_list.at( ntmp_idx ),
-											 ptd_list.at( ptmp_idx ),
-											 ntd_list.at( ntmp_idx ),
-											 i, j );
+						array_evt->SetEvent( pen_list.at( pindex.at( ptmp_idx ) ),
+											 nen_list.at( nindex.at( ntmp_idx ) ),
+											 pid_list.at( pindex.at( ptmp_idx ) ),
+											 nid_list.at( nindex.at( ntmp_idx ) ),
+											 ptd_list.at( pindex.at( ptmp_idx ) ),
+											 ntd_list.at( nindex.at( ntmp_idx ) ),
+							 				 i, j );
 
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
-							
+
 						// High n-side threshold situation, fill p-only event
 						arrayp_evt->CopyEvent( array_evt );
 						write_evts->AddEvt( arrayp_evt );
@@ -1215,9 +1280,14 @@ void EventBuilder::ArrayFinder() {
 									 ptd_list.at( pmax_idx ),
 									 ntd_list.at( nmax_idx ),
 									 i, j );
-				
+
 				write_evts->AddEvt( array_evt );
 				array_ctr++;
+
+				// High n-side threshold situation, fill p-only event
+				arrayp_evt->CopyEvent( array_evt );
+				write_evts->AddEvt( arrayp_evt );
+				arrayp_ctr++;
 
 			}
 			
@@ -1246,6 +1316,8 @@ void EventBuilder::RecoilFinder() {
 			recoil_evt->SetdETime( rtd_list[i] );
 			recoil_evt->SetSector( rsec_list[i] );
 			recoil_evt->AddRecoil( ren_list[i], rid_list[i] );
+			
+			index.push_back(i);
 
 			// Look for matching dE events
 			for( unsigned int j = 0; j < ren_list.size(); ++j ) {
@@ -1257,12 +1329,12 @@ void EventBuilder::RecoilFinder() {
 
 				
 				// Found a match
-				if( i != j && rid_list[j] != 0 && !flag_skip &&
+				if( i != j && !flag_skip &&
 				    rsec_list[i] == rsec_list[j] ){
 					
 					index.push_back(j);
 					recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
-					if( rid_list[j] == 1 ) recoil_evt->SetETime( rtd_list[j] );
+					if( rid_list[j] == (int)set->GetRecoilEnergyLossDepth() ) recoil_evt->SetETime( rtd_list[j] );
 										
 				}
 				
@@ -1277,7 +1349,7 @@ void EventBuilder::RecoilFinder() {
 			// Fill the tree and get ready for next recoil event
 			write_evts->AddEvt( recoil_evt );
 			recoil_ctr++;
-			
+						
 		}
 		
 	}
@@ -1429,6 +1501,7 @@ void EventBuilder::MakeEventHists(){
 	output_file->cd( dirname.data() );
 
 	tdiff = new TH1F( "tdiff", "Time difference to first trigger;#Delta t [ns]", 1e3, -10, 1e5 );
+	tdiff_clean = new TH1F( "tdiff_clean", "Time difference to first trigger without noise;#Delta t [ns]", 1e3, -10, 1e5 );
 
 	caen_freq = new TProfile( "caen_freq", "Frequency of pulser in CAEN DAQ as a function of time;time [ns];f [Hz]", 10.8e4, 0, 10.8e12 );
 
@@ -1760,6 +1833,7 @@ void EventBuilder::CleanHists() {
 	asic_pulser_loss.clear();
 	
 	delete tdiff;
+	delete tdiff_clean;
 	delete caen_freq;
 	delete ebis_freq;
 	delete t1_freq;

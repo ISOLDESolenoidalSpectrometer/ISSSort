@@ -24,6 +24,14 @@ void ISSEvts::ClearEvt() {
 	elum_event.clear();
 	zd_event.clear();
 	
+	std::vector<ArrayEvt>().swap(array_event);
+	std::vector<ArrayPEvt>().swap(arrayp_event);
+	std::vector<RecoilEvt>().swap(recoil_event);
+	std::vector<MwpcEvt>().swap(mwpc_event);
+	std::vector<ElumEvt>().swap(elum_event);
+	std::vector<ZeroDegreeEvt>().swap(zd_event);
+
+	
 	ebis = -999;
 	t1 = -999;
 

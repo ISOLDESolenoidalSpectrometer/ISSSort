@@ -135,6 +135,7 @@ private:
 	bool flag_close_event;
 	bool flag_caen_pulser;
 	std::vector<bool> flag_pause, flag_resume;
+	bool noise_flag;
 
 	// Time variables
 	long		 		time_diff;
@@ -158,6 +159,7 @@ private:
 	bool				mythres;	///< above threshold?
 
 	// Data variables - Array
+	unsigned char		myasic;		///< ASIC number
 	unsigned char		myside;		///< p-side = 0; n-side = 1
 	unsigned char		myrow;		///< 4 wafers along array, 2 dE-E, 13 for gas
 	int					mystrip;	///< strip number for DSSSD
@@ -220,7 +222,7 @@ private:
 	std::vector<std::vector<TH2F*>> pn_mult;
 
 	// Timing histograms
-	TH1F *tdiff;
+	TH1F *tdiff, *tdiff_clean;
 	TProfile *caen_freq, *ebis_freq, *t1_freq;
 	std::vector<TH1F*> fpga_td, asic_td;
 	std::vector<TProfile*> fpga_pulser_loss, fpga_freq_diff;
