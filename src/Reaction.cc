@@ -114,12 +114,22 @@ void Reaction::ReadReaction() {
 	EBIS_On = config->GetValue( "EBIS_On", 1.2e6 );		// normally 1.2 ms in slow extraction
 	EBIS_Off = config->GetValue( "EBIS_Off", 2.52e7 );	// this allows a off window 20 times bigger than on
 
+	// Target offset
+	x_offset = config->GetValue( "TargetOffset.X", 0.0 );	// of course this should be 0.0 if you centre the beam! Units of mm, horizontal
+	y_offset = config->GetValue( "TargetOffset.Y", 0.0 );	// of course this should be 0.0 if you centre the beam! Units of mm, vertical
+
 	// Finished
 	delete config;
 
 }
 
 void Reaction::MakeReaction( TVector3 vec, double en ){
+	
+	// Apply the X and Y offsets directly to the TVector3 input
+	// We move the array opposite to the target, which replicates the same
+	// geometrical shift that is observed with respect to the beam
+	vec.SetX( vec.X() - x_offset );
+	vec.SetY( vec.Y() - y_offset );
 	
 	// Set the input parameters, might use them in another function
 	Ejectile.SetEnergyLab(en);			// ejectile energy in keV

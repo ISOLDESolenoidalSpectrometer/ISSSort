@@ -139,6 +139,10 @@ public:
 	// Set values
 	inline void	SetField( double m ){ Mfield = m; };
 	inline void	SetArrayDistance( double d ){ z0 = d; };
+	
+	// Target offsets
+	inline void SetOffsetX( double x ){ x_offset = x; };
+	inline void SetOffsetY( double y ){ y_offset = y; };
 
 	// Get cuts
 	unsigned int ncuts;
@@ -181,6 +185,10 @@ private:
 	double z_meas;		///< measured z distance from target that ejectile interesect the silicon detector
 	double z;			///< projected z distance from target that ejectile interesect the beam axis
 
+	// Target offsets
+	double x_offset;	///< horizontal offset of the target/beam position, with respect to the array in mm
+	double y_offset;	///< vertical offset of the target/beam position, with respect to the array in mm
+	
 	// Cuts
 	std::vector<std::string> cutfile, cutname;
 	TFile *recoil_file;
