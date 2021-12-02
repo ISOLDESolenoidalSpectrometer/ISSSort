@@ -30,8 +30,10 @@
 #Mfield: 2.0		# Magnetic field strength in Tesla 
 
 
-## Detector distances
+## Detector geometry
 #ArrayDistance: -100.0	# Target to array distance in mm (edge of first wafer; negative upstream; positive downstream)
+#TargetOffset.X: 0.0	# Beam spot offset with respect to the vertical in mm (positive is up wrt beam direction)
+#TargetOffset.Y: 0.0	# Beam spot offset with respect to the horizontal in mm (positive is right wrt beam direction)
 
 
 # EBIS windows
