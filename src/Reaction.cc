@@ -61,8 +61,8 @@ void Reaction::ReadReaction() {
 	Beam.SetA( config->GetValue( "BeamA", 29.98394686 ) );
 	Beam.SetZ( config->GetValue( "BeamZ", 12 ) );
 
-	Eb = config->GetValue( "BeamE", 8520.0 ); // in keV/u
-	Eb *= Beam.GetMass_u(); // keV
+	Eb = config->GetValue( "BeamE", 8520.0 ); // in keV/A
+	Eb *= Beam.GetA(); // keV
 	Beam.SetEnergyLab( Eb ); // keV
 	
 	Target.SetA( config->GetValue( "TargetA", 2.0135575247 ) );
