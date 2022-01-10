@@ -92,4 +92,4 @@ a feature request on GitHub and I will consider adding it to the standard code.
 You also need to have ROOT installed. At the moment it works with v5 or v6, but let me know of any problems.
 
 
- 
+![Schematic for ISSSort](./schematic_isssort.png)
