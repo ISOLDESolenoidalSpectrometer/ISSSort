@@ -1,10 +1,12 @@
 # Makefile for Midas to Root for ISS
 .PHONY: clean all
 
+PWD			:= $(shell pwd)
 BIN_DIR     := ./bin
 SRC_DIR     := ./src
 LIB_DIR     := ./lib
 INC_DIR     := ./include
+AME_FILE	:= \"$(PWD)/data/mass_1.mas20\"
 
 ROOTVER     := $(shell root-config --version | head -c1)
 ifeq ($(ROOTVER),5)
@@ -33,6 +35,9 @@ CC          = $(shell root-config --cxx)
 # Flags for compiler.
 CFLAGS		= -c -Wall -Wextra $(ROOTCFLAGS) -g -fPIC
 INCLUDES	+= -I$(INC_DIR) -I.
+
+# Pass in the data file locations
+CFLAGS		+= -DAME_FILE=$(AME_FILE)
 
 # Linker.
 LD          = $(shell root-config --ld)

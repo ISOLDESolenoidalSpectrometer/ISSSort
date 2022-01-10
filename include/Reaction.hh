@@ -4,11 +4,13 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <map>
 
 #include "TSystem.h"
 #include "TEnv.h"
 #include "TMath.h"
 #include "TObject.h"
+#include "TString.h"
 #include "TFile.h"
 #include "TCutG.h"
 #include "TVector3.h"
@@ -22,9 +24,24 @@
 # include "Settings.hh"
 #endif
 
-
-#define u_mass 931494.10242f;	///< 1 atomic mass unit in keV/c^2
+#define p_mass 938272.08816f;	///< mass of the proton in keV/c^2
+#define n_mass 939565.42052f;	///< mass of the neutron in keV/c^2
+#define u_mass 931494.10242f;	///< atomic mass unit in keV/c^2
 #define kg_mm_s 299.792458f;	/// 1 keV/c in kg•mm/s
+
+// Element names
+const std::vector<std::string> gElName = {
+	"n","H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg",
+	"Al","Si","P","S","Cl","Ar","K","Ca","Sc","Ti","V","Cr",
+	"Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr",
+	"Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd",
+	"In","Sn","Sb","Te","I","Xe","Cs","Ba","La","Ce","Pr","Nd",
+	"Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf",
+	"Ta","W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po",
+	"At","Rn","Fr","Ra","Ac","Th","Pa","U","Np","Pu","Am","Cm",
+	"Bk","Cf","Es","Fm","Md","No","Lr","Rf","Db","Sg","Bh","Hs",
+	"Mt","Ds","Rg","Cn","Nh","Fl","Ms","Lv","Ts","Og","Uue","Ubn"
+};
 
 
 /// A class to read in the reaction file in ROOT's TConfig format.
@@ -39,31 +56,44 @@ public:
 	~Particle();
 	
 	// Get properties
-	inline double	GetMass_u(){ return A; };			// returns mass in u
-	inline double	GetMass(){ return A*u_mass; };		// returns mass in keV/c^2
-	inline int		GetA(){ return (int)(A+0.499); };	// returns mass number
-	inline int		GetZ(){ return Z; };
-	inline double	GetEnergyLab(){ return Elab; };
-	inline double	GetEnergyTotLab(){
+	inline double		GetMass_u(){
+		return GetMass() / u_mass;
+	};			// returns mass in u
+	inline double		GetMass(){
+		double mass = (double)GetN() * n_mass;
+		mass += (double)GetZ() * p_mass;
+		mass -= (double)GetA() * bindingE;
+		return mass;
+	};		// returns mass in keV/c^2
+	inline int			GetA(){ return A; };	// returns mass number
+	inline int			GetZ(){ return Z; };
+	inline int			GetN(){ return A-Z; };
+	inline std::string	GetIsotope(){
+		return std::to_string( GetA() ) + gElName.at( GetZ() );
+	};
+	inline double		GetBindingEnergy(){ return bindingE; };
+	inline double		GetEnergyLab(){ return Elab; };
+	inline double		GetEnergyTotLab(){
 		return GetMass() + GetEnergyLab();
 	};
-	inline double	GetEnergyTotCM(){ return Ecm_tot; };
-	inline double	GetMomentumLab(){
+	inline double		GetEnergyTotCM(){ return Ecm_tot; };
+	inline double		GetMomentumLab(){
 		return TMath::Sqrt( TMath::Power( GetEnergyTotLab(), 2.0 ) - TMath::Power( GetMass(), 2.0 ) );
 	};
-	inline double	GetMomentumCM(){
+	inline double		GetMomentumCM(){
 		return TMath::Sqrt( TMath::Power( GetEnergyTotCM(), 2.0 ) - TMath::Power( GetMass(), 2.0 ) );
 	};
-	inline double	GetGamma(){
+	inline double		GetGamma(){
 		return GetEnergyTotLab() / GetMass();
 	};
-	inline double	GetThetaCM(){ return ThetaCM; };
-	inline double	GetThetaLab(){ return ThetaLab; };
-	inline double	GetEx(){ return Ex; };
+	inline double		GetThetaCM(){ return ThetaCM; };
+	inline double		GetThetaLab(){ return ThetaLab; };
+	inline double		GetEx(){ return Ex; };
 
 	// Set properties
-	inline void		SetA( double myA ){ A = myA; };
+	inline void		SetA( int myA ){ A = myA; };
 	inline void		SetZ( int myZ ){ Z = myZ; };
+	inline void		SetBindingEnergy( double myBE ){ bindingE = myBE; };
 	inline void		SetEnergyLab( double myElab ){ Elab = myElab; };
 	inline void		SetEnergyTotCM( double myEcm ){ Ecm_tot = myEcm; };
 	inline void		SetThetaCM( double mytheta ){ ThetaCM = mytheta; };
@@ -74,8 +104,9 @@ public:
 private:
 	
 	// Properties of reaction particles
-	double	A;			///< mass in atomic units, u
+	int		A;			///< mass number, A of the particle, obviously
 	int		Z; 			///< The Z of the particle, obviously
+	double	bindingE;	///< binding energy per nucleon in keV/c^2
 	double	Ecm_tot;	///< total  energy in the centre of mass frame
 	double	Elab;		///< energy in the laboratory system
 	double	ThetaCM;	///< theta in the centre of mass frame in radians
@@ -96,6 +127,8 @@ public:
 	~Reaction();
 	
 	// Main functions
+	void AddBindingEnergy( short Ai, short Zi, TString ame_be_str );
+	void ReadMassTables();
 	void ReadReaction();
 	void SetFile( std::string filename ){
 		fInputFile = filename;
@@ -114,6 +147,10 @@ public:
 	inline double GetThetaCM(){ return Recoil.GetThetaCM(); };
 	inline double GetDistance(){ return z; };
 	inline double GetEx(){ return Recoil.GetEx(); };
+	inline double GetQvalue(){
+		return Beam.GetMass() + Target.GetMass() -
+			Ejectile.GetMass() + Recoil.GetMass();
+	};
 	inline double GetEnergyTotLab(){
 		return Beam.GetEnergyTotLab() + Target.GetEnergyTotLab();
 	};
@@ -157,6 +194,9 @@ private:
 	
 	// Settings file
 	Settings *set;
+	
+	// Mass tables
+	std::map< std::string, double > ame_be; ///< List of biniding energies from  AME2021
 
 	// Stuff with the magnet and detectors
 	double Mfield;	///< Magnetic field strength in Telsa

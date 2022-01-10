@@ -15,15 +15,15 @@
 
 
 ## Reaction definition
-#BeamA: 30.		# this is actually the mass in u, not mass number (one day iss_sort will have mass tables)
-#BeamZ: 12		# yes, it is Z, the atomic number 
-#BeamE: 8500.		# the laboratory beam energy in keV/u (note, not the usual MeV/u)
-#TargetA: 2.		# same for target
+#BeamA: 30		# mass number
+#BeamZ: 12		# atomic number
+#BeamE: 8500.	# the laboratory beam energy in keV/u (note, not the usual MeV/u)
+#TargetA: 2		#
 #TargetZ: 1		#  
-#EjectileA: 1.		# in (d,p) the ejectile is the proton
-#EjectileZ: 1		#  
-#RecoilA: 31.		# the recoil is the heavy ion
-#RecoilZ: 12		# 
+#EjectileA: 1	# in (d,p) the ejectile is the proton
+#EjectileZ: 1	# we keep this language even though we have inverse kinematics
+#RecoilA: 31.	# the recoil is the heavy ion
+#RecoilZ: 12	# not the target-like product as in normal kinematics
 
 
 ## Magnetic field settings
