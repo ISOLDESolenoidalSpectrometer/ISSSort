@@ -78,7 +78,7 @@ Then you have access to all the member functions like array_event->GetZ(), recoi
 
 ### Step 4: Histogramming
 Finally a bunch of standard physics histograms are built using input from the reaction file, given with the -r flag.
-An example reaction file is incluede in the source of this code, including a description of the format.
+An example reaction file is included in the source of this code, including a description of the format.
 
 The code will now chain together all of the event trees from the previous step to produce a single output file given with the -o flag.
 The default file name will be the first input file appended with _hists.root.
@@ -92,4 +92,4 @@ a feature request on GitHub and I will consider adding it to the standard code.
 You also need to have ROOT installed. At the moment it works with v5 or v6, but let me know of any problems.
 
 
-![Schematic for ISSSort](./schematic_isssort.png)
+![Schematic for ISSSort](./.schematic_isssort.png)
