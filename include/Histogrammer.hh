@@ -160,7 +160,7 @@ private:
 	std::vector<std::vector<TH1F*>> recoil_elum_td;
 	TH2F *recoil_array_tw;
 	TProfile *recoil_array_tw_prof;
-	TH1F *ebis_td_recoil, *ebis_td_array;
+	TH1F *ebis_td_recoil, *ebis_td_array, *ebis_td_elum;
 
 	// Recoils
 	std::vector<TH2F*> recoil_EdE;

@@ -244,6 +244,7 @@ void Histogrammer::MakeHists() {
 	// EBIS time windows
 	ebis_td_recoil = new TH1F( "ebis_td_recoil", "Recoil time with respect to EBIS;#Deltat;Counts per 20 #mus", 5e3, 0, 1e8  );
 	ebis_td_array = new TH1F( "ebis_td_array", "Array time with respect to EBIS;#Deltat;Counts per 20 #mus", 5e3, 0, 1e8  );
+	ebis_td_elum = new TH1F( "ebis_td_elum", "ELUM time with respect to EBIS;#Deltat;Counts per 20 #mus", 5e3, 0, 1e8  );
 
 	
 	// For ELUM sectors
@@ -419,6 +420,9 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 			// Get ELUM event
 			elum_evt = read_evts->GetElumEvt(j);
 			
+			// EBIS time
+			ebis_td_elum->Fill( (double)elum_evt->GetTime() - (double)read_evts->GetEBIS() );
+
 			// Singles
 			elum->Fill( elum_evt->GetEnergy() );
 			elum_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
