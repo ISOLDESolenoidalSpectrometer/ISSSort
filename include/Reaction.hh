@@ -149,7 +149,7 @@ public:
 	inline double GetEx(){ return Recoil.GetEx(); };
 	inline double GetQvalue(){
 		return Beam.GetMass() + Target.GetMass() -
-			Ejectile.GetMass() + Recoil.GetMass();
+			Ejectile.GetMass() - Recoil.GetMass();
 	};
 	inline double GetEnergyTotLab(){
 		return Beam.GetEnergyTotLab() + Target.GetEnergyTotLab();
