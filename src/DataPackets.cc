@@ -42,6 +42,7 @@ void DataPackets::SetData( AsicData *data ){
 	fill_data.SetAsic( data->GetAsic() );
 	fill_data.SetChannel( data->GetChannel() );
 	fill_data.SetEnergy( data->GetEnergy() );
+	fill_data.SetThreshold( data->IsOverThreshold() );
 
 	asic_packets.push_back( fill_data );
 	
