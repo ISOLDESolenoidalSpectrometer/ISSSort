@@ -467,10 +467,10 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 		
 
 		// Loop over recoil events
-		for( unsigned int i = 0; i < read_evts->GetRecoilMultiplicity(); ++i ){
+		for( unsigned int j = 0; j < read_evts->GetRecoilMultiplicity(); ++j ){
 
 			// Get recoil event
-			recoil_evt = read_evts->GetRecoilEvt(i);
+			recoil_evt = read_evts->GetRecoilEvt(j);
 			
 			// EBIS time
 			ebis_td_recoil->Fill( (double)recoil_evt->GetTime() - (double)read_evts->GetEBIS() );
