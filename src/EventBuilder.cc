@@ -401,7 +401,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 
 			
 			// p-side event
-			else if( myside == 0 ) {
+			if( myside == 0 && mythres ) {
 			
 			// test here about hit bit value
 			//if( myside == 0 && !asic_data->GetHitBit() ) {
@@ -417,7 +417,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 
 			// n-side event
-			else if( myside == 1 ) {
+			else if( myside == 1 && mythres ) {
 
 			// test here about hit bit value
 			//else if( myside == 1 && asic_data->GetHitBit() ) {
@@ -477,7 +477,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 
 
 			// Is it a recoil?
-			else if( set->IsRecoil( mymod, mych ) && mythres ) {
+			if( set->IsRecoil( mymod, mych ) && mythres ) {
 				
 				mysector = set->GetRecoilSector( mymod, mych );
 				mylayer = set->GetRecoilLayer( mymod, mych );
@@ -530,7 +530,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			if( caen_time_start.at( mymod ) == 0 )
 				caen_time_start.at( mymod ) = mytime;
 			
-			// or is it the end event (we don't know so keep updating
+			// or is it the end event (we don't know so keep updating)
 			caen_time_stop.at( mymod ) = mytime;
 
 		}
