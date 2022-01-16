@@ -22,7 +22,7 @@
 #TargetZ: 1		#  
 #EjectileA: 1	# in (d,p) the ejectile is the proton
 #EjectileZ: 1	# we keep this language even though we have inverse kinematics
-#RecoilA: 31.	# the recoil is the heavy ion
+#RecoilA: 31	# the recoil is the heavy ion
 #RecoilZ: 12	# not the target-like product as in normal kinematics
 
 

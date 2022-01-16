@@ -135,7 +135,7 @@ private:
 	bool flag_close_event;
 	bool flag_caen_pulser;
 	std::vector<bool> flag_pause, flag_resume;
-	bool noise_flag;
+	bool noise_flag, event_open;
 
 	// Time variables
 	long		 		time_diff;
@@ -217,6 +217,9 @@ private:
 	std::vector<std::vector<TH2F*>> pn_12;
 	std::vector<std::vector<TH2F*>> pn_21;
 	std::vector<std::vector<TH2F*>> pn_22;
+	std::vector<std::vector<TH2F*>> pn_ab;
+	std::vector<std::vector<TH2F*>> pn_nab;
+	std::vector<std::vector<TH2F*>> pn_pab;
 	std::vector<std::vector<TH2F*>> pn_max;
 	std::vector<std::vector<TH1F*>> pn_td;
 	std::vector<std::vector<TH2F*>> pn_mult;

@@ -250,6 +250,7 @@ void EventBuilder::Initialise(){
 	
 	flag_close_event = false;
 	noise_flag = false;
+	event_open = true;
 
 	hit_ctr = 0;
 	
@@ -342,7 +343,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			
 			// Check if first event was noise
 			// Reset the build window if so
-			if( noise_flag && hit_ctr == 1 )
+			if( noise_flag && !event_open )
 				time_first = mytime;
 
 			noise_flag = false; // reset noise flag
@@ -396,6 +397,8 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			
 			// If it's below threshold do not use as window opener
 			if( !mythres ) noise_flag = true;
+			else event_open = true;
+
 			
 			// p-side event
 			else if( myside == 0 ) {
@@ -470,6 +473,8 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			
 			// If it's below threshold do not use as window opener
 			if( !mythres ) noise_flag = true;
+			else event_open = true;
+
 
 			// Is it a recoil?
 			else if( set->IsRecoil( mymod, mych ) && mythres ) {
@@ -943,6 +948,9 @@ void EventBuilder::ArrayFinder() {
 					psum_en  = pen_list.at( pindex.at(0) );
 					psum_en += pen_list.at( pindex.at(1) );
 
+					// Fill addback histogram
+					pn_pab[i][j]->Fill( psum_en, nen_list.at( nindex.at(0) ) );
+
 					// Fill the addback event
 					array_evt->SetEvent( psum_en,
 										 nen_list.at( nindex.at(0) ),
@@ -965,6 +973,9 @@ void EventBuilder::ArrayFinder() {
 				// Non-neighbour strips
 				else {
 					
+					// Fill addback histogram
+					pn_pab[i][j]->Fill( pen_list.at( pmax_idx ), nen_list.at( nindex.at(0) ) );
+
 					// Fill the maximum energy event
 					array_evt->SetEvent( pen_list.at( pmax_idx ),
 										 nen_list.at( nindex.at(0) ),
@@ -983,7 +994,7 @@ void EventBuilder::ArrayFinder() {
 					arrayp_ctr++;
 
 				}
-				
+								
 			}
 			
 			// p == 1 vs n == 2
@@ -998,6 +1009,9 @@ void EventBuilder::ArrayFinder() {
 					// Simple sum of both energies, cross-talk not included yet
 					nsum_en  = nen_list.at( nindex.at(0) );
 					nsum_en += nen_list.at( nindex.at(1) );
+
+					// Fill addback histogram
+					pn_nab[i][j]->Fill( pen_list.at( pindex.at(0) ), nsum_en );
 
 					// Fill the addback event
 					array_evt->SetEvent( pen_list.at( pindex.at(0) ),
@@ -1020,6 +1034,9 @@ void EventBuilder::ArrayFinder() {
 				
 				// Non-neighbour strips
 				else {
+
+					// Fill addback histogram
+					pn_nab[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nmax_idx ) );
 
 					// Fill the maximum energy event
 					array_evt->SetEvent( pen_list.at( pindex.at(0) ),
@@ -1051,6 +1068,9 @@ void EventBuilder::ArrayFinder() {
 					// Simple sum of both energies, cross-talk not included yet
 					psum_en  = pen_list.at( pindex.at(0) );
 					psum_en += pen_list.at( pindex.at(1) );
+
+					// Fill addback histogram
+					pn_pab[i][j]->Fill( psum_en, -1 );
 
 					// Fill add back event
 					arrayp_evt->SetEvent( psum_en,
@@ -1103,6 +1123,9 @@ void EventBuilder::ArrayFinder() {
 					nsum_en  = nen_list.at( nindex.at(0) );
 					nsum_en += nen_list.at( nindex.at(1) );
 
+					// Fill addback histogram
+					pn_ab[i][j]->Fill( psum_en, nsum_en );
+
 					// Fill the addback event
 					array_evt->SetEvent( psum_en,
 										 nsum_en,
@@ -1129,6 +1152,9 @@ void EventBuilder::ArrayFinder() {
 					psum_en  = pen_list.at( pindex.at(0) );
 					psum_en += pen_list.at( pindex.at(1) );
 
+					// Fill addback histogram
+					pn_ab[i][j]->Fill( psum_en, nen_list.at( nmax_idx ) );
+
 					// Fill the addback event for p-side, but max for n-side
 					array_evt->SetEvent( psum_en,
 										 nen_list.at( nmax_idx ),
@@ -1154,6 +1180,9 @@ void EventBuilder::ArrayFinder() {
 					// Simple sum of both energies, cross-talk not included yet
 					nsum_en  = nen_list.at( nindex.at(0) );
 					nsum_en += nen_list.at( nindex.at(1) );
+
+					// Fill addback histogram
+					pn_ab[i][j]->Fill( pen_list.at( pmax_idx ), nsum_en );
 
 					// Fill the addback event for n-side, but max for p-side
 					array_evt->SetEvent( pen_list.at( pmax_idx ),
@@ -1184,6 +1213,10 @@ void EventBuilder::ArrayFinder() {
 						// Fill the [0,0]
 						ptmp_idx = 0;
 						ntmp_idx = 0;
+						
+						// Fill addback histogram
+						pn_ab[i][j]->Fill( pen_list.at( pindex.at( ptmp_idx ) ), nen_list.at( nindex.at( ntmp_idx ) ) );
+
 						array_evt->SetEvent( pen_list.at( pindex.at( ptmp_idx ) ),
 											 nen_list.at( nindex.at( ntmp_idx ) ),
 											 pid_list.at( pindex.at( ptmp_idx ) ),
@@ -1203,6 +1236,10 @@ void EventBuilder::ArrayFinder() {
 						// Then fill the [1,1]
 						ptmp_idx = 1;
 						ntmp_idx = 1;
+
+						// Fill addback histogram
+						pn_ab[i][j]->Fill( pen_list.at( pindex.at( ptmp_idx ) ), nen_list.at( nindex.at( ntmp_idx ) ) );
+
 						array_evt->SetEvent( pen_list.at( pindex.at( ptmp_idx ) ),
 											 nen_list.at( nindex.at( ntmp_idx ) ),
 											 pid_list.at( pindex.at( ptmp_idx ) ),
@@ -1227,6 +1264,10 @@ void EventBuilder::ArrayFinder() {
 						// Fill the [0,1]
 						ptmp_idx = 0;
 						ntmp_idx = 1;
+
+						// Fill addback histogram
+						pn_ab[i][j]->Fill( pen_list.at( pindex.at( ptmp_idx ) ), nen_list.at( nindex.at( ntmp_idx ) ) );
+
 						array_evt->SetEvent( pen_list.at( pindex.at( ptmp_idx ) ),
 											 nen_list.at( nindex.at( ntmp_idx ) ),
 											 pid_list.at( pindex.at( ptmp_idx ) ),
@@ -1246,6 +1287,10 @@ void EventBuilder::ArrayFinder() {
 						// Then fill the [1,0]
 						ptmp_idx = 1;
 						ntmp_idx = 0;
+
+						// Fill addback histogram
+						pn_ab[i][j]->Fill( pen_list.at( pindex.at( ptmp_idx ) ), nen_list.at( nindex.at( ntmp_idx ) ) );
+
 						array_evt->SetEvent( pen_list.at( pindex.at( ptmp_idx ) ),
 											 nen_list.at( nindex.at( ntmp_idx ) ),
 											 pid_list.at( pindex.at( ptmp_idx ) ),
@@ -1294,10 +1339,10 @@ void EventBuilder::ArrayFinder() {
 			// Histogram for n vs p-side max energies
 			pn_max[i][j]->Fill( pmax_en, nmax_en );
 			
-		}
+		} // j; row
 
-	}
-		
+	} // i; module
+
 }
 
 void EventBuilder::RecoilFinder() {
@@ -1585,6 +1630,9 @@ void EventBuilder::MakeEventHists(){
 	pn_12.resize( set->GetNumberOfArrayModules() );
 	pn_21.resize( set->GetNumberOfArrayModules() );
 	pn_22.resize( set->GetNumberOfArrayModules() );
+	pn_ab.resize( set->GetNumberOfArrayModules() );
+	pn_nab.resize( set->GetNumberOfArrayModules() );
+	pn_pab.resize( set->GetNumberOfArrayModules() );
 	pn_max.resize( set->GetNumberOfArrayModules() );
 	pn_td.resize( set->GetNumberOfArrayModules() );
 	pn_mult.resize( set->GetNumberOfArrayModules() );
@@ -1602,6 +1650,9 @@ void EventBuilder::MakeEventHists(){
 		pn_12[i].resize( set->GetNumberOfArrayRows() );
 		pn_21[i].resize( set->GetNumberOfArrayRows() );
 		pn_22[i].resize( set->GetNumberOfArrayRows() );
+		pn_ab[i].resize( set->GetNumberOfArrayRows() );
+		pn_nab[i].resize( set->GetNumberOfArrayRows() );
+		pn_pab[i].resize( set->GetNumberOfArrayRows() );
 		pn_max[i].resize( set->GetNumberOfArrayRows() );
 		pn_td[i].resize( set->GetNumberOfArrayRows() );
 		pn_mult[i].resize( set->GetNumberOfArrayRows() );
@@ -1628,6 +1679,21 @@ void EventBuilder::MakeEventHists(){
 			htitle = "p-side multiplicity = 2 vs. n-side multiplicity = 2 (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
 			pn_22[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			
+			hname = "pn_ab_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "p-side addback energy vs. n-side addback energy (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
+			pn_ab[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			
+			hname = "pn_nab_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "p-side singles energy vs. n-side addback energy (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
+			pn_nab[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			
+			hname = "pn_pab_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "p-side addback energy vs. n-side singles energy (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
+			pn_pab[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
 			
 			hname = "pn_max_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side max energy vs. n-side max energy (module ";
@@ -1761,6 +1827,24 @@ void EventBuilder::CleanHists() {
 		pn_22.clear();
 	}
 
+	for( unsigned int i = 0; i < pn_ab.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_ab.at(i).size(); j++ )
+			delete (pn_ab[i][j]);
+		pn_ab.clear();
+	}
+
+	for( unsigned int i = 0; i < pn_nab.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_nab.at(i).size(); j++ )
+			delete (pn_nab[i][j]);
+		pn_nab.clear();
+	}
+
+	for( unsigned int i = 0; i < pn_pab.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_pab.at(i).size(); j++ )
+			delete (pn_pab[i][j]);
+		pn_pab.clear();
+	}
+
 	for( unsigned int i = 0; i < pn_max.size(); i++ ) {
 		for( unsigned int j = 0; j < pn_max.at(i).size(); j++ )
 			delete (pn_max[i][j]);
@@ -1788,6 +1872,9 @@ void EventBuilder::CleanHists() {
 	pn_12.clear();
 	pn_21.clear();
 	pn_22.clear();
+	pn_ab.clear();
+	pn_nab.clear();
+	pn_pab.clear();
 	pn_max.clear();
 	pn_td.clear();
 	pn_mult.clear();
