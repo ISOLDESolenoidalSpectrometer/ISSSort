@@ -401,40 +401,40 @@ int main( int argc, char *argv[] ){
 	//-------------------------//
 	TimeSorter sort;
 	std::cout << "\n +++ ISS Analysis:: processing TimeSorter +++" << std::endl;
-	
+
 	// Check each file
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
-			
+
 		name_input_file = input_names.at(i) + ".root";
 		name_output_file = input_names.at(i) + "_sort.root";
 
 		// We need to time sort it if we just converted it
 		if( flag_convert || force_convert.at(i) )
 			force_sort = true;
-			
+
 		// If it doesn't exist, we have to sort it anyway
 		else {
-			
+
 			ftest.open( name_output_file.data() );
 			if( !ftest.is_open() ) force_sort = true;
 			else {
-				
+
 				ftest.close();
 				rtest = new TFile( name_output_file.data() );
 				if( rtest->IsZombie() ) force_sort = true;
 				if( !force_sort )
 					std::cout << name_output_file << " already sorted" << std::endl;
 				rtest->Close();
-				
+
 			}
-			
+
 		}
 
 		if( force_sort ) {
-		
+
 			std::cout << name_input_file << " --> ";
 			std::cout << name_output_file << std::endl;
-			
+
 			sort.SetInputFile( name_input_file );
 			sort.SetOutput( name_output_file );
 			sort.SortFile();
@@ -443,7 +443,7 @@ int main( int argc, char *argv[] ){
 			force_sort = false;
 
 		}
-	
+
 	}
 	
 	

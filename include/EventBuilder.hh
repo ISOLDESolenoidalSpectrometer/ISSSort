@@ -56,7 +56,6 @@ public:
 	virtual ~EventBuilder();
 
 	void	SetInputFile( std::string input_file_name );
-	void	SetInputFile( std::vector<std::string> input_file_names );
 	void	SetInputTree( TTree* user_tree );
 	void	SetOutput( std::string output_file_name );
 	void	StartFile();	///< called for every file
@@ -93,7 +92,8 @@ public:
 private:
 	
 	/// Input tree
-	TChain *input_tree;
+	TFile *input_file;
+	TTree *input_tree;
 	DataPackets *in_data;
 	AsicData *asic_data;
 	CaenData *caen_data;

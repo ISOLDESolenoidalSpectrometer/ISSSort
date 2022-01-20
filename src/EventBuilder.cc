@@ -179,29 +179,23 @@ void EventBuilder::StartFile(){
 	
 }
 
-void EventBuilder::SetInputFile( std::vector<std::string> input_file_names ) {
-	
-	/// Overloaded function for a single file or multiple files
-	input_tree = new TChain( "iss_sort" );
-	for( unsigned int i = 0; i < input_file_names.size(); i++ ) {
-	
-		input_tree->Add( input_file_names[i].data() );
-		
-	}
-	input_tree->SetBranchAddress( "data", &in_data );
-	
-	StartFile();
-
-	return;
-	
-}
-
 void EventBuilder::SetInputFile( std::string input_file_name ) {
 	
 	/// Overloaded function for a single file or multiple files
-	input_tree = new TChain( "iss_sort" );
-	input_tree->Add( input_file_name.data() );
-	input_tree->SetBranchAddress( "data", &in_data );
+	//input_tree = new TTree( "iss" );
+	//input_tree->Add( input_file_name.data() );
+	
+	// Open next Root input file.
+	input_file = new TFile( input_file_name.data(), "read" );
+	if( input_file->IsZombie() ) {
+		
+		std::cout << "Cannot open " << input_file_name << std::endl;
+		return;
+		
+	}
+	
+	// Set the input tree
+	SetInputTree( (TTree*)input_file->Get("iss") );
 
 	StartFile();
 
@@ -212,7 +206,7 @@ void EventBuilder::SetInputFile( std::string input_file_name ) {
 void EventBuilder::SetInputTree( TTree *user_tree ){
 	
 	// Find the tree and set branch addresses
-	input_tree = (TChain*)user_tree;
+	input_tree = user_tree;
 	input_tree->SetBranchAddress( "data", &in_data );
 
 	StartFile();
@@ -306,7 +300,6 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 
 	std::cout << " Event Building: number of entries in input tree = ";
 	std::cout << n_entries << std::endl;
-	std::cout << " Start build at event " << start_build << std::endl;
 
 	
 	// ------------------------------------------------------------------------ //
@@ -324,7 +317,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 		if( time_prev > mytime ) {
 			
 			std::cout << "Out of order event in file ";
-			std::cout << input_tree->GetFile()->GetName() << std::endl;
+			std::cout << input_tree->GetName() << std::endl;
 			
 		}
 			
@@ -761,9 +754,9 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			
 		} // if close event && hit_ctr > 0
 		
-		if( i % 10000 == 0 || i+1 == n_entries ) {
+		if( i % (n_entries/100) == 0 || i+1 == n_entries ) {
 			
-			std::cout << " " << std::setw(8) << std::setprecision(4);
+			std::cout << " " << std::setw(6) << std::setprecision(4);
 			std::cout << (float)(i+1)*100.0/(float)n_entries << "%    \r";
 			std::cout.flush();
 			

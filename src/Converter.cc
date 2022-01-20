@@ -37,6 +37,7 @@ void Converter::SetOutput( std::string output_file_name ){
 	
 	// Open output file
 	output_file = new TFile( output_file_name.data(), "recreate", 0 );
+	output_file->SetCompressionLevel(0);
 
 	// Create log file.
 	std::string log_file_name = output_file_name.substr( 0, output_file_name.find_last_of(".") );
@@ -51,6 +52,7 @@ void Converter::SetOutput( std::string output_file_name ){
 void Converter::MakeTree() {
 
 	// Create Root tree
+	const int splitLevel = 0; // don't split branches = 0, full splitting = 99
 	if( gDirectory->GetListOfKeys()->Contains( "iss" ) ) {
 		
 		output_tree = (TTree*)gDirectory->Get("iss");
@@ -62,8 +64,8 @@ void Converter::MakeTree() {
 	
 		output_tree = new TTree( "iss", "iss" );
 		data_packet = new DataPackets();
-		output_tree->Branch( "data", "DataPackets", &data_packet );
-
+		output_tree->Branch( "data", "DataPackets", &data_packet, splitLevel );
+		
 	}
 	
 	asic_data = new AsicData();

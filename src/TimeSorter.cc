@@ -36,6 +36,10 @@ void TimeSorter::SetInputTree( TTree* user_tree ){
 
 	// Find the tree and set branch addresses
 	input_tree = user_tree;
+	input_tree->SetCacheSize(200000000); // 200 MB
+	input_tree->SetCacheEntryRange(0,input_tree->GetEntries()-1);
+	input_tree->AddBranchToCache( "*", kTRUE );
+	//input_tree->StopCacheLearningPhase();
 	return;
 	
 }
@@ -44,18 +48,20 @@ void TimeSorter::SetOutput( std::string output_file_name ){
 	
 	// Open root file
 	output_file = new TFile( output_file_name.data(), "recreate", "Time sorted ISS data" );
+	//output_file->SetCompressionLevel(0);
 
 	// Create output Root file and Tree.
 	output_file->cd();
 	output_tree = (TTree*)input_tree->CloneTree(0);
 	output_tree->SetDirectory( output_file );
-	output_tree->SetName( "iss_sort" );
+	output_tree->SetName( "iss" );
 	output_tree->SetTitle( "Time sorted, calibrated ISS data" );
 	//output_tree->SetBasketSize( "*", 16000 );
-	output_tree->SetAutoFlush( 30*1024*1024 );	// 30 MB
-	output_tree->SetAutoSave( 100*1024*1024 );	// 100 MB
+	//output_tree->SetAutoFlush( 30*1024*1024 );	// 30 MB
+	//output_tree->SetAutoSave( 100*1024*1024 );	// 100 MB
 	output_tree->AutoSave();
-	
+	//output_tree->GetBranch( "data" )->SetCompressionLevel(0);
+
 	// Create log file.
 	std::string log_file_name = output_file_name.substr( 0, output_file_name.find_last_of(".") );
 	log_file_name += ".log";
@@ -92,9 +98,9 @@ unsigned long TimeSorter::SortFile( unsigned long start_sort ) {
 			input_tree->GetEntry( idx );
 			output_tree->Fill();
 			
-			if( i % 100000 == 0 || i+1 == nb_idx ) {
+			if( i % (nb_idx/100) == 0 || i+1 == nb_idx ) {
 				
-				std::cout << " " << std::setw(8) << std::setprecision(4);
+				std::cout << " " << std::setw(6) << std::setprecision(4);
 				std::cout << (float)(i+1)*100.0/(float)nb_idx << "%    \r";
 				std::cout.flush();
 				
@@ -113,10 +119,13 @@ unsigned long TimeSorter::SortFile( unsigned long start_sort ) {
 	
 
 	// Write histograms, trees and clean up
+	std::cout << "Read " << input_file->GetBytesRead();
+	std::cout << " bytes in " << input_file->GetReadCalls();
+	std::cout << " transactions" << std::endl;
+	//input_tree->PrintCacheStats();
 	output_tree->Write( 0, TObject::kWriteDelete );
 	output_file->SaveSelf();
 	//output_file->Print();
-	
 	
 	std::cout << "End TimeSorter: time elapsed = " << time(NULL)-t_start << " sec." << std::endl;
 	log_file << "End TimeSorter: time elapsed = " << time(NULL)-t_start << " sec." << std::endl;
