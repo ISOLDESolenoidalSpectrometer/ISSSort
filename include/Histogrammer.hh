@@ -137,7 +137,7 @@ private:
 	
 	/// Input tree
 	TChain *input_tree;
-	ISSEvts *read_evts;
+	ISSEvts *read_evts = 0;
 	ArrayEvt *array_evt;
 	ArrayPEvt *arrayp_evt;
 	RecoilEvt *recoil_evt;

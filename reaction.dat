@@ -30,8 +30,10 @@
 #Mfield: 2.0		# Magnetic field strength in Tesla 
 
 
-## Detector geometry
+## Detector and target geometry
 #ArrayDistance: -100.0	# Target to array distance in mm (edge of first wafer; negative upstream; positive downstream)
+#ArrayDeadlayer: 0.001	# Dead layer on surface of the array silicon in mm of Si equivalent
+#TargetThickness: 0.2	# Target thickness in mg/cm^2
 #TargetOffset.X: 0.0	# Beam spot offset with respect to the vertical in mm (positive is up wrt beam direction)
 #TargetOffset.Y: 0.0	# Beam spot offset with respect to the horizontal in mm (positive is right wrt beam direction)
 

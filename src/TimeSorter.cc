@@ -24,7 +24,7 @@ bool TimeSorter::SetInputFile( std::string input_file_name ){
 	}
 	
 	// Set the input tree
-	SetInputTree( (TTree*)input_file->Get("iss") );
+	SetInputTree( (TTree*)input_file->Get("iss_sort") );
 
 	std::cout << "Sorting file by timestamp: " << input_file->GetName() << std::endl;
 
@@ -53,8 +53,8 @@ void TimeSorter::SetOutput( std::string output_file_name ){
 	// Create output Root file and Tree.
 	output_file->cd();
 	output_tree = (TTree*)input_tree->CloneTree(0);
-	output_tree->SetDirectory( output_file );
-	output_tree->SetName( "iss" );
+	output_tree->SetDirectory( output_file->GetDirectory("/") );
+	output_tree->SetName( "iss_sort" );
 	output_tree->SetTitle( "Time sorted, calibrated ISS data" );
 	//output_tree->SetBasketSize( "*", 16000 );
 	//output_tree->SetAutoFlush( 30*1024*1024 );	// 30 MB

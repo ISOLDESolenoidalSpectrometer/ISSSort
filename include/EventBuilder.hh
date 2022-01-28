@@ -94,7 +94,7 @@ private:
 	/// Input tree
 	TFile *input_file;
 	TTree *input_tree;
-	DataPackets *in_data;
+	DataPackets *in_data = 0;
 	AsicData *asic_data;
 	CaenData *caen_data;
 	InfoData *info_data;

@@ -7,6 +7,7 @@ SRC_DIR     := ./src
 LIB_DIR     := ./lib
 INC_DIR     := ./include
 AME_FILE	:= \"$(PWD)/data/mass_1.mas20\"
+SRIM_DIR	:= \"$(PWD)/srim/\"
 
 ROOTVER     := $(shell root-config --version | head -c1)
 ifeq ($(ROOTVER),5)
@@ -38,6 +39,7 @@ INCLUDES	+= -I$(INC_DIR) -I.
 
 # Pass in the data file locations
 CFLAGS		+= -DAME_FILE=$(AME_FILE)
+CFLAGS		+= -DSRIM_DIR=$(SRIM_DIR)
 
 # Linker.
 LD          = $(shell root-config --ld)

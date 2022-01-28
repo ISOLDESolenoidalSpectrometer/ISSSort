@@ -16,6 +16,8 @@
 #include "TVector3.h"
 #include "TF1.h"
 #include "TError.h"
+#include "TCanvas.h"
+#include "TGraph.h"
 #include "Math/RootFinder.h"
 #include "Math/Functor.h"
 
@@ -23,6 +25,15 @@
 #ifndef __SETTINGS_HH
 # include "Settings.hh"
 #endif
+
+// Make sure that the data and srim file are defined
+#ifndef AME_FILE
+# define AME_FILE "./data/mass_1.mas20"
+#endif
+#ifndef SRIM_DIR
+# define SRIM_DIR "./srim/"
+#endif
+
 
 const double p_mass  = 938272.08816;	///< mass of the proton in keV/c^2
 const double n_mass  = 939565.42052;	///< mass of the neutron in keV/c^2
@@ -52,8 +63,8 @@ class Particle : public TObject {
 public:
 	
 	// setup functions
-	Particle();
-	~Particle();
+	Particle() {};
+	~Particle() {};
 	
 	// Get properties
 	inline double		GetMass_u(){
@@ -181,6 +192,10 @@ public:
 	inline void SetOffsetX( double x ){ x_offset = x; };
 	inline void SetOffsetY( double y ){ y_offset = y; };
 
+	// Energy loss and stopping powers
+	double GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> &g );
+	bool ReadStoppingPowers( std::string isotope1, std::string isotope2, std::unique_ptr<TGraph> &g );
+
 	// Get cuts
 	unsigned int ncuts;
 	inline TCutG* GetRecoilCut( unsigned int i ){
@@ -199,8 +214,9 @@ private:
 	std::map< std::string, double > ame_be; ///< List of biniding energies from  AME2021
 
 	// Stuff with the magnet and detectors
-	double Mfield;	///< Magnetic field strength in Telsa
-	double z0;		///< Distance between the array and first silicon wafer
+	double Mfield;		///< Magnetic field strength in Telsa
+	double z0;			///< Distance between the array and first silicon wafer
+	double deadlayer;	///< Dead layer on array silicon in mm of Si equivalent
 	
 	// Reaction partners
 	Particle Beam, Target, Ejectile, Recoil;
@@ -209,7 +225,8 @@ private:
 	double Eb;		///< laboratory beam energy in keV/u
 	
 	// Stuff for the Ex calculation
-	TF1 *fa;
+	std::unique_ptr<ROOT::Math::RootFinder> rf;
+	std::unique_ptr<TF1> fa, fb;
 	double alpha;
 	double params[4];
 	double e3_cm;
@@ -225,15 +242,20 @@ private:
 	double z_meas;		///< measured z distance from target that ejectile interesect the silicon detector
 	double z;			///< projected z distance from target that ejectile interesect the beam axis
 
-	// Target offsets
-	double x_offset;	///< horizontal offset of the target/beam position, with respect to the array in mm
-	double y_offset;	///< vertical offset of the target/beam position, with respect to the array in mm
+	// Target thickness and offsets
+	double target_thickness;	///< target thickness in units of mg/cm^2
+	double x_offset;			///< horizontal offset of the target/beam position, with respect to the array in mm
+	double y_offset;			///< vertical offset of the target/beam position, with respect to the array in mm
 	
 	// Cuts
 	std::vector<std::string> cutfile, cutname;
 	TFile *recoil_file;
 	std::vector<TCutG*> recoil_cut;
 	
+	// Stopping powers
+	std::vector<std::unique_ptr<TGraph>> gStopping;
+	bool stopping;
+
 };
 
 #endif

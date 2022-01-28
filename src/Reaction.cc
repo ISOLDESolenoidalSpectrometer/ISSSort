@@ -3,13 +3,9 @@
 ClassImp( Particle )
 ClassImp( Reaction )
 
-// Particles
-Particle::Particle(){}
-Particle::~Particle(){}
-
-
 double alpha_function( double *x, double *params ){
 
+	// Equation to solve for alpha, LHS = 0
 	double alpha = x[0];
 	double z = params[0];
 	double rho = params[1];
@@ -19,6 +15,22 @@ double alpha_function( double *x, double *params ){
 	double root = p * TMath::Sin(alpha);
 	root -= gqb * rho * TMath::Tan(alpha);
 	root -= gqb * z;
+
+	return root;
+
+}
+
+double alpha_derivative( double *x, double *params ){
+
+	// Derivative of the alpha equation
+	double alpha = x[0];
+	//double z = params[0]; // unused in derivative
+	double rho = params[1];
+	double p = params[2];
+	double gqb = params[3];
+	
+	double root = p * TMath::Cos(alpha);
+	root -= gqb * rho / TMath::Cos(alpha) / TMath::Cos(alpha);
 
 	return root;
 
@@ -37,10 +49,12 @@ Reaction::Reaction( std::string filename, Settings *myset ){
 	ReadReaction();
 	
 	// Root finder algorithm
-	fa = new TF1( "alpha_function", alpha_function, 0.0, TMath::Pi()/2.0, 4 );
-
+	fa = std::make_unique<TF1>( "alpha_function", alpha_function, 0.0, TMath::Pi()/2.0, 4 );
+	fb = std::make_unique<TF1>( "alpha_derivative", alpha_derivative, 0.0, TMath::Pi()/2.0, 4 );
+	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
 	
 }
+
 Reaction::~Reaction(){
 
 	for( unsigned int i = 0; i < recoil_cut.size(); ++i )
@@ -147,9 +161,10 @@ void Reaction::ReadReaction() {
 	// Magnetic field stuff
 	Mfield = config->GetValue( "Mfield", 2.0 );
 	
-	// Detector to target distances
+	// Detector to target distances and dead layer of Si
 	z0 = config->GetValue( "ArrayDistance", 100.0 );
-	
+	deadlayer = config->GetValue( "ArrayDeadlayer", 0.001 ); // units of mm of Si
+
 	// Get particle properties
 	Beam.SetA( config->GetValue( "BeamA", 30 ) );
 	Beam.SetZ( config->GetValue( "BeamZ", 12 ) );
@@ -239,23 +254,207 @@ void Reaction::ReadReaction() {
 	EBIS_On = config->GetValue( "EBIS_On", 1.2e6 );		// normally 1.2 ms in slow extraction
 	EBIS_Off = config->GetValue( "EBIS_Off", 2.52e7 );	// this allows a off window 20 times bigger than on
 
-	// Target offset
+	// Target thickness and offsets
+	target_thickness = config->GetValue( "TargetThickness", 0.200 ); // units of mg/cm^2
 	x_offset = config->GetValue( "TargetOffset.X", 0.0 );	// of course this should be 0.0 if you centre the beam! Units of mm, vertical
 	y_offset = config->GetValue( "TargetOffset.Y", 0.0 );	// of course this should be 0.0 if you centre the beam! Units of mm, horizontal
 
-	
+	// Get the stopping powers
+	stopping = true;
+	for( unsigned int i = 0; i < 3; ++i )
+		gStopping.push_back( std::make_unique<TGraph>() );
+	stopping *= ReadStoppingPowers( Beam.GetIsotope(), Target.GetIsotope(), gStopping[0] );
+	stopping *= ReadStoppingPowers( Ejectile.GetIsotope(), Target.GetIsotope(), gStopping[1] );
+	stopping *= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[2] );
+
 	// Some diagnostics and info
 	std::cout << std::endl << " +++  ";
 	std::cout << Beam.GetIsotope() << "(" << Target.GetIsotope() << ",";
 	std::cout << Ejectile.GetIsotope() << ")" << Recoil.GetIsotope();
-	std::cout << "  +++" << std::endl << "Beam energy = ";
-	std::cout << Beam.GetEnergyLab()*0.001 << " MeV" << std::endl;
+	std::cout << "  +++" << std::endl;
 	std::cout << "Q-value = " << GetQvalue()*0.001 << " MeV" << std::endl;
+	std::cout << "Incoming beam energy = ";
+	std::cout << Beam.GetEnergyLab()*0.001 << " MeV" << std::endl;
+	std::cout << "Target thickness = ";
+	std::cout << target_thickness << " mg/cm^2" << std::endl;
+
+	// Calculate the energy loss
+	if( stopping ){
+		
+		double eloss = GetEnergyLoss( Beam.GetEnergyLab(), 0.5 * target_thickness, gStopping[0] );
+		Beam.SetEnergyLab( Beam.GetEnergyLab() - eloss );
+		std::cout << "Beam energy at centre of target = ";
+		std::cout << Beam.GetEnergyLab()*0.001 << " MeV" << std::endl;
+
+	}
+	else std::cout << "Stopping powers not calculated" << std::endl;
 
 	// Finished
 	delete config;
 
 }
+
+double Reaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> &g ) {
+
+	/// Returns the energy loss at a given initial energy and distance travelled
+	/// A negative distance will add the energy back on, i.e. travelling backwards
+	/// This means that you will get a negative energy loss as a return value
+	unsigned int Nmeshpoints = 50; // number of steps to take in integration
+	double dx = dist/(double)Nmeshpoints;
+	double E = Ei;
+	
+	for( unsigned int i = 0; i < Nmeshpoints; i++ ){
+
+		if( E < 100. ) break; // when we fall below 100 keV we assume maximum energy loss
+		E -= g->Eval(E) * dx;
+		
+	}
+	
+	return Ei - E;
+
+}
+
+bool Reaction::ReadStoppingPowers( std::string isotope1, std::string isotope2, std::unique_ptr<TGraph> &g ) {
+	 
+	/// Open stopping power files and make TGraphs of data
+	
+	// Change target material depending on species
+	if( isotope2 == "1H" ) isotope2 = "CH2";
+	if( isotope2 == "2H" ) isotope2 = "CD2";
+	if( isotope2 == "3H" ) isotope2 = "tTi";
+
+	// Make title
+	std::string title = "Stopping powers for ";
+	title += isotope1 + " in " + isotope2;
+	title += ";" + isotope1 + " energy [keV];";
+	title += "Energy loss in " + isotope2;
+	if( isotope2 == "Si" ) title += " [keV/#mum]";
+	else title += " [keV/(mg/cm^{2})]";
+	
+	// Initialise an empty TGraph
+	g->SetTitle( title.c_str() );
+
+	// Keep things quiet from ROOT
+	gErrorIgnoreLevel = kWarning;
+
+	// Open the data file
+	// SRIM_DIR is defined at compilation and is in source code
+	std::string srimfilename = std::string( SRIM_DIR ) + "/";
+	srimfilename += isotope1 + "_" + isotope2 + ".txt";
+	
+	std::ifstream input_file;
+	input_file.open( srimfilename, std::ios::in );
+
+	// If it fails to open print an error
+	if( !input_file.is_open() ) {
+		
+		std::cerr << "Cannot open " << srimfilename << std::endl;
+		return false;
+		  
+	}
+
+
+	std::string line, units, tmp_str;
+	std::stringstream line_ss;
+	double En, nucl, elec, total, tmp_dbl;
+	 
+	// Test file format
+	std::getline( input_file, line );
+	if( line.substr( 3, 5 ) == "=====" ) {
+		
+		// Advance
+		while( std::getline( input_file, line ) && !input_file.eof() ) {
+			
+			// Skip over the really short lines
+			if( line.length() < 10 ) continue;
+			
+			// Check for the start of the data
+			if( line.substr( 3, 5 ) == "-----" ) break;
+			
+		}
+		
+	}
+	else {
+		
+		std::cerr << "Not a srim file: " << srimfilename << std::endl;
+		return false;
+		
+	}
+
+	// Read in the data
+	while( std::getline( input_file, line ) && !input_file.eof() ) {
+		
+		// Skip over the really short lines
+		if( line.length() < 10 ) continue;
+
+		// Read in data
+		line_ss.str("");
+		line_ss << line;
+		line_ss >> En >> units >> nucl >> elec >> tmp_dbl >> tmp_str >> tmp_dbl >> tmp_str;
+		
+		if( units == "eV" ) En *= 1E-3;
+		else if( units == "keV" ) En *= 1E0;
+		else if( units == "MeV" ) En *= 1E3;
+		else if( units == "GeV" ) En *= 1E6;
+		
+		total = nucl + elec ; // in some units, conversion done later
+		
+		g->SetPoint( g->GetN(), En, total );
+		
+		// If we've reached the end, stop
+		if( line.substr( 3, 9 ) == "---------" ) break;
+		
+	}
+	
+	// Get next line and check there are conversion factors
+	std::getline( input_file, line );
+	if( line.substr( 0, 9 ) != " Multiply" ){
+		
+		std::cerr << "Couldn't get conversion factors from ";
+		std::cerr << srimfilename << std::endl;
+		return false;
+		
+	}
+	std::getline( input_file, line ); // next line is just ------
+
+	// Get conversion factors
+	double conv, conv_keVum, conv_MeVmgcm2;
+	std::getline( input_file, line ); // first conversion is eV / Angstrom
+	std::getline( input_file, line ); // keV / micron
+	conv_keVum = std::stod( line.substr( 0, 15 ) );
+	std::getline( input_file, line ); // MeV / mm
+	std::getline( input_file, line ); // keV / (ug/cm2)
+	std::getline( input_file, line ); // MeV / (mg/cm2)
+	conv_MeVmgcm2 = std::stod( line.substr( 0, 15 ) );
+	
+	// Now convert all the points in the plot
+	if( isotope2 == "Si" ) conv = conv_keVum * 1E3; // silicon thickness in mm, energy in keV
+	else conv = conv_MeVmgcm2 * 1E3; // target thickness in mg/cm2, energy in keV
+	for( Int_t i = 0; i < g->GetN(); ++i ){
+		
+		g->GetPoint( i, En, total );
+		g->SetPoint( i, En, total*conv );
+		
+	}
+	
+	// Draw the plot and save it somewhere
+	TCanvas *c = new TCanvas();
+	c->SetLogx();
+	//c->SetLogy();
+	g->Draw("A*");
+	std::string pdfname = srimfilename.substr( 0, srimfilename.find_last_of(".") ) + ".pdf";
+	c->SaveAs( pdfname.c_str() );
+	
+	delete c;
+	input_file.close();
+	
+	// ROOT can be noisey again
+	gErrorIgnoreLevel = kInfo;
+
+	return true;
+	 
+}
+
 
 void Reaction::MakeReaction( TVector3 vec, double en ){
 	
@@ -282,17 +481,47 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	params[3] /= TMath::TwoPi(); 					// qb/2pi
 	params[3] *= Ejectile.GetGamma();				// γ3*qb/2pi
 
-	// RootFinder algorithm
-	fa->SetParameters( params );
-	ROOT::Math::RootFinder rf( ROOT::Math::RootFinder::kGSL_NEWTON ); // with derivatives
-	//ROOT::Math::RootFinder rf( ROOT::Math::RootFinder::kBRENT ); // without derivatives
- 	ROOT::Math::GradFunctor1D wf( *fa );
-	rf.SetFunction( wf, 0.2 * TMath::Pi() ); // with derivatives
-	//rf.SetFunction( wf, 0.0, TMath::PiOver2() ); // without derivatives
+	// Apply the energy loss correction and solve again
+	// Keep going for 50 iterations or until we are better than 0.01% change
+	alpha = 0.99 * TMath::PiOver2();
+	double alpha_prev = 9999.;
+	unsigned int iter = 0;
 	gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
-	rf.Solve( 500, 1e-5, 1e-6 );
-	if( rf.Status() ) alpha = TMath::QuietNaN();
-	else alpha = rf.Root();
+	while( TMath::Abs( ( alpha - alpha_prev ) / alpha ) > 0.0001 && iter < 50 ) {
+	
+		// Distance is negative because energy needs to be recovered
+		// First we recover the energy lost in the Si dead layer
+		double dist = -1.0 * deadlayer / TMath::Abs( TMath::Sin( alpha ) );
+		double eloss = GetEnergyLoss( en, dist, gStopping[2] );
+		Ejectile.SetEnergyLab( en - eloss );
+		
+		// First we recover the energy lost in the target
+		dist = -0.5 * target_thickness / TMath::Abs( TMath::Cos( alpha ) );
+		eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
+		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
+		
+		// Set parameters
+		alpha_prev = alpha;
+		params[2] = Ejectile.GetMomentumLab();
+		fa->SetParameters( params );
+		fb->SetParameters( params );
+		
+		// Build the function and derivative, the solve
+		ROOT::Math::GradFunctor1D wf( *fa, *fb );
+		rf->SetFunction( wf, 0.2 * TMath::Pi() ); // with derivatives
+		rf->Solve( 500, 1e-5, 1e-6 );
+		
+		// Check result
+		if( rf->Status() ){
+			alpha = TMath::QuietNaN();
+			break;
+		}
+		else alpha = rf->Root();
+		
+		iter++;
+	
+	}
+	
 	gErrorIgnoreLevel = kInfo; // print info and above again
 
 	// Get the real z value at beam axis and lab angle
@@ -323,20 +552,7 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
     Recoil.SetEx( Ex );
     Ejectile.SetEx( 0.0 );
 
-  	
-	//std::cout << "-----------------------" << std::endl;
-	//std::cout << "  z_meas = " << z << " mm" << std::endl;
-	//std::cout << "     rho = " << rho << " mm" << std::endl;
-	//std::cout << "       z = " << z << " mm" << std::endl;
-	//std::cout << "    beta = " << GetBeta() << std::endl;
-	//std::cout << "   gamma = " << GetGamma() << std::endl;
-	//std::cout << "   alpha = " << alpha*TMath::RadToDeg() << " deg" << std::endl;
-	//std::cout << "    e_cm = " << GetEnergyTotCM()*1e-3 << " MeV" << std::endl;
-	//std::cout << "   e3_cm = " << e3_cm*1e-3 << " MeV" << std::endl;
-	//std::cout << "theta_cm = " << theta_cm*TMath::RadToDeg() << " deg" << std::endl;
-	//std::cout << "      Ex = " << Ex*1e-3 << " MeV" << std::endl;
 
-	
   	return;	
 
 }

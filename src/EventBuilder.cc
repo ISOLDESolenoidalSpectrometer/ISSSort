@@ -195,7 +195,7 @@ void EventBuilder::SetInputFile( std::string input_file_name ) {
 	}
 	
 	// Set the input tree
-	SetInputTree( (TTree*)input_file->Get("iss") );
+	SetInputTree( (TTree*)input_file->Get("iss_sort") );
 
 	StartFile();
 
