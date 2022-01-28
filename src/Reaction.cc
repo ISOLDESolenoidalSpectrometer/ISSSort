@@ -483,7 +483,7 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 
 	// Apply the energy loss correction and solve again
 	// Keep going for 50 iterations or until we are better than 0.01% change
-	alpha = 0.99 * TMath::PiOver2();
+	alpha = 0.5 * TMath::PiOver2();
 	double alpha_prev = 9999.;
 	unsigned int iter = 0;
 	gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
