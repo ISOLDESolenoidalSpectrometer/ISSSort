@@ -57,19 +57,21 @@ If a calibration file is added with the -c flag, the ADC data is calibrated for 
 An example calibration file is included in the source of this code, including a description of the format.
 
 A settings file can also be included with the -s flag to overwrite any of the defaults for the configuration of the electronics and detectors.
-An example settings file is incluede in the source of this code, including a description of the format.
+An example settings file is included in the source of this code, including a description of the format.
 
 The ouptut file contains a single ROOT tree of the data and a series of diagnostic histograms and singles spectra.
 If the output file already exists, iss_sort will skip this step unless the -f flag is used.
 
 ### Step 2: Time Sorting
-In order to combine timestamp and ADC data, the time sorting step needs to be performed by adding the -s flag.
-This step will follow the conversion step and will produce a new output file, appended with _sort.root.
+In order to combine timestamp and ADC data, the time sorting step needs to be performed.
+This step always follows the conversion step and will produce a new output file, appended with _sort.root.
+This is potentially the slowest part of the process if there is a lot of data out of order due to the number of I/O operations.
 
 ### Step 3: Event Builder
 The next step is the event builder, which runs if the -e flag is used, or automatically if a new file has been converted.
-This uses the calibrated, time sorted data from the previous step to produce a one output file per input, appended with _events.root.
-The same settings file from the Converter step is reused for the same parameter, plus the length of the build window (default 3 µs).
+This uses the calibrated, time sorted data from the previous step to produce one output file per input, appended with _events.root.
+The same settings file from the Converter step is reused for the same parameters, plus the length of the build window (default 3 µs).
+There is a plan to have these setting written in to the ROOT file itself, so the file doesn't need to be passed again, but this isn't the case yet.
 
 Events are built according to the particles on the array, correlating n- and p-side data, and also for recoil events, elum events, and ZeroDegree events in separate classes.
 This format is all contained within the ISSEvts class, which you can browse to see which functions are available.
@@ -89,7 +91,7 @@ a feature request on GitHub and I will consider adding it to the standard code.
 
 ## Dependencies
 
-You also need to have ROOT installed. At the moment it works with v5 or v6, but let me know of any problems.
+You also need to have ROOT installed with a minumum standard that your compiler supports C++17. At the moment it works with v5 or v6, but let me know of any problems.
 
 
 ![Schematic for ISSSort](./.schematic_isssort.png)
