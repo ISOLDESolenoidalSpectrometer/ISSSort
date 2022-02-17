@@ -97,6 +97,9 @@ public:
 	inline double		GetGamma(){
 		return GetEnergyTotLab() / GetMass();
 	};
+	inline double GetBeta(){
+		return TMath::Sqrt( 1.0 - 1.0 / TMath::Power( GetGamma(), 2.0 ) );
+	};
 	inline double		GetThetaCM(){ return ThetaCM; };
 	inline double		GetThetaLab(){ return ThetaLab; };
 	inline double		GetEx(){ return Ex; };
@@ -171,12 +174,6 @@ public:
 		etot += 2.0 * Beam.GetEnergyTotLab() * Target.GetMass();
 		etot = TMath::Sqrt( etot );
 		return etot;
-	};
-	inline double GetBeta(){
-		return TMath::Sqrt( 2.0 * Beam.GetEnergyLab() / Beam.GetMass() );
-	};
-	inline double GetGamma(){
-		return 1.0 / TMath::Sqrt( 1.0 - TMath::Power( GetBeta(), 2.0 ) );
 	};
 	inline double GetZmeasured(){ return z_meas; };
 	inline double GetZprojected(){ return z; };
