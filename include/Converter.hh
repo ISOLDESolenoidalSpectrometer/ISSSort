@@ -39,16 +39,16 @@ public:
 	
 
 	int ConvertFile( std::string input_file_name,
-					int start_block = 0,
-					int end_block = -1);
+					unsigned long start_block = 0,
+					long end_block = -1);
 	void MakeHists();
 	void MakeTree();
 
 	void SetBlockHeader( char *input_header );
-	void ProcessBlockHeader( int nblock );
+	void ProcessBlockHeader( unsigned long nblock );
 
 	void SetBlockData( char *input_data );
-	void ProcessBlockData( int nblock );
+	void ProcessBlockData( unsigned long nblock );
 
 	void ProcessASICData();
 	void ProcessCAENData();

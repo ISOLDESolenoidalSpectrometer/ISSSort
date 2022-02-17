@@ -405,7 +405,7 @@ void Converter::SetBlockHeader( char *input_header ){
 }
 
 // Function to process header words
-void Converter::ProcessBlockHeader( int nblock ){
+void Converter::ProcessBlockHeader( unsigned long nblock ){
 		
 	// For each new header, reset the swap mode
 	swap = 0;
@@ -486,7 +486,7 @@ void Converter::SetBlockData( char *input_data ){
 
 
 // Function to process data words
-void Converter::ProcessBlockData( int nblock ){
+void Converter::ProcessBlockData( unsigned long nblock ){
 	
 	// Get the data in 64-bit words and check endieness and swap if needed
 	// Data format here: http://npg.dl.ac.uk/documents/edoc504/edoc504.html
@@ -1069,8 +1069,8 @@ void Converter::ProcessInfoData(){
 
 // Function to run the conversion for a single file
 int Converter::ConvertFile( std::string input_file_name,
-							 int start_block,
-							 int end_block ) {
+							 unsigned long start_block,
+							 long end_block ) {
 	
 	// Read the file.
 	std::ifstream input_file( input_file_name, std::ios::in|std::ios::binary );
@@ -1088,13 +1088,13 @@ int Converter::ConvertFile( std::string input_file_name,
 	
 	// Calculate the size of the file.
 	input_file.seekg( 0, input_file.end );
-	int size_end = input_file.tellg();
+	unsigned long long size_end = input_file.tellg();
 	input_file.seekg( 0, input_file.beg );
-	int size_beg = input_file.tellg();
-	int FILE_SIZE = size_end - size_beg;
+	unsigned long long size_beg = input_file.tellg();
+	unsigned long long FILE_SIZE = size_end - size_beg;
 	
 	// Calculate the number of blocks in the file.
-	int BLOCKS_NUM = FILE_SIZE / DATA_BLOCK_SIZE;
+	unsigned long BLOCKS_NUM = FILE_SIZE / DATA_BLOCK_SIZE;
 	
 	//a sanity check for file size...
 	//QQQ: add more strict test?
@@ -1120,7 +1120,7 @@ int Converter::ConvertFile( std::string input_file_name,
 	
 	
 	// Loop over all the blocks.
-	for( int nblock = 0; nblock < BLOCKS_NUM ; nblock++ ){
+	for( unsigned long nblock = 0; nblock < BLOCKS_NUM ; nblock++ ){
 		
 		// Take one block each time and analyze it.
 		if( nblock % 200 == 0 || nblock+1 == BLOCKS_NUM ) {
@@ -1139,7 +1139,7 @@ int Converter::ConvertFile( std::string input_file_name,
 
 
 		// Check if we are before the start block or after the end block
-		if( nblock < start_block || ( nblock > end_block && end_block > 0 ) )
+		if( nblock < start_block || ( (long)nblock > end_block && end_block > 0 ) )
 			continue;
 
 
