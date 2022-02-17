@@ -9,3 +9,4 @@ src/.*o
 *.xcworkspace
 .DS_Store
 */.DS_Store
+srim/*.pdf

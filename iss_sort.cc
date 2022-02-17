@@ -34,9 +34,10 @@ std::string name_cal_file;
 std::string name_react_file;
 std::vector<std::string> input_names;
 
-// a flag at the input to force the conversion
+// a flag at the input to force or not the conversion
 bool flag_convert = false;
 bool flag_events = false;
+bool flag_alpha = false;
 
 // select what steps of the analysis to be forced
 std::vector<bool> force_convert;
@@ -217,6 +218,7 @@ int main( int argc, char *argv[] ){
 	interface->Add("-d", "Data directory to add to the monitor", &datadir_name );
 	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
 	interface->Add("-e", "Flag to force new event builder (new calibration)", &flag_events );
+	interface->Add("-a", "Flag to define an alpha source run", &flag_alpha );
 	interface->Add("-s", "Settings file", &name_set_file );
 	interface->Add("-c", "Calibration file", &name_cal_file );
 	interface->Add("-r", "Reaction file", &name_react_file );
@@ -394,6 +396,9 @@ int main( int argc, char *argv[] ){
 		}
 		
 	}
+	
+	// If this is an alpha source run, stop here!
+	if( flag_alpha ) return 0;
 		
 	
 	//-------------------------//
