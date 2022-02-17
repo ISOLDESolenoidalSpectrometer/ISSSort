@@ -24,7 +24,7 @@ bool TimeSorter::SetInputFile( std::string input_file_name ){
 	}
 	
 	// Set the input tree
-	SetInputTree( (TTree*)input_file->Get("iss_sort") );
+	SetInputTree( (TTree*)input_file->Get("iss") );
 
 	std::cout << "Sorting file by timestamp: " << input_file->GetName() << std::endl;
 
