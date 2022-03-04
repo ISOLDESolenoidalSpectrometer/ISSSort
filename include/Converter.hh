@@ -68,6 +68,7 @@ public:
 	inline TTree* GetTree(){ return output_tree; };
 
 	inline void AddCalibration( Calibration *mycal ){ cal = mycal; };
+	inline void SourceOnly(){ flag_source = true; };
 
 
 
@@ -123,9 +124,11 @@ private:
 		
 	};
 
+	
+	// Flag for source run
+	bool flag_source;
 
-	// Log file
-	std::ofstream log_file;
+	// Logs
 	std::stringstream sslogs;
 
 	

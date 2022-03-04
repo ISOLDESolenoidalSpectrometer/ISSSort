@@ -37,7 +37,7 @@ std::vector<std::string> input_names;
 // a flag at the input to force or not the conversion
 bool flag_convert = false;
 bool flag_events = false;
-bool flag_alpha = false;
+bool flag_source = false;
 
 // select what steps of the analysis to be forced
 std::vector<bool> force_convert;
@@ -218,7 +218,7 @@ int main( int argc, char *argv[] ){
 	interface->Add("-d", "Data directory to add to the monitor", &datadir_name );
 	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
 	interface->Add("-e", "Flag to force new event builder (new calibration)", &flag_events );
-	interface->Add("-a", "Flag to define an alpha source run", &flag_alpha );
+	interface->Add("-source", "Flag to define an source only run", &flag_source );
 	interface->Add("-s", "Settings file", &name_set_file );
 	interface->Add("-c", "Calibration file", &name_cal_file );
 	interface->Add("-r", "Reaction file", &name_react_file );
@@ -362,8 +362,9 @@ int main( int argc, char *argv[] ){
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 			
 		name_input_file = input_names.at(i);
-		name_output_file = input_names.at(i) + ".root";
-		
+		if( flag_source ) name_output_file = input_names.at(i) + "_source.root";
+		else name_output_file = input_names.at(i) + ".root";
+
 		force_convert.push_back( false );
 
 		// If it doesn't exist, we have to convert it anyway
@@ -387,6 +388,7 @@ int main( int argc, char *argv[] ){
 			std::cout << name_output_file << std::endl;
 			
 			conv.SetOutput( name_output_file );
+			if( flag_source ) conv.SourceOnly();
 			conv.MakeTree();
 			conv.MakeHists();
 			conv.AddCalibration( mycal );
@@ -397,8 +399,8 @@ int main( int argc, char *argv[] ){
 		
 	}
 	
-	// If this is an alpha source run, stop here!
-	if( flag_alpha ) return 0;
+	// If this is a source only run, stop here!
+	if( flag_source ) return 0;
 		
 	
 	//-------------------------//

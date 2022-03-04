@@ -24,6 +24,9 @@ Converter::Converter( Settings *myset ) {
 		ctr_caen_ext.push_back(0);	// external timestamps
 
 	}
+	
+	// Default that we do not have a source only run
+	flag_source = false;
 
 }
 
@@ -38,11 +41,6 @@ void Converter::SetOutput( std::string output_file_name ){
 	// Open output file
 	output_file = new TFile( output_file_name.data(), "recreate", 0 );
 	output_file->SetCompressionLevel(0);
-
-	// Create log file.
-	std::string log_file_name = output_file_name.substr( 0, output_file_name.find_last_of(".") );
-	log_file_name += ".log";
-	log_file.open( log_file_name.c_str(), std::ios::out );
 	
 	return;
 
@@ -443,24 +441,6 @@ void Converter::ProcessBlockHeader( unsigned long nblock ){
 	(block_header[22] & 0xFF) << 16  | (block_header[23]& 0xFF) << 24 ;
 	
 
-	// Print header info.
-	log_file << "== DATA BLOCK: " << nblock << std::endl;
-	log_file << "Header_id: " << header_id << std::endl;
-	log_file << "Header_sequence: " << header_sequence << std::endl;
-	log_file << "Header_stream: " << header_stream << std::endl;
-	log_file << "Header tape: " << header_tape << std::endl;
-	log_file << "Header_MyEndian: " << header_MyEndian << std::endl;
-	log_file << "Header_DataEndian: " << header_DataEndian << std::endl;
-	log_file << "Header_DataLen: " << header_DataLen << std::endl;
-	
-	log_file << "== and in HEX:" << std::hex << std::endl;
-	for( unsigned int i = 0; i < HEADER_SIZE; i++ ) {
-		
-		log_file << int( block_header[i] ) << " ";
-		if( (i+1)%4 == 0 ) log_file << std::endl;
-		
-	}
-	
 	if( std::string(header_id).substr(0,8) != "EBYEDATA" ) {
 	
 		std::cerr << "Bad header in block " << nblock << std::endl;
@@ -523,19 +503,6 @@ void Converter::ProcessBlockData( unsigned long nblock ){
 		word = GetWord(i);
 		word_0 = (word & 0xFFFFFFFF00000000) >> 32;
 		word_1 = (word & 0x00000000FFFFFFFF);
-
-		// Put the info in binary and dump it to file.
-		// only do it for first 25 words of data
-		if( i < 25 && nblock < 10 ){
-			
-			std::bitset<32> _word_0(word_0);
-			std::bitset<32> _word_1(word_1);
-			
-			log_file << "= Entry: " << i  << std::endl;
-			log_file << "Word 0: " << _word_0 << "  "<< std::hex << "0x"<<word_0 << std::dec << std::endl; // Must have first 2 bits: 10.
-			log_file << "Word 1: " << _word_1 << "  "<< std::hex << "0x"<<word_1 << std::dec << std::endl; // Must have first 4 bits: 0000.
-						
-		}
 		
 		// Check the trailer: reject or keep the block.
 		if( ( word_0 & 0xFFFFFFFF ) == 0xFFFFFFFF ||
@@ -543,8 +510,6 @@ void Converter::ProcessBlockData( unsigned long nblock ){
 		    ( word_1 & 0xFFFFFFFF ) == 0xFFFFFFFF ||
 		    ( word_1 & 0xFFFFFFFF ) == 0x5E5E5E5E ){
 			
-			log_file << "End of block " << nblock << " (" << std::hex;
-			log_file << word_0 << ", " << word_1 << ")" << std::dec << std::endl;
 			flag_terminator = true;
 			return;
 			
@@ -589,8 +554,7 @@ void Converter::ProcessBlockData( unsigned long nblock ){
 		else if( my_type == 0x1 ){
 			
 			// contains the sample length
-			nsamples = word_1 & 0x0000FFFF; // 16 bits from 0 in second word
-			if( i < 25 && nblock < 10 ) log_file << "nsamples = " << nsamples << std::endl;
+			nsamples = word_0 & 0xFFFF; // 16 bits from 0
 			
 			// Get the samples from the trace
 			for( UInt_t j = 0; j < nsamples; j++ ){
@@ -632,32 +596,10 @@ void Converter::ProcessBlockData( unsigned long nblock ){
 		else {
 			
 			// output error message!
-			log_file << "WARNING: WRONG TYPE! word 0: " << word_0;
-			log_file << ", my_type: " << my_type << std::endl;
+			std::cerr << "WARNING: WRONG TYPE! word 0: " << word_0;
+			std::cerr << ", my_type: " << my_type << std::endl;
 		
 		}
-		
-		
-		if( i < 25 && nblock < 10 ){
-			
-			// Print the information.
-			log_file << "Info:" << std::endl;
-			
-			log_file << "type: " << std::dec << int(my_type) << std::hex <<" 0x" << int(my_type)<<std::endl;
-			log_file << "hit: " << std::dec << int(my_hit) << std::hex<<" 0x"<< int(my_hit)<<std::endl;
-			log_file << "module id: " << std::dec << int(my_mod_id) << std::hex<<" 0x"<< int(my_mod_id)<<std::endl;
-			log_file << "asic id: " << std::dec << int(my_asic_id) << std::hex<<" 0x"<< int(my_asic_id)<<std::endl;
-			log_file << "channel id: " << std::dec << int(my_ch_id) << std::hex<<" 0x"<< int(my_ch_id)<<std::endl;
-			log_file << "time stamp(LSB): " << std::dec << my_tm_stp << std::hex<<" 0x"<< my_tm_stp<<std::endl;
-			log_file << "ADC data: " << std::dec << my_adc_data << std::hex<<" 0x"<< my_adc_data<<std::endl;
-			log_file << "ADC id: " << std::dec << int(my_data_id) << std::hex<<" 0x"<< int(my_data_id)<<std::endl;
-			log_file << "info code: " << std::dec << int(my_info_code) << std::hex<<" 0x"<< int(my_info_code)<<std::endl;
-			log_file << "info field: " << std::dec << my_info_field << std::hex<<" 0x"<< my_info_field<<std::endl;
-			
-			log_file << std::dec << std::endl;
-
-		}
-		
 		
 	} // loop - i < header_DataLen
 	
@@ -710,7 +652,7 @@ void Converter::ProcessASICData(){
 			info_data->SetTime( my_tm_stp );
 			info_data->SetCode( set->GetArrayPulserCode() );
 			data_packet->SetData( info_data );
-			output_tree->Fill();
+			if( !flag_source ) output_tree->Fill();
 			info_data->Clear();
 			
 		}
@@ -753,7 +695,7 @@ void Converter::ProcessASICData(){
 		
 		// Set this data and fill event to tree
 		data_packet->SetData( asic_data );
-		output_tree->Fill();
+		if( !flag_source ) output_tree->Fill();
 		asic_data->Clear();
 		
 		// Count asic hit per module
@@ -914,7 +856,7 @@ void Converter::FinishCAENData(){
 			info_data->SetModule( caen_data->GetModule() + set->GetNumberOfArrayModules() );
 			info_data->SetCode( my_info_code );
 			data_packet->SetData( info_data );
-			output_tree->Fill();
+			if( !flag_source ) output_tree->Fill();
 			info_data->Clear();
 
 			// Fill histograms for external trigger
@@ -936,7 +878,7 @@ void Converter::FinishCAENData(){
 			// Also add the time offset when we do this
 			caen_data->SetTime( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
 			data_packet->SetData( caen_data );
-			output_tree->Fill();
+			if( !flag_source ) output_tree->Fill();
 			
 			//std::cout << "Complete CAEN event" << std::endl;
 			//std::cout << "Trace length = " << caen_data->GetTraceLength() << std::endl;
@@ -1057,7 +999,7 @@ void Converter::ProcessInfoData(){
 		info_data->SetTime( my_tm_stp );
 		info_data->SetCode( my_info_code );
 		data_packet->SetData( info_data );
-		output_tree->Fill();
+		if( !flag_source ) output_tree->Fill();
 		info_data->Clear();
 
 	}
@@ -1110,8 +1052,6 @@ int Converter::ConvertFile( std::string input_file_name,
 	sslogs << "\t  N blocks = " << BLOCKS_NUM << std::endl;
 
 	std::cout << sslogs.str() << std::endl;
-	log_file << __PRETTY_FUNCTION__ << std::endl;
-	log_file << sslogs.str() << std::endl;
 	sslogs.str( std::string() ); // clean up
 	
 	// Data format: http://npg.dl.ac.uk/documents/edoc504/edoc504.html
@@ -1165,7 +1105,6 @@ int Converter::ConvertFile( std::string input_file_name,
 	input_file.close();
 	output_file->Write( 0, TObject::kWriteDelete );
 	//output_file->Print();
-	log_file.close();
 	
 	return BLOCKS_NUM;
 	
