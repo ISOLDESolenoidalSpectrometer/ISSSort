@@ -225,7 +225,7 @@ private:
 	std::unique_ptr<ROOT::Math::RootFinder> rf;
 	std::unique_ptr<TF1> fa, fb;
 	double alpha;
-	double params[4];
+	double params[5];
 	double e3_cm;
 	double Ex;
 	double theta_cm;
