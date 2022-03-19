@@ -52,3 +52,9 @@
 #RecoilCut_2.Name: CUTG	# sector 2
 #RecoilCut_3.File: NULL	# sector 3
 #RecoilCut_3.Name: CUTG	# sector 3
+
+
+## E vs Z cut files
+#NumberOfEvsZCuts: 1		# default is 1, but you can have as many as you like
+#EvsZCut_0.File: NULL		# ROOT file containing the a 2D E vs Z cut
+#EvsZCut_0.Name: CUTG		# name of the TCutG object inside the ROOT file

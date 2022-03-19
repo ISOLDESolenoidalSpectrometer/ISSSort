@@ -216,28 +216,28 @@ void Reaction::ReadReaction() {
 	Recoil.SetBindingEnergy( ame_be.at( Recoil.GetIsotope() ) );
 	
 	// Get recoil energy cut
-	ncuts = set->GetNumberOfRecoilSectors();
-	recoil_cut.resize( ncuts );
-	cutfile.resize( ncuts );
-	cutname.resize( ncuts );
-	for( unsigned int i = 0; i < ncuts; ++i ) {
+	nrecoilcuts = set->GetNumberOfRecoilSectors();
+	recoil_cut.resize( nrecoilcuts );
+	recoilcutfile.resize( nrecoilcuts );
+	recoilcutname.resize( nrecoilcuts );
+	for( unsigned int i = 0; i < nrecoilcuts; ++i ) {
 	
-		cutfile.at(i) = config->GetValue( Form( "RecoilCut_%d.File", i ), "NULL" );
-		cutname.at(i) = config->GetValue( Form( "RecoilCut_%d.Name", i ), "CUTG" );
+		recoilcutfile.at(i) = config->GetValue( Form( "RecoilCut_%d.File", i ), "NULL" );
+		recoilcutname.at(i) = config->GetValue( Form( "RecoilCut_%d.Name", i ), "CUTG" );
 		
 		// Check if it is given by the user
-		if( cutfile.at(i) != "NULL" ) {
+		if( recoilcutfile.at(i) != "NULL" ) {
 		
-			recoil_file = new TFile( cutfile.at(i).data(), "READ" );
+			recoil_file = new TFile( recoilcutfile.at(i).data(), "READ" );
 			if( recoil_file->IsZombie() )
-				std::cout << "Couldn't open " << cutfile.at(i) << " correctly" << std::endl;
+				std::cout << "Couldn't open " << recoilcutfile.at(i) << " correctly" << std::endl;
 				
 			else {
 			
-				if( !recoil_file->GetListOfKeys()->Contains( cutname.at(i).data() ) )
-					std::cout << "Couldn't find " << cutname.at(i) << " in " << cutfile.at(i) << std::endl;
+				if( !recoil_file->GetListOfKeys()->Contains( recoilcutname.at(i).data() ) )
+					std::cout << "Couldn't find " << recoilcutname.at(i) << " in " << recoilcutfile.at(i) << std::endl;
 				else
-					recoil_cut.at(i) = (TCutG*)recoil_file->Get( cutname.at(i).data() )->Clone();
+					recoil_cut.at(i) = (TCutG*)recoil_file->Get( recoilcutname.at(i).data() )->Clone();
 
 			}
 			
@@ -247,6 +247,41 @@ void Reaction::ReadReaction() {
 		
 		// Assign an empty cut file if none is given, so the code doesn't crash
 		if( !recoil_cut.at(i) ) recoil_cut.at(i) = new TCutG();
+	
+	}
+	
+	// Get E versus z cuts
+	nevszcuts = config->GetValue( "NumberOfEvsZCuts", 0 );
+	e_vs_z_cut.resize( nevszcuts );
+	evszcutfile.resize( nevszcuts );
+	evszcutname.resize( nevszcuts );
+	for( unsigned int i = 0; i < nevszcuts; ++i ) {
+	
+		evszcutfile.at(i) = config->GetValue( Form( "EvsZCut_%d.File", i ), "NULL" );
+		evszcutname.at(i) = config->GetValue( Form( "EvsZCut_%d.Name", i ), "CUTG" );
+		
+		// Check if it is given by the user
+		if( evszcutfile.at(i) != "NULL" ) {
+		
+			e_vs_z_file = new TFile( evszcutfile.at(i).data(), "READ" );
+			if( e_vs_z_file->IsZombie() )
+				std::cout << "Couldn't open " << evszcutfile.at(i) << " correctly" << std::endl;
+				
+			else {
+			
+				if( !recoil_file->GetListOfKeys()->Contains( evszcutname.at(i).data() ) )
+					std::cout << "Couldn't find " << evszcutname.at(i) << " in " << evszcutfile.at(i) << std::endl;
+				else
+					e_vs_z_cut.at(i) = (TCutG*)e_vs_z_file->Get( evszcutname.at(i).data() )->Clone();
+
+			}
+			
+			e_vs_z_file->Close();
+			
+		}
+		
+		// Assign an empty cut file if none is given, so the code doesn't crash
+		if( !e_vs_z_cut.at(i) ) e_vs_z_cut.at(i) = new TCutG();
 	
 	}
 	
