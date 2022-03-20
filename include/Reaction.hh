@@ -194,14 +194,13 @@ public:
 	bool ReadStoppingPowers( std::string isotope1, std::string isotope2, std::unique_ptr<TGraph> &g );
 
 	// Get cuts
-	unsigned int nrecoilcuts;
 	inline TCutG* GetRecoilCut( unsigned int i ){
 		if( i < nrecoilcuts ) return recoil_cut.at(i);
 		else return nullptr;
 	};
 	
 	// Get cuts
-	unsigned int nevszcuts;
+	inline unsigned int GetNumberOfEvsZCuts(){ return nevszcuts; };
 	inline TCutG* GetEvsZCut( unsigned int i ){
 		if( i < nevszcuts ) return e_vs_z_cut.at(i);
 		else return nullptr;
@@ -252,6 +251,8 @@ private:
 	double y_offset;			///< vertical offset of the target/beam position, with respect to the array in mm
 	
 	// Cuts
+	unsigned int nrecoilcuts;
+	unsigned int nevszcuts;
 	std::vector<std::string> recoilcutfile, recoilcutname;
 	std::vector<std::string> evszcutfile, evszcutname;
 	TFile *recoil_file;

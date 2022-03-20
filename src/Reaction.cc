@@ -251,7 +251,7 @@ void Reaction::ReadReaction() {
 	}
 	
 	// Get E versus z cuts
-	nevszcuts = config->GetValue( "NumberOfEvsZCuts", 0 );
+	nevszcuts = config->GetValue( "NumberOfEvsZCuts", 1 );
 	e_vs_z_cut.resize( nevszcuts );
 	evszcutfile.resize( nevszcuts );
 	evszcutname.resize( nevszcuts );

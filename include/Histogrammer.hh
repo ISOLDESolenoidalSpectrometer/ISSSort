@@ -174,6 +174,12 @@ private:
 	std::vector<TH2F*> E_vs_z_ebis_off_mod;
 	std::vector<TH2F*> E_vs_z_recoil_mod;
 	std::vector<TH2F*> E_vs_z_recoilT_mod;
+	std::vector<TH2F*> E_vs_z_cut;
+	std::vector<TH2F*> E_vs_z_ebis_cut;
+	std::vector<TH2F*> E_vs_z_ebis_on_cut;
+	std::vector<TH2F*> E_vs_z_ebis_off_cut;
+	std::vector<TH2F*> E_vs_z_recoil_cut;
+	std::vector<TH2F*> E_vs_z_recoilT_cut;
 	TH2F *E_vs_z, *E_vs_z_ebis, *E_vs_z_ebis_on, *E_vs_z_ebis_off;
 	TH2F *E_vs_z_recoil, *E_vs_z_recoilT;
 	
@@ -184,6 +190,12 @@ private:
 	std::vector<TH2F*> Ex_vs_theta_ebis_off_mod;
 	std::vector<TH2F*> Ex_vs_theta_recoil_mod;
 	std::vector<TH2F*> Ex_vs_theta_recoilT_mod;
+	std::vector<TH2F*> Ex_vs_theta_cut;
+	std::vector<TH2F*> Ex_vs_theta_ebis_cut;
+	std::vector<TH2F*> Ex_vs_theta_ebis_on_cut;
+	std::vector<TH2F*> Ex_vs_theta_ebis_off_cut;
+	std::vector<TH2F*> Ex_vs_theta_recoil_cut;
+	std::vector<TH2F*> Ex_vs_theta_recoilT_cut;
 	TH2F *Ex_vs_theta, *Ex_vs_theta_ebis, *Ex_vs_theta_ebis_on, *Ex_vs_theta_ebis_off;
 	TH2F *Ex_vs_theta_recoil, *Ex_vs_theta_recoilT;
 		
@@ -194,6 +206,12 @@ private:
 	std::vector<TH2F*> Ex_vs_z_ebis_off_mod;
 	std::vector<TH2F*> Ex_vs_z_recoil_mod;
 	std::vector<TH2F*> Ex_vs_z_recoilT_mod;
+	std::vector<TH2F*> Ex_vs_z_cut;
+	std::vector<TH2F*> Ex_vs_z_ebis_cut;
+	std::vector<TH2F*> Ex_vs_z_ebis_on_cut;
+	std::vector<TH2F*> Ex_vs_z_ebis_off_cut;
+	std::vector<TH2F*> Ex_vs_z_recoil_cut;
+	std::vector<TH2F*> Ex_vs_z_recoilT_cut;
 	TH2F *Ex_vs_z, *Ex_vs_z_ebis, *Ex_vs_z_ebis_on, *Ex_vs_z_ebis_off;
 	TH2F *Ex_vs_z_recoil, *Ex_vs_z_recoilT;
 		
@@ -204,6 +222,12 @@ private:
 	std::vector<TH1F*> Ex_ebis_off_mod;
 	std::vector<TH1F*> Ex_recoil_mod;
 	std::vector<TH1F*> Ex_recoilT_mod;
+	std::vector<TH1F*> Ex_cut;
+	std::vector<TH1F*> Ex_ebis_cut;
+	std::vector<TH1F*> Ex_ebis_on_cut;
+	std::vector<TH1F*> Ex_ebis_off_cut;
+	std::vector<TH1F*> Ex_recoil_cut;
+	std::vector<TH1F*> Ex_recoilT_cut;
 	TH1F *Ex, *Ex_ebis, *Ex_ebis_on, *Ex_ebis_off;
 	TH1F *Ex_recoil, *Ex_recoilT;
 		

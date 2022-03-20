@@ -14,8 +14,6 @@ void Histogrammer::MakeHists() {
 
 	std::string hname, htitle;
 	std::string dirname;
-	
-	
 
 	float zmax, zmin = react->GetArrayDistance();
 	if( zmin < 0 ) { // upstream
@@ -49,6 +47,41 @@ void Histogrammer::MakeHists() {
 	htitle = "Excitation energy vs. measured z;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
 	Ex_vs_z = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
 
+	// For each user cut
+	E_vs_z_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_vs_theta_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_vs_z_cut.resize( react->GetNumberOfEvsZCuts() );
+	for( unsigned int j = 0; j < react->GetNumberOfEvsZCuts(); ++j ) {
+		
+		dirname = "SinglesMode/cut_" + std::to_string(j);
+		output_file->mkdir( dirname.data() );
+		output_file->cd( dirname.data() );
+
+		E_vs_z_cut.resize( set->GetNumberOfArrayModules() );
+		hname = "E_vs_z_cut" + std::to_string(j);
+		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
+		htitle += ";z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+
+		hname = "Ex_cut" + std::to_string(j);
+		htitle = "Excitation energy for user cut " + std::to_string(j);
+		htitle += ";Excitation energy [keV];Counts per 20 keV";
+		Ex_cut[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+
+		hname = "Ex_vs_theta_cut" + std::to_string(j);
+		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+		htitle += ";#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		Ex_vs_theta_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+
+		hname = "Ex_vs_z_cut" + std::to_string(j);
+		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+		htitle += ";z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_z_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+
+		
+	}
+	
 	// For each array module
 	E_vs_z_mod.resize( set->GetNumberOfArrayModules() );
 	Ex_mod.resize( set->GetNumberOfArrayModules() );
@@ -56,7 +89,7 @@ void Histogrammer::MakeHists() {
 	Ex_vs_z_mod.resize( set->GetNumberOfArrayModules() );
 	for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
 	
-		dirname = "SinglesMode/module" + std::to_string(j);
+		dirname = "SinglesMode/module_" + std::to_string(j);
 		output_file->mkdir( dirname.data() );
 		output_file->cd( dirname.data() );
 
@@ -136,6 +169,87 @@ void Histogrammer::MakeHists() {
 	htitle = "Excitation energy vs. measured z gated off EBIS;z [mm];Excitation energy [keV];Counts per mm per 0.01 rad";
 	Ex_vs_z_ebis_off = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
 
+	// For each user cut
+	E_vs_z_ebis_cut.resize( react->GetNumberOfEvsZCuts() );
+	E_vs_z_ebis_on_cut.resize( react->GetNumberOfEvsZCuts() );
+	E_vs_z_ebis_off_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_ebis_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_ebis_on_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_ebis_off_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_vs_theta_ebis_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_vs_theta_ebis_on_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_vs_theta_ebis_off_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_vs_z_ebis_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_vs_z_ebis_on_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_vs_z_ebis_off_cut.resize( react->GetNumberOfEvsZCuts() );
+	for( unsigned int j = 0; j < react->GetNumberOfEvsZCuts(); ++j ) {
+
+		dirname = "EBISMode/cut_" + std::to_string(j);
+		output_file->mkdir( dirname.data() );
+		output_file->cd( dirname.data() );
+
+		hname = "E_vs_z_ebis_cut" + std::to_string(j);
+		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
+		htitle += " gated by EBIS and off beam subtracted;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+
+		hname = "E_vs_z_ebis_on_cut" + std::to_string(j);
+		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
+		htitle += " gated on EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+
+		hname = "E_vs_z_ebis_off_cut" + std::to_string(j);
+		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
+		htitle += " gated off EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+
+		hname = "Ex_ebis_cut" + std::to_string(j);
+		htitle = "Excitation energy for user cut " + std::to_string(j);
+		htitle += " gated by EBIS and off beam subtracted;Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_ebis_cut[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		
+		hname = "Ex_ebis_on_cut" + std::to_string(j);
+		htitle = "Excitation energy for user cut " + std::to_string(j);
+		htitle += " gated on EBIS;Excitation energy [keV];Counts per 20 keV";
+		Ex_ebis_on_cut[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		
+		hname = "Ex_ebis_off_cut" + std::to_string(j);
+		htitle = "Excitation energy for user cut " + std::to_string(j);
+		htitle += " gated off EBIS;Excitation energy [keV];Counts per 20 keV";
+		Ex_ebis_off_cut[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+
+		hname = "Ex_vs_theta_ebis_cut" + std::to_string(j);
+		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		Ex_vs_theta_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+
+		hname = "Ex_vs_theta_ebis_on_cut" + std::to_string(j);
+		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		Ex_vs_theta_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+
+		hname = "Ex_vs_theta_ebis_off_cut" + std::to_string(j);
+		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		Ex_vs_theta_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+
+		hname = "Ex_vs_z_ebis_cut" + std::to_string(j);
+		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
+		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_z_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+
+		hname = "Ex_vs_z_ebis_on_cut" + std::to_string(j);
+		htitle = "Excitation energy vs. measured z  for user cut " + std::to_string(j);
+		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_z_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+
+		hname = "Ex_vs_z_ebis_off_cut" + std::to_string(j);
+		htitle = "Excitation energy vs. measured z  for user cut " + std::to_string(j);
+		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_z_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+
+	}
+
 	// For each array module
 	E_vs_z_ebis_mod.resize( set->GetNumberOfArrayModules() );
 	E_vs_z_ebis_on_mod.resize( set->GetNumberOfArrayModules() );
@@ -151,7 +265,7 @@ void Histogrammer::MakeHists() {
 	Ex_vs_z_ebis_off_mod.resize( set->GetNumberOfArrayModules() );
 	for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
 
-		dirname = "EBISMode/module" + std::to_string(j);
+		dirname = "EBISMode/module_" + std::to_string(j);
 		output_file->mkdir( dirname.data() );
 		output_file->cd( dirname.data() );
 
@@ -254,6 +368,63 @@ void Histogrammer::MakeHists() {
 	htitle = "Excitation energy vs. measured z with a time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 0.01 rad";
 	Ex_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
 	
+	// For each user cut
+	E_vs_z_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
+	E_vs_z_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_vs_theta_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_vs_theta_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_vs_z_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_vs_z_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
+	for( unsigned int j = 0; j < react->GetNumberOfEvsZCuts(); ++j ) {
+			
+		dirname = "RecoilMode/cut_" + std::to_string(j);
+		output_file->mkdir( dirname.data() );
+		output_file->cd( dirname.data() );
+
+		hname = "E_vs_z_recoil_cut" + std::to_string(j);
+		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
+		htitle += " gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		
+		hname = "E_vs_z_recoilT_cut" + std::to_string(j);
+		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
+		htitle += " with a time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		
+		hname = "Ex_recoil_cut" + std::to_string(j);
+		htitle = "Excitation energy for user cut " + std::to_string(j);
+		htitle += " gated by recoils;Excitation energy [keV];Counts per 20 keV";
+		Ex_recoil_cut[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		
+		hname = "Ex_recoilT_cut" + std::to_string(j);
+		htitle = "Excitation energy for user cut " + std::to_string(j);
+		htitle += " with a time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
+		Ex_recoilT_cut[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		
+		hname = "Ex_vs_theta_recoil_cut" + std::to_string(j);
+		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+		htitle += " gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		Ex_vs_theta_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+	
+		hname = "Ex_vs_theta_recoilT_cut" + std::to_string(j);
+		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+		htitle += " with a time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		Ex_vs_theta_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+	
+		hname = "Ex_vs_z_recoil_cut" + std::to_string(j);
+		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
+		htitle += " gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		
+		hname = "Ex_vs_z_recoilT_cut" + std::to_string(j);
+		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
+		htitle += " with a time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		
+	} // Array
+	
 	// For each array module
 	E_vs_z_recoil_mod.resize( set->GetNumberOfArrayModules() );
 	E_vs_z_recoilT_mod.resize( set->GetNumberOfArrayModules() );
@@ -265,7 +436,7 @@ void Histogrammer::MakeHists() {
 	Ex_vs_z_recoilT_mod.resize( set->GetNumberOfArrayModules() );
 	for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
 			
-		dirname = "RecoilMode/module" + std::to_string(j);
+		dirname = "RecoilMode/module_" + std::to_string(j);
 		output_file->mkdir( dirname.data() );
 		output_file->cd( dirname.data() );
 
@@ -329,7 +500,7 @@ void Histogrammer::MakeHists() {
 	// Loop over each recoil sector
 	for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
 	
-		dirname = "RecoilDetector/sector" + std::to_string(i);
+		dirname = "RecoilDetector/sector_" + std::to_string(i);
 		output_file->mkdir( dirname.data() );
 		output_file->cd( dirname.data() );
 
@@ -419,7 +590,7 @@ void Histogrammer::MakeHists() {
 
 	for( unsigned int j = 0; j < set->GetNumberOfELUMSectors(); ++j ) {
 		
-		dirname = "ElumDetector/sector" + std::to_string(j);
+		dirname = "ElumDetector/sector_" + std::to_string(j);
 		output_file->mkdir( dirname.data() );
 		output_file->cd( dirname.data() );
 
@@ -515,6 +686,22 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 			Ex_vs_z->Fill( react->GetZmeasured(), react->GetEx() );
 			Ex_vs_z_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 
+			// Check the E vs z cuts from the user
+			for( unsigned int k = 0; k < react->GetNumberOfEvsZCuts(); ++k ){
+				
+				// Is inside the cut
+				if( react->GetEvsZCut(k)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+					
+					E_vs_z_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+					Ex_cut[k]->Fill( react->GetEx() );
+					Ex_vs_theta_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+					Ex_vs_z_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
+					
+				} // inside cut
+				
+			} // loop over cuts
+
+
 			// EBIS time
 			ebis_td_array->Fill( (double)array_evt->GetTime() - (double)read_evts->GetEBIS() );
 
@@ -538,6 +725,25 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 				Ex_vs_z_ebis_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 				Ex_vs_z_ebis_on_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 
+				// Check the E vs z cuts from the user
+				for( unsigned int k = 0; k < react->GetNumberOfEvsZCuts(); ++k ){
+					
+					// Is inside the cut
+					if( react->GetEvsZCut(k)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+						
+						E_vs_z_ebis_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+						E_vs_z_ebis_on_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+						Ex_ebis_cut[k]->Fill( react->GetEx() );
+						Ex_ebis_on_cut[k]->Fill( react->GetEx() );
+						Ex_vs_theta_ebis_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+						Ex_vs_theta_ebis_on_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+						Ex_vs_z_ebis_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
+						Ex_vs_z_ebis_on_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
+						
+					} // inside cut
+					
+				} // loop over cuts
+
 			} // ebis
 			
 			else if( OffBeam( array_evt ) ){
@@ -559,7 +765,26 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 				Ex_vs_z_ebis_off->Fill( react->GetZmeasured(), react->GetEx() );
 				Ex_vs_z_ebis_off_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 
-			}
+				// Check the E vs z cuts from the user
+				for( unsigned int k = 0; k < react->GetNumberOfEvsZCuts(); ++k ){
+					
+					// Is inside the cut
+					if( react->GetEvsZCut(k)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+						
+						E_vs_z_ebis_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy(), -1.0 * react->GetEBISRatio() );
+						E_vs_z_ebis_off_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+						Ex_ebis_cut[k]->Fill( react->GetEx(), -1.0 * react->GetEBISRatio() );
+						Ex_ebis_off_cut[k]->Fill( react->GetEx() );
+						Ex_vs_theta_ebis_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx(), -1.0 * react->GetEBISRatio() );
+						Ex_vs_theta_ebis_off_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+						Ex_vs_z_ebis_cut[k]->Fill( react->GetZmeasured(), react->GetEx(), -1.0 * react->GetEBISRatio() );
+						Ex_vs_z_ebis_off_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
+						
+					} // inside cut
+					
+				} // loop over cuts
+				
+			} // off ebis
 			
 			// Loop over recoil events
 			for( unsigned int k = 0; k < read_evts->GetRecoilMultiplicity(); ++k ){
@@ -576,6 +801,10 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 				// Check for prompt events with recoils
 				if( PromptCoincidence( recoil_evt, array_evt ) ){
 				
+					// Recoils in coincidence with an array event
+					recoil_EdE_array[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest(), recoil_evt->GetEnergyLoss() );
+
+					// Array histograms
 					E_vs_z_recoilT->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 					E_vs_z_recoilT_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 					Ex_recoilT->Fill( react->GetEx() );
@@ -585,8 +814,20 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 					Ex_vs_z_recoilT->Fill( react->GetZmeasured(), react->GetEx() );
 					Ex_vs_z_recoilT_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 
-					// Recoils in coincidence with an array event
-					recoil_EdE_array[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest(), recoil_evt->GetEnergyLoss() );
+					// Check the E vs z cuts from the user
+					for( unsigned int k = 0; k < react->GetNumberOfEvsZCuts(); ++k ){
+						
+						// Is inside the cut
+						if( react->GetEvsZCut(k)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+							
+							E_vs_z_recoilT_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+							Ex_recoilT_cut[k]->Fill( react->GetEx() );
+							Ex_vs_theta_recoilT_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+							Ex_vs_z_recoilT_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
+							
+						} // inside cut
+						
+					} // loop over cuts
 
 					// Add an energy gate
 					if( RecoilCut( recoil_evt ) ) {
@@ -600,7 +841,21 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 						Ex_vs_z_recoil->Fill( react->GetZmeasured(), react->GetEx() );
 						Ex_vs_z_recoil_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 
-					
+						// Check the E vs z cuts from the user
+						for( unsigned int k = 0; k < react->GetNumberOfEvsZCuts(); ++k ){
+							
+							// Is inside the cut
+							if( react->GetEvsZCut(k)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+								
+								E_vs_z_recoil_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+								Ex_recoil_cut[k]->Fill( react->GetEx() );
+								Ex_vs_theta_recoil_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+								Ex_vs_z_recoil_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
+								
+							} // inside cut
+							
+						} // loop over cuts
+
 					} // energy cuts
 								
 				} // prompt	
