@@ -269,7 +269,7 @@ void Reaction::ReadReaction() {
 				
 			else {
 			
-				if( !recoil_file->GetListOfKeys()->Contains( evszcutname.at(i).data() ) )
+				if( !e_vs_z_file->GetListOfKeys()->Contains( evszcutname.at(i).data() ) )
 					std::cout << "Couldn't find " << evszcutname.at(i) << " in " << evszcutfile.at(i) << std::endl;
 				else
 					e_vs_z_cut.at(i) = (TCutG*)e_vs_z_file->Get( evszcutname.at(i).data() )->Clone();
@@ -561,7 +561,7 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	// Get the real z value at beam axis and lab angle
 	if( z_meas < 0 ) z = z_meas - rho * TMath::Tan( alpha );
 	else z = z_meas + rho * TMath::Tan( alpha );
-	Ejectile.SetThetaLab( TMath::PiOver2() - alpha );
+	Ejectile.SetThetaLab( TMath::PiOver2() + alpha );
 
 	// Total energy of ejectile in centre of mass
 	e3_cm = Ejectile.GetEnergyTotLab();
