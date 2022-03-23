@@ -175,6 +175,13 @@ public:
 		etot = TMath::Sqrt( etot );
 		return etot;
 	};
+	inline double		GetGamma(){
+		return Beam.GetMomentumLab() / GetEnergyTotLab();
+	};
+	inline double GetBeta(){
+		return TMath::Sqrt( 1.0 - 1.0 / TMath::Power( GetGamma(), 2.0 ) );
+	};
+
 	inline double GetZmeasured(){ return z_meas; };
 	inline double GetZprojected(){ return z; };
 	inline double GetEBISOnTime(){ return EBIS_On; };

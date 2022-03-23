@@ -565,15 +565,15 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 
 	// Total energy of ejectile in centre of mass
 	e3_cm = Ejectile.GetEnergyTotLab();
-	e3_cm -= Beam.GetBeta() * Ejectile.GetMomentumLab() * TMath::Sin( alpha );
-	e3_cm *= Beam.GetGamma();
+	e3_cm -= GetBeta() * Ejectile.GetMomentumLab() * TMath::Sin( alpha );
+	e3_cm *= GetGamma();
 	Ejectile.SetEnergyTotCM( e3_cm );
 	Recoil.SetEnergyTotCM( GetEnergyTotCM() - e3_cm );
 
 	// Theta_CM
-	theta_cm  = Beam.GetGamma() * Ejectile.GetEnergyTotCM();
+	theta_cm  = GetGamma() * Ejectile.GetEnergyTotCM();
 	theta_cm -= Ejectile.GetEnergyTotLab();
-	theta_cm /= Beam.GetGamma() * Beam.GetBeta() * Ejectile.GetMomentumCM();
+	theta_cm /= GetGamma() * GetBeta() * Ejectile.GetMomentumCM();
 	theta_cm  = TMath::ACos( theta_cm );
 	Recoil.SetThetaCM( theta_cm );
 	Ejectile.SetThetaCM( TMath::Pi() - theta_cm );
