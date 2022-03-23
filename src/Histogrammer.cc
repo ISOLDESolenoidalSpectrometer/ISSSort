@@ -815,15 +815,15 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 					Ex_vs_z_recoilT_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 
 					// Check the E vs z cuts from the user
-					for( unsigned int k = 0; k < react->GetNumberOfEvsZCuts(); ++k ){
+					for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
 						
 						// Is inside the cut
-						if( react->GetEvsZCut(k)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+						if( react->GetEvsZCut(l)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
 							
-							E_vs_z_recoilT_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-							Ex_recoilT_cut[k]->Fill( react->GetEx() );
-							Ex_vs_theta_recoilT_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-							Ex_vs_z_recoilT_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
+							E_vs_z_recoilT_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+							Ex_recoilT_cut[l]->Fill( react->GetEx() );
+							Ex_vs_theta_recoilT_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+							Ex_vs_z_recoilT_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
 							
 						} // inside cut
 						
@@ -842,15 +842,15 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 						Ex_vs_z_recoil_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 
 						// Check the E vs z cuts from the user
-						for( unsigned int k = 0; k < react->GetNumberOfEvsZCuts(); ++k ){
+						for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
 							
 							// Is inside the cut
-							if( react->GetEvsZCut(k)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+							if( react->GetEvsZCut(l)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
 								
-								E_vs_z_recoil_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-								Ex_recoil_cut[k]->Fill( react->GetEx() );
-								Ex_vs_theta_recoil_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-								Ex_vs_z_recoil_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
+								E_vs_z_recoil_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+								Ex_recoil_cut[l]->Fill( react->GetEx() );
+								Ex_vs_theta_recoil_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+								Ex_vs_z_recoil_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
 								
 							} // inside cut
 							
