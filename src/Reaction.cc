@@ -10,11 +10,11 @@ double alpha_function( double *x, double *params ){
 	double z = params[0];
 	double rho = params[1];
 	double p = params[2];
-	double gqb = params[3] * params[4];
+	double gqb = params[3];
 	
 	double root = p * TMath::Sin(alpha);
 	root -= gqb * rho * TMath::Tan(alpha);
-	root -= gqb * z;
+	root += gqb * z;
 
 	return root;
 
@@ -27,7 +27,7 @@ double alpha_derivative( double *x, double *params ){
 	//double z = params[0]; // unused in derivative
 	double rho = params[1];
 	double p = params[2];
-	double gqb = params[3] * params[4];
+	double gqb = params[3];
 	
 	double root = p * TMath::Cos(alpha);
 	root -= gqb * rho / TMath::Cos(alpha) / TMath::Cos(alpha);
@@ -514,7 +514,6 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	params[2] = Ejectile.GetMomentumLab();			// p
 	params[3] = Ejectile.GetZ() * GetField_corr(); 	// qb
 	params[3] /= TMath::TwoPi(); 					// qb/2pi
-	params[4] = Ejectile.GetGamma();				// γ3
 
 	// Apply the energy loss correction and solve again
 	// Keep going for 50 iterations or until we are better than 0.01% change
@@ -538,7 +537,6 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 		// Set parameters
 		alpha_prev = alpha;
 		params[2] = Ejectile.GetMomentumLab();			// p
-		params[4] = Ejectile.GetGamma();				// γ3
 		fa->SetParameters( params );
 		fb->SetParameters( params );
 		
