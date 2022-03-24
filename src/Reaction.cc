@@ -14,7 +14,7 @@ double alpha_function( double *x, double *params ){
 	
 	double root = p * TMath::Sin(alpha);
 	root -= gqb * rho * TMath::Tan(alpha);
-	root += gqb * z;
+	root -= gqb * z;
 
 	return root;
 
