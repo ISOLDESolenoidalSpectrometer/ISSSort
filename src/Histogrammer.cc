@@ -150,11 +150,11 @@ void Histogrammer::MakeHists() {
 	Ex_vs_theta_ebis = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, -1000, 15000 );
 	
 	hname = "Ex_vs_theta_ebis_on";
-	htitle = "Excitation energy vs. centre of mass angle gated on EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 0.01 rad";
+	htitle = "Excitation energy vs. centre of mass angle gated on EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
 	Ex_vs_theta_ebis_on = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, -1000, 15000 );
 	
 	hname = "Ex_vs_theta_ebis_off";
-	htitle = "Excitation energy vs. centre of mass angle gated off EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 0.01 rad";
+	htitle = "Excitation energy vs. centre of mass angle gated off EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
 	Ex_vs_theta_ebis_off = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, -1000, 15000 );
 
 	hname = "Ex_vs_z_ebis";
@@ -162,11 +162,11 @@ void Histogrammer::MakeHists() {
 	Ex_vs_z_ebis = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
 	
 	hname = "Ex_vs_z_ebis_on";
-	htitle = "Excitation energy vs. measured z gated on EBIS;z [mm];Excitation energy [keV];Counts per mm per 0.01 rad";
+	htitle = "Excitation energy vs. measured z gated on EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
 	Ex_vs_z_ebis_on = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
 	
 	hname = "Ex_vs_z_ebis_off";
-	htitle = "Excitation energy vs. measured z gated off EBIS;z [mm];Excitation energy [keV];Counts per mm per 0.01 rad";
+	htitle = "Excitation energy vs. measured z gated off EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
 	Ex_vs_z_ebis_off = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
 
 	// For each user cut
@@ -353,19 +353,19 @@ void Histogrammer::MakeHists() {
 	Ex_recoilT = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
 		
 	hname = "Ex_vs_theta_recoil";
-	htitle = "Excitation energy vs. centre of mass angle gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 0.01 rad";
+	htitle = "Excitation energy vs. centre of mass angle gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
 	Ex_vs_theta_recoil = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, -1000, 15000 );
 	
 	hname = "Ex_vs_theta_recoilT";
-	htitle = "Excitation energy vs. centre of mass angle with a time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 0.01 rad";
+	htitle = "Excitation energy vs. centre of mass angle with a time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
 	Ex_vs_theta_recoilT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, -1000, 15000 );
 	
 	hname = "Ex_vs_z_recoil";
-	htitle = "Excitation energy vs. measured z gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 0.01 rad";
+	htitle = "Excitation energy vs. measured z gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
 	Ex_vs_z_recoil = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
 	
 	hname = "Ex_vs_z_recoilT";
-	htitle = "Excitation energy vs. measured z with a time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 0.01 rad";
+	htitle = "Excitation energy vs. measured z with a time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
 	Ex_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
 	
 	// For each user cut
