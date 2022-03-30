@@ -10,11 +10,11 @@ double alpha_function( double *x, double *params ){
 	double z = params[0];
 	double rho = params[1];
 	double p = params[2];
-	double gqb = params[3];
+	double qb = params[3];
 	
-	double root = p * TMath::Sin(alpha);
-	root -= gqb * rho * TMath::Tan(alpha);
-	root -= gqb * z;
+	double root = rho * TMath::Tan(alpha);
+	root -= p * TMath::Sin(alpha) / qb;
+	root -= z;
 
 	return root;
 
@@ -27,10 +27,11 @@ double alpha_derivative( double *x, double *params ){
 	//double z = params[0]; // unused in derivative
 	double rho = params[1];
 	double p = params[2];
-	double gqb = params[3];
+	double qb = params[3];
 	
-	double root = p * TMath::Cos(alpha);
-	root -= gqb * rho / TMath::Cos(alpha) / TMath::Cos(alpha);
+	double root = rho / qb;
+	root /= TMath::Power( TMath::Cos(alpha), 2.0 );
+	root -= p * TMath::Cos(alpha);
 
 	return root;
 
@@ -509,11 +510,11 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
     //----------------//
     // EX calculation //
     //----------------//
-	params[0] = z_meas;								// z in mm
-	params[1] = rho;								// rho in mm
-	params[2] = Ejectile.GetMomentumLab();			// p
-	params[3] = Ejectile.GetZ() * GetField_corr(); 	// qb
-	params[3] /= TMath::TwoPi(); 					// qb/2pi
+	params[0] = z_meas;										// z in mm
+	params[1] = rho;										// rho in mm
+	params[2] = Ejectile.GetMomentumLab();					// p
+	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
+	params[3] /= TMath::TwoPi(); 							// qb/2pi
 
 	// Apply the energy loss correction and solve again
 	// Keep going for 50 iterations or until we are better than 0.01% change
@@ -565,7 +566,7 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 
 	// Total energy of ejectile in centre of mass
 	e3_cm = Ejectile.GetEnergyTotLab();
-	e3_cm -= GetBeta() * Ejectile.GetMomentumLab() * TMath::Sin( alpha );
+	e3_cm -= Ejectile.GetBeta() * Ejectile.GetMomentumLab() * TMath::Sin( alpha );
 	e3_cm *= GetGamma();
 	Ejectile.SetEnergyTotCM( e3_cm );
 	Recoil.SetEnergyTotCM( GetEnergyTotCM() - e3_cm );
@@ -573,7 +574,7 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	// Theta_CM
 	theta_cm  = GetGamma() * Ejectile.GetEnergyTotCM();
 	theta_cm -= Ejectile.GetEnergyTotLab();
-	theta_cm /= GetGamma() * GetBeta() * Ejectile.GetMomentumCM();
+	theta_cm /= GetGamma() * Ejectile.GetBeta() * Ejectile.GetMomentumCM();
 	theta_cm  = TMath::ACos( theta_cm );
 	Recoil.SetThetaCM( theta_cm );
 	Ejectile.SetThetaCM( TMath::Pi() - theta_cm );
