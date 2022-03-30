@@ -515,6 +515,11 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	params[2] = Ejectile.GetMomentumLab();					// p
 	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 	params[3] /= TMath::TwoPi(); 							// qb/2pi
+	
+	std::cout << "Proton beta = " << Ejectile.GetBeta() << std::endl;
+	std::cout << "CoM beta = " << GetBeta() << std::endl;
+	std::cout << "Proton gamma = " << Ejectile.GetGamma() << std::endl;
+	std::cout << "CoM gamma = " << GetGamma() << std::endl << std::endl;
 
 	// Apply the energy loss correction and solve again
 	// Keep going for 50 iterations or until we are better than 0.01% change
@@ -566,7 +571,7 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 
 	// Total energy of ejectile in centre of mass
 	e3_cm = Ejectile.GetEnergyTotLab();
-	e3_cm -= Ejectile.GetBeta() * Ejectile.GetMomentumLab() * TMath::Sin( alpha );
+	e3_cm -= GetBeta() * Ejectile.GetMomentumLab() * TMath::Sin( alpha );
 	e3_cm *= GetGamma();
 	Ejectile.SetEnergyTotCM( e3_cm );
 	Recoil.SetEnergyTotCM( GetEnergyTotCM() - e3_cm );
@@ -574,7 +579,7 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	// Theta_CM
 	theta_cm  = GetGamma() * Ejectile.GetEnergyTotCM();
 	theta_cm -= Ejectile.GetEnergyTotLab();
-	theta_cm /= GetGamma() * Ejectile.GetBeta() * Ejectile.GetMomentumCM();
+	theta_cm /= GetGamma() * GetBeta() * Ejectile.GetMomentumCM();
 	theta_cm  = TMath::ACos( theta_cm );
 	Recoil.SetThetaCM( theta_cm );
 	Ejectile.SetThetaCM( TMath::Pi() - theta_cm );

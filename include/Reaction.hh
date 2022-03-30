@@ -176,7 +176,7 @@ public:
 		return etot;
 	};
 	inline double		GetGamma(){
-		return Beam.GetMomentumLab() / GetEnergyTotLab();
+		return GetEnergyTotLab() / ( Beam.GetMass() + Target.GetMass() );
 	};
 	inline double GetBeta(){
 		return TMath::Sqrt( 1.0 - 1.0 / TMath::Power( GetGamma(), 2.0 ) );
