@@ -83,8 +83,8 @@ public:
 		return std::to_string( GetA() ) + gElName.at( GetZ() );
 	};
 	inline double		GetBindingEnergy(){ return bindingE; };
-	inline double		GetEnergyLab(){ return Elab; }; // kinetic E
-	inline double		GetEnergyTotLab(){ // Etot = Ek + m0
+	inline double		GetEnergyLab(){ return Elab; }; // Ek = (γ-1)m0
+	inline double		GetEnergyTotLab(){ // Etot = Ek + m0 = γm0
 		return GetMass() + GetEnergyLab();
 	};
 	inline double		GetEnergyTotCM(){ return Ecm_tot; };

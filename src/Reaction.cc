@@ -12,9 +12,9 @@ double alpha_function( double *x, double *params ){
 	double p = params[2];
 	double qb = params[3];
 	
-	double root = rho * TMath::Tan(alpha);
-	root -= p * TMath::Sin(alpha) / qb;
-	root -= z;
+	double root = p * TMath::Sin(alpha);
+	root -= qb * rho * TMath::Tan(alpha);
+	root -= qb * z;
 
 	return root;
 
@@ -29,9 +29,8 @@ double alpha_derivative( double *x, double *params ){
 	double p = params[2];
 	double qb = params[3];
 	
-	double root = rho / qb;
-	root /= TMath::Power( TMath::Cos(alpha), 2.0 );
-	root -= p * TMath::Cos(alpha);
+	double root = p * TMath::Cos(alpha);
+	root -= qb * rho / TMath::Cos(alpha) / TMath::Cos(alpha);
 
 	return root;
 
@@ -586,7 +585,27 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	Ex  = TMath::Sqrt( Ex ) - Recoil.GetMass();
     Recoil.SetEx( Ex );
     Ejectile.SetEx( 0.0 );
+	
+	
+	
+	// Debug output
+	if( alpha > 0 || alpha < 0 ){
+		
+//		std::cout << "z_meas = " << z_meas << std::endl;
+//		std::cout << "Ep = " << en << std::endl;
+//		std::cout << "alpha = " << alpha*TMath::RadToDeg() << std::endl;
+//		std::cout << "z_corr = " << z << std::endl;
+//		std::cout << "e3_cm = " << e3_cm << std::endl;
+//		std::cout << "e4_cm = " << Recoil.GetEnergyTotCM() << std::endl;
+//		std::cout << "etot_cm = " << GetEnergyTotCM() << std::endl;
+//		std::cout << "etot_lab = " << GetEnergyTotLab() << std::endl;
+//		std::cout << "gamma = " << GetGamma() << std::endl;
+//		std::cout << "beta = " << GetBeta() << std::endl;
+//		std::cout << "theta_cm = " << Recoil.GetThetaCM()*TMath::RadToDeg() << std::endl;
+//		std::cout << "Ex = " << Recoil.GetEx() << std::endl;
+//		std::cout << std::endl;
 
+	}
 
   	return;	
 
