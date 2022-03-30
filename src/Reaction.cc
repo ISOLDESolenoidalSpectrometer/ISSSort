@@ -516,11 +516,6 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 	params[3] /= TMath::TwoPi(); 							// qb/2pi
 	
-	std::cout << "Proton beta = " << Ejectile.GetBeta() << std::endl;
-	std::cout << "CoM beta = " << GetBeta() << std::endl;
-	std::cout << "Proton gamma = " << Ejectile.GetGamma() << std::endl;
-	std::cout << "CoM gamma = " << GetGamma() << std::endl << std::endl;
-
 	// Apply the energy loss correction and solve again
 	// Keep going for 50 iterations or until we are better than 0.01% change
 	alpha = 0.5 * TMath::PiOver2();
