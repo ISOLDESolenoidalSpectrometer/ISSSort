@@ -83,8 +83,8 @@ public:
 		return std::to_string( GetA() ) + gElName.at( GetZ() );
 	};
 	inline double		GetBindingEnergy(){ return bindingE; };
-	inline double		GetEnergyLab(){ return Elab; };
-	inline double		GetEnergyTotLab(){
+	inline double		GetEnergyLab(){ return Elab; }; // kinetic E
+	inline double		GetEnergyTotLab(){ // Etot = Ek + m0
 		return GetMass() + GetEnergyLab();
 	};
 	inline double		GetEnergyTotCM(){ return Ecm_tot; };
@@ -94,7 +94,7 @@ public:
 	inline double		GetMomentumCM(){
 		return TMath::Sqrt( TMath::Power( GetEnergyTotCM(), 2.0 ) - TMath::Power( GetMass(), 2.0 ) );
 	};
-	inline double		GetGamma(){
+	inline double		GetGamma(){ // Etot = γm0
 		return GetEnergyTotLab() / GetMass();
 	};
 	inline double GetBeta(){
@@ -176,7 +176,7 @@ public:
 		return etot;
 	};
 	inline double		GetGamma(){
-		return GetEnergyTotLab() / ( Beam.GetMass() + Target.GetMass() );
+		return GetEnergyTotLab() / GetEnergyTotCM();
 	};
 	inline double GetBeta(){
 		return TMath::Sqrt( 1.0 - 1.0 / TMath::Power( GetGamma(), 2.0 ) );

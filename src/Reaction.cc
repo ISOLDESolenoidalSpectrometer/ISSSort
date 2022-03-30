@@ -516,6 +516,11 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 	params[3] /= TMath::TwoPi(); 							// qb/2pi
 	
+	std::cout << "CoM energy = " << GetEnergyTotCM() << std::endl;
+	std::cout << "Lab energy = " << GetEnergyTotLab() << std::endl;
+	std::cout << std::endl;
+
+	
 	// Apply the energy loss correction and solve again
 	// Keep going for 50 iterations or until we are better than 0.01% change
 	alpha = 0.5 * TMath::PiOver2();
@@ -572,9 +577,9 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	Recoil.SetEnergyTotCM( GetEnergyTotCM() - e3_cm );
 
 	// Theta_CM
-	theta_cm  = GetGamma() * Ejectile.GetEnergyTotCM();
-	theta_cm -= Ejectile.GetEnergyTotLab();
-	theta_cm /= GetGamma() * GetBeta() * Ejectile.GetMomentumCM();
+	theta_cm  = Ejectile.GetEnergyTotCM();
+	theta_cm -= Ejectile.GetEnergyTotLab() / GetGamma();
+	theta_cm /= GetBeta() * Ejectile.GetMomentumCM();
 	theta_cm  = TMath::ACos( theta_cm );
 	Recoil.SetThetaCM( theta_cm );
 	Ejectile.SetThetaCM( TMath::Pi() - theta_cm );
