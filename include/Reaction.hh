@@ -58,13 +58,13 @@ const std::vector<std::string> gElName = {
 /// A class to read in the reaction file in ROOT's TConfig format.
 /// And also to do the physics stuff for the reaction
 
-class Particle : public TObject {
+class ISSParticle : public TObject {
 	
 public:
 	
 	// setup functions
-	Particle() {};
-	~Particle() {};
+	ISSParticle() {};
+	~ISSParticle() {};
 	
 	// Get properties
 	inline double		GetMass_u(){
@@ -128,17 +128,17 @@ private:
 	double	Ex;			///< Excitation energy in keV
 
 	
-	ClassDef( Particle, 1 )
+	ClassDef( ISSParticle, 1 )
 	
 };
 
-class Reaction {
+class ISSReaction {
 	
 public:
 	
 	// setup functions
-	Reaction( std::string filename, Settings *myset );
-	~Reaction();
+	ISSReaction( std::string filename, ISSSettings *myset );
+	~ISSReaction();
 	
 	// Main functions
 	void AddBindingEnergy( short Ai, short Zi, TString ame_be_str );
@@ -218,7 +218,7 @@ private:
 	std::string fInputFile;
 	
 	// Settings file
-	Settings *set;
+	ISSSettings *set;
 	
 	// Mass tables
 	std::map< std::string, double > ame_be; ///< List of biniding energies from  AME2021
@@ -229,7 +229,7 @@ private:
 	double deadlayer;	///< Dead layer on array silicon in mm of Si equivalent
 	
 	// Reaction partners
-	Particle Beam, Target, Ejectile, Recoil;
+	ISSParticle Beam, Target, Ejectile, Recoil;
 	
 	// Initial properties from file
 	double Eb;		///< laboratory beam energy in keV/u

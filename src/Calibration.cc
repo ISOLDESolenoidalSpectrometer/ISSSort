@@ -1,6 +1,6 @@
 #include "Calibration.hh"
 
-Calibration::Calibration( std::string filename, Settings *myset ) {
+ISSCalibration::ISSCalibration( std::string filename, ISSSettings *myset ) {
 
 	SetFile( filename );
 	set = myset;
@@ -8,13 +8,13 @@ Calibration::Calibration( std::string filename, Settings *myset ) {
 		
 }
 
-Calibration::~Calibration() {
+ISSCalibration::~ISSCalibration() {
 
 	//std::cout << "destructor" << std::endl;
 
 }
 
-void Calibration::ReadCalibration() {
+void ISSCalibration::ReadCalibration() {
 
 	TEnv *config = new TEnv( fInputFile.data() );
 	
@@ -98,7 +98,7 @@ void Calibration::ReadCalibration() {
 	
 }
 
-float Calibration::AsicEnergy( unsigned int mod, unsigned int asic, unsigned int chan, unsigned short raw ) {
+float ISSCalibration::AsicEnergy( unsigned int mod, unsigned int asic, unsigned int chan, unsigned short raw ) {
 	
 	float energy, raw_rand;
 	TRandom *fRand = new TRandom();
@@ -130,7 +130,7 @@ float Calibration::AsicEnergy( unsigned int mod, unsigned int asic, unsigned int
 	
 }
 
-float Calibration::AsicThreshold( unsigned int mod, unsigned int asic, unsigned int chan ) {
+float ISSCalibration::AsicThreshold( unsigned int mod, unsigned int asic, unsigned int chan ) {
 	
 	if( mod < set->GetNumberOfArrayModules() &&
 	   asic < set->GetNumberOfArrayASICs() &&
@@ -144,7 +144,7 @@ float Calibration::AsicThreshold( unsigned int mod, unsigned int asic, unsigned 
 	
 }
 
-long Calibration::AsicTime( unsigned int mod, unsigned int asic ){
+long ISSCalibration::AsicTime( unsigned int mod, unsigned int asic ){
 	
 	if( mod < set->GetNumberOfArrayModules() &&
 	   asic < set->GetNumberOfArrayASICs() ) {
@@ -157,7 +157,7 @@ long Calibration::AsicTime( unsigned int mod, unsigned int asic ){
 	
 }
 
-bool Calibration::AsicEnabled( unsigned int mod, unsigned int asic ){
+bool ISSCalibration::AsicEnabled( unsigned int mod, unsigned int asic ){
 	
 	if( mod < set->GetNumberOfArrayModules() &&
 	   asic < set->GetNumberOfArrayASICs() ) {
@@ -170,7 +170,7 @@ bool Calibration::AsicEnabled( unsigned int mod, unsigned int asic ){
 	
 }
 
-float Calibration::AsicWalk( unsigned int mod, unsigned int asic, float energy ){
+float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energy ){
 	
 	float walk = 0;
 	
@@ -190,7 +190,7 @@ float Calibration::AsicWalk( unsigned int mod, unsigned int asic, float energy )
 	
 }
 
-float Calibration::CaenEnergy( unsigned int mod, unsigned int chan, unsigned short raw ) {
+float ISSCalibration::CaenEnergy( unsigned int mod, unsigned int chan, unsigned short raw ) {
 	
 	float energy, raw_rand;
 	TRandom *fRand = new TRandom();
@@ -224,7 +224,7 @@ float Calibration::CaenEnergy( unsigned int mod, unsigned int chan, unsigned sho
 	
 }
 
-float Calibration::CaenThreshold( unsigned int mod, unsigned int chan ) {
+float ISSCalibration::CaenThreshold( unsigned int mod, unsigned int chan ) {
 	
 	if( mod < set->GetNumberOfCAENModules() &&
 	   chan < set->GetNumberOfCAENChannels() ) {
@@ -237,7 +237,7 @@ float Calibration::CaenThreshold( unsigned int mod, unsigned int chan ) {
 	
 }
 
-long Calibration::CaenTime( unsigned int mod, unsigned int chan ){
+long ISSCalibration::CaenTime( unsigned int mod, unsigned int chan ){
 	
 	if( mod < set->GetNumberOfCAENModules() &&
 	   chan < set->GetNumberOfCAENChannels() ) {

@@ -1,16 +1,16 @@
 #include "Histogrammer.hh"
 
-Histogrammer::Histogrammer( Reaction *myreact, Settings *myset ){
+ISSHistogrammer::ISSHistogrammer( ISSReaction *myreact, ISSSettings *myset ){
 	
 	react = myreact;
 	set = myset;
 		
 }
 
-Histogrammer::~Histogrammer(){}
+ISSHistogrammer::~ISSHistogrammer(){}
 
 
-void Histogrammer::MakeHists() {
+void ISSHistogrammer::MakeHists() {
 
 	std::string hname, htitle;
 	std::string dirname;
@@ -629,23 +629,23 @@ void Histogrammer::MakeHists() {
 	
 }
 
-unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
+unsigned long ISSHistogrammer::FillHists( unsigned long start_fill ) {
 	
 	/// Main function to fill the histograms
 	n_entries = input_tree->GetEntries();
 
-	std::cout << " Histogrammer: number of entries in event tree = ";
+	std::cout << " ISSHistogrammer: number of entries in event tree = ";
 	std::cout << n_entries << std::endl;
 	
 	if( start_fill == n_entries ){
 	
-		std::cout << " Histogrammer: Nothing to do..." << std::endl;
+		std::cout << " ISSHistogrammer: Nothing to do..." << std::endl;
 		return n_entries;
 	
 	}
 	else {
 	
-		std::cout << " Histogrammer: Start filling at event #";
+		std::cout << " ISSHistogrammer: Start filling at event #";
 		std::cout << std::to_string( start_fill ) << std::endl;
 	
 	}
@@ -954,14 +954,14 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 	
 }
 
-void Histogrammer::Terminate() {
+void ISSHistogrammer::Terminate() {
 	
 	// Close output file
 	output_file->Close();
 	
 }
 
-void Histogrammer::SetInputFile( std::vector<std::string> input_file_names ) {
+void ISSHistogrammer::SetInputFile( std::vector<std::string> input_file_names ) {
 	
 	/// Overlaaded function for a single file or multiple files
 	input_tree = new TChain( "evt_tree" );
@@ -976,7 +976,7 @@ void Histogrammer::SetInputFile( std::vector<std::string> input_file_names ) {
 	
 }
 
-void Histogrammer::SetInputFile( std::string input_file_name ) {
+void ISSHistogrammer::SetInputFile( std::string input_file_name ) {
 	
 	/// Overloaded function for a single file or multiple files
 	input_tree = new TChain( "evt_tree" );
@@ -987,7 +987,7 @@ void Histogrammer::SetInputFile( std::string input_file_name ) {
 	
 }
 
-void Histogrammer::SetInputTree( TTree *user_tree ){
+void ISSHistogrammer::SetInputTree( TTree *user_tree ){
 	
 	// Find the tree and set branch addresses
 	input_tree = (TChain*)user_tree;

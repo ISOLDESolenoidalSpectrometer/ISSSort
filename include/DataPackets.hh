@@ -3,16 +3,16 @@
 
 #include "TObject.h"
 
-class AsicData : public TObject {
+class ISSAsicData : public TObject {
 	
 public:
 
-	AsicData();
-	AsicData( unsigned long t, unsigned short adc,
+	ISSAsicData();
+	ISSAsicData( unsigned long t, unsigned short adc,
 			  unsigned char m, unsigned char a,
 			  unsigned char c, bool h, bool th,
 			  float e, int w );
-	~AsicData();
+	~ISSAsicData();
 	
 	inline unsigned long	GetTime() { return time; };
 	inline unsigned short	GetAdcValue() { return adc_value; };
@@ -49,21 +49,21 @@ protected:
 	int				walk;
 
 	
-	ClassDef( AsicData, 3 )
+	ClassDef( ISSAsicData, 3 )
 	
 };
 
-class CaenData : public TObject {
+class ISSCaenData : public TObject {
 	
 public:
 
-	CaenData();
-	CaenData( unsigned long t, unsigned short f,
+	ISSCaenData();
+	ISSCaenData( unsigned long t, unsigned short f,
 			  std::vector<unsigned short> tr,
 			  unsigned short ql, unsigned short qs,
 			  unsigned char m, unsigned char c,
 			  bool th );
-	~CaenData();
+	~ISSCaenData();
 
 	inline unsigned long	GetTime() { return time; };
 	inline unsigned short	GetFineTime() { return finetime; };
@@ -108,17 +108,17 @@ protected:
 	float						energy;
 
 	
-	ClassDef( CaenData, 2 )
+	ClassDef( ISSCaenData, 2 )
 	
 };
 
-class InfoData : public TObject {
+class ISSInfoData : public TObject {
 	
 public:
 
-	InfoData();
-	InfoData( unsigned long t, unsigned char c, unsigned char m );
-	~InfoData();
+	ISSInfoData();
+	ISSInfoData( unsigned long t, unsigned char c, unsigned char m );
+	~ISSInfoData();
 	
 	inline unsigned long GetTime(){ return time; };
 	inline unsigned char GetCode(){ return code; };
@@ -142,11 +142,11 @@ protected:
 	/// code = 22 is T1 timestamp
 
 	
-	ClassDef( InfoData, 1 )
+	ClassDef( ISSInfoData, 1 )
 	
 };
 
-class DataPackets : public TObject {
+class ISSDataPackets : public TObject {
 	
 public:
 	
@@ -157,14 +157,14 @@ public:
 	//inline void SetData( AsicData *data ) { ClearData(); asic_packets.push_back( data ); };
 	//inline void SetData( CaenData *data ) { ClearData(); caen_packets.push_back( data ); };
 	//inline void SetData( InfoData *data ) { ClearData(); info_packets.push_back( data ); };
-	void SetData( AsicData *data );
-	void SetData( CaenData *data );
-	void SetData( InfoData *data );
+	void SetData( ISSAsicData *data );
+	void SetData( ISSCaenData *data );
+	void SetData( ISSInfoData *data );
 
 	// These methods are not very safe for access
-	inline AsicData* GetAsicData() { return &asic_packets.at(0); };
-	inline CaenData* GetCaenData() { return &caen_packets.at(0); };
-	inline InfoData* GetInfoData() { return &info_packets.at(0); };
+	inline ISSAsicData* GetAsicData() { return &asic_packets.at(0); };
+	inline ISSCaenData* GetCaenData() { return &caen_packets.at(0); };
+	inline ISSInfoData* GetInfoData() { return &info_packets.at(0); };
 	
 	// Complicated way to get the time...
 	unsigned long GetTime();
@@ -175,11 +175,11 @@ public:
 
 protected:
 	
-	std::vector<AsicData> asic_packets;
-	std::vector<CaenData> caen_packets;
-	std::vector<InfoData> info_packets;
+	std::vector<ISSAsicData> asic_packets;
+	std::vector<ISSCaenData> caen_packets;
+	std::vector<ISSInfoData> info_packets;
 
-	ClassDef( DataPackets, 1 )
+	ClassDef( ISSDataPackets, 1 )
 
 };
 

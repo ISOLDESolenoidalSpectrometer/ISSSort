@@ -1,19 +1,19 @@
 #include "Settings.hh"
 
-Settings::Settings( std::string filename ) {
+ISSSettings::ISSSettings( std::string filename ) {
 	
 	SetFile( filename );
 	ReadSettings();
 	
 }
 
-Settings::~Settings() {
+ISSSettings::~ISSSettings() {
 	
 	//std::cout << "destructor" << std::endl;
 	
 }
 
-void Settings::ReadSettings() {
+void ISSSettings::ReadSettings() {
 	
 	TEnv *config = new TEnv( fInputFile.data() );
 	
@@ -221,7 +221,7 @@ void Settings::ReadSettings() {
 }
 
 
-bool Settings::IsRecoil( unsigned int mod, unsigned int ch ) {
+bool ISSSettings::IsRecoil( unsigned int mod, unsigned int ch ) {
 	
 	/// Return true if this is a recoil event
 	if( recoil_sector[mod][ch] >= 0 ) return true;
@@ -229,7 +229,7 @@ bool Settings::IsRecoil( unsigned int mod, unsigned int ch ) {
 	
 }
 
-int Settings::GetRecoilSector( unsigned int mod, unsigned int ch ) {
+int ISSSettings::GetRecoilSector( unsigned int mod, unsigned int ch ) {
 	
 	/// Return the sector or quadrant of a recoil event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
@@ -245,7 +245,7 @@ int Settings::GetRecoilSector( unsigned int mod, unsigned int ch ) {
 	
 }
 
-int Settings::GetRecoilLayer( unsigned int mod, unsigned int ch ) {
+int ISSSettings::GetRecoilLayer( unsigned int mod, unsigned int ch ) {
 	
 	/// Return the sector or quadrant of a recoil event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
@@ -261,7 +261,7 @@ int Settings::GetRecoilLayer( unsigned int mod, unsigned int ch ) {
 	
 }
 
-bool Settings::IsMWPC( unsigned int mod, unsigned int ch ) {
+bool ISSSettings::IsMWPC( unsigned int mod, unsigned int ch ) {
 	
 	/// Return true if this is a MWPC event
 	if( mwpc_axis[mod][ch] >= 0 && mwpc_axis[mod][ch] < (int)n_mwpc_axes ) return true;
@@ -269,7 +269,7 @@ bool Settings::IsMWPC( unsigned int mod, unsigned int ch ) {
 	
 }
 
-int Settings::GetMWPCAxis( unsigned int mod, unsigned int ch ) {
+int ISSSettings::GetMWPCAxis( unsigned int mod, unsigned int ch ) {
 	
 	/// Return the axis number of an MWPC event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
@@ -285,7 +285,7 @@ int Settings::GetMWPCAxis( unsigned int mod, unsigned int ch ) {
 	
 }
 
-int Settings::GetMWPCID( unsigned int mod, unsigned int ch ) {
+int ISSSettings::GetMWPCID( unsigned int mod, unsigned int ch ) {
 	
 	/// Return the TAC number of an MWPC event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
@@ -301,7 +301,7 @@ int Settings::GetMWPCID( unsigned int mod, unsigned int ch ) {
 	
 }
 
-bool Settings::IsELUM( unsigned int mod, unsigned int ch ) {
+bool ISSSettings::IsELUM( unsigned int mod, unsigned int ch ) {
 	
 	/// Return true if this is an ELUM event
 	if( elum_sector[mod][ch] >= 0 ) return true;
@@ -310,7 +310,7 @@ bool Settings::IsELUM( unsigned int mod, unsigned int ch ) {
 }
 
 
-int Settings::GetELUMSector( unsigned int mod, unsigned int ch ) {
+int ISSSettings::GetELUMSector( unsigned int mod, unsigned int ch ) {
 	
 	/// Return the sector or quadrant of a ELUM event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
@@ -326,7 +326,7 @@ int Settings::GetELUMSector( unsigned int mod, unsigned int ch ) {
 	
 }
 
-bool Settings::IsZD( unsigned int mod, unsigned int ch ) {
+bool ISSSettings::IsZD( unsigned int mod, unsigned int ch ) {
 	
 	/// Return true if this is an ZeroDegree event
 	if( zd_layer[mod][ch] >= 0 ) return true;
@@ -335,7 +335,7 @@ bool Settings::IsZD( unsigned int mod, unsigned int ch ) {
 }
 
 
-int Settings::GetZDLayer( unsigned int mod, unsigned int ch ) {
+int ISSSettings::GetZDLayer( unsigned int mod, unsigned int ch ) {
 	
 	/// Return the layer of a ZeroDegree event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )

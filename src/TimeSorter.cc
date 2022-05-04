@@ -1,18 +1,18 @@
 #include "TimeSorter.hh"
 
-TimeSorter::TimeSorter( ){
+ISSTimeSorter::ISSTimeSorter( ){
 	
 	//std::cout << "constructor" << std::endl;
 
 }
 
-TimeSorter::~TimeSorter() {
+ISSTimeSorter::~ISSTimeSorter() {
 	
 	//std::cout << "destructor" << std::endl;
 
 }
 
-bool TimeSorter::SetInputFile( std::string input_file_name ){
+bool ISSTimeSorter::SetInputFile( std::string input_file_name ){
 	
 	// Open next Root input file.
 	input_file = new TFile( input_file_name.data(), "read" );
@@ -32,7 +32,7 @@ bool TimeSorter::SetInputFile( std::string input_file_name ){
 	
 }
 
-void TimeSorter::SetInputTree( TTree* user_tree ){
+void ISSTimeSorter::SetInputTree( TTree* user_tree ){
 
 	// Find the tree and set branch addresses
 	input_tree = user_tree;
@@ -44,7 +44,7 @@ void TimeSorter::SetInputTree( TTree* user_tree ){
 	
 }
 
-void TimeSorter::SetOutput( std::string output_file_name ){
+void ISSTimeSorter::SetOutput( std::string output_file_name ){
 	
 	// Open root file
 	output_file = new TFile( output_file_name.data(), "recreate", "Time sorted ISS data" );
@@ -71,7 +71,7 @@ void TimeSorter::SetOutput( std::string output_file_name ){
 	
 };
 
-unsigned long TimeSorter::SortFile( unsigned long start_sort ) {
+unsigned long ISSTimeSorter::SortFile( unsigned long start_sort ) {
 
 	// Start timer
 	time( &t_start );
@@ -127,8 +127,8 @@ unsigned long TimeSorter::SortFile( unsigned long start_sort ) {
 	output_file->SaveSelf();
 	//output_file->Print();
 	
-	std::cout << "End TimeSorter: time elapsed = " << time(NULL)-t_start << " sec." << std::endl;
-	log_file << "End TimeSorter: time elapsed = " << time(NULL)-t_start << " sec." << std::endl;
+	std::cout << "End ISSTimeSorter: time elapsed = " << time(NULL)-t_start << " sec." << std::endl;
+	log_file << "End ISSTimeSorter: time elapsed = " << time(NULL)-t_start << " sec." << std::endl;
 	
 	
 	return n_entries;

@@ -23,12 +23,12 @@
 /// Each channel also has a threshold (not implemented)
 /// and there is a time offset parameter for each ASIC module, too.
 
-class Calibration {
+class ISSCalibration {
 
 public:
 
-	Calibration( std::string filename, Settings *myset );
-	virtual ~Calibration();
+	ISSCalibration( std::string filename, ISSSettings *myset );
+	virtual ~ISSCalibration();
 	void ReadCalibration();
 	void PrintCalibration();
 	void SetFile( std::string filename ){
@@ -52,7 +52,7 @@ private:
 
 	std::string fInputFile;
 	
-	Settings *set;
+	ISSSettings *set;
 
 	std::vector< std::vector< std::vector<float> > > fAsicOffset;
 	std::vector< std::vector< std::vector<float> > > fAsicGain;
@@ -68,7 +68,7 @@ private:
 	std::vector< std::vector<float> > fCaenThreshold;
 	std::vector< std::vector<long> > fCaenTime;
 
-	//ClassDef(Calibration, 1)
+	//ClassDef(ISSCalibration, 1)
    
 };
 

@@ -52,21 +52,21 @@ bool flag_monitor = false;
 int mon_time = -1; // update time in seconds
 
 // Settings file
-Settings *myset;
+ISSSettings *myset;
 
 // Calibration file
-Calibration *mycal;
+ISSCalibration *mycal;
 bool overwrite_cal = false;
 
 // Reaction file
-Reaction *myreact;
+ISSReaction *myreact;
 
 // Struct for passing to the thread
 typedef struct thptr {
 	
-	Calibration *mycal;
-	Settings *myset;
-	Reaction *myreact;
+	ISSCalibration *mycal;
+	ISSSettings *myset;
+	ISSReaction *myreact;
 	
 } thread_data;
 
@@ -82,10 +82,10 @@ void* monitor_run( void* ptr ){
 //void monitor_run(){
 	
 	// This function is called to run when monitoring
-	Converter conv_mon( ((thptr*)ptr)->myset );
-	TimeSorter sort_mon;
-	EventBuilder eb_mon( ((thptr*)ptr)->myset );
-	Histogrammer hist_mon( ((thptr*)ptr)->myreact, ((thptr*)ptr)->myset );
+	ISSConverter conv_mon( ((thptr*)ptr)->myset );
+	ISSTimeSorter sort_mon;
+	ISSEventBuilder eb_mon( ((thptr*)ptr)->myset );
+	ISSHistogrammer hist_mon( ((thptr*)ptr)->myreact, ((thptr*)ptr)->myset );
 
 	// Data/Event counters
 	int start_block = 0;
@@ -300,9 +300,9 @@ int main( int argc, char *argv[] ){
 
 	}
 	
-	myset = new Settings( name_set_file );
-	mycal = new Calibration( name_cal_file, myset );
-	myreact = new Reaction( name_react_file, myset );
+	myset = new ISSSettings( name_set_file );
+	mycal = new ISSCalibration( name_cal_file, myset );
+	myreact = new ISSReaction( name_react_file, myset );
 
 
 	
@@ -350,7 +350,7 @@ int main( int argc, char *argv[] ){
 	//------------------------//
 	// Run conversion to ROOT //
 	//------------------------//
-	Converter conv( myset );
+	ISSConverter conv( myset );
 	std::cout << "\n +++ ISS Analysis:: processing Converter +++" << std::endl;
 
 	TFile *rtest;
@@ -406,7 +406,7 @@ int main( int argc, char *argv[] ){
 	//-------------------------//
 	// Do time sorting of data //
 	//-------------------------//
-	TimeSorter sort;
+	ISSTimeSorter sort;
 	std::cout << "\n +++ ISS Analysis:: processing TimeSorter +++" << std::endl;
 
 	// Check each file
@@ -457,7 +457,7 @@ int main( int argc, char *argv[] ){
 	//-----------------------//
 	// Physics event builder //
 	//-----------------------//
-	EventBuilder eb( myset );
+	ISSEventBuilder eb( myset );
 	std::cout << "\n +++ ISS Analysis:: processing EventBuilder +++" << std::endl;
 	
 	// Update calibration file if given
@@ -513,7 +513,7 @@ int main( int argc, char *argv[] ){
 	//------------------------------//
 	// Finally make some histograms //
 	//------------------------------//
-	Histogrammer hist( myreact, myset );
+	ISSHistogrammer hist( myreact, myset );
 	std::cout << "\n +++ ISS Analysis:: processing Histogrammer +++" << std::endl;
 
 	hist.SetOutput( output_name );

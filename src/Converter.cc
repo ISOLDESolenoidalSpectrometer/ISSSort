@@ -1,6 +1,6 @@
 #include "Converter.hh"
 
-Converter::Converter( Settings *myset ) {
+ISSConverter::ISSConverter( ISSSettings *myset ) {
 
 	// We need to do initialise, but only after Settings are added
 	set = myset;
@@ -30,13 +30,13 @@ Converter::Converter( Settings *myset ) {
 
 }
 
-Converter::~Converter() {
+ISSConverter::~ISSConverter() {
 	
 	//std::cout << "destructor" << std::endl;
 
 }
 
-void Converter::SetOutput( std::string output_file_name ){
+void ISSConverter::SetOutput( std::string output_file_name ){
 	
 	// Open output file
 	output_file = new TFile( output_file_name.data(), "recreate", 0 );
@@ -47,7 +47,7 @@ void Converter::SetOutput( std::string output_file_name ){
 };
 
 
-void Converter::MakeTree() {
+void ISSConverter::MakeTree() {
 
 	// Create Root tree
 	const int splitLevel = 0; // don't split branches = 0, full splitting = 99
@@ -61,14 +61,14 @@ void Converter::MakeTree() {
 	else {
 	
 		output_tree = new TTree( "iss", "iss" );
-		data_packet = new DataPackets();
-		output_tree->Branch( "data", "DataPackets", &data_packet, splitLevel );
+		data_packet = new ISSDataPackets();
+		output_tree->Branch( "data", "ISSDataPackets", &data_packet, splitLevel );
 		
 	}
 	
-	asic_data = new AsicData();
-	caen_data = new CaenData();
-	info_data = new InfoData();
+	asic_data = new ISSAsicData();
+	caen_data = new ISSCaenData();
+	info_data = new ISSInfoData();
 	
 	asic_data->ClearData();
 	caen_data->ClearData();
@@ -78,7 +78,7 @@ void Converter::MakeTree() {
 	
 }
 
-void Converter::MakeHists() {
+void ISSConverter::MakeHists() {
 	
 	std::string hname, htitle;
 	std::string dirname, maindirname, subdirname;
@@ -392,7 +392,7 @@ void Converter::MakeHists() {
 }
 
 // Function to copy the header from a DataSpy, for example
-void Converter::SetBlockHeader( char *input_header ){
+void ISSConverter::SetBlockHeader( char *input_header ){
 	
 	// Copy header
 	for( unsigned int i = 0; i < HEADER_SIZE; i++ )
@@ -403,7 +403,7 @@ void Converter::SetBlockHeader( char *input_header ){
 }
 
 // Function to process header words
-void Converter::ProcessBlockHeader( unsigned long nblock ){
+void ISSConverter::ProcessBlockHeader( unsigned long nblock ){
 		
 	// For each new header, reset the swap mode
 	swap = 0;
@@ -454,7 +454,7 @@ void Converter::ProcessBlockHeader( unsigned long nblock ){
 
 
 // Function to copy the main data from a DataSpy, for example
-void Converter::SetBlockData( char *input_data ){
+void ISSConverter::SetBlockData( char *input_data ){
 	
 	// Copy header
 	for( UInt_t i = 0; i < MAIN_SIZE; i++ )
@@ -466,7 +466,7 @@ void Converter::SetBlockData( char *input_data ){
 
 
 // Function to process data words
-void Converter::ProcessBlockData( unsigned long nblock ){
+void ISSConverter::ProcessBlockData( unsigned long nblock ){
 	
 	// Get the data in 64-bit words and check endieness and swap if needed
 	// Data format here: http://npg.dl.ac.uk/documents/edoc504/edoc504.html
@@ -607,7 +607,7 @@ void Converter::ProcessBlockData( unsigned long nblock ){
 
 }
 
-void Converter::ProcessASICData(){
+void ISSConverter::ProcessASICData(){
 
 	// ISS/R3B ASIC data format
 	my_hit = ( word_0 >> 29 ) & 0x1;
@@ -707,7 +707,7 @@ void Converter::ProcessASICData(){
 	
 }
 
-void Converter::ProcessCAENData(){
+void ISSConverter::ProcessCAENData(){
 
 	// CAEN data format
 	my_adc_data = word_0 & 0xFFFF; // 16 bits from 0
@@ -811,7 +811,7 @@ void Converter::ProcessCAENData(){
 
 }
 
-void Converter::FinishCAENData(){
+void ISSConverter::FinishCAENData(){
 	
 	// Got all items
 	if( flag_caen_data0 && flag_caen_data1 && flag_caen_data3 && flag_caen_trace ){
@@ -915,7 +915,7 @@ void Converter::FinishCAENData(){
 
 }
 
-void Converter::ProcessInfoData(){
+void ISSConverter::ProcessInfoData(){
 
 	// MIDAS info data format
 	my_mod_id = (word_0 >> 24) & 0x003F; // bits 24:29
@@ -1010,7 +1010,7 @@ void Converter::ProcessInfoData(){
 
 
 // Function to run the conversion for a single file
-int Converter::ConvertFile( std::string input_file_name,
+int ISSConverter::ConvertFile( std::string input_file_name,
 							 unsigned long start_block,
 							 long end_block ) {
 	

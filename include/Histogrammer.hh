@@ -32,12 +32,12 @@
 #endif
 
 
-class Histogrammer {
+class ISSHistogrammer {
 	
 public:
 
-	Histogrammer( Reaction *myreact, Settings *myset );
-	~Histogrammer();
+	ISSHistogrammer( ISSReaction *myreact, ISSSettings *myset );
+	~ISSHistogrammer();
 	
 	void MakeHists();
 	unsigned long FillHists( unsigned long start_fill = 0 );
@@ -59,69 +59,69 @@ public:
 	
 	// Coincidence conditions (to be put in settings file eventually)
 	// Time walk corrections can also be added here
-	inline bool	PromptCoincidence( RecoilEvt *r, ArrayEvt *a ){
+	inline bool	PromptCoincidence( ISSRecoilEvt *r, ISSArrayEvt *a ){
 		if( (double)r->GetTime() - (double)a->GetTime() > -350 &&
 			(double)r->GetTime() - (double)a->GetTime() < 250 ) return true;
 		else return false;
 	};
-	inline bool	RandomCoincidence( RecoilEvt *r, ArrayEvt *a ){
+	inline bool	RandomCoincidence( ISSRecoilEvt *r, ISSArrayEvt *a ){
 		if( (double)r->GetTime() - (double)a->GetTime() > 600 &&
 			(double)r->GetTime() - (double)a->GetTime() < 1200 ) return true;
 		else return false;
 	};
-	inline bool	PromptCoincidence( RecoilEvt *r, ElumEvt *e ){
+	inline bool	PromptCoincidence( ISSRecoilEvt *r, ISSElumEvt *e ){
 		if( (double)r->GetTime() - (double)e->GetTime() > -400 &&
 			(double)r->GetTime() - (double)e->GetTime() < 100 ) return true;
 		else return false;
 	};
-	inline bool	RandomCoincidence( RecoilEvt *r, ElumEvt *e ){
+	inline bool	RandomCoincidence( ISSRecoilEvt *r, ISSElumEvt *e ){
 		if( (double)r->GetTime() - (double)e->GetTime() > 500 &&
 			(double)r->GetTime() - (double)e->GetTime() < 1500 ) return true;
 		else return false;
 	};
-	inline bool	OnBeam( RecoilEvt *r ){
+	inline bool	OnBeam( ISSRecoilEvt *r ){
 		if( (double)r->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
 			(double)r->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
-	inline bool	OnBeam( ElumEvt *e ){
+	inline bool	OnBeam( ISSElumEvt *e ){
 		if( (double)e->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
 			(double)e->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
-	inline bool	OnBeam( ArrayEvt *a ){
+	inline bool	OnBeam( ISSArrayEvt *a ){
 		if( (double)a->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
 			(double)a->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
-	inline bool	OnBeam( ZeroDegreeEvt *z ){
+	inline bool	OnBeam( ISSZeroDegreeEvt *z ){
 		if( (double)z->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
 			(double)z->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
-	inline bool	OffBeam( RecoilEvt *r ){
+	inline bool	OffBeam( ISSRecoilEvt *r ){
 		if( (double)r->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
 			(double)r->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
-	inline bool	OffBeam( ElumEvt *e ){
+	inline bool	OffBeam( ISSElumEvt *e ){
 		if( (double)e->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
 			(double)e->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
-	inline bool	OffBeam( ArrayEvt *a ){
+	inline bool	OffBeam( ISSArrayEvt *a ){
 		if( (double)a->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
 			(double)a->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
-	inline bool	OffBeam( ZeroDegreeEvt *z ){
+	inline bool	OffBeam( ISSZeroDegreeEvt *z ){
 		if( (double)z->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
 			(double)z->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
 
 	// Recoil energy gate
-	inline bool RecoilCut( RecoilEvt *r ){
+	inline bool RecoilCut( ISSRecoilEvt *r ){
 		if( react->GetRecoilCut( r->GetSector() )->IsInside( r->GetEnergyRest(), r->GetEnergyLoss() ) )
 			return true;
 		else return false;
@@ -130,19 +130,19 @@ public:
 private:
 	
 	// Reaction
-	Reaction *react;
+	ISSReaction *react;
 	
 	// Settings file
-	Settings *set;
+	ISSSettings *set;
 	
 	/// Input tree
 	TChain *input_tree;
 	ISSEvts *read_evts = 0;
-	ArrayEvt *array_evt;
-	ArrayPEvt *arrayp_evt;
-	RecoilEvt *recoil_evt;
-	ElumEvt *elum_evt;
-	ZeroDegreeEvt *zd_evt;
+	ISSArrayEvt *array_evt;
+	ISSArrayPEvt *arrayp_evt;
+	ISSRecoilEvt *recoil_evt;
+	ISSElumEvt *elum_evt;
+	ISSZeroDegreeEvt *zd_evt;
 	
 	/// Output file
 	TFile *output_file;

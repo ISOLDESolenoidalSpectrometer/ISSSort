@@ -48,12 +48,12 @@
 
 
 
-class EventBuilder {
+class ISSEventBuilder {
 	
 public:
 
-	EventBuilder( Settings *myset );
-	virtual ~EventBuilder();
+	ISSEventBuilder( ISSSettings *myset );
+	virtual ~ISSEventBuilder();
 
 	void	SetInputFile( std::string input_file_name );
 	void	SetInputTree( TTree* user_tree );
@@ -62,7 +62,7 @@ public:
 	void	Initialise();	///< called for every event
 	void	MakeEventHists();
 	
-	inline void AddCalibration( Calibration *mycal ){
+	inline void AddCalibration( ISSCalibration *mycal ){
 		cal = mycal;
 		overwrite_cal = true;
 	};
@@ -94,31 +94,31 @@ private:
 	/// Input tree
 	TFile *input_file;
 	TTree *input_tree;
-	DataPackets *in_data = 0;
-	AsicData *asic_data;
-	CaenData *caen_data;
-	InfoData *info_data;
+	ISSDataPackets *in_data = 0;
+	ISSAsicData *asic_data;
+	ISSCaenData *caen_data;
+	ISSInfoData *info_data;
 
 	/// Outputs
 	TFile *output_file;
 	TTree *output_tree;
 	ISSEvts *write_evts;
-	ArrayEvt *array_evt;
-	ArrayPEvt *arrayp_evt;
-	RecoilEvt *recoil_evt;
-	MwpcEvt *mwpc_evt;
-	ElumEvt *elum_evt;
-	ZeroDegreeEvt *zd_evt;
+	ISSArrayEvt *array_evt;
+	ISSArrayPEvt *arrayp_evt;
+	ISSRecoilEvt *recoil_evt;
+	ISSMwpcEvt *mwpc_evt;
+	ISSElumEvt *elum_evt;
+	ISSZeroDegreeEvt *zd_evt;
 	
 	// Do calibration
-	Calibration *cal;
+	ISSCalibration *cal;
 	bool overwrite_cal;
 	
 	// Settings file
-	Settings *set;
+	ISSSettings *set;
 	
 	// Reaction information
-	Reaction *react;
+	ISSReaction *react;
 
 	
 	// These things should probably be in the settings file

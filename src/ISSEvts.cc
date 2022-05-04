@@ -1,11 +1,11 @@
 #include "ISSEvts.hh"
 
-ClassImp(ArrayEvt)
-ClassImp(ArrayPEvt)
-ClassImp(RecoilEvt)
-ClassImp(MwpcEvt)
-ClassImp(ElumEvt)
-ClassImp(ZeroDegreeEvt)
+ClassImp(ISSArrayEvt)
+ClassImp(ISSArrayPEvt)
+ClassImp(ISSRecoilEvt)
+ClassImp(ISSMwpcEvt)
+ClassImp(ISSElumEvt)
+ClassImp(ISSZeroDegreeEvt)
 ClassImp(ISSEvts)
 
 
@@ -24,12 +24,12 @@ void ISSEvts::ClearEvt() {
 	elum_event.clear();
 	zd_event.clear();
 	
-	std::vector<ArrayEvt>().swap(array_event);
-	std::vector<ArrayPEvt>().swap(arrayp_event);
-	std::vector<RecoilEvt>().swap(recoil_event);
-	std::vector<MwpcEvt>().swap(mwpc_event);
-	std::vector<ElumEvt>().swap(elum_event);
-	std::vector<ZeroDegreeEvt>().swap(zd_event);
+	std::vector<ISSArrayEvt>().swap(array_event);
+	std::vector<ISSArrayPEvt>().swap(arrayp_event);
+	std::vector<ISSRecoilEvt>().swap(recoil_event);
+	std::vector<ISSMwpcEvt>().swap(mwpc_event);
+	std::vector<ISSElumEvt>().swap(elum_event);
+	std::vector<ISSZeroDegreeEvt>().swap(zd_event);
 
 	
 	ebis = -999;
@@ -39,10 +39,10 @@ void ISSEvts::ClearEvt() {
 
 }
 
-void ISSEvts::AddEvt( ArrayEvt *event ) {
+void ISSEvts::AddEvt( ISSArrayEvt *event ) {
 	
 	// Make a copy of the event and push it back
-	ArrayEvt fill_evt;
+	ISSArrayEvt fill_evt;
 	fill_evt.SetEvent( event->GetPEnergy(),
 					   event->GetNEnergy(),
 					   event->GetPID(),
@@ -56,10 +56,10 @@ void ISSEvts::AddEvt( ArrayEvt *event ) {
 	
 }
 
-void ISSEvts::AddEvt( ArrayPEvt *event ) {
+void ISSEvts::AddEvt( ISSArrayPEvt *event ) {
 	
 	// Make a copy of the event and push it back
-	ArrayPEvt fill_evt;
+	ISSArrayPEvt fill_evt;
 	fill_evt.SetEvent( event->GetPEnergy(),
 					   event->GetNEnergy(),
 					   event->GetPID(),
@@ -73,10 +73,10 @@ void ISSEvts::AddEvt( ArrayPEvt *event ) {
 	
 }
 
-void ISSEvts::AddEvt( RecoilEvt *event ) {
+void ISSEvts::AddEvt( ISSRecoilEvt *event ) {
 	
 	// Make a copy of the event and push it back
-	RecoilEvt fill_evt;
+	ISSRecoilEvt fill_evt;
 	fill_evt.SetEvent( event->GetEnergies(),
 					   event->GetIDs(),
 					   event->GetSector(),
@@ -87,10 +87,10 @@ void ISSEvts::AddEvt( RecoilEvt *event ) {
 	
 }
 
-void ISSEvts::AddEvt( MwpcEvt *event ) {
+void ISSEvts::AddEvt( ISSMwpcEvt *event ) {
 	
 	// Make a copy of the event and push it back
-	MwpcEvt fill_evt;
+	ISSMwpcEvt fill_evt;
 	fill_evt.SetEvent( event->GetTacDiff(),
 					   event->GetAxis(),
 					   event->GetTime() );
@@ -99,10 +99,10 @@ void ISSEvts::AddEvt( MwpcEvt *event ) {
 	
 }
 
-void ISSEvts::AddEvt( ElumEvt *event ) {
+void ISSEvts::AddEvt( ISSElumEvt *event ) {
 	
 	// Make a copy of the event and push it back
-	ElumEvt fill_evt;
+	ISSElumEvt fill_evt;
 	fill_evt.SetEvent( event->GetEnergy(),
 					   event->GetID(),
 					   event->GetSector(),
@@ -112,10 +112,10 @@ void ISSEvts::AddEvt( ElumEvt *event ) {
 	
 }
 
-void ISSEvts::AddEvt( ZeroDegreeEvt *event ) {
+void ISSEvts::AddEvt( ISSZeroDegreeEvt *event ) {
 	
 	// Make a copy of the event and push it back
-	ZeroDegreeEvt fill_evt;
+	ISSZeroDegreeEvt fill_evt;
 	fill_evt.SetEvent( event->GetEnergies(),
 					   event->GetIDs(),
 					   event->GetSector(),
@@ -129,10 +129,10 @@ void ISSEvts::AddEvt( ZeroDegreeEvt *event ) {
 // ------------ //
 // Array events //
 // ------------ //
-ArrayEvt::ArrayEvt(){}
-ArrayEvt::~ArrayEvt(){}
+ISSArrayEvt::ISSArrayEvt(){}
+ISSArrayEvt::~ISSArrayEvt(){}
 
-void ArrayEvt::SetEvent( float mypen, float mynen,
+void ISSArrayEvt::SetEvent( float mypen, float mynen,
 						 unsigned char mypid, unsigned char mynid,
 						 unsigned long myptime, unsigned long myntime,
 						 unsigned char mymod, unsigned char myrow ) {
@@ -152,7 +152,7 @@ void ArrayEvt::SetEvent( float mypen, float mynen,
 	
 }
 
-void ArrayEvt::CopyEvent( ArrayEvt *in ){
+void ISSArrayEvt::CopyEvent( ISSArrayEvt *in ){
 	
 	pen 	= in->GetPEnergy();
 	ptime	= in->GetPTime();
@@ -169,25 +169,25 @@ void ArrayEvt::CopyEvent( ArrayEvt *in ){
 	
 }
 
-float ArrayEvt::GetX(){
+float ISSArrayEvt::GetX(){
 	
 	return GetPhiXY().X();
 
 }
 
-float ArrayEvt::GetY(){
+float ISSArrayEvt::GetY(){
 	
 	return GetPhiXY().Y();
 
 }
 
-float ArrayEvt::GetPhi(){
+float ISSArrayEvt::GetPhi(){
 	
 	return GetPhiXY().Phi();
 
 }
 
-float ArrayEvt::GetZ(){
+float ISSArrayEvt::GetZ(){
 	
 	/// Get the z position of the interaction
 	/// Note that there is no radial correction yet implemented
@@ -207,7 +207,7 @@ float ArrayEvt::GetZ(){
 	
 }
 
-TVector2 ArrayEvt::GetPhiXY(){
+TVector2 ISSArrayEvt::GetPhiXY(){
 	
 	/// Get the phi angle of the interaction, and in the meantime define x,y too
 	/// Note that there is no radial correction yet implemented
@@ -234,7 +234,7 @@ TVector2 ArrayEvt::GetPhiXY(){
 }
 
 
-TVector3 ArrayEvt::GetPosition(){
+TVector3 ISSArrayEvt::GetPosition(){
 	
 	TVector3 pos( GetX(), GetY(), GetZ() );
 	
@@ -245,17 +245,17 @@ TVector3 ArrayEvt::GetPosition(){
 // ------------------- //
 // Array p-side events //
 // ------------------- //
-ArrayPEvt::ArrayPEvt(){}
-ArrayPEvt::~ArrayPEvt(){}
+ISSArrayPEvt::ISSArrayPEvt(){}
+ISSArrayPEvt::~ISSArrayPEvt(){}
 
 
 // ------------- //
 // Recoil events //
 // ------------- //
-RecoilEvt::RecoilEvt(){}
-RecoilEvt::~RecoilEvt(){}
+ISSRecoilEvt::ISSRecoilEvt(){}
+ISSRecoilEvt::~ISSRecoilEvt(){}
 
-void RecoilEvt::SetEvent( std::vector<float> myenergy,
+void ISSRecoilEvt::SetEvent( std::vector<float> myenergy,
 						  std::vector<unsigned char> myid, unsigned char mysec,
 						  unsigned long mydetime, unsigned long myetime ) {
 	
@@ -269,7 +269,7 @@ void RecoilEvt::SetEvent( std::vector<float> myenergy,
 	
 }
 
-void RecoilEvt::ClearEvent(){
+void ISSRecoilEvt::ClearEvent(){
 	
 	energy.clear();
 	id.clear();
@@ -281,10 +281,10 @@ void RecoilEvt::ClearEvent(){
 // ----------- //
 // MWPC events //
 // ----------- //
-MwpcEvt::MwpcEvt(){}
-MwpcEvt::~MwpcEvt(){}
+ISSMwpcEvt::ISSMwpcEvt(){}
+ISSMwpcEvt::~ISSMwpcEvt(){}
 
-void MwpcEvt::SetEvent( int mytacdiff, unsigned char myaxis,
+void ISSMwpcEvt::SetEvent( int mytacdiff, unsigned char myaxis,
 						unsigned long mytime ) {
 	
 	tacdiff = mytacdiff;
@@ -299,10 +299,10 @@ void MwpcEvt::SetEvent( int mytacdiff, unsigned char myaxis,
 // ----------- //
 // Elum events //
 // ----------- //
-ElumEvt::ElumEvt(){}
-ElumEvt::~ElumEvt(){}
+ISSElumEvt::ISSElumEvt(){}
+ISSElumEvt::~ISSElumEvt(){}
 
-void ElumEvt::SetEvent( float myenergy, unsigned char myid,
+void ISSElumEvt::SetEvent( float myenergy, unsigned char myid,
 						unsigned char mysec, unsigned long mytime ) {
 	
 	energy = myenergy;
@@ -318,10 +318,10 @@ void ElumEvt::SetEvent( float myenergy, unsigned char myid,
 // ----------------- //
 // ZeroDegree events //
 // ----------------- //
-ZeroDegreeEvt::ZeroDegreeEvt(){}
-ZeroDegreeEvt::~ZeroDegreeEvt(){}
+ISSZeroDegreeEvt::ISSZeroDegreeEvt(){}
+ISSZeroDegreeEvt::~ISSZeroDegreeEvt(){}
 
-void ZeroDegreeEvt::SetEvent( std::vector<float> myenergy,
+void ISSZeroDegreeEvt::SetEvent( std::vector<float> myenergy,
 							  std::vector<unsigned char> myid, unsigned char mysec,
 							  unsigned long mydetime, unsigned long myetime ) {
 	
@@ -335,7 +335,7 @@ void ZeroDegreeEvt::SetEvent( std::vector<float> myenergy,
 	
 }
 
-void ZeroDegreeEvt::ClearEvent(){
+void ISSZeroDegreeEvt::ClearEvent(){
 	
 	energy.clear();
 	id.clear();

@@ -30,12 +30,12 @@
 # include "DataPackets.hh"
 #endif
 
-class Converter {
+class ISSConverter {
 
 public:
 	
-	Converter( Settings *myset );
-	~Converter();
+	ISSConverter( ISSSettings *myset );
+	~ISSConverter();
 	
 
 	int ConvertFile( std::string input_file_name,
@@ -67,7 +67,7 @@ public:
 	inline TFile* GetFile(){ return output_file; };
 	inline TTree* GetTree(){ return output_tree; };
 
-	inline void AddCalibration( Calibration *mycal ){ cal = mycal; };
+	inline void AddCalibration( ISSCalibration *mycal ){ cal = mycal; };
 	inline void SourceOnly(){ flag_source = true; };
 
 
@@ -200,10 +200,10 @@ private:
 	UInt_t block_test;
 
 	// Data types
-	DataPackets *data_packet;
-	AsicData *asic_data;
-	CaenData *caen_data;
-	InfoData *info_data;
+	ISSDataPackets *data_packet;
+	ISSAsicData *asic_data;
+	ISSCaenData *caen_data;
+	ISSInfoData *info_data;
 	
 	// Output stuff
 	TFile *output_file;
@@ -237,10 +237,10 @@ private:
 	std::vector<TH1F*> hnside;
 	
 	// 	Settings file
-	Settings *set;
+	ISSSettings *set;
 
 	// 	Calibrator
-	Calibration *cal;
+	ISSCalibration *cal;
 
 
 };

@@ -1,6 +1,6 @@
 #include "EventBuilder.hh"
 
-EventBuilder::EventBuilder( Settings *myset ){
+ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
 	
 	// First get the settings
 	set = myset;
@@ -108,7 +108,7 @@ EventBuilder::EventBuilder( Settings *myset ){
 	
 }
 
-EventBuilder::~EventBuilder(){
+ISSEventBuilder::~ISSEventBuilder(){
 	
 	//delete output_tree;
 	//delete write_evts;
@@ -119,7 +119,7 @@ EventBuilder::~EventBuilder(){
 
 }
 
-void EventBuilder::StartFile(){
+void ISSEventBuilder::StartFile(){
 	
 	// Call for every new file
 	// Reset counters etc.
@@ -179,7 +179,7 @@ void EventBuilder::StartFile(){
 	
 }
 
-void EventBuilder::SetInputFile( std::string input_file_name ) {
+void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
 	
 	/// Overloaded function for a single file or multiple files
 	//input_tree = new TTree( "iss" );
@@ -203,7 +203,7 @@ void EventBuilder::SetInputFile( std::string input_file_name ) {
 	
 }
 
-void EventBuilder::SetInputTree( TTree *user_tree ){
+void ISSEventBuilder::SetInputTree( TTree *user_tree ){
 	
 	// Find the tree and set branch addresses
 	input_tree = user_tree;
@@ -215,16 +215,16 @@ void EventBuilder::SetInputTree( TTree *user_tree ){
 	
 }
 
-void EventBuilder::SetOutput( std::string output_file_name ) {
+void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 
 	// These are the branches we need
 	write_evts = new ISSEvts();
-	array_evt = new ArrayEvt();
-	arrayp_evt = new ArrayPEvt();
-	recoil_evt = new RecoilEvt();
-	mwpc_evt = new MwpcEvt();
-	elum_evt = new ElumEvt();
-	zd_evt = new ZeroDegreeEvt();
+	array_evt = new ISSArrayEvt();
+	arrayp_evt = new ISSArrayPEvt();
+	recoil_evt = new ISSRecoilEvt();
+	mwpc_evt = new ISSMwpcEvt();
+	elum_evt = new ISSElumEvt();
+	zd_evt = new ISSZeroDegreeEvt();
 
 	// ------------------------------------------------------------------------ //
 	// Create output file and create events tree
@@ -238,7 +238,7 @@ void EventBuilder::SetOutput( std::string output_file_name ) {
 	
 }
 
-void EventBuilder::Initialise(){
+void ISSEventBuilder::Initialise(){
 
 	/// This is called at the end of every execution/loop
 	
@@ -283,7 +283,7 @@ void EventBuilder::Initialise(){
 	
 }
 
-unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
+unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 	
 	/// Function to loop over the sort tree and build array and recoil events
 
@@ -769,7 +769,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 	// Clean up
 	//--------------------------
 
-	std::cout << "\n EventBuilder finished..." << std::endl;
+	std::cout << "\n ISSEventBuilder finished..." << std::endl;
 	std::cout << "  ASIC data packets = " << n_asic_data << std::endl;
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 		std::cout << "   Module " << i << " pause = " << n_asic_pause[i] << std::endl;
@@ -812,7 +812,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 }
 
 
-void EventBuilder::ArrayFinder() {
+void ISSEventBuilder::ArrayFinder() {
 	
 	std::vector<unsigned int> pindex;
 	std::vector<unsigned int> nindex;
@@ -1338,7 +1338,7 @@ void EventBuilder::ArrayFinder() {
 
 }
 
-void EventBuilder::RecoilFinder() {
+void ISSEventBuilder::RecoilFinder() {
 		
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
@@ -1394,7 +1394,7 @@ void EventBuilder::RecoilFinder() {
 	
 }
 
-void EventBuilder::MwpcFinder() {
+void ISSEventBuilder::MwpcFinder() {
 
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
@@ -1454,7 +1454,7 @@ void EventBuilder::MwpcFinder() {
 	
 }
 
-void EventBuilder::ElumFinder() {
+void ISSEventBuilder::ElumFinder() {
 	
 	// Loop over ELUM events
 	for( unsigned int i = 0; i < een_list.size(); ++i ) {
@@ -1474,7 +1474,7 @@ void EventBuilder::ElumFinder() {
 	
 }
 
-void EventBuilder::ZeroDegreeFinder() {
+void ISSEventBuilder::ZeroDegreeFinder() {
 	
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
@@ -1525,7 +1525,7 @@ void EventBuilder::ZeroDegreeFinder() {
 	
 }
 
-void EventBuilder::MakeEventHists(){
+void ISSEventBuilder::MakeEventHists(){
 	
 	std::string hname, htitle;
 	std::string dirname, maindirname, subdirname;
@@ -1793,7 +1793,7 @@ void EventBuilder::MakeEventHists(){
 	
 }
 
-void EventBuilder::CleanHists() {
+void ISSEventBuilder::CleanHists() {
 
 	// Clean up the histograms to save memory for later
 	for( unsigned int i = 0; i < pn_11.size(); i++ ) {

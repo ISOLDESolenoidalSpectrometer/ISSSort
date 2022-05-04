@@ -12,12 +12,12 @@
 /// This has the number of modules, channels and things
 /// It also defines which detectors are which
 
-class Settings {
+class ISSSettings {
 
 public:
 
-	Settings( std::string filename );
-	virtual ~Settings();
+	ISSSettings( std::string filename );
+	virtual ~ISSSettings();
 	
 	void ReadSettings();
 	void PrintSettings();

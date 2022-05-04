@@ -9,13 +9,13 @@
 #include "TVector3.h"
 #include "TObject.h"
 
-class ArrayEvt : public TObject {
+class ISSArrayEvt : public TObject {
 
 public:
 	
 	// setup functions
-	ArrayEvt();
-	~ArrayEvt();
+	ISSArrayEvt();
+	~ISSArrayEvt();
 
 	// Event reconstruction
 	void SetEvent( float mypen, float mynen,
@@ -24,7 +24,7 @@ public:
 				   unsigned char mymod, unsigned char row );
 	
 	// Copy event
-	void CopyEvent( ArrayEvt *in );
+	void CopyEvent( ISSArrayEvt *in );
 	
 	// Return functions
 	inline float 			GetEnergy(){ return pen; };
@@ -59,32 +59,32 @@ private:
 	unsigned long	ntime;	///< n-side timestamp
 
 
-	ClassDef( ArrayEvt, 2 )
+	ClassDef( ISSArrayEvt, 2 )
 
 };
 
-class ArrayPEvt : public ArrayEvt {
+class ISSArrayPEvt : public ISSArrayEvt {
 
 public:
 	
 	// setup functions
-	ArrayPEvt();
-	~ArrayPEvt();
+	ISSArrayPEvt();
+	~ISSArrayPEvt();
 
 private:
 
 
-	ClassDef( ArrayPEvt, 1 )
+	ClassDef( ISSArrayPEvt, 1 )
 
 };
 
-class RecoilEvt : public TObject {
+class ISSRecoilEvt : public TObject {
 
 public:
 		
 	// setup functions
-	RecoilEvt();
-	~RecoilEvt();
+	ISSRecoilEvt();
+	~ISSRecoilEvt();
 
 	void SetEvent( std::vector<float> myenergy,
 				   std::vector<unsigned char> myid, unsigned char mysec,
@@ -155,17 +155,17 @@ private:
 	unsigned long				detime;	///< time stamp of dE event
 	unsigned long				etime;	///< time stamp of E event
 
-	ClassDef( RecoilEvt, 2 )
+	ClassDef( ISSRecoilEvt, 2 )
 
 };
 
-class MwpcEvt : public TObject {
+class ISSMwpcEvt : public TObject {
 
 public:
 		
 	// setup functions
-	MwpcEvt();
-	~MwpcEvt();
+	ISSMwpcEvt();
+	~ISSMwpcEvt();
 	
 	void SetEvent( int mytacdiff, unsigned char myaxis,
 				   unsigned long mytime );
@@ -186,17 +186,17 @@ private:
 	unsigned char	axis;		///< axis ID, usually just x=0 and y=1
 	unsigned long	time;		///< time stamp of the MWPC event
 	
-	ClassDef( MwpcEvt, 1 );
+	ClassDef( ISSMwpcEvt, 1 );
 
 };
 
-class ElumEvt : public TObject {
+class ISSElumEvt : public TObject {
 
 public:
 		
 	// setup functions
-	ElumEvt();
-	~ElumEvt();
+	ISSElumEvt();
+	~ISSElumEvt();
 	
 	void SetEvent( float myenergy, unsigned char myid,
 				   unsigned char mysec, unsigned long mytime );
@@ -220,17 +220,17 @@ private:
 	unsigned char	sec;	///< sector or quandrant of the ELUM detector, i.e. 0-3 when split into 4
 	unsigned long	time;	///< time stamp of the ELUM event
 	
-	ClassDef( ElumEvt, 2 );
+	ClassDef( ISSElumEvt, 2 );
 
 };
 
-class ZeroDegreeEvt : public TObject {
+class ISSZeroDegreeEvt : public TObject {
 
 public:
 		
 	// setup functions
-	ZeroDegreeEvt();
-	~ZeroDegreeEvt();
+	ISSZeroDegreeEvt();
+	~ISSZeroDegreeEvt();
 
 	void SetEvent( std::vector<float> myenergy,
 				   std::vector<unsigned char> myid, unsigned char mysec,
@@ -296,7 +296,7 @@ private:
 	unsigned long				detime;	///< time stamp of ZeroDegree event
 	unsigned long				etime;	///< time stamp of ZeroDegree event
 
-	ClassDef( ZeroDegreeEvt, 2 )
+	ClassDef( ISSZeroDegreeEvt, 2 )
 
 };
 
@@ -311,12 +311,12 @@ public:
 	ISSEvts();
 	~ISSEvts();
 	
-	void AddEvt( ArrayEvt *event );
-	void AddEvt( ArrayPEvt *event );
-	void AddEvt( RecoilEvt *event );
-	void AddEvt( MwpcEvt *event );
-	void AddEvt( ElumEvt *event );
-	void AddEvt( ZeroDegreeEvt *event );
+	void AddEvt( ISSArrayEvt *event );
+	void AddEvt( ISSArrayPEvt *event );
+	void AddEvt( ISSRecoilEvt *event );
+	void AddEvt( ISSMwpcEvt *event );
+	void AddEvt( ISSElumEvt *event );
+	void AddEvt( ISSZeroDegreeEvt *event );
 	
 	inline unsigned int GetArrayMultiplicity(){ return array_event.size(); };
 	inline unsigned int GetArrayPMultiplicity(){ return arrayp_event.size(); };
@@ -325,27 +325,27 @@ public:
 	inline unsigned int GetElumMultiplicity(){ return elum_event.size(); };
 	inline unsigned int GetZeroDegreeMultiplicity(){ return zd_event.size(); };
 	
-	inline ArrayEvt* GetArrayEvt( unsigned int i ){
+	inline ISSArrayEvt* GetArrayEvt( unsigned int i ){
 		if( i < array_event.size() ) return &array_event.at(i);
 		else return nullptr;
 	};
-	inline ArrayPEvt* GetArrayPEvt( unsigned int i ){
+	inline ISSArrayPEvt* GetArrayPEvt( unsigned int i ){
 		if( i < arrayp_event.size() ) return &arrayp_event.at(i);
 		else return nullptr;
 	};
-	inline RecoilEvt* GetRecoilEvt( unsigned int i ){
+	inline ISSRecoilEvt* GetRecoilEvt( unsigned int i ){
 		if( i < recoil_event.size() ) return &recoil_event.at(i);
 		else return nullptr;
 	};
-	inline MwpcEvt* GetMwpcEvt( unsigned int i ){
+	inline ISSMwpcEvt* GetMwpcEvt( unsigned int i ){
 		if( i < mwpc_event.size() ) return &mwpc_event.at(i);
 		else return nullptr;
 	};
-	inline ElumEvt* GetElumEvt( unsigned int i ){
+	inline ISSElumEvt* GetElumEvt( unsigned int i ){
 		if( i < elum_event.size() ) return &elum_event.at(i);
 		else return nullptr;
 	};
-	inline ZeroDegreeEvt* GetZeroDegreeEvt( unsigned int i ){
+	inline ISSZeroDegreeEvt* GetZeroDegreeEvt( unsigned int i ){
 		if( i < zd_event.size() ) return &zd_event.at(i);
 		else return nullptr;
 	};
@@ -366,12 +366,12 @@ private:
 	unsigned long ebis;		///< absolute EBIS pulse time
 	unsigned long t1;		///< absolute proton pulse time
 
-	std::vector<ArrayEvt> array_event;
-	std::vector<ArrayPEvt> arrayp_event;
-	std::vector<RecoilEvt> recoil_event;
-	std::vector<MwpcEvt> mwpc_event;
-	std::vector<ElumEvt> elum_event;
-	std::vector<ZeroDegreeEvt> zd_event;
+	std::vector<ISSArrayEvt> array_event;
+	std::vector<ISSArrayPEvt> arrayp_event;
+	std::vector<ISSRecoilEvt> recoil_event;
+	std::vector<ISSMwpcEvt> mwpc_event;
+	std::vector<ISSElumEvt> elum_event;
+	std::vector<ISSZeroDegreeEvt> zd_event;
 
 	ClassDef( ISSEvts, 3 )
 	

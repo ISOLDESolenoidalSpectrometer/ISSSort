@@ -13,12 +13,12 @@
 #include <TTree.h>
 #include <TTreeIndex.h>
 
-class TimeSorter {
+class ISSTimeSorter {
 
 public:
 
-	TimeSorter();
-	virtual ~TimeSorter();
+	ISSTimeSorter();
+	virtual ~ISSTimeSorter();
 	
 	unsigned long SortFile( unsigned long start_sort = 0 );
 	

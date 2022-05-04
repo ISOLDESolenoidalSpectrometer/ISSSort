@@ -1,7 +1,7 @@
 #include "Reaction.hh"
 
-ClassImp( Particle )
-ClassImp( Reaction )
+ClassImp( ISSParticle )
+ClassImp( ISSReaction )
 
 double alpha_function( double *x, double *params ){
 
@@ -38,7 +38,7 @@ double alpha_derivative( double *x, double *params ){
 
 
 // Reaction things
-Reaction::Reaction( std::string filename, Settings *myset ){
+ISSReaction::ISSReaction( std::string filename, ISSSettings *myset ){
 		
 	// Read in mass tables
 	ReadMassTables();
@@ -55,7 +55,7 @@ Reaction::Reaction( std::string filename, Settings *myset ){
 	
 }
 
-Reaction::~Reaction(){
+ISSReaction::~ISSReaction(){
 
 	for( unsigned int i = 0; i < recoil_cut.size(); ++i )
 		delete (recoil_cut[i]);
@@ -64,7 +64,7 @@ Reaction::~Reaction(){
 
 }
 
-void Reaction::AddBindingEnergy( short Ai, short Zi, TString ame_be_str ) {
+void ISSReaction::AddBindingEnergy( short Ai, short Zi, TString ame_be_str ) {
 	
 	// A key for the isotope
 	std::string isotope_key;
@@ -86,7 +86,7 @@ void Reaction::AddBindingEnergy( short Ai, short Zi, TString ame_be_str ) {
 	
 }
 
-void Reaction::ReadMassTables() {
+void ISSReaction::ReadMassTables() {
 
 	// Input data file is in the source code
 	// AME_FILE is passed as a definition at compilation time in Makefile
@@ -152,7 +152,7 @@ void Reaction::ReadMassTables() {
 
 }
 
-void Reaction::ReadReaction() {
+void ISSReaction::ReadReaction() {
 
 	TEnv *config = new TEnv( fInputFile.data() );
 	
@@ -329,7 +329,7 @@ void Reaction::ReadReaction() {
 
 }
 
-double Reaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> &g ) {
+double ISSReaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> &g ) {
 
 	/// Returns the energy loss at a given initial energy and distance travelled
 	/// A negative distance will add the energy back on, i.e. travelling backwards
@@ -349,7 +349,7 @@ double Reaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> 
 
 }
 
-bool Reaction::ReadStoppingPowers( std::string isotope1, std::string isotope2, std::unique_ptr<TGraph> &g ) {
+bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2, std::unique_ptr<TGraph> &g ) {
 	 
 	/// Open stopping power files and make TGraphs of data
 	
@@ -491,7 +491,7 @@ bool Reaction::ReadStoppingPowers( std::string isotope1, std::string isotope2, s
 }
 
 
-void Reaction::MakeReaction( TVector3 vec, double en ){
+void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	
 	// Apply the X and Y offsets directly to the TVector3 input
 	// We move the array opposite to the target, which replicates the same

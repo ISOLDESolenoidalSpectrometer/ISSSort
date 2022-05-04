@@ -1,39 +1,39 @@
 #include "DataPackets.hh"
 
-ClassImp(AsicData)
-ClassImp(CaenData)
-ClassImp(InfoData)
-ClassImp(DataPackets)
+ClassImp(ISSAsicData)
+ClassImp(ISSCaenData)
+ClassImp(ISSInfoData)
+ClassImp(ISSDataPackets)
 
-AsicData::AsicData(){}
-AsicData::~AsicData(){}
-AsicData::AsicData( unsigned long t, unsigned short adc, unsigned char m,
+ISSAsicData::ISSAsicData(){}
+ISSAsicData::~ISSAsicData(){}
+ISSAsicData::ISSAsicData( unsigned long t, unsigned short adc, unsigned char m,
 					unsigned char a, unsigned char c, bool h, bool th, float e, int w ) :
 					time(t), adc_value(adc), mod(m), asic(a), ch(c), hit_bit(h), thres(th), energy(e), walk(w) {}
 
-CaenData::CaenData(){}
-CaenData::~CaenData(){}
-CaenData::CaenData( unsigned long t, unsigned short f,
+ISSCaenData::ISSCaenData(){}
+ISSCaenData::~ISSCaenData(){}
+ISSCaenData::ISSCaenData( unsigned long t, unsigned short f,
 				    std::vector<unsigned short> tr,
 					unsigned short ql, unsigned short qs,
 					unsigned char m, unsigned char c,
 				    bool th ) :
 					time(t), finetime(f), trace(tr), Qlong(ql), Qshort(qs), mod(m), ch(c), thres(th) {}
 
-InfoData::InfoData(){}
-InfoData::~InfoData(){}
-InfoData::InfoData( unsigned long t, unsigned char c, unsigned char m ) :
+ISSInfoData::ISSInfoData(){}
+ISSInfoData::~ISSInfoData(){}
+ISSInfoData::ISSInfoData( unsigned long t, unsigned char c, unsigned char m ) :
 					time(t), code(c), mod(m) {}
 
 
-void DataPackets::SetData( AsicData *data ){
+void ISSDataPackets::SetData( ISSAsicData *data ){
 	
 	// Reset the vector to size = 0
 	// We only want to have one element per Tree entry
 	ClearData();
 	
 	// Make a copy of the input data and push it back
-	AsicData fill_data;
+	ISSAsicData fill_data;
 	fill_data.SetTime( data->GetTime() );
 	fill_data.SetWalk( data->GetWalk() );
 	fill_data.SetAdcValue( data->GetAdcValue() );
@@ -48,14 +48,14 @@ void DataPackets::SetData( AsicData *data ){
 	
 }
 
-void DataPackets::SetData( CaenData *data ){
+void ISSDataPackets::SetData( ISSCaenData *data ){
 	
 	// Reset the vector to size = 0
 	// We only want to have one element per Tree entry
 	ClearData();
 	
 	// Make a copy of the input data and push it back
-	CaenData fill_data;
+	ISSCaenData fill_data;
 	
 	fill_data.SetTime( data->GetTime() );
 	fill_data.SetFineTime( data->GetFineTime() );
@@ -70,14 +70,14 @@ void DataPackets::SetData( CaenData *data ){
 
 }
 
-void DataPackets::SetData( InfoData *data ){
+void ISSDataPackets::SetData( ISSInfoData *data ){
 	
 	// Reset the vector to size = 0
 	// We only want to have one element per Tree entry
 	ClearData();
 	
 	// Make a copy of the input data and push it back
-	InfoData fill_data;
+	ISSInfoData fill_data;
 	fill_data.SetTime( data->GetTime() );
 	fill_data.SetCode( data->GetCode() );
 	fill_data.SetModule( data->GetModule() );
@@ -87,7 +87,7 @@ void DataPackets::SetData( InfoData *data ){
 }
 
 
-void DataPackets::ClearData(){
+void ISSDataPackets::ClearData(){
 	
 	asic_packets.clear();
 	caen_packets.clear();
@@ -97,7 +97,7 @@ void DataPackets::ClearData(){
 	
 }
 
-unsigned long DataPackets::GetTime(){
+unsigned long ISSDataPackets::GetTime(){
 		
 	if( IsAsic() ) return GetAsicData()->GetTime();
 	if( IsCaen() ) return GetCaenData()->GetTime();
@@ -107,19 +107,19 @@ unsigned long DataPackets::GetTime(){
 	
 }
 
-UInt_t DataPackets::GetTimeMSB(){
+UInt_t ISSDataPackets::GetTimeMSB(){
 	
 	return ( (this->GetTime() >> 32) & 0x0000FFFF );
 	
 }
 
-UInt_t DataPackets::GetTimeLSB(){
+UInt_t ISSDataPackets::GetTimeLSB(){
 	
 	return (UInt_t)this->GetTime();
 	
 }
 
-void CaenData::ClearData(){
+void ISSCaenData::ClearData(){
 	
 	time = 0;
 	finetime = 0;
@@ -134,7 +134,7 @@ void CaenData::ClearData(){
 	
 }
 
-void AsicData::ClearData(){
+void ISSAsicData::ClearData(){
 	
 	time = 0;
 	walk = 0;
@@ -149,7 +149,7 @@ void AsicData::ClearData(){
 	
 }
 
-void InfoData::ClearData(){
+void ISSInfoData::ClearData(){
 	
 	time = 0;
 	code = 0;
