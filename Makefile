@@ -53,6 +53,7 @@ OBJECTS =  		$(SRC_DIR)/Calibration.o \
 				$(SRC_DIR)/DataPackets.o \
 				$(SRC_DIR)/Histogrammer.o \
 				$(SRC_DIR)/ISSEvts.o \
+				$(SRC_DIR)/ISSGUI.o \
 				$(SRC_DIR)/Reaction.o \
 				$(SRC_DIR)/Settings.o \
 				$(SRC_DIR)/TimeSorter.o \
@@ -65,6 +66,7 @@ DEPENDENCIES =  $(INC_DIR)/Calibration.hh \
 				$(INC_DIR)/DataPackets.hh \
 				$(INC_DIR)/Histogrammer.hh \
 				$(INC_DIR)/ISSEvts.hh \
+				$(INC_DIR)/ISSGUI.hh \
 				$(INC_DIR)/Reaction.hh \
 				$(INC_DIR)/Settings.hh \
 				$(INC_DIR)/TimeSorter.hh \

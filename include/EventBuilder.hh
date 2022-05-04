@@ -15,6 +15,9 @@
 #include <TProfile.h>
 #include <TVector2.h>
 #include <TVector3.h>
+#include <TGProgressBar.h>
+#include <TSystem.h>
+
 
 // Settings header
 #ifndef __SETTINGS_HH
@@ -88,6 +91,11 @@ public:
 	};
 	void CleanHists();
 
+	inline void AddProgressBar( std::shared_ptr<TGProgressBar> myprog ){
+		prog = myprog;
+		_prog_ = true;
+	};
+
 
 private:
 	
@@ -120,7 +128,10 @@ private:
 	// Reaction information
 	ISSReaction *react;
 
-	
+	// Progress bar
+	bool _prog_;
+	std::shared_ptr<TGProgressBar> prog;
+
 	// These things should probably be in the settings file
 	long build_window;  /// length of build window in ns
 	

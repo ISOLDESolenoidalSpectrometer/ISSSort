@@ -14,6 +14,9 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <TProfile.h>
+#include <TGProgressBar.h>
+#include <TSystem.h>
+
 
 // Settings header
 #ifndef __SETTINGS_HH
@@ -70,6 +73,10 @@ public:
 	inline void AddCalibration( ISSCalibration *mycal ){ cal = mycal; };
 	inline void SourceOnly(){ flag_source = true; };
 
+	inline void AddProgressBar( std::shared_ptr<TGProgressBar> myprog ){
+		prog = myprog;
+		_prog_ = true;
+	};
 
 
 private:
@@ -241,6 +248,10 @@ private:
 
 	// 	Calibrator
 	ISSCalibration *cal;
+
+	// Progress bar
+	bool _prog_;
+	std::shared_ptr<TGProgressBar> prog;
 
 
 };

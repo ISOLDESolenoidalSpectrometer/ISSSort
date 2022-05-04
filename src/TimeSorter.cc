@@ -100,10 +100,18 @@ unsigned long ISSTimeSorter::SortFile( unsigned long start_sort ) {
 			
 			if( i % (nb_idx/100) == 0 || i+1 == nb_idx ) {
 				
-				std::cout << " " << std::setw(6) << std::setprecision(4);
-				std::cout << (float)(i+1)*100.0/(float)nb_idx << "%    \r";
-				std::cout.flush();
+				// Percent complete
+				float percent = (float)(i+1)*100.0/(float)nb_idx;
 				
+				// Progress bar in GUI
+				if( _prog_ ) prog->SetPosition( percent );
+
+				// Progress bar in terminal
+				std::cout << " " << std::setw(6) << std::setprecision(4);
+				std::cout << percent << "%    \r";
+				std::cout.flush();
+				gSystem->ProcessEvents();
+
 			}
 
 		}

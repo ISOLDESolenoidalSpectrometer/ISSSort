@@ -12,6 +12,9 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TTreeIndex.h>
+#include <TGProgressBar.h>
+#include <TSystem.h>
+
 
 class ISSTimeSorter {
 
@@ -32,6 +35,11 @@ public:
 	};
 	inline TFile* GetFile(){ return output_file; };
 	inline TTree* GetTree(){ return output_tree; };
+	
+	inline void AddProgressBar( std::shared_ptr<TGProgressBar> myprog ){
+		prog = myprog;
+		_prog_ = true;
+	};
 
 
 private:
@@ -51,6 +59,10 @@ private:
 	
 	// Sort time
 	time_t t_start;
+
+	// Progress bar
+	bool _prog_;
+	std::shared_ptr<TGProgressBar> prog;
 
 };
 

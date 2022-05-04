@@ -756,10 +756,18 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 		
 		if( i % (n_entries/100) == 0 || i+1 == n_entries ) {
 			
+			// Percent complete
+			float percent = (float)(i+1)*100.0/(float)n_entries;
+
+			// Progress bar in GUI
+			if( _prog_ ) prog->SetPosition( percent );
+
+			// Progress bar in terminal
 			std::cout << " " << std::setw(6) << std::setprecision(4);
-			std::cout << (float)(i+1)*100.0/(float)n_entries << "%    \r";
+			std::cout << percent << "%    \r";
 			std::cout.flush();
-			
+			gSystem->ProcessEvents();
+
 		}
 		
 		

@@ -15,6 +15,9 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <TCutG.h>
+#include <TGProgressBar.h>
+#include <TSystem.h>
+
 
 // Reaction header
 #ifndef __REACTION_HH
@@ -56,6 +59,12 @@ public:
 	};
 
 	inline TFile* GetFile(){ return output_file; };
+	
+	inline void AddProgressBar( std::shared_ptr<TGProgressBar> myprog ){
+		prog = myprog;
+		_prog_ = true;
+	};
+
 	
 	// Coincidence conditions (to be put in settings file eventually)
 	// Time walk corrections can also be added here
@@ -147,7 +156,10 @@ private:
 	/// Output file
 	TFile *output_file;
 	
-	
+	// Progress bar
+	bool _prog_;
+	std::shared_ptr<TGProgressBar> prog;
+
 	// Counters
 	unsigned long n_entries;
 	

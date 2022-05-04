@@ -1065,12 +1065,20 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 		// Take one block each time and analyze it.
 		if( nblock % 200 == 0 || nblock+1 == BLOCKS_NUM ) {
 			
-			std::cout << " " << std::setw(8) << std::setprecision(4);
-			std::cout << (float)(nblock+1)*100.0/(float)BLOCKS_NUM << "%\r";
-			std::cout.flush();
+			// Percent complete
+			float percent = (float)(nblock+1)*100.0/(float)BLOCKS_NUM;
 			
+			// Progress bar in GUI
+			if( _prog_ ) prog->SetPosition( percent );
+
+			// Progress bar in terminal
+			std::cout << " " << std::setw(8) << std::setprecision(4);
+			std::cout << percent << "%\r";
+			std::cout.flush();
+			gSystem->ProcessEvents();
+
 		}
-		
+
 		
 		// Get the header.
 		input_file.read( (char*)&block_header, HEADER_SIZE );
