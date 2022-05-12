@@ -271,9 +271,9 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 
 	}
 
-	d *= 0.953;							// p-side strip pitch = 0.953 mm
-	d += 1.508;							// distance from wafer edge to active region
-	d += 125.5 * (3.0 - (float)row);	// move to correct row (125.0 mm wafer length + 0.5 mm inter-wafer gap)
+	z *= 0.953;							// p-side strip pitch = 0.953 mm
+	z += 1.508;							// distance from wafer edge to active region
+	z += 125.5 * (3.0 - (float)row);	// move to correct row (125.0 mm wafer length + 0.5 mm inter-wafer gap)
 
 	// Assume it's in the centre of the side
 	TVector2 vec2( 26.75, 0.0 );
