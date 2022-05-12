@@ -634,7 +634,7 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 		Ejectile.SetEnergyLab( en - eloss );
 		
 		// First we recover the energy lost in the target
-		dist = -0.5 * target_thickness / TMath::Abs( TMath::Cos( alpha ) );
+		dist = -0.5 * target_thickness / TMath::Abs( TMath::Sin( alpha ) );
 		eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
 		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
 		
