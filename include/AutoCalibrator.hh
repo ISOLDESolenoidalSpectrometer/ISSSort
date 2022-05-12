@@ -18,6 +18,8 @@
 #include <TGProgressBar.h>
 #include <TSystem.h>
 #include <TStyle.h>
+#include "Math/MinimizerOptions.h"
+
 
 // Settings header
 #ifndef __SETTINGS_HH

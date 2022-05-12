@@ -12,7 +12,6 @@
 #include "TEnv.h"
 #include "TRandom.h"
 #include "TMath.h"
-#include "Math/MinimizerOptions.h"
 
 // Settings header
 #ifndef __SETTINGS_HH
