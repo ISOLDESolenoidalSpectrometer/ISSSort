@@ -130,7 +130,7 @@ float Calibration::AsicEnergy( unsigned int mod, unsigned int asic, unsigned int
 	
 }
 
-float Calibration::AsicThreshold( unsigned int mod, unsigned int asic, unsigned int chan ) {
+unsigned int Calibration::AsicThreshold( unsigned int mod, unsigned int asic, unsigned int chan ) {
 	
 	if( mod < set->GetNumberOfArrayModules() &&
 	   asic < set->GetNumberOfArrayASICs() &&
@@ -224,7 +224,7 @@ float Calibration::CaenEnergy( unsigned int mod, unsigned int chan, unsigned sho
 	
 }
 
-float Calibration::CaenThreshold( unsigned int mod, unsigned int chan ) {
+unsigned int Calibration::CaenThreshold( unsigned int mod, unsigned int chan ) {
 	
 	if( mod < set->GetNumberOfCAENModules() &&
 	   chan < set->GetNumberOfCAENChannels() ) {

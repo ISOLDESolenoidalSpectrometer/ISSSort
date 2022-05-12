@@ -39,6 +39,7 @@ use iss_sort with following flags:
         [-d <string        >: Data directory to add to the monitor]
         [-f                 : Flag to force new ROOT conversion]
         [-e                 : Flag to force new event builder (new calibration)]
+        [-source                  : Flag to define an source only run]
         [-s <string        >: Settings file]
         [-c <string        >: Calibration file]
         [-r <string        >: Reaction file]

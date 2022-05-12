@@ -163,7 +163,7 @@ void Reaction::ReadReaction() {
 	
 	// Detector to target distances and dead layer of Si
 	z0 = config->GetValue( "ArrayDistance", 100.0 );
-	deadlayer = config->GetValue( "ArrayDeadlayer", 0.001 ); // units of mm of Si
+	deadlayer = config->GetValue( "ArrayDeadlayer", 0.0005 ); // units of mm of Si
 
 	// Get particle properties
 	Beam.SetA( config->GetValue( "BeamA", 30 ) );
@@ -525,12 +525,12 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	
 		// Distance is negative because energy needs to be recovered
 		// First we recover the energy lost in the Si dead layer
-		double dist = -1.0 * deadlayer / TMath::Abs( TMath::Sin( alpha ) );
+		double dist = -1.0 * deadlayer / TMath::Abs( TMath::Cos( alpha ) );
 		double eloss = GetEnergyLoss( en, dist, gStopping[2] );
 		Ejectile.SetEnergyLab( en - eloss );
 		
 		// First we recover the energy lost in the target
-		dist = -0.5 * target_thickness / TMath::Abs( TMath::Cos( alpha ) );
+		dist = -0.5 * target_thickness / TMath::Abs( TMath::Sin( alpha ) );
 		eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
 		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
 		

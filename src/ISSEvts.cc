@@ -197,12 +197,11 @@ float ArrayEvt::GetZ(){
 	/// y is positive in the horizontal direction towards XT03 (right)
 	/// phi is positive in the clockwise direction, looking from the origin to positive z (beam direction)
 
-	float d = 127.5 - pid;			// take centre of the end strip
-	d += 128 * (3 - row);			// move along to the correct row
-	d *= 0.95;						// p-side strip pitch = 0.95 mm
-	d += (3 - row) * 3.9;			// inter wafer distance (to be confirmed)
-	d += 1.7;						// distance from wafer edge to active region
-		
+    float d = 127.5 - (float)pid;       // take centre of the end strip
+    d *= 0.953;                         // p-side strip pitch = 0.953 mm
+    d += 1.508;                         // distance from wafer edge to active region
+    d += 125.5 * (3.0 - (float)row);    // move to correct row (125.0 mm wafer length + 0.5 mm inter-wafer gap)
+
 	return d; // in mm
 	
 }
