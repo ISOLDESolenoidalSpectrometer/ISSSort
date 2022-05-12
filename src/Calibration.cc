@@ -130,7 +130,7 @@ float ISSCalibration::AsicEnergy( unsigned int mod, unsigned int asic, unsigned 
 	
 }
 
-float ISSCalibration::AsicThreshold( unsigned int mod, unsigned int asic, unsigned int chan ) {
+unsigned int ISSCalibration::AsicThreshold( unsigned int mod, unsigned int asic, unsigned int chan ) {
 	
 	if( mod < set->GetNumberOfArrayModules() &&
 	   asic < set->GetNumberOfArrayASICs() &&
@@ -224,7 +224,7 @@ float ISSCalibration::CaenEnergy( unsigned int mod, unsigned int chan, unsigned 
 	
 }
 
-float ISSCalibration::CaenThreshold( unsigned int mod, unsigned int chan ) {
+unsigned int ISSCalibration::CaenThreshold( unsigned int mod, unsigned int chan ) {
 	
 	if( mod < set->GetNumberOfCAENModules() &&
 	   chan < set->GetNumberOfCAENChannels() ) {
@@ -249,3 +249,72 @@ long ISSCalibration::CaenTime( unsigned int mod, unsigned int chan ){
 	return 0;
 	
 }
+
+void ISSCalibration::PrintCalibration( std::ostream &stream, std::string opt ){
+	
+	// Check options for energy only
+	bool caen_only = false;
+	bool asic_only = false;
+	bool energy_only = false;
+	if( opt.find("c") != std::string::npos || opt.find("C") != std::string::npos ) caen_only = true;
+	if( opt.find("a") != std::string::npos || opt.find("A") != std::string::npos ) asic_only = true;
+	if( opt.find("e") != std::string::npos || opt.find("E") != std::string::npos ) energy_only = true;
+	
+	if( !caen_only ) {
+	
+		// ASIC print
+		for( unsigned int mod = 0; mod < set->GetNumberOfArrayModules(); mod++ ){
+
+			for( unsigned int asic = 0; asic < set->GetNumberOfArrayASICs(); asic++ ){
+
+				if( !energy_only ) {
+					
+					stream << Form( "asic_%d_%d.Time: %ld", mod, asic, fAsicTime[mod][asic] ) << std::endl;
+					stream << Form( "asic_%d_%d.Enabled: %d", mod, asic, (int)fAsicEnabled[mod][asic] ) << std::endl;
+
+					for( unsigned int i = 0; i < 3; i++ )
+						 stream << Form( "asic_%d_%d.Walk%d: %f", mod, asic, i, fAsicWalk[mod][asic][i] ) << std::endl;
+
+				}
+				
+				for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
+					
+					stream << Form( "asic_%d_%d_%d.Offset: %f", mod, asic, chan, fAsicOffset[mod][asic][chan] ) << std::endl;
+					stream << Form( "asic_%d_%d_%d.Gain: %f", mod, asic, chan, fAsicGain[mod][asic][chan] ) << std::endl;
+					stream << Form( "asic_%d_%d_%d.GainQuadr: %f", mod, asic, chan, fAsicGainQuadr[mod][asic][chan] ) << std::endl;
+					if( !energy_only )
+						stream << Form( "asic_%d_%d_%d.Threshold: %u", mod, asic, chan, fAsicThreshold[mod][asic][chan] ) << std::endl;
+
+				} // chan
+				
+			} // asic
+
+		} // mod
+
+	} // !caen_only
+	
+	if( !asic_only ) {
+	
+		// CAEN print
+		for( unsigned int mod = 0; mod < set->GetNumberOfCAENModules(); mod++ ){
+
+			for( unsigned int chan = 0; chan < set->GetNumberOfCAENChannels(); chan++ ){
+
+					stream << Form( "caen_%d_%d.Offset: %f", mod, chan, fCaenOffset[mod][chan] ) << std::endl;
+					stream << Form( "caen_%d_%d.Gain: %f", mod, chan, fCaenGain[mod][chan] ) << std::endl;
+					stream << Form( "caen_%d_%d.GainQuadr: %f", mod, chan, fCaenGainQuadr[mod][chan] ) << std::endl;
+
+					if( !energy_only ) {
+					
+						stream << Form( "caen_%d_%d.Threshold: %u", mod, chan, fCaenThreshold[mod][chan] ) << std::endl;
+						stream << Form( "caen_%d_%d.Time: %ld", mod, chan, fCaenTime[mod][chan] ) << std::endl;
+
+					}
+					
+			} // chan
+			
+		} // mod
+
+	} // !asic_only
+
+};

@@ -38,10 +38,13 @@ double alpha_derivative( double *x, double *params ){
 
 
 // Reaction things
-ISSReaction::ISSReaction( std::string filename, ISSSettings *myset ){
+ISSReaction::ISSReaction( std::string filename, ISSSettings *myset, bool source ){
 		
 	// Read in mass tables
 	ReadMassTables();
+	
+	// Check if it's a source run
+	flag_source = source;
 
 	// Get the info from the user input
 	set = myset;
@@ -163,7 +166,7 @@ void ISSReaction::ReadReaction() {
 	
 	// Detector to target distances and dead layer of Si
 	z0 = config->GetValue( "ArrayDistance", 100.0 );
-	deadlayer = config->GetValue( "ArrayDeadlayer", 0.001 ); // units of mm of Si
+	deadlayer = config->GetValue( "ArrayDeadlayer", 0.0005 ); // units of mm of Si
 
 	// Get particle properties
 	Beam.SetA( config->GetValue( "BeamA", 30 ) );
@@ -294,33 +297,58 @@ void ISSReaction::ReadReaction() {
 	x_offset = config->GetValue( "TargetOffset.X", 0.0 );	// of course this should be 0.0 if you centre the beam! Units of mm, vertical
 	y_offset = config->GetValue( "TargetOffset.Y", 0.0 );	// of course this should be 0.0 if you centre the beam! Units of mm, horizontal
 
-	// Get the stopping powers
+	// If it's a source run, we can ignore most of that
+	// or better still, initialise everything and overwrite what we need
+	if( flag_source ){
+		
+		Ejectile.SetA(4);
+		Ejectile.SetZ(2);
+		Ejectile.SetBindingEnergy( ame_be.at( Ejectile.GetIsotope() ) );
+		Beam.SetEnergyLab(0.0);	// prevent any CM/Lab transformation
+		target_thickness = 0.0; // no energy loss in target/source?
+		
+	}
+	
+	// Get the stopping powers in TGraphs
 	stopping = true;
 	for( unsigned int i = 0; i < 3; ++i )
 		gStopping.push_back( std::make_unique<TGraph>() );
-	stopping *= ReadStoppingPowers( Beam.GetIsotope(), Target.GetIsotope(), gStopping[0] );
-	stopping *= ReadStoppingPowers( Ejectile.GetIsotope(), Target.GetIsotope(), gStopping[1] );
+	
+	if( !flag_source ) {
+		stopping *= ReadStoppingPowers( Beam.GetIsotope(), Target.GetIsotope(), gStopping[0] );
+		stopping *= ReadStoppingPowers( Ejectile.GetIsotope(), Target.GetIsotope(), gStopping[1] );
+	}
 	stopping *= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[2] );
 
 	// Some diagnostics and info
-	std::cout << std::endl << " +++  ";
-	std::cout << Beam.GetIsotope() << "(" << Target.GetIsotope() << ",";
-	std::cout << Ejectile.GetIsotope() << ")" << Recoil.GetIsotope();
-	std::cout << "  +++" << std::endl;
-	std::cout << "Q-value = " << GetQvalue()*0.001 << " MeV" << std::endl;
-	std::cout << "Incoming beam energy = ";
-	std::cout << Beam.GetEnergyLab()*0.001 << " MeV" << std::endl;
-	std::cout << "Target thickness = ";
-	std::cout << target_thickness << " mg/cm^2" << std::endl;
+	if( !flag_source ) {
+		
+		std::cout << std::endl << " +++  ";
+		std::cout << Beam.GetIsotope() << "(" << Target.GetIsotope() << ",";
+		std::cout << Ejectile.GetIsotope() << ")" << Recoil.GetIsotope();
+		std::cout << "  +++" << std::endl;
+		std::cout << "Q-value = " << GetQvalue()*0.001 << " MeV" << std::endl;
+		std::cout << "Incoming beam energy = ";
+		std::cout << Beam.GetEnergyLab()*0.001 << " MeV" << std::endl;
+		std::cout << "Target thickness = ";
+		std::cout << target_thickness << " mg/cm^2" << std::endl;
 
+	}
+	else std::cout << std::endl << " +++  Alpha Source Run  +++";
+	
 	// Calculate the energy loss
 	if( stopping ){
 		
-		double eloss = GetEnergyLoss( Beam.GetEnergyLab(), 0.5 * target_thickness, gStopping[0] );
-		Beam.SetEnergyLab( Beam.GetEnergyLab() - eloss );
-		std::cout << "Beam energy at centre of target = ";
-		std::cout << Beam.GetEnergyLab()*0.001 << " MeV" << std::endl;
+		// But only if it's not a source run
+		if( !flag_source ) {
+		
+			double eloss = GetEnergyLoss( Beam.GetEnergyLab(), 0.5 * target_thickness, gStopping[0] );
+			Beam.SetEnergyLab( Beam.GetEnergyLab() - eloss );
+			std::cout << "Beam energy at centre of target = ";
+			std::cout << Beam.GetEnergyLab()*0.001 << " MeV" << std::endl;
 
+		}
+		
 	}
 	else std::cout << "Stopping powers not calculated" << std::endl;
 
@@ -490,8 +518,84 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 	 
 }
 
+float ISSReaction::SimulateDecay( TVector3 vec, double en ){
+
+	/// This function will use the interaction position and decay energy of an ejectile
+	/// event, to solve the kinematics and define parameters such as:
+	/// theta_lab, etc. It returns the detected energy of the ejectile
+
+	// Apply the X and Y offsets directly to the TVector3 input
+	// We move the array opposite to the target, which replicates the same
+	// geometrical shift that is observed with respect to the beam
+	vec.SetX( vec.X() - x_offset );
+	vec.SetY( vec.Y() - y_offset );
+
+	// Set the input parameters, might use them in another function
+	Ejectile.SetEnergyLab(en);			// ejectile energy in keV
+	z_meas = vec.Z();					// measured z in mm
+	if( z0 < 0 ) z_meas = z0 - z_meas;	// upstream
+	else z_meas += z0;					// downstream
+	rho	= vec.Perp();					// perpenicular distance from beam axis to interaction point
+
+    //------------------------//
+    // Kinematics calculation //
+    //------------------------//
+	params[0] = z_meas;										// z in mm
+	params[1] = rho;										// rho in mm
+	params[2] = Ejectile.GetMomentumLab();					// p
+	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
+	params[3] /= TMath::TwoPi(); 							// qb/2pi
+		
+	// Set parameters
+	fa->SetParameters( params );
+	fb->SetParameters( params );
+	
+	// Build the function and derivative, the solve
+	gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
+	ROOT::Math::GradFunctor1D wf( *fa, *fb );
+	rf->SetFunction( wf, 0.2 * TMath::Pi() ); // with derivatives
+	rf->Solve( 500, 1e-5, 1e-6 );
+	
+	// Check result
+	if( rf->Status() ){
+		alpha = TMath::QuietNaN();
+	}
+	else alpha = rf->Root();
+	gErrorIgnoreLevel = kInfo; // print info and above again
+
+	// Get the real z value at beam axis and lab angle
+	if( z_meas < 0 ) z = z_meas - rho * TMath::Tan( alpha );
+	else z = z_meas + rho * TMath::Tan( alpha );
+	Ejectile.SetThetaLab( TMath::PiOver2() + alpha );
+	
+	// Calculate the energy loss
+	// Distance is postive because energy is lost
+	double dist = 1.0 * deadlayer / TMath::Abs( TMath::Cos( alpha ) );
+	double eloss = GetEnergyLoss( en, dist, gStopping[2] );
+	
+	//std::cout << "z = " << z_meas << " mm, angle = ";
+	//std::cout << alpha*TMath::RadToDeg() << " deg, dead layer = ";
+	//std::cout << dist*1e3 << " µm: " << en << " - " << eloss << std::endl;
+	
+	return en - eloss;
+
+}
+
+
+void ISSReaction::SimulateReaction( TVector3 vec, double ex ){
+
+	/// This function will use the interaction position and excitaion energy of an ejectile
+	/// event, to solve the reaction kinematics and define parameters such as:
+	/// theta_cm, theta_lab,, E_lab, E_det, etc.
+
+	
+}
 
 void ISSReaction::MakeReaction( TVector3 vec, double en ){
+	
+	/// This function will use the interaction position and detected energy of an ejectile
+	/// event, to solve the reaction kinematics and define parameters such as:
+	/// theta_cm, theta_lab, Ex, E_lab, etc.
 	
 	// Apply the X and Y offsets directly to the TVector3 input
 	// We move the array opposite to the target, which replicates the same
@@ -506,9 +610,9 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	else z_meas += z0;					// downstream
 	rho	= vec.Perp();					// perpenicular distance from beam axis to interaction point
     
-    //----------------//
-    // EX calculation //
-    //----------------//
+	//------------------------//
+    // Kinematics calculation //
+    //------------------------//
 	params[0] = z_meas;										// z in mm
 	params[1] = rho;										// rho in mm
 	params[2] = Ejectile.GetMomentumLab();					// p
@@ -525,7 +629,7 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	
 		// Distance is negative because energy needs to be recovered
 		// First we recover the energy lost in the Si dead layer
-		double dist = -1.0 * deadlayer / TMath::Abs( TMath::Sin( alpha ) );
+		double dist = -1.0 * deadlayer / TMath::Abs( TMath::Cos( alpha ) );
 		double eloss = GetEnergyLoss( en, dist, gStopping[2] );
 		Ejectile.SetEnergyLab( en - eloss );
 		

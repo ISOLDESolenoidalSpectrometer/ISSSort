@@ -767,7 +767,7 @@ void ISSGUI::gui_hist(){
 	TString name_input_file;
 	TString name_output_file;
 	
-	prog_format  = "Histogramming: %.0f%%";
+	prog_format = "Histogramming: %.0f%%";
 	prog_hist->ShowPosition( true, false, prog_format.data() );
 	
 	name_output_file = text_out_file->GetText();
@@ -800,6 +800,86 @@ void ISSGUI::gui_hist(){
 	
 }
 
+void ISSGUI::gui_autocal(){
+
+	//-----------------------------------//
+	// Run automatic calibration routine //
+	//-----------------------------------//
+	ISSAutoCalibrator autocal( myset.get(), myrea.get() );
+	autocal.AddProgressBar( prog_hist );
+	autocal.AddCalibration( mycal.get() );
+	std::cout << "\n +++ ISS Analysis:: processing AutoCalibration +++" << std::endl;
+
+	// Update everything
+	gSystem->ProcessEvents();
+
+	// Progress bar and filenames
+	std::string prog_format;
+	TFile *rtest;
+	std::ifstream ftest;
+	std::string name_input_file;
+	std::string name_output_file = "autocal.root";
+	std::string hadd_file_list = "";
+	std::string name_results_file = "autocal_results.cal";
+
+	prog_format = "AutoCalibrating: %.0f%%";
+	prog_sort->ShowPosition( true, false, prog_format.data() );
+
+	prog_format = "EventBuilder not running";
+	prog_evnt->ShowPosition( true, false, prog_format.data() );
+
+	prog_format = "Histogrammer not running";
+	prog_hist->ShowPosition( true, false, prog_format.data() );
+
+	// Check each file
+	for( unsigned int i = 0; i < filelist.size(); i++ ){
+			
+		name_input_file = filelist.at(i) + "_source.root";
+
+		// Add to list if the converted file exists
+		ftest.open( name_input_file.data() );
+		if( ftest.is_open() ) {
+		
+			ftest.close();
+			rtest = new TFile( name_input_file.data() );
+			if( !rtest->IsZombie() ) {
+				hadd_file_list += " " + name_input_file;
+			}
+			else {
+				std::cout << "Skipping " << name_input_file;
+				std::cout << ", it's broken" << std::endl;
+			}
+			rtest->Close();
+			
+		}
+		
+		else {
+			std::cout << "Skipping " << name_input_file;
+			std::cout << ", file does not exist" << std::endl;
+		}
+
+	}
+	
+	// Perform the hadd (doesn't work on Windows)
+	std::string cmd = "hadd -k -T -v 0 -f ";
+	cmd += name_output_file;
+	cmd += hadd_file_list;
+	gSystem->Exec( cmd.data() );
+	
+	// Give this file to the autocalibrator
+	if( autocal.SetInputFile( name_output_file ) ) return;
+	autocal.DoFits();
+	autocal.SaveCalFile( name_results_file );
+	
+	prog_format  = "AutoCalibrator complete";
+	prog_sort->ShowPosition( true, false, prog_format.data() );
+
+	// Update everything
+	gSystem->ProcessEvents();
+	return;
+}
+
+
 void ISSGUI::on_sort_clicked() {
 
 	// Settings files, etc
@@ -811,10 +891,6 @@ void ISSGUI::on_sort_clicked() {
 	if( name_cal_file == "" ) name_cal_file = "dummy";
 	if( name_rea_file == "" ) name_rea_file = "dummy";
 
-	myset = std::make_shared<ISSSettings>( name_set_file );
-	mycal = std::make_shared<ISSCalibration>( name_cal_file, myset.get() );
-	myrea = std::make_shared<ISSReaction>( name_rea_file, myset.get() );
-	
 	// select what steps of the analysis to be forced
 	force_sort = false;
 	force_events = false;
@@ -822,7 +898,12 @@ void ISSGUI::on_sort_clicked() {
 	flag_events = check_event->IsOn();
 	flag_source = check_source->IsOn();
 	flag_autocal = check_autocal->IsOn();
+	if( flag_autocal ) flag_source = true;
 
+	myset = std::make_shared<ISSSettings>( name_set_file );
+	mycal = std::make_shared<ISSCalibration>( name_cal_file, myset.get() );
+	myrea = std::make_shared<ISSReaction>( name_rea_file, myset.get(), flag_source );
+	
 	//------------------//
 	// Run the analysis //
 	//------------------//
@@ -832,6 +913,8 @@ void ISSGUI::on_sort_clicked() {
 		gui_build();
 		gui_hist();
 	}
+	else if( flag_autocal )
+		gui_autocal();
 	std::cout << "\n\nFinished!\n";
 	
 }

@@ -35,6 +35,7 @@
 #include "EventBuilder.hh"
 #include "Reaction.hh"
 #include "Histogrammer.hh"
+#include "AutoCalibrator.hh"
 
 // C++ include.
 #include <string>
@@ -166,6 +167,7 @@ public:
 	void gui_sort();
 	void gui_build();
 	void gui_hist();
+	void gui_autocal();
 
 	// Slots
 	TString		get_filename();

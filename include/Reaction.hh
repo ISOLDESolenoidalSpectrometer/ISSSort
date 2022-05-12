@@ -137,7 +137,7 @@ class ISSReaction {
 public:
 	
 	// setup functions
-	ISSReaction( std::string filename, ISSSettings *myset );
+	ISSReaction( std::string filename, ISSSettings *myset, bool source );
 	~ISSReaction();
 	
 	// Main functions
@@ -153,7 +153,9 @@ public:
 	
 	// This is the function called event-by-event
 	void	MakeReaction( TVector3 vec, double en );
-		
+	void	SimulateReaction( TVector3 vec, double ex );
+	float	SimulateDecay( TVector3 vec, double en );
+
 	// Get values
 	inline double GetField(){ return Mfield; };
 	inline double GetField_corr(){ return Mfield*kg_mm_s; };
@@ -212,6 +214,10 @@ public:
 		if( i < nevszcuts ) return e_vs_z_cut.at(i);
 		else return nullptr;
 	};
+
+	// It's a source only measurement
+	inline void SourceOnly(){ flag_source = true; };
+
 	
 private:
 
@@ -270,6 +276,9 @@ private:
 	// Stopping powers
 	std::vector<std::unique_ptr<TGraph>> gStopping;
 	bool stopping;
+	
+	// Flag in case it's an alpha source
+	bool flag_source;
 
 };
 

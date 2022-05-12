@@ -6,8 +6,8 @@
 #include "EventBuilder.hh"
 #include "Reaction.hh"
 #include "Histogrammer.hh"
+#include "AutoCalibrator.hh"
 #include "ISSGUI.hh"
-
 
 // ROOT include.
 #include <TTree.h>
@@ -42,6 +42,7 @@ std::vector<std::string> input_names;
 bool flag_convert = false;
 bool flag_events = false;
 bool flag_source = false;
+bool flag_autocal = false;
 
 // select what steps of the analysis to be forced
 std::vector<bool> force_convert;
@@ -429,6 +430,63 @@ void do_hist(){
 	
 }
 
+void do_autocal(){
+
+	//-----------------------------------//
+	// Run automatic calibration routine //
+	//-----------------------------------//
+	ISSAutoCalibrator autocal( myset, myreact );
+	autocal.AddCalibration( mycal );
+	std::cout << "\n +++ ISS Analysis:: processing AutoCalibration +++" << std::endl;
+
+	TFile *rtest;
+	std::ifstream ftest;
+	std::string name_input_file;
+	std::string name_output_file = "autocal.root";
+	std::string hadd_file_list = "";
+	std::string name_results_file = "autocal_results.cal";
+
+	// Check each file
+	for( unsigned int i = 0; i < input_names.size(); i++ ){
+			
+		name_input_file = input_names.at(i) + "_source.root";
+
+		// Add to list if the converted file exists
+		ftest.open( name_input_file.data() );
+		if( ftest.is_open() ) {
+		
+			ftest.close();
+			rtest = new TFile( name_input_file.data() );
+			if( !rtest->IsZombie() ) {
+				hadd_file_list += " " + name_input_file;
+			}
+			else {
+				std::cout << "Skipping " << name_input_file;
+				std::cout << ", it's broken" << std::endl;
+			}
+			rtest->Close();
+			
+		}
+		
+		else {
+			std::cout << "Skipping " << name_input_file;
+			std::cout << ", file does not exist" << std::endl;
+		}
+
+	}
+	
+	// Perform the hadd (doesn't work on Windows)
+	std::string cmd = "hadd -k -T -v 0 -f ";
+	cmd += name_output_file;
+	cmd += hadd_file_list;
+	gSystem->Exec( cmd.data() );
+	
+	// Give this file to the autocalibrator
+	if( autocal.SetInputFile( name_output_file ) ) return;
+	autocal.DoFits();
+	autocal.SaveCalFile( name_results_file );
+	
+}
 
 int main( int argc, char *argv[] ){
 	
@@ -443,6 +501,7 @@ int main( int argc, char *argv[] ){
 	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
 	interface->Add("-e", "Flag to force new event builder (new calibration)", &flag_events );
 	interface->Add("-source", "Flag to define an source only run", &flag_source );
+	interface->Add("-autocal", "Flag to perform automatic calibration of alpha source data", &flag_autocal );
 	interface->Add("-s", "Settings file", &name_set_file );
 	interface->Add("-c", "Calibration file", &name_cal_file );
 	interface->Add("-r", "Reaction file", &name_react_file );
@@ -475,6 +534,9 @@ int main( int argc, char *argv[] ){
 			return 1;
 			
 	}
+	
+	// Check if this is a source run
+	if( flag_autocal ) flag_source = true;
 	
 	// Check if we should be monitoring the input
 	if( mon_time > 0 && input_names.size() == 1 ) {
@@ -538,8 +600,7 @@ int main( int argc, char *argv[] ){
 	
 	myset = new ISSSettings( name_set_file );
 	mycal = new ISSCalibration( name_cal_file, myset );
-	myreact = new ISSReaction( name_react_file, myset );
-
+	myreact = new ISSReaction( name_react_file, myset, flag_source );
 
 	
 	//-------------------//
@@ -585,10 +646,13 @@ int main( int argc, char *argv[] ){
 	// Run the analysis //
 	//------------------//
 	do_convert();
-	if( !flag_source ) {
+	if( !flag_source && !flag_autocal ) {
 		do_sort();
 		do_build();
 		do_hist();
+	}
+	else if( flag_autocal ) {
+		do_autocal();
 	}
 	std::cout << "\n\nFinished!\n";
 			

@@ -47,7 +47,8 @@ LD          = $(shell root-config --ld)
 LDFLAGS 	+= $(ROOTLDFLAGS)
 
 # The object files.
-OBJECTS =  		$(SRC_DIR)/Calibration.o \
+OBJECTS =  		$(SRC_DIR)/AutoCalibrator.o \
+				$(SRC_DIR)/Calibration.o \
 				$(SRC_DIR)/CommandLineInterface.o \
 				$(SRC_DIR)/Converter.o \
 				$(SRC_DIR)/DataPackets.o \
@@ -60,7 +61,8 @@ OBJECTS =  		$(SRC_DIR)/Calibration.o \
 				$(SRC_DIR)/EventBuilder.o
  
 # The header files.
-DEPENDENCIES =  $(INC_DIR)/Calibration.hh \
+DEPENDENCIES =  $(INC_DIR)/AutoCalibrator.hh \
+				$(INC_DIR)/Calibration.hh \
 				$(INC_DIR)/CommandLineInterface.hh \
 				$(INC_DIR)/Converter.hh \
 				$(INC_DIR)/DataPackets.hh \
@@ -70,7 +72,8 @@ DEPENDENCIES =  $(INC_DIR)/Calibration.hh \
 				$(INC_DIR)/Reaction.hh \
 				$(INC_DIR)/Settings.hh \
 				$(INC_DIR)/TimeSorter.hh \
-				$(INC_DIR)/EventBuilder.hh
+				$(INC_DIR)/EventBuilder.hh \
+				$(INC_DIR)/FitFunctions.hh
  
 .PHONY : all
 all: $(BIN_DIR)/iss_sort $(LIB_DIR)/libiss_sort.so

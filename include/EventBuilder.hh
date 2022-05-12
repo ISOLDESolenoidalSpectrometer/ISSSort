@@ -79,11 +79,7 @@ public:
 	void ElumFinder();
 	void ZeroDegreeFinder();
 	//void GammaFinder(); // in the future :-)
-	
-	// Geometry functions
-	float GetZ( int layer, int strip );
-	TVector2 GetPhiXY( int sector, int strip );
-	
+		
 	inline TFile* GetFile(){ return output_file; };
 	inline TTree* GetTree(){ return output_tree; };
 	inline void CloseOutput(){
@@ -125,9 +121,6 @@ private:
 	// Settings file
 	ISSSettings *set;
 	
-	// Reaction information
-	ISSReaction *react;
-
 	// Progress bar
 	bool _prog_;
 	std::shared_ptr<TGProgressBar> prog;
