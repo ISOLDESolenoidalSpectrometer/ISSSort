@@ -28,21 +28,26 @@ or
 ./bin/iss_sort
 ```
 
-The input options are described below
+If you start the code without any flags, it will launch the GUI. To run in batch mode, simple pass at least one file to the programme with the -i flag.
+
+The input options are described below.
 
 ```
 use iss_sort with following flags:
-        [-i <vector<string>>: List of input files]
-        [-m <int           >: Monitor input file every X seconds]
-        [-p <int           >: Port number for web server (default 8030)]
-        [-o <string        >: Output file for histogram file]
-        [-d <string        >: Data directory to add to the monitor]
-        [-f                 : Flag to force new ROOT conversion]
-        [-e                 : Flag to force new event builder (new calibration)]
-        [-s <string        >: Settings file]
-        [-c <string        >: Calibration file]
-        [-r <string        >: Reaction file]
-        [-h                 : Print this help]
+        [-i       <vector<string>>: List of input files]
+        [-m       <int           >: Monitor input file every X seconds]
+        [-p       <int           >: Port number for web server (default 8030)]
+        [-o       <string        >: Output file for histogram file]
+        [-d       <string        >: Data directory to add to the monitor]
+        [-f                       : Flag to force new ROOT conversion]
+        [-e                       : Flag to force new event builder (new calibration)]
+        [-source                  : Flag to define an source only run]
+        [-autocal                 : Flag to perform automatic calibration of alpha source data]
+        [-s       <string        >: Settings file]
+        [-c       <string        >: Calibration file]
+        [-r       <string        >: Reaction file]
+        [-g                       : Launch the GUI]
+        [-h                       : Print this help]
 ```
 
 ## Sorting Philosophy
@@ -61,6 +66,11 @@ An example settings file is included in the source of this code, including a des
 
 The ouptut file contains a single ROOT tree of the data and a series of diagnostic histograms and singles spectra.
 If the output file already exists, iss_sort will skip this step unless the -f flag is used.
+
+If this is a calibration source run, declare the -source flag, which skips the following unnecessary stages of analysis.
+The output file in this case will not have any tree data and will be appended with _source.root.
+If you add the -autocal flag, the programme assumes you have given data from a quadruple alpha source and will attempt to perform an automatic strip-by-strip calibration.
+To correct for energy losses accuratley, you must also provide a reaction file with the Mfield, TargetArrayDistance and ArrayDeadLayer parameters at minimum.
 
 ### Step 2: Time Sorting
 In order to combine timestamp and ADC data, the time sorting step needs to be performed.
