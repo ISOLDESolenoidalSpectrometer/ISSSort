@@ -118,6 +118,13 @@ private:
 	std::vector< std::vector<float> > fCaenGainQuadr;
 	std::vector< std::vector<unsigned int> > fCaenThreshold;
 	std::vector< std::vector<long> > fCaenTime;
+	
+	float fAsicOffsetDefault;
+	float fAsicGainDefault;
+	float fAsicGainQuadrDefault;
+	float fCaenOffsetDefault;
+	float fCaenGainDefault;
+	float fCaenGainQuadrDefault;
 
 	//ClassDef(ISSCalibration, 1)
    

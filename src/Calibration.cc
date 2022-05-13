@@ -27,6 +27,10 @@ void ISSCalibration::ReadCalibration() {
 	fAsicEnabled.resize( set->GetNumberOfArrayModules() );
 	fAsicWalk.resize( set->GetNumberOfArrayModules() );
 	
+	fAsicOffsetDefault = -4100.0;
+	fAsicGainDefault = 16.0;
+	fAsicGainQuadrDefault = 0.0;
+
 	// ASIC parameter read
 	for( unsigned int mod = 0; mod < set->GetNumberOfArrayModules(); mod++ ){
 
@@ -54,9 +58,9 @@ void ISSCalibration::ReadCalibration() {
 
 			for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
 				
-				fAsicOffset[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Offset", mod, asic, chan ), -2936. );
-				fAsicGain[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Gain", mod, asic, chan ), 14.5 );
-				fAsicGainQuadr[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.GainQuadr", mod, asic, chan ), 0. );
+				fAsicOffset[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Offset", mod, asic, chan ), fAsicOffsetDefault );
+				fAsicGain[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Gain", mod, asic, chan ), fAsicGainDefault );
+				fAsicGainQuadr[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.GainQuadr", mod, asic, chan ), fAsicGainQuadrDefault );
 				fAsicThreshold[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Threshold", mod, asic, chan ), 0. );
 
 			}
@@ -73,6 +77,10 @@ void ISSCalibration::ReadCalibration() {
 	fCaenThreshold.resize( set->GetNumberOfCAENModules() );
 	fCaenTime.resize( set->GetNumberOfCAENModules() );
 
+	fCaenOffsetDefault = 0.0;
+	fCaenGainDefault = 1.0;
+	fCaenGainQuadrDefault = 0.0;
+
 	// CAEN parameter read
 	for( unsigned int mod = 0; mod < set->GetNumberOfCAENModules(); mod++ ){
 
@@ -84,9 +92,9 @@ void ISSCalibration::ReadCalibration() {
 
 		for( unsigned int chan = 0; chan < set->GetNumberOfCAENChannels(); chan++ ){
 
-			fCaenOffset[mod][chan] = config->GetValue( Form( "caen_%d_%d.Offset", mod, chan ), 0. );
-			fCaenGain[mod][chan] = config->GetValue( Form( "caen_%d_%d.Gain", mod, chan ), 1. );
-			fCaenGainQuadr[mod][chan] = config->GetValue( Form( "caen_%d_%d.GainQuadr", mod, chan ), 0. );
+			fCaenOffset[mod][chan] = config->GetValue( Form( "caen_%d_%d.Offset", mod, chan ), fCaenOffsetDefault );
+			fCaenGain[mod][chan] = config->GetValue( Form( "caen_%d_%d.Gain", mod, chan ), fCaenGainDefault );
+			fCaenGainQuadr[mod][chan] = config->GetValue( Form( "caen_%d_%d.GainQuadr", mod, chan ), fCaenGainQuadrDefault );
 			fCaenThreshold[mod][chan] = config->GetValue( Form( "caen_%d_%d.Threshold", mod, chan ), 0. );
 			fCaenTime[mod][chan] = config->GetValue( Form( "caen_%d_%d.Time", mod,  chan ), 0 );
 
@@ -267,24 +275,35 @@ void ISSCalibration::PrintCalibration( std::ostream &stream, std::string opt ){
 
 			for( unsigned int asic = 0; asic < set->GetNumberOfArrayASICs(); asic++ ){
 
+				// Print these unless we request energy only parameters
 				if( !energy_only ) {
 					
-					stream << Form( "asic_%d_%d.Time: %ld", mod, asic, fAsicTime[mod][asic] ) << std::endl;
-					stream << Form( "asic_%d_%d.Enabled: %d", mod, asic, (int)fAsicEnabled[mod][asic] ) << std::endl;
-
+					// Don't bother printing if they are just defaults
+					if( fAsicTime[mod][asic] != 0 ) stream << Form( "asic_%d_%d.Time: %ld", mod, asic, fAsicTime[mod][asic] ) << std::endl;
+					if( !fAsicEnabled[mod][asic] ) stream << Form( "asic_%d_%d.Enabled: %d", mod, asic, 0 ) << std::endl;
+		
 					for( unsigned int i = 0; i < 3; i++ )
-						 stream << Form( "asic_%d_%d.Walk%d: %f", mod, asic, i, fAsicWalk[mod][asic][i] ) << std::endl;
+						if( fAsicWalk[mod][asic][i] > 1e-9 || fAsicWalk[mod][asic][i] < 1e-9 )
+							stream << Form( "asic_%d_%d.Walk%d: %f", mod, asic, i, fAsicWalk[mod][asic][i] ) << std::endl;
 
 				}
 				
 				for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
 					
-					stream << Form( "asic_%d_%d_%d.Offset: %f", mod, asic, chan, fAsicOffset[mod][asic][chan] ) << std::endl;
-					stream << Form( "asic_%d_%d_%d.Gain: %f", mod, asic, chan, fAsicGain[mod][asic][chan] ) << std::endl;
-					stream << Form( "asic_%d_%d_%d.GainQuadr: %f", mod, asic, chan, fAsicGainQuadr[mod][asic][chan] ) << std::endl;
-					if( !energy_only )
-						stream << Form( "asic_%d_%d_%d.Threshold: %u", mod, asic, chan, fAsicThreshold[mod][asic][chan] ) << std::endl;
+					// Don't bother printing if they are just defaults
+					if( TMath::Abs( fAsicGainQuadr[mod][asic][chan] - fAsicOffsetDefault ) < 1e-6 &&
+						TMath::Abs( fAsicGain[mod][asic][chan] - fAsicGainDefault ) < 1e-6 &&
+					    TMath::Abs( fAsicOffset[mod][asic][chan] - fAsicGainQuadrDefault ) < 1e-6 ) {
 
+						stream << Form( "asic_%d_%d_%d.Offset: %f", mod, asic, chan, fAsicOffset[mod][asic][chan] ) << std::endl;
+						stream << Form( "asic_%d_%d_%d.Gain: %f", mod, asic, chan, fAsicGain[mod][asic][chan] ) << std::endl;
+						stream << Form( "asic_%d_%d_%d.GainQuadr: %f", mod, asic, chan, fAsicGainQuadr[mod][asic][chan] ) << std::endl;
+						
+					} // defaults
+				
+					if( fAsicThreshold[mod][asic][chan] != 0 )
+						stream << Form( "asic_%d_%d_%d.Threshold: %u", mod, asic, chan, fAsicThreshold[mod][asic][chan] ) << std::endl;
+					
 				} // chan
 				
 			} // asic
@@ -300,17 +319,21 @@ void ISSCalibration::PrintCalibration( std::ostream &stream, std::string opt ){
 
 			for( unsigned int chan = 0; chan < set->GetNumberOfCAENChannels(); chan++ ){
 
+				if( TMath::Abs( fCaenGainQuadr[mod][chan] - fCaenOffsetDefault ) < 1e-6 &&
+					TMath::Abs( fCaenGain[mod][chan] - fCaenGainDefault ) < 1e-6 &&
+					TMath::Abs( fCaenOffset[mod][chan] - fCaenGainQuadrDefault ) < 1e-6 ) {
+
 					stream << Form( "caen_%d_%d.Offset: %f", mod, chan, fCaenOffset[mod][chan] ) << std::endl;
 					stream << Form( "caen_%d_%d.Gain: %f", mod, chan, fCaenGain[mod][chan] ) << std::endl;
 					stream << Form( "caen_%d_%d.GainQuadr: %f", mod, chan, fCaenGainQuadr[mod][chan] ) << std::endl;
 
-					if( !energy_only ) {
-					
-						stream << Form( "caen_%d_%d.Threshold: %u", mod, chan, fCaenThreshold[mod][chan] ) << std::endl;
-						stream << Form( "caen_%d_%d.Time: %ld", mod, chan, fCaenTime[mod][chan] ) << std::endl;
+				}
+		
+				if( fCaenThreshold[mod][chan] != 0 )
+					stream << Form( "caen_%d_%d.Threshold: %u", mod, chan, fCaenThreshold[mod][chan] ) << std::endl;
 
-					}
-					
+				if( !energy_only && fCaenTime[mod][chan] != 0 )
+					stream << Form( "caen_%d_%d.Time: %ld", mod, chan, fCaenTime[mod][chan] ) << std::endl;
 			} // chan
 			
 		} // mod
