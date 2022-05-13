@@ -9,6 +9,9 @@ ISSAutoCalibrator::ISSAutoCalibrator( ISSSettings *myset, ISSReaction *myreact )
 	// Create the directory for the plots
 	gSystem->Exec( "mkdir -p autocal" );
 	
+	// Set some global defaults
+	ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Fumili");
+	
 }
 
 int ISSAutoCalibrator::SetInputFile( std::string input_file_name ) {
@@ -155,7 +158,6 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 	
 	// Define total fit
 	TF1 *total = new TF1( "totalfit", MultiAlphaGaussianBG, gPeakChannelLowerThreshold, gPeakChannelUpperThreshold, npars );
-	//ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit2");
 
 	// Format total fit
 	//total->SetNpx(600);
