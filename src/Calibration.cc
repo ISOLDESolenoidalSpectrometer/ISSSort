@@ -291,9 +291,9 @@ void ISSCalibration::PrintCalibration( std::ostream &stream, std::string opt ){
 				for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
 					
 					// Don't bother printing if they are just defaults
-					if( TMath::Abs( fAsicGainQuadr[mod][asic][chan] - fAsicOffsetDefault ) < 1e-6 &&
-						TMath::Abs( fAsicGain[mod][asic][chan] - fAsicGainDefault ) < 1e-6 &&
-					    TMath::Abs( fAsicOffset[mod][asic][chan] - fAsicGainQuadrDefault ) < 1e-6 ) {
+					if( TMath::Abs( fAsicGainQuadr[mod][asic][chan] - fAsicOffsetDefault ) > 1e-6 &&
+						TMath::Abs( fAsicGain[mod][asic][chan] - fAsicGainDefault ) > 1e-6 &&
+					    TMath::Abs( fAsicOffset[mod][asic][chan] - fAsicGainQuadrDefault ) > 1e-6 ) {
 
 						stream << Form( "asic_%d_%d_%d.Offset: %f", mod, asic, chan, fAsicOffset[mod][asic][chan] ) << std::endl;
 						stream << Form( "asic_%d_%d_%d.Gain: %f", mod, asic, chan, fAsicGain[mod][asic][chan] ) << std::endl;
@@ -319,9 +319,9 @@ void ISSCalibration::PrintCalibration( std::ostream &stream, std::string opt ){
 
 			for( unsigned int chan = 0; chan < set->GetNumberOfCAENChannels(); chan++ ){
 
-				if( TMath::Abs( fCaenGainQuadr[mod][chan] - fCaenOffsetDefault ) < 1e-6 &&
-					TMath::Abs( fCaenGain[mod][chan] - fCaenGainDefault ) < 1e-6 &&
-					TMath::Abs( fCaenOffset[mod][chan] - fCaenGainQuadrDefault ) < 1e-6 ) {
+				if( TMath::Abs( fCaenGainQuadr[mod][chan] - fCaenOffsetDefault ) > 1e-6 &&
+					TMath::Abs( fCaenGain[mod][chan] - fCaenGainDefault ) > 1e-6 &&
+					TMath::Abs( fCaenOffset[mod][chan] - fCaenGainQuadrDefault ) > 1e-6 ) {
 
 					stream << Form( "caen_%d_%d.Offset: %f", mod, chan, fCaenOffset[mod][chan] ) << std::endl;
 					stream << Form( "caen_%d_%d.Gain: %f", mod, chan, fCaenGain[mod][chan] ) << std::endl;
