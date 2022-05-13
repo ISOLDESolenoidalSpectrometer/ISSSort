@@ -10,7 +10,7 @@ ISSAutoCalibrator::ISSAutoCalibrator( ISSSettings *myset, ISSReaction *myreact )
 	gSystem->Exec( "mkdir -p autocal" );
 	
 	// Set some global defaults
-	ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Fumili");
+	//ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Fumili");
 	
 }
 

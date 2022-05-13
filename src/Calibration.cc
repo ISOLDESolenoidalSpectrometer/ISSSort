@@ -334,6 +334,7 @@ void ISSCalibration::PrintCalibration( std::ostream &stream, std::string opt ){
 
 				if( !energy_only && fCaenTime[mod][chan] != 0 )
 					stream << Form( "caen_%d_%d.Time: %ld", mod, chan, fCaenTime[mod][chan] ) << std::endl;
+
 			} // chan
 			
 		} // mod
