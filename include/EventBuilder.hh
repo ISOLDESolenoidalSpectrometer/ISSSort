@@ -222,6 +222,8 @@ private:
 	std::vector<std::vector<TH2F*>> pn_pab;
 	std::vector<std::vector<TH2F*>> pn_max;
 	std::vector<std::vector<TH1F*>> pn_td;
+	std::vector<std::vector<TH1F*>> pp_td;
+	std::vector<std::vector<TH1F*>> nn_td;
 	std::vector<std::vector<TH2F*>> pn_mult;
 
 	// Timing histograms
