@@ -882,9 +882,20 @@ void ISSEventBuilder::ArrayFinder() {
 				pn_mult[i][j]->Fill( pindex.size(), nindex.size() );
 
 			// Time difference hists
+			// p-n time
 			for( unsigned int k = 0; k < pindex.size(); ++k )
 				for( unsigned int l = 0; l < nindex.size(); ++l )
 					pn_td[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ) );
+
+			// p-p time
+			for( unsigned int k = 0; k < pindex.size(); ++k )
+				for( unsigned int l = k+1; l < pindex.size(); ++l )
+					pp_td[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ptd_list.at( pindex.at(l) ) );
+
+			// n-n time
+			for( unsigned int k = 0; k < nindex.size(); ++k )
+				for( unsigned int l = k+1; l < nindex.size(); ++l )
+					nn_td[i][j]->Fill( ntd_list.at( nindex.at(k) ) - ntd_list.at( nindex.at(l) ) );
 
 			
 			// Easy case, p == 1 vs n == 1
@@ -1628,6 +1639,8 @@ void ISSEventBuilder::MakeEventHists(){
 	pn_pab.resize( set->GetNumberOfArrayModules() );
 	pn_max.resize( set->GetNumberOfArrayModules() );
 	pn_td.resize( set->GetNumberOfArrayModules() );
+	pp_td.resize( set->GetNumberOfArrayModules() );
+	nn_td.resize( set->GetNumberOfArrayModules() );
 	pn_mult.resize( set->GetNumberOfArrayModules() );
 
 	// Loop over ISS modules
@@ -1648,6 +1661,8 @@ void ISSEventBuilder::MakeEventHists(){
 		pn_pab[i].resize( set->GetNumberOfArrayRows() );
 		pn_max[i].resize( set->GetNumberOfArrayRows() );
 		pn_td[i].resize( set->GetNumberOfArrayRows() );
+		pp_td[i].resize( set->GetNumberOfArrayRows() );
+		nn_td[i].resize( set->GetNumberOfArrayRows() );
 		pn_mult[i].resize( set->GetNumberOfArrayRows() );
 
 		// Loop over rows of the array
@@ -1697,6 +1712,16 @@ void ISSEventBuilder::MakeEventHists(){
 			htitle = "p-side vs. n-side time difference (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];counts";
 			pn_td[i][j] = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
+			
+			hname = "pp_td_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "p-side vs. p-side time difference (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];counts";
+			pp_td[i][j] = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
+			
+			hname = "nn_td_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "n-side vs. n-side time difference (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];counts";
+			nn_td[i][j] = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
 			
 			hname = "pn_mult_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side vs. n-side multiplicity (module ";
@@ -1850,6 +1875,18 @@ void ISSEventBuilder::CleanHists() {
 		pn_td.clear();
 	}
 
+	for( unsigned int i = 0; i < pp_td.size(); i++ ) {
+		for( unsigned int j = 0; j < pp_td.at(i).size(); j++ )
+			delete (pp_td[i][j]);
+		pp_td.clear();
+	}
+
+	for( unsigned int i = 0; i < nn_td.size(); i++ ) {
+		for( unsigned int j = 0; j < nn_td.at(i).size(); j++ )
+			delete (nn_td[i][j]);
+		nn_td.clear();
+	}
+
 	for( unsigned int i = 0; i < pn_mult.size(); i++ ) {
 		for( unsigned int j = 0; j < pn_mult.at(i).size(); j++ )
 			delete (pn_mult[i][j]);
@@ -1870,6 +1907,8 @@ void ISSEventBuilder::CleanHists() {
 	pn_pab.clear();
 	pn_max.clear();
 	pn_td.clear();
+	pp_td.clear();
+	nn_td.clear();
 	pn_mult.clear();
 	recoil_EdE.clear();
 	recoil_dEsum.clear();
