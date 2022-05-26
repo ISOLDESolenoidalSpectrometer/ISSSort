@@ -883,8 +883,20 @@ unsigned long ISSHistogrammer::FillHists( unsigned long start_fill ) {
 				
 				elum_ebis->Fill( elum_evt->GetEnergy() );
 				elum_ebis_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
+				elum_ebis_on->Fill( elum_evt->GetEnergy() );
+				elum_ebis_on_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
+
+			} // ebis
+			
+			else {
 				
-			} // ebis	
+				elum_ebis->Fill( elum_evt->GetEnergy(), -1.0 * react->GetEBISRatio() );
+				elum_ebis_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy(), -1.0 * react->GetEBISRatio() );
+				elum_ebis_off->Fill( elum_evt->GetEnergy() );
+				elum_ebis_off_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
+
+				
+			}
 			
 			// Loop over recoil events
 			for( unsigned int k = 0; k < read_evts->GetRecoilMultiplicity(); ++k ){
