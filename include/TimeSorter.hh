@@ -21,7 +21,7 @@ class ISSTimeSorter {
 public:
 
 	ISSTimeSorter();
-	virtual ~ISSTimeSorter();
+	virtual ~ISSTimeSorter(){};
 	
 	unsigned long SortFile( unsigned long start_sort = 0 );
 	

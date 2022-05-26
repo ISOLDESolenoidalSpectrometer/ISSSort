@@ -4,11 +4,11 @@ ISSHistogrammer::ISSHistogrammer( ISSReaction *myreact, ISSSettings *myset ){
 	
 	react = myreact;
 	set = myset;
+	
+	// No progress bar by default
+	_prog_ = false;
 		
 }
-
-ISSHistogrammer::~ISSHistogrammer(){}
-
 
 void ISSHistogrammer::MakeHists() {
 

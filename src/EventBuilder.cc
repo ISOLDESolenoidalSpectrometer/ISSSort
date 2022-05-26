@@ -5,6 +5,9 @@ ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
 	// First get the settings
 	set = myset;
 	
+	// No progress bar by default
+	_prog_ = false;
+
 	// ------------------------------------------------------------------------ //
 	// Initialise variables and flags
 	// ------------------------------------------------------------------------ //
@@ -106,17 +109,6 @@ ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
 		
 	}
 	
-}
-
-ISSEventBuilder::~ISSEventBuilder(){
-	
-	//delete output_tree;
-	//delete write_evts;
-	//delete array_evt;
-	//delete recoil_evt;
-	//delete elum_evt;
-	//delete zd_evt;
-
 }
 
 void ISSEventBuilder::StartFile(){

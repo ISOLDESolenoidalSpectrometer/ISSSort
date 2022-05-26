@@ -40,7 +40,7 @@ class ISSHistogrammer {
 public:
 
 	ISSHistogrammer( ISSReaction *myreact, ISSSettings *myset );
-	~ISSHistogrammer();
+	virtual ~ISSHistogrammer(){};
 	
 	void MakeHists();
 	unsigned long FillHists( unsigned long start_fill = 0 );

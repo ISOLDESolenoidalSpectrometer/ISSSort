@@ -2,13 +2,8 @@
 
 ISSTimeSorter::ISSTimeSorter( ){
 	
-	//std::cout << "constructor" << std::endl;
-
-}
-
-ISSTimeSorter::~ISSTimeSorter() {
-	
-	//std::cout << "destructor" << std::endl;
+	// No progress bar by default
+	_prog_ = false;
 
 }
 

@@ -56,7 +56,7 @@ class ISSEventBuilder {
 public:
 
 	ISSEventBuilder( ISSSettings *myset );
-	virtual ~ISSEventBuilder();
+	virtual ~ISSEventBuilder(){};
 
 	void	SetInputFile( std::string input_file_name );
 	void	SetInputTree( TTree* user_tree );

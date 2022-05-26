@@ -38,7 +38,7 @@ class ISSConverter {
 public:
 	
 	ISSConverter( ISSSettings *myset );
-	~ISSConverter();
+	virtual ~ISSConverter(){};
 	
 
 	int ConvertFile( std::string input_file_name,

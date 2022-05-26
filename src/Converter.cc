@@ -27,12 +27,9 @@ ISSConverter::ISSConverter( ISSSettings *myset ) {
 	
 	// Default that we do not have a source only run
 	flag_source = false;
-
-}
-
-ISSConverter::~ISSConverter() {
 	
-	//std::cout << "destructor" << std::endl;
+	// No progress bar by default
+	_prog_ = false;
 
 }
 
