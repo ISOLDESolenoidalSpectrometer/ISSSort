@@ -5,6 +5,9 @@ ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
 	// First get the settings
 	set = myset;
 	
+	// No calibration file by default
+	overwrite_cal = false;
+	
 	// No progress bar by default
 	_prog_ = false;
 
@@ -117,6 +120,9 @@ void ISSEventBuilder::StartFile(){
 	// Reset counters etc.
 	
 	time_prev = 0;
+	time_min = 0;
+	time_max = 0;
+	time_first = 0;
 	caen_time = 0;
 	caen_prev = 0;
 	ebis_prev = 0;
@@ -236,7 +242,7 @@ void ISSEventBuilder::Initialise(){
 	
 	flag_close_event = false;
 	noise_flag = false;
-	event_open = true;
+	event_open = false;
 
 	hit_ctr = 0;
 	
@@ -312,7 +318,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			std::cout << input_tree->GetName() << std::endl;
 			
 		}
-			
+		
 		// Sort out the timing for the event window
 		// but only if it isn't an info event, i.e only for real data
 		if( !in_data->IsInfo() ) {
@@ -342,7 +348,16 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			else if( mytime < time_min ) time_min = mytime;
 			
 		}
+		
+		else {
+			
+			// record time of this event
+			time_prev = mytime;
 
+		}
+				
+		
+		
 		// ------------------------------------------ //
 		// Find particles on the array
 		// ------------------------------------------ //
@@ -683,6 +698,13 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 		//  check if last datum from this event and do some cleanup
 		//------------------------------
 		
+		// Debug
+		//std::cout << "Entry #" << i << ": time = " << mytime << std::endl;
+		//if( in_data->IsInfo() ) std::cout << "\tInfo code = " << (int)info_data->GetCode() << std::endl;
+		//else if( in_data->IsAsic() ) std::cout << "\tAsic = " << (int)asic_data->GetAsic() << std::endl;
+		//else if( in_data->IsCaen() ) std::cout << "\tCAEN = " << (int)caen_data->GetModule() << std::endl;
+		//else std::cout << "\tUnknown event type" << std::endl;
+
 		if( (i+1) == n_entries )
 			flag_close_event = true; // set flag to close this event
 			
@@ -711,11 +733,18 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 
 		} // if next entry beyond time window: close event!
 		
+		// Debug
+		//std::cout << "\tNext time = " << in_data->GetTime() << std::endl;
+		//std::cout << "\ttime_diff = " << time_diff << std::endl;
+		//std::cout << "\thit_ctr = " << hit_ctr << std::endl;
+		//std::cout << "\tEvent open? " << event_open << std::endl;
+		//std::cout << "\tClose event? " << flag_close_event << std::endl;
+
 		
 		//----------------------------
-		// if close this event and number of datums in event>0
+		// if close this event and number of data in event>0
 		//----------------------------
-		if( flag_close_event && hit_ctr > 0 ) {
+		if( flag_close_event ) {
 
 			//----------------------------------
 			// Build array events, recoils, etc
@@ -744,8 +773,8 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			//--------------------------------------------------
 			Initialise();
 			
-		} // if close event && hit_ctr > 0
-		
+		} // if close event
+				
 		if( i % (n_entries/100) == 0 || i+1 == n_entries ) {
 			
 			// Percent complete
@@ -1549,8 +1578,8 @@ void ISSEventBuilder::MakeEventHists(){
 		output_file->mkdir( dirname.data() );
 	output_file->cd( dirname.data() );
 
-	tdiff = new TH1F( "tdiff", "Time difference to first trigger;#Delta t [ns]", 1e3, -10, 1e5 );
-	tdiff_clean = new TH1F( "tdiff_clean", "Time difference to first trigger without noise;#Delta t [ns]", 1e3, -10, 1e5 );
+	tdiff = new TH1F( "tdiff", "Time difference to first trigger;#Delta t [ns]", 1.5e3, -0.5e5, 1.0e5 );
+	tdiff_clean = new TH1F( "tdiff_clean", "Time difference to first trigger without noise;#Delta t [ns]", 1.5e3, -0.5e5, 1.0e5 );
 
 	caen_freq = new TProfile( "caen_freq", "Frequency of pulser in CAEN DAQ as a function of time;time [ns];f [Hz]", 10.8e4, 0, 10.8e12 );
 
