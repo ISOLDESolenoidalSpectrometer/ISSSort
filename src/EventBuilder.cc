@@ -750,28 +750,33 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 		//----------------------------
 		if( flag_close_event || (i+1) == n_entries ) {
 
-			//----------------------------------
-			// Build array events, recoils, etc
-			//----------------------------------
-			ArrayFinder();		// add an ArrayEvt for each n/p pair
-			RecoilFinder();		// add a RecoilEvt for each dE-E
-			MwpcFinder();		// add an MwpcEvt for pair of TAC events
-			ElumFinder();		// add an ElumEvt for each S1 event
-			ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
+			// If we opened the event, then sort it out
+			if( event_open ) {
+			
+				//----------------------------------
+				// Build array events, recoils, etc
+				//----------------------------------
+				ArrayFinder();		// add an ArrayEvt for each n/p pair
+				RecoilFinder();		// add a RecoilEvt for each dE-E
+				MwpcFinder();		// add an MwpcEvt for pair of TAC events
+				ElumFinder();		// add an ElumEvt for each S1 event
+				ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
 
-			// ------------------------------------
-			// Add timing and fill the ISSEvts tree
-			// ------------------------------------
-			write_evts->SetEBIS( ebis_time );
-			write_evts->SetT1( t1_time );
-			if( write_evts->GetArrayMultiplicity() ||
-			    write_evts->GetArrayPMultiplicity() ||
-			    write_evts->GetRecoilMultiplicity() ||
-			    write_evts->GetMwpcMultiplicity() ||
-			    write_evts->GetElumMultiplicity() ||
-			    write_evts->GetZeroDegreeMultiplicity() ) output_tree->Fill();
+				// ------------------------------------
+				// Add timing and fill the ISSEvts tree
+				// ------------------------------------
+				write_evts->SetEBIS( ebis_time );
+				write_evts->SetT1( t1_time );
+				if( write_evts->GetArrayMultiplicity() ||
+					write_evts->GetArrayPMultiplicity() ||
+					write_evts->GetRecoilMultiplicity() ||
+					write_evts->GetMwpcMultiplicity() ||
+					write_evts->GetElumMultiplicity() ||
+					write_evts->GetZeroDegreeMultiplicity() )
+					output_tree->Fill();
 
-
+			}
+			
 			//--------------------------------------------------
 			// clear values of arrays to store intermediate info
 			//--------------------------------------------------
