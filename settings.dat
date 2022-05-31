@@ -35,6 +35,7 @@
 #PulserAsicArray: 1
 #PulserChannelArray: 63
 #PulserCodeArray: 19
+#PulserThresholdArray: 1000
 #PulserModuleCAEN: 1
 #PulserChannelCAEN: 13
 #PulserCodeCAEN: 20
