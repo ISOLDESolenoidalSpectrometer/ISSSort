@@ -241,9 +241,8 @@ void ISSEventBuilder::Initialise(){
 	/// This is called at the end of every execution/loop
 	
 	flag_close_event = false;
-	noise_flag = false;
 	event_open = false;
-
+	
 	hit_ctr = 0;
 	
 	pen_list.clear();
@@ -319,44 +318,12 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			
 		}
 		
-		// Sort out the timing for the event window
-		// but only if it isn't an info event, i.e only for real data
-		if( !in_data->IsInfo() ) {
-			
-			// if this is first datum included in Event
-			if( hit_ctr == 0 ) {
-				
-				time_min	= mytime;
-				time_max	= mytime;
-				time_first	= mytime;
-				
-			}
-			
-			// Check if first event was noise
-			// Reset the build window if so
-			if( noise_flag && !event_open )
-				time_first = mytime;
-
-			noise_flag = false; // reset noise flag
-			hit_ctr++; // increase counter for bits of data included in this event
-
-			// record time of this event
-			time_prev = mytime;
-			
-			// Update min and max
-			if( mytime > time_max ) time_max = mytime;
-			else if( mytime < time_min ) time_min = mytime;
-			
-		}
+		// record time of this event
+		time_prev = mytime;
 		
-		else {
-			
-			// record time of this event
-			time_prev = mytime;
+		// assume this isn't noise for now
+		noise_flag = false;
 
-		}
-				
-		
 		
 		// ------------------------------------------ //
 		// Find particles on the array
@@ -414,6 +381,8 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 				pid_list.push_back( mystrip );
 				prow_list.push_back( myrow );
 
+				hit_ctr++; // increase counter for bits of data included in this event
+
 			}
 
 			// n-side event
@@ -430,7 +399,8 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 				nid_list.push_back( mystrip );
 				nrow_list.push_back( myrow );
 
-				
+				hit_ctr++; // increase counter for bits of data included in this event
+
 			}
 			
 			// Is it the start event?
@@ -487,6 +457,8 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 				rid_list.push_back( mylayer );
 				rsec_list.push_back( mysector );
 
+				hit_ctr++; // increase counter for bits of data included in this event
+
 			}
 			
 			// Is it an MWPC?
@@ -502,6 +474,8 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 					
 				}
 
+				hit_ctr++; // increase counter for bits of data included in this event
+
 			}
 			
 			// Is it an ELUM?
@@ -512,6 +486,8 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 				een_list.push_back( myenergy );
 				etd_list.push_back( mytime );
 				esec_list.push_back( mysector );
+
+				hit_ctr++; // increase counter for bits of data included in this event
 
 			}
 
@@ -524,6 +500,8 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 				ztd_list.push_back( mytime );
 				zid_list.push_back( mylayer );
 				
+				hit_ctr++; // increase counter for bits of data included in this event
+
 			}
 			
 			// Is it the start event?
@@ -546,8 +524,13 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			
 			info_data = in_data->GetInfoData();
 			
+			// if there are no data so far, set this as time_first
+			if( hit_ctr == 0 )
+				time_first = mytime;
+			
 			// Update EBIS time
-			if( info_data->GetCode() == set->GetEBISCode() ) {
+			if( info_data->GetCode() == set->GetEBISCode() &&
+			    TMath::Abs( (double)ebis_time - (double)info_data->GetTime() ) > 1e3 ) {
 				
 				ebis_time = info_data->GetTime();
 				ebis_hz = 1e9 / ( (double)ebis_time - (double)ebis_prev );
@@ -692,59 +675,80 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 
 						
 		}
+		
+		// Sort out the timing for the event window
+		// but only if it isn't an info event, i.e only for real data
+		else {
+			
+			// if this is first datum included in Event
+			if( hit_ctr == 1 ) {
+				
+				time_min	= mytime;
+				time_max	= mytime;
+				time_first	= mytime;
+				
+			}
+			
+			// Update max time
+			if( mytime > time_max ) time_max = mytime;
+			else if( mytime < time_min ) time_min = mytime;
+			
+		} // not info data
 
+		
+		// Debug
+		//if( mytime-ebis_time > 40e6 ) {
+		//	std::cout << "Entry #" << i << ": time = " << mytime << std::endl;
+		//	if( in_data->IsInfo() ) std::cout << "\tInfo code = " << (int)info_data->GetCode() << std::endl;
+		//	else if( in_data->IsAsic() ) {
+		//		std::cout << "\tAsic = " << (int)asic_data->GetAsic() << std::endl;
+		//		std::cout << "\tMod  = " << (int)asic_data->GetModule() << std::endl;
+		//		std::cout << "\tCh   = " << (int)asic_data->GetChannel() << std::endl;
+		//	}
+		//	else if( in_data->IsCaen() ) std::cout << "\tCAEN = " << (int)caen_data->GetModule() << std::endl;
+		//	else std::cout << "\tUnknown event type" << std::endl;
+		//}
 		
 		//------------------------------
 		//  check if last datum from this event and do some cleanup
 		//------------------------------
 		
-		// Debug
-		//std::cout << "Entry #" << i << ": time = " << mytime << std::endl;
-		//if( in_data->IsInfo() ) std::cout << "\tInfo code = " << (int)info_data->GetCode() << std::endl;
-		//else if( in_data->IsAsic() ) std::cout << "\tAsic = " << (int)asic_data->GetAsic() << std::endl;
-		//else if( in_data->IsCaen() ) std::cout << "\tCAEN = " << (int)caen_data->GetModule() << std::endl;
-		//else std::cout << "\tUnknown event type" << std::endl;
+		input_tree->GetEntry(i+1);
+					
+		time_diff = in_data->GetTime() - time_first;
 
-		if( (i+1) == n_entries )
+		// window = time_stamp_first + time_window
+		if( time_diff > build_window )
+			flag_close_event = true; // set flag to close this event
+
+		// we've gone on to the next file in the chain
+		else if( time_diff < 0 )
 			flag_close_event = true; // set flag to close this event
 			
-		else {  //check if next entry is beyond time window: close event!
-
-			input_tree->GetEntry(i+1);
-						
-			time_diff = in_data->GetTime() - time_first;
-
-			// window = time_stamp_first + time_window
-			if( time_diff > build_window )
-				flag_close_event = true; // set flag to close this event
-
-			// we've gone on to the next file in the chain
-			else if( time_diff < 0 )
-				flag_close_event = true; // set flag to close this event
-				
-			// Fill tdiff hist only for real data
-			if( !in_data->IsInfo() ) {
-				
-				tdiff->Fill( time_diff );
-				if( !noise_flag )
-					tdiff_clean->Fill( time_diff );
+		// Fill tdiff hist only for real data
+		if( !in_data->IsInfo() ) {
 			
-			}
+			tdiff->Fill( time_diff );
+			if( !noise_flag )
+				tdiff_clean->Fill( time_diff );
+		
+		}
 
-		} // if next entry beyond time window: close event!
 		
 		// Debug
-		//std::cout << "\tNext time = " << in_data->GetTime() << std::endl;
-		//std::cout << "\ttime_diff = " << time_diff << std::endl;
-		//std::cout << "\thit_ctr = " << hit_ctr << std::endl;
-		//std::cout << "\tEvent open? " << event_open << std::endl;
-		//std::cout << "\tClose event? " << flag_close_event << std::endl;
-
+		//if( mytime-ebis_time > 40e6 ) {
+		//	std::cout << "\tNext time = " << in_data->GetTime() << std::endl;
+		//	std::cout << "\ttime_diff = " << time_diff << std::endl;
+		//	std::cout << "\ttime-EBIS = " << mytime-ebis_time << std::endl;
+		//	std::cout << "\thit_ctr = " << hit_ctr << std::endl;
+		//	std::cout << "\tEvent open? " << event_open << std::endl;
+		//	std::cout << "\tClose event? " << flag_close_event << std::endl;
+		//}
 		
 		//----------------------------
 		// if close this event and number of data in event>0
 		//----------------------------
-		if( flag_close_event ) {
+		if( flag_close_event || (i+1) == n_entries ) {
 
 			//----------------------------------
 			// Build array events, recoils, etc
@@ -775,6 +779,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			
 		} // if close event
 				
+		// Progress bar
 		if( i % (n_entries/100) == 0 || i+1 == n_entries ) {
 			
 			// Percent complete
