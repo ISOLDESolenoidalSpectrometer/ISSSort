@@ -1,10 +1,16 @@
 #include "EventBuilder.hh"
 
-EventBuilder::EventBuilder( Settings *myset ){
+ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
 	
 	// First get the settings
 	set = myset;
 	
+	// No calibration file by default
+	overwrite_cal = false;
+	
+	// No progress bar by default
+	_prog_ = false;
+
 	// ------------------------------------------------------------------------ //
 	// Initialise variables and flags
 	// ------------------------------------------------------------------------ //
@@ -108,23 +114,15 @@ EventBuilder::EventBuilder( Settings *myset ){
 	
 }
 
-EventBuilder::~EventBuilder(){
-	
-	//delete output_tree;
-	//delete write_evts;
-	//delete array_evt;
-	//delete recoil_evt;
-	//delete elum_evt;
-	//delete zd_evt;
-
-}
-
-void EventBuilder::StartFile(){
+void ISSEventBuilder::StartFile(){
 	
 	// Call for every new file
 	// Reset counters etc.
 	
 	time_prev = 0;
+	time_min = 0;
+	time_max = 0;
+	time_first = 0;
 	caen_time = 0;
 	caen_prev = 0;
 	ebis_prev = 0;
@@ -179,7 +177,7 @@ void EventBuilder::StartFile(){
 	
 }
 
-void EventBuilder::SetInputFile( std::string input_file_name ) {
+void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
 	
 	/// Overloaded function for a single file or multiple files
 	//input_tree = new TTree( "iss" );
@@ -203,7 +201,7 @@ void EventBuilder::SetInputFile( std::string input_file_name ) {
 	
 }
 
-void EventBuilder::SetInputTree( TTree *user_tree ){
+void ISSEventBuilder::SetInputTree( TTree *user_tree ){
 	
 	// Find the tree and set branch addresses
 	input_tree = user_tree;
@@ -215,16 +213,16 @@ void EventBuilder::SetInputTree( TTree *user_tree ){
 	
 }
 
-void EventBuilder::SetOutput( std::string output_file_name ) {
+void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 
 	// These are the branches we need
 	write_evts = new ISSEvts();
-	array_evt = new ArrayEvt();
-	arrayp_evt = new ArrayPEvt();
-	recoil_evt = new RecoilEvt();
-	mwpc_evt = new MwpcEvt();
-	elum_evt = new ElumEvt();
-	zd_evt = new ZeroDegreeEvt();
+	array_evt = new ISSArrayEvt();
+	arrayp_evt = new ISSArrayPEvt();
+	recoil_evt = new ISSRecoilEvt();
+	mwpc_evt = new ISSMwpcEvt();
+	elum_evt = new ISSElumEvt();
+	zd_evt = new ISSZeroDegreeEvt();
 
 	// ------------------------------------------------------------------------ //
 	// Create output file and create events tree
@@ -238,14 +236,13 @@ void EventBuilder::SetOutput( std::string output_file_name ) {
 	
 }
 
-void EventBuilder::Initialise(){
+void ISSEventBuilder::Initialise(){
 
 	/// This is called at the end of every execution/loop
 	
 	flag_close_event = false;
-	noise_flag = false;
-	event_open = true;
-
+	event_open = false;
+	
 	hit_ctr = 0;
 	
 	pen_list.clear();
@@ -283,7 +280,7 @@ void EventBuilder::Initialise(){
 	
 }
 
-unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
+unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 	
 	/// Function to loop over the sort tree and build array and recoil events
 
@@ -320,37 +317,14 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			std::cout << input_tree->GetName() << std::endl;
 			
 		}
-			
-		// Sort out the timing for the event window
-		// but only if it isn't an info event, i.e only for real data
-		if( !in_data->IsInfo() ) {
-			
-			// if this is first datum included in Event
-			if( hit_ctr == 0 ) {
-				
-				time_min	= mytime;
-				time_max	= mytime;
-				time_first	= mytime;
-				
-			}
-			
-			// Check if first event was noise
-			// Reset the build window if so
-			if( noise_flag && !event_open )
-				time_first = mytime;
+		
+		// record time of this event
+		time_prev = mytime;
+		
+		// assume this isn't noise for now
+		noise_flag = false;
 
-			noise_flag = false; // reset noise flag
-			hit_ctr++; // increase counter for bits of data included in this event
-
-			// record time of this event
-			time_prev = mytime;
-			
-			// Update min and max
-			if( mytime > time_max ) time_max = mytime;
-			else if( mytime < time_min ) time_min = mytime;
-			
-		}
-
+		
 		// ------------------------------------------ //
 		// Find particles on the array
 		// ------------------------------------------ //
@@ -407,6 +381,8 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				pid_list.push_back( mystrip );
 				prow_list.push_back( myrow );
 
+				hit_ctr++; // increase counter for bits of data included in this event
+
 			}
 
 			// n-side event
@@ -423,7 +399,8 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				nid_list.push_back( mystrip );
 				nrow_list.push_back( myrow );
 
-				
+				hit_ctr++; // increase counter for bits of data included in this event
+
 			}
 			
 			// Is it the start event?
@@ -480,6 +457,8 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				rid_list.push_back( mylayer );
 				rsec_list.push_back( mysector );
 
+				hit_ctr++; // increase counter for bits of data included in this event
+
 			}
 			
 			// Is it an MWPC?
@@ -495,6 +474,8 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 					
 				}
 
+				hit_ctr++; // increase counter for bits of data included in this event
+
 			}
 			
 			// Is it an ELUM?
@@ -505,6 +486,8 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				een_list.push_back( myenergy );
 				etd_list.push_back( mytime );
 				esec_list.push_back( mysector );
+
+				hit_ctr++; // increase counter for bits of data included in this event
 
 			}
 
@@ -517,6 +500,8 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 				ztd_list.push_back( mytime );
 				zid_list.push_back( mylayer );
 				
+				hit_ctr++; // increase counter for bits of data included in this event
+
 			}
 			
 			// Is it the start event?
@@ -539,8 +524,13 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			
 			info_data = in_data->GetInfoData();
 			
+			// if there are no data so far, set this as time_first
+			if( hit_ctr == 0 )
+				time_first = mytime;
+			
 			// Update EBIS time
-			if( info_data->GetCode() == set->GetEBISCode() ) {
+			if( info_data->GetCode() == set->GetEBISCode() &&
+			    TMath::Abs( (double)ebis_time - (double)info_data->GetTime() ) > 1e3 ) {
 				
 				ebis_time = info_data->GetTime();
 				ebis_hz = 1e9 / ( (double)ebis_time - (double)ebis_prev );
@@ -551,7 +541,8 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 		
 			// Update T1 time
-			if( info_data->GetCode() == set->GetT1Code() ){
+			if( info_data->GetCode() == set->GetT1Code() &&
+				TMath::Abs( (double)t1_time - (double)info_data->GetTime() ) > 1e3 ){
 				
 				t1_time = info_data->GetTime();
 				t1_hz = 1e9 / ( (double)t1_time - (double)t1_prev );
@@ -685,19 +676,46 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 
 						
 		}
+		
+		// Sort out the timing for the event window
+		// but only if it isn't an info event, i.e only for real data
+		else {
+			
+			// if this is first datum included in Event
+			if( hit_ctr == 1 ) {
+				
+				time_min	= mytime;
+				time_max	= mytime;
+				time_first	= mytime;
+				
+			}
+			
+			// Update max time
+			if( mytime > time_max ) time_max = mytime;
+			else if( mytime < time_min ) time_min = mytime;
+			
+		} // not info data
 
+		
+		// Debug
+		//if( mytime-ebis_time > 40e6 ) {
+		//	std::cout << "Entry #" << i << ": time = " << mytime << std::endl;
+		//	if( in_data->IsInfo() ) std::cout << "\tInfo code = " << (int)info_data->GetCode() << std::endl;
+		//	else if( in_data->IsAsic() ) {
+		//		std::cout << "\tAsic = " << (int)asic_data->GetAsic() << std::endl;
+		//		std::cout << "\tMod  = " << (int)asic_data->GetModule() << std::endl;
+		//		std::cout << "\tCh   = " << (int)asic_data->GetChannel() << std::endl;
+		//	}
+		//	else if( in_data->IsCaen() ) std::cout << "\tCAEN = " << (int)caen_data->GetModule() << std::endl;
+		//	else std::cout << "\tUnknown event type" << std::endl;
+		//}
 		
 		//------------------------------
 		//  check if last datum from this event and do some cleanup
 		//------------------------------
 		
-		if( (i+1) == n_entries )
-			flag_close_event = true; // set flag to close this event
-			
-		else {  //check if next entry is beyond time window: close event!
-
-			input_tree->GetEntry(i+1);
-						
+		if( input_tree->GetEntry(i+1) ) {
+					
 			time_diff = in_data->GetTime() - time_first;
 
 			// window = time_stamp_first + time_window
@@ -717,49 +735,72 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 			
 			}
 
-		} // if next entry beyond time window: close event!
+		}
 		
+		// Debug
+		//if( mytime-ebis_time > 40e6 ) {
+		//	std::cout << "\tNext time = " << in_data->GetTime() << std::endl;
+		//	std::cout << "\ttime_diff = " << time_diff << std::endl;
+		//	std::cout << "\ttime-EBIS = " << mytime-ebis_time << std::endl;
+		//	std::cout << "\thit_ctr = " << hit_ctr << std::endl;
+		//	std::cout << "\tEvent open? " << event_open << std::endl;
+		//	std::cout << "\tClose event? " << flag_close_event << std::endl;
+		//}
 		
 		//----------------------------
-		// if close this event and number of datums in event>0
+		// if close this event or last entry
 		//----------------------------
-		if( flag_close_event && hit_ctr > 0 ) {
+		if( flag_close_event || (i+1) == n_entries ) {
 
-			//----------------------------------
-			// Build array events, recoils, etc
-			//----------------------------------
-			ArrayFinder();		// add an ArrayEvt for each n/p pair
-			RecoilFinder();		// add a RecoilEvt for each dE-E
-			MwpcFinder();		// add an MwpcEvt for pair of TAC events
-			ElumFinder();		// add an ElumEvt for each S1 event
-			ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
+			// If we opened the event, then sort it out
+			if( event_open ) {
+			
+				//----------------------------------
+				// Build array events, recoils, etc
+				//----------------------------------
+				ArrayFinder();		// add an ArrayEvt for each n/p pair
+				RecoilFinder();		// add a RecoilEvt for each dE-E
+				MwpcFinder();		// add an MwpcEvt for pair of TAC events
+				ElumFinder();		// add an ElumEvt for each S1 event
+				ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
 
-			// ------------------------------------
-			// Add timing and fill the ISSEvts tree
-			// ------------------------------------
-			write_evts->SetEBIS( ebis_time );
-			write_evts->SetT1( t1_time );
-			if( write_evts->GetArrayMultiplicity() ||
-			    write_evts->GetArrayPMultiplicity() ||
-			    write_evts->GetRecoilMultiplicity() ||
-			    write_evts->GetMwpcMultiplicity() ||
-			    write_evts->GetElumMultiplicity() ||
-			    write_evts->GetZeroDegreeMultiplicity() ) output_tree->Fill();
+				// ------------------------------------
+				// Add timing and fill the ISSEvts tree
+				// ------------------------------------
+				write_evts->SetEBIS( ebis_time );
+				write_evts->SetT1( t1_time );
+				if( write_evts->GetArrayMultiplicity() ||
+					write_evts->GetArrayPMultiplicity() ||
+					write_evts->GetRecoilMultiplicity() ||
+					write_evts->GetMwpcMultiplicity() ||
+					write_evts->GetElumMultiplicity() ||
+					write_evts->GetZeroDegreeMultiplicity() )
+					output_tree->Fill();
 
-
+			}
+			
 			//--------------------------------------------------
 			// clear values of arrays to store intermediate info
 			//--------------------------------------------------
 			Initialise();
 			
-		} // if close event && hit_ctr > 0
-		
+		} // if close event
+				
+		// Progress bar
 		if( i % (n_entries/100) == 0 || i+1 == n_entries ) {
 			
+			// Percent complete
+			float percent = (float)(i+1)*100.0/(float)n_entries;
+
+			// Progress bar in GUI
+			if( _prog_ ) prog->SetPosition( percent );
+
+			// Progress bar in terminal
 			std::cout << " " << std::setw(6) << std::setprecision(4);
-			std::cout << (float)(i+1)*100.0/(float)n_entries << "%    \r";
+			std::cout << percent << "%    \r";
 			std::cout.flush();
-			
+			gSystem->ProcessEvents();
+
 		}
 		
 		
@@ -769,7 +810,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 	// Clean up
 	//--------------------------
 
-	std::cout << "\n EventBuilder finished..." << std::endl;
+	std::cout << "\n ISSEventBuilder finished..." << std::endl;
 	std::cout << "  ASIC data packets = " << n_asic_data << std::endl;
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 		std::cout << "   Module " << i << " pause = " << n_asic_pause[i] << std::endl;
@@ -812,7 +853,7 @@ unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 }
 
 
-void EventBuilder::ArrayFinder() {
+void ISSEventBuilder::ArrayFinder() {
 	
 	std::vector<unsigned int> pindex;
 	std::vector<unsigned int> nindex;
@@ -882,9 +923,20 @@ void EventBuilder::ArrayFinder() {
 				pn_mult[i][j]->Fill( pindex.size(), nindex.size() );
 
 			// Time difference hists
+			// p-n time
 			for( unsigned int k = 0; k < pindex.size(); ++k )
 				for( unsigned int l = 0; l < nindex.size(); ++l )
 					pn_td[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ) );
+
+			// p-p time
+			for( unsigned int k = 0; k < pindex.size(); ++k )
+				for( unsigned int l = k+1; l < pindex.size(); ++l )
+					pp_td[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ptd_list.at( pindex.at(l) ) );
+
+			// n-n time
+			for( unsigned int k = 0; k < nindex.size(); ++k )
+				for( unsigned int l = k+1; l < nindex.size(); ++l )
+					nn_td[i][j]->Fill( ntd_list.at( nindex.at(k) ) - ntd_list.at( nindex.at(l) ) );
 
 			
 			// Easy case, p == 1 vs n == 1
@@ -1338,7 +1390,7 @@ void EventBuilder::ArrayFinder() {
 
 }
 
-void EventBuilder::RecoilFinder() {
+void ISSEventBuilder::RecoilFinder() {
 		
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
@@ -1394,7 +1446,7 @@ void EventBuilder::RecoilFinder() {
 	
 }
 
-void EventBuilder::MwpcFinder() {
+void ISSEventBuilder::MwpcFinder() {
 
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
@@ -1454,7 +1506,7 @@ void EventBuilder::MwpcFinder() {
 	
 }
 
-void EventBuilder::ElumFinder() {
+void ISSEventBuilder::ElumFinder() {
 	
 	// Loop over ELUM events
 	for( unsigned int i = 0; i < een_list.size(); ++i ) {
@@ -1474,7 +1526,7 @@ void EventBuilder::ElumFinder() {
 	
 }
 
-void EventBuilder::ZeroDegreeFinder() {
+void ISSEventBuilder::ZeroDegreeFinder() {
 	
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
@@ -1525,7 +1577,7 @@ void EventBuilder::ZeroDegreeFinder() {
 	
 }
 
-void EventBuilder::MakeEventHists(){
+void ISSEventBuilder::MakeEventHists(){
 	
 	std::string hname, htitle;
 	std::string dirname, maindirname, subdirname;
@@ -1538,8 +1590,8 @@ void EventBuilder::MakeEventHists(){
 		output_file->mkdir( dirname.data() );
 	output_file->cd( dirname.data() );
 
-	tdiff = new TH1F( "tdiff", "Time difference to first trigger;#Delta t [ns]", 1e3, -10, 1e5 );
-	tdiff_clean = new TH1F( "tdiff_clean", "Time difference to first trigger without noise;#Delta t [ns]", 1e3, -10, 1e5 );
+	tdiff = new TH1F( "tdiff", "Time difference to first trigger;#Delta t [ns]", 1.5e3, -0.5e5, 1.0e5 );
+	tdiff_clean = new TH1F( "tdiff_clean", "Time difference to first trigger without noise;#Delta t [ns]", 1.5e3, -0.5e5, 1.0e5 );
 
 	caen_freq = new TProfile( "caen_freq", "Frequency of pulser in CAEN DAQ as a function of time;time [ns];f [Hz]", 10.8e4, 0, 10.8e12 );
 
@@ -1628,6 +1680,8 @@ void EventBuilder::MakeEventHists(){
 	pn_pab.resize( set->GetNumberOfArrayModules() );
 	pn_max.resize( set->GetNumberOfArrayModules() );
 	pn_td.resize( set->GetNumberOfArrayModules() );
+	pp_td.resize( set->GetNumberOfArrayModules() );
+	nn_td.resize( set->GetNumberOfArrayModules() );
 	pn_mult.resize( set->GetNumberOfArrayModules() );
 
 	// Loop over ISS modules
@@ -1648,6 +1702,8 @@ void EventBuilder::MakeEventHists(){
 		pn_pab[i].resize( set->GetNumberOfArrayRows() );
 		pn_max[i].resize( set->GetNumberOfArrayRows() );
 		pn_td[i].resize( set->GetNumberOfArrayRows() );
+		pp_td[i].resize( set->GetNumberOfArrayRows() );
+		nn_td[i].resize( set->GetNumberOfArrayRows() );
 		pn_mult[i].resize( set->GetNumberOfArrayRows() );
 
 		// Loop over rows of the array
@@ -1697,6 +1753,16 @@ void EventBuilder::MakeEventHists(){
 			htitle = "p-side vs. n-side time difference (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];counts";
 			pn_td[i][j] = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
+			
+			hname = "pp_td_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "p-side vs. p-side time difference (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];counts";
+			pp_td[i][j] = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
+			
+			hname = "nn_td_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "n-side vs. n-side time difference (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];counts";
+			nn_td[i][j] = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
 			
 			hname = "pn_mult_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side vs. n-side multiplicity (module ";
@@ -1793,7 +1859,7 @@ void EventBuilder::MakeEventHists(){
 	
 }
 
-void EventBuilder::CleanHists() {
+void ISSEventBuilder::CleanHists() {
 
 	// Clean up the histograms to save memory for later
 	for( unsigned int i = 0; i < pn_11.size(); i++ ) {
@@ -1850,6 +1916,18 @@ void EventBuilder::CleanHists() {
 		pn_td.clear();
 	}
 
+	for( unsigned int i = 0; i < pp_td.size(); i++ ) {
+		for( unsigned int j = 0; j < pp_td.at(i).size(); j++ )
+			delete (pp_td[i][j]);
+		pp_td.clear();
+	}
+
+	for( unsigned int i = 0; i < nn_td.size(); i++ ) {
+		for( unsigned int j = 0; j < nn_td.at(i).size(); j++ )
+			delete (nn_td[i][j]);
+		nn_td.clear();
+	}
+
 	for( unsigned int i = 0; i < pn_mult.size(); i++ ) {
 		for( unsigned int j = 0; j < pn_mult.at(i).size(); j++ )
 			delete (pn_mult[i][j]);
@@ -1870,6 +1948,8 @@ void EventBuilder::CleanHists() {
 	pn_pab.clear();
 	pn_max.clear();
 	pn_td.clear();
+	pp_td.clear();
+	nn_td.clear();
 	pn_mult.clear();
 	recoil_EdE.clear();
 	recoil_dEsum.clear();
