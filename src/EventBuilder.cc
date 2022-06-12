@@ -541,7 +541,8 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 		
 			// Update T1 time
-			if( info_data->GetCode() == set->GetT1Code() ){
+			if( info_data->GetCode() == set->GetT1Code() &&
+				TMath::Abs( (double)t1_time - (double)info_data->GetTime() ) > 1e3 ){
 				
 				t1_time = info_data->GetTime();
 				t1_hz = 1e9 / ( (double)t1_time - (double)t1_prev );
@@ -713,27 +714,28 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 		//  check if last datum from this event and do some cleanup
 		//------------------------------
 		
-		input_tree->GetEntry(i+1);
+		if( input_tree->GetEntry(i+1) ) {
 					
-		time_diff = in_data->GetTime() - time_first;
+			time_diff = in_data->GetTime() - time_first;
 
-		// window = time_stamp_first + time_window
-		if( time_diff > build_window )
-			flag_close_event = true; // set flag to close this event
+			// window = time_stamp_first + time_window
+			if( time_diff > build_window )
+				flag_close_event = true; // set flag to close this event
 
-		// we've gone on to the next file in the chain
-		else if( time_diff < 0 )
-			flag_close_event = true; // set flag to close this event
+			// we've gone on to the next file in the chain
+			else if( time_diff < 0 )
+				flag_close_event = true; // set flag to close this event
+				
+			// Fill tdiff hist only for real data
+			if( !in_data->IsInfo() ) {
+				
+				tdiff->Fill( time_diff );
+				if( !noise_flag )
+					tdiff_clean->Fill( time_diff );
 			
-		// Fill tdiff hist only for real data
-		if( !in_data->IsInfo() ) {
-			
-			tdiff->Fill( time_diff );
-			if( !noise_flag )
-				tdiff_clean->Fill( time_diff );
-		
+			}
+
 		}
-
 		
 		// Debug
 		//if( mytime-ebis_time > 40e6 ) {
@@ -746,7 +748,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 		//}
 		
 		//----------------------------
-		// if close this event and number of data in event>0
+		// if close this event or last entry
 		//----------------------------
 		if( flag_close_event || (i+1) == n_entries ) {
 
