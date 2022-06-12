@@ -17,7 +17,7 @@ class Settings {
 public:
 
 	Settings( std::string filename );
-	virtual ~Settings();
+	virtual inline ~Settings(){};
 	
 	void ReadSettings();
 	void PrintSettings();

@@ -493,6 +493,10 @@ bool Reaction::ReadStoppingPowers( std::string isotope1, std::string isotope2, s
 
 void Reaction::MakeReaction( TVector3 vec, double en ){
 	
+	/// This function will use the interaction position and detected energy of an ejectile
+	/// event, to solve the reaction kinematics and define parameters such as:
+	/// theta_cm, theta_lab, Ex, E_lab, etc.
+
 	// Apply the X and Y offsets directly to the TVector3 input
 	// We move the array opposite to the target, which replicates the same
 	// geometrical shift that is observed with respect to the beam
@@ -506,9 +510,9 @@ void Reaction::MakeReaction( TVector3 vec, double en ){
 	else z_meas += z0;					// downstream
 	rho	= vec.Perp();					// perpenicular distance from beam axis to interaction point
     
-    //----------------//
-    // EX calculation //
-    //----------------//
+    //------------------------//
+    // Kinematics calculation //
+    //------------------------//
 	params[0] = z_meas;										// z in mm
 	params[1] = rho;										// rho in mm
 	params[2] = Ejectile.GetMomentumLab();					// p

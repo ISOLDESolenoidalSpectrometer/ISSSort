@@ -37,7 +37,7 @@ class Histogrammer {
 public:
 
 	Histogrammer( Reaction *myreact, Settings *myset );
-	~Histogrammer();
+	virtual inline ~Histogrammer(){};
 	
 	void MakeHists();
 	unsigned long FillHists( unsigned long start_fill = 0 );

@@ -8,12 +8,6 @@ Calibration::Calibration( std::string filename, Settings *myset ) {
 		
 }
 
-Calibration::~Calibration() {
-
-	//std::cout << "destructor" << std::endl;
-
-}
-
 void Calibration::ReadCalibration() {
 
 	TEnv *config = new TEnv( fInputFile.data() );
@@ -27,6 +21,10 @@ void Calibration::ReadCalibration() {
 	fAsicEnabled.resize( set->GetNumberOfArrayModules() );
 	fAsicWalk.resize( set->GetNumberOfArrayModules() );
 	
+	fAsicOffsetDefault = -4100.0;
+	fAsicGainDefault = 16.0;
+	fAsicGainQuadrDefault = 0.0;
+
 	// ASIC parameter read
 	for( unsigned int mod = 0; mod < set->GetNumberOfArrayModules(); mod++ ){
 
@@ -54,10 +52,10 @@ void Calibration::ReadCalibration() {
 
 			for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
 				
-				fAsicOffset[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Offset", mod, asic, chan ), -2936. );
-				fAsicGain[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Gain", mod, asic, chan ), 14.5 );
-				fAsicGainQuadr[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.GainQuadr", mod, asic, chan ), 0. );
-				fAsicThreshold[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Threshold", mod, asic, chan ), 0. );
+				fAsicOffset[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Offset", mod, asic, chan ), fAsicOffsetDefault );
+				fAsicGain[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Gain", mod, asic, chan ), fAsicGainDefault );
+				fAsicGainQuadr[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.GainQuadr", mod, asic, chan ), fAsicGainQuadrDefault );
+				fAsicThreshold[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Threshold", mod, asic, chan ), 0 );
 
 			}
 			
@@ -73,6 +71,10 @@ void Calibration::ReadCalibration() {
 	fCaenThreshold.resize( set->GetNumberOfCAENModules() );
 	fCaenTime.resize( set->GetNumberOfCAENModules() );
 
+	fCaenOffsetDefault = 0.0;
+	fCaenGainDefault = 1.0;
+	fCaenGainQuadrDefault = 0.0;
+
 	// CAEN parameter read
 	for( unsigned int mod = 0; mod < set->GetNumberOfCAENModules(); mod++ ){
 
@@ -84,9 +86,9 @@ void Calibration::ReadCalibration() {
 
 		for( unsigned int chan = 0; chan < set->GetNumberOfCAENChannels(); chan++ ){
 
-			fCaenOffset[mod][chan] = config->GetValue( Form( "caen_%d_%d.Offset", mod, chan ), 0. );
-			fCaenGain[mod][chan] = config->GetValue( Form( "caen_%d_%d.Gain", mod, chan ), 1. );
-			fCaenGainQuadr[mod][chan] = config->GetValue( Form( "caen_%d_%d.GainQuadr", mod, chan ), 0. );
+			fCaenOffset[mod][chan] = config->GetValue( Form( "caen_%d_%d.Offset", mod, chan ), fCaenOffsetDefault );
+			fCaenGain[mod][chan] = config->GetValue( Form( "caen_%d_%d.Gain", mod, chan ), fCaenGainDefault );
+			fCaenGainQuadr[mod][chan] = config->GetValue( Form( "caen_%d_%d.GainQuadr", mod, chan ), fCaenGainQuadrDefault );
 			fCaenThreshold[mod][chan] = config->GetValue( Form( "caen_%d_%d.Threshold", mod, chan ), 0. );
 			fCaenTime[mod][chan] = config->GetValue( Form( "caen_%d_%d.Time", mod,  chan ), 0 );
 
@@ -170,9 +172,9 @@ bool Calibration::AsicEnabled( unsigned int mod, unsigned int asic ){
 	
 }
 
-float Calibration::AsicWalk( unsigned int mod, unsigned int asic, float energy ){
+double Calibration::AsicWalk( unsigned int mod, unsigned int asic, float energy ){
 	
-	float walk = 0;
+	double walk = 0;
 	
 	if( mod < set->GetNumberOfArrayModules() &&
 	   asic < set->GetNumberOfArrayASICs() ) {

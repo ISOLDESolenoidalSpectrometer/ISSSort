@@ -35,7 +35,7 @@ class Converter {
 public:
 	
 	Converter( Settings *myset );
-	~Converter();
+	virtual inline ~Converter(){};
 	
 
 	int ConvertFile( std::string input_file_name,

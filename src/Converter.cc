@@ -30,12 +30,6 @@ Converter::Converter( Settings *myset ) {
 
 }
 
-Converter::~Converter() {
-	
-	//std::cout << "destructor" << std::endl;
-
-}
-
 void Converter::SetOutput( std::string output_file_name ){
 	
 	// Open output file
@@ -1065,8 +1059,10 @@ int Converter::ConvertFile( std::string input_file_name,
 		// Take one block each time and analyze it.
 		if( nblock % 200 == 0 || nblock+1 == BLOCKS_NUM ) {
 			
+			// Percent complete
+			float percent = (float)(nblock+1)*100.0/(float)BLOCKS_NUM;
 			std::cout << " " << std::setw(8) << std::setprecision(4);
-			std::cout << (float)(nblock+1)*100.0/(float)BLOCKS_NUM << "%\r";
+			std::cout << percent << "%\r";
 			std::cout.flush();
 			
 		}

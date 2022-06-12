@@ -18,7 +18,7 @@ class TimeSorter {
 public:
 
 	TimeSorter();
-	virtual ~TimeSorter();
+	virtual inline ~TimeSorter(){};
 	
 	unsigned long SortFile( unsigned long start_sort = 0 );
 	

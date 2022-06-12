@@ -7,12 +7,6 @@ Settings::Settings( std::string filename ) {
 	
 }
 
-Settings::~Settings() {
-	
-	//std::cout << "destructor" << std::endl;
-	
-}
-
 void Settings::ReadSettings() {
 	
 	TEnv *config = new TEnv( fInputFile.data() );

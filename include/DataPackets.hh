@@ -25,7 +25,7 @@ public:
 	inline bool				IsOverThreshold() { return thres; };
 
 	inline void SetTime( unsigned long t ){ time = t; };
-	inline void SetWalk( int w ){ walk = w; };
+	inline void SetWalk( double w ){ walk = w; };
 	inline void SetAdcValue( unsigned short adc ){ adc_value = adc; };
 	inline void SetModule( unsigned char m ){ mod = m; };
 	inline void SetAsic( unsigned char a ){ asic = a; };
@@ -49,7 +49,7 @@ protected:
 	int				walk;
 
 	
-	ClassDef( AsicData, 3 )
+	ClassDef( AsicData, 4 )
 	
 };
 

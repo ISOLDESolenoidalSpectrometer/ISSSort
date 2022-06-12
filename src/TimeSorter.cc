@@ -1,14 +1,8 @@
 #include "TimeSorter.hh"
 
-TimeSorter::TimeSorter( ){
+TimeSorter::TimeSorter(){
 	
 	//std::cout << "constructor" << std::endl;
-
-}
-
-TimeSorter::~TimeSorter() {
-	
-	//std::cout << "destructor" << std::endl;
 
 }
 
@@ -100,8 +94,11 @@ unsigned long TimeSorter::SortFile( unsigned long start_sort ) {
 			
 			if( i % (nb_idx/100) == 0 || i+1 == nb_idx ) {
 				
+				// Percent complete
+				float percent = (float)(i+1)*100.0/(float)nb_idx;
+
 				std::cout << " " << std::setw(6) << std::setprecision(4);
-				std::cout << (float)(i+1)*100.0/(float)nb_idx << "%    \r";
+				std::cout << percent << "%    \r";
 				std::cout.flush();
 				
 			}

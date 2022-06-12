@@ -1,6 +1,6 @@
 #include "EventBuilder.hh"
 
-ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
+EventBuilder::EventBuilder( Settings *myset ){
 	
 	// First get the settings
 	set = myset;
@@ -8,9 +8,6 @@ ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
 	// No calibration file by default
 	overwrite_cal = false;
 	
-	// No progress bar by default
-	_prog_ = false;
-
 	// ------------------------------------------------------------------------ //
 	// Initialise variables and flags
 	// ------------------------------------------------------------------------ //
@@ -114,7 +111,7 @@ ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
 	
 }
 
-void ISSEventBuilder::StartFile(){
+void EventBuilder::StartFile(){
 	
 	// Call for every new file
 	// Reset counters etc.
@@ -177,7 +174,7 @@ void ISSEventBuilder::StartFile(){
 	
 }
 
-void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
+void EventBuilder::SetInputFile( std::string input_file_name ) {
 	
 	/// Overloaded function for a single file or multiple files
 	//input_tree = new TTree( "iss" );
@@ -201,7 +198,7 @@ void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
 	
 }
 
-void ISSEventBuilder::SetInputTree( TTree *user_tree ){
+void EventBuilder::SetInputTree( TTree *user_tree ){
 	
 	// Find the tree and set branch addresses
 	input_tree = user_tree;
@@ -213,16 +210,16 @@ void ISSEventBuilder::SetInputTree( TTree *user_tree ){
 	
 }
 
-void ISSEventBuilder::SetOutput( std::string output_file_name ) {
+void EventBuilder::SetOutput( std::string output_file_name ) {
 
 	// These are the branches we need
 	write_evts = new ISSEvts();
-	array_evt = new ISSArrayEvt();
-	arrayp_evt = new ISSArrayPEvt();
-	recoil_evt = new ISSRecoilEvt();
-	mwpc_evt = new ISSMwpcEvt();
-	elum_evt = new ISSElumEvt();
-	zd_evt = new ISSZeroDegreeEvt();
+	array_evt = new ArrayEvt();
+	arrayp_evt = new ArrayPEvt();
+	recoil_evt = new RecoilEvt();
+	mwpc_evt = new MwpcEvt();
+	elum_evt = new ElumEvt();
+	zd_evt = new ZeroDegreeEvt();
 
 	// ------------------------------------------------------------------------ //
 	// Create output file and create events tree
@@ -236,7 +233,7 @@ void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 	
 }
 
-void ISSEventBuilder::Initialise(){
+void EventBuilder::Initialise(){
 
 	/// This is called at the end of every execution/loop
 	
@@ -280,7 +277,7 @@ void ISSEventBuilder::Initialise(){
 	
 }
 
-unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
+unsigned long EventBuilder::BuildEvents( unsigned long start_build ) {
 	
 	/// Function to loop over the sort tree and build array and recoil events
 
@@ -792,14 +789,10 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			// Percent complete
 			float percent = (float)(i+1)*100.0/(float)n_entries;
 
-			// Progress bar in GUI
-			if( _prog_ ) prog->SetPosition( percent );
-
 			// Progress bar in terminal
 			std::cout << " " << std::setw(6) << std::setprecision(4);
 			std::cout << percent << "%    \r";
 			std::cout.flush();
-			gSystem->ProcessEvents();
 
 		}
 		
@@ -810,7 +803,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 	// Clean up
 	//--------------------------
 
-	std::cout << "\n ISSEventBuilder finished..." << std::endl;
+	std::cout << "\n EventBuilder finished..." << std::endl;
 	std::cout << "  ASIC data packets = " << n_asic_data << std::endl;
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 		std::cout << "   Module " << i << " pause = " << n_asic_pause[i] << std::endl;
@@ -853,7 +846,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 }
 
 
-void ISSEventBuilder::ArrayFinder() {
+void EventBuilder::ArrayFinder() {
 	
 	std::vector<unsigned int> pindex;
 	std::vector<unsigned int> nindex;
@@ -1390,7 +1383,7 @@ void ISSEventBuilder::ArrayFinder() {
 
 }
 
-void ISSEventBuilder::RecoilFinder() {
+void EventBuilder::RecoilFinder() {
 		
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
@@ -1446,7 +1439,7 @@ void ISSEventBuilder::RecoilFinder() {
 	
 }
 
-void ISSEventBuilder::MwpcFinder() {
+void EventBuilder::MwpcFinder() {
 
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
@@ -1506,7 +1499,7 @@ void ISSEventBuilder::MwpcFinder() {
 	
 }
 
-void ISSEventBuilder::ElumFinder() {
+void EventBuilder::ElumFinder() {
 	
 	// Loop over ELUM events
 	for( unsigned int i = 0; i < een_list.size(); ++i ) {
@@ -1526,7 +1519,7 @@ void ISSEventBuilder::ElumFinder() {
 	
 }
 
-void ISSEventBuilder::ZeroDegreeFinder() {
+void EventBuilder::ZeroDegreeFinder() {
 	
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
@@ -1577,7 +1570,7 @@ void ISSEventBuilder::ZeroDegreeFinder() {
 	
 }
 
-void ISSEventBuilder::MakeEventHists(){
+void EventBuilder::MakeEventHists(){
 	
 	std::string hname, htitle;
 	std::string dirname, maindirname, subdirname;
@@ -1859,7 +1852,7 @@ void ISSEventBuilder::MakeEventHists(){
 	
 }
 
-void ISSEventBuilder::CleanHists() {
+void EventBuilder::CleanHists() {
 
 	// Clean up the histograms to save memory for later
 	for( unsigned int i = 0; i < pn_11.size(); i++ ) {

@@ -28,7 +28,7 @@ class Calibration {
 public:
 
 	Calibration( std::string filename, Settings *myset );
-	virtual ~Calibration();
+	virtual inline ~Calibration(){};
 	void ReadCalibration();
 	void PrintCalibration();
 	void SetFile( std::string filename ){
@@ -41,7 +41,7 @@ public:
 	unsigned int AsicThreshold( unsigned int mod, unsigned int asic, unsigned int chan );
 	long AsicTime( unsigned int mod, unsigned int asic );
 	bool AsicEnabled( unsigned int mod, unsigned int asic );
-	float AsicWalk( unsigned int mod, unsigned int asic, float energy );
+	double AsicWalk( unsigned int mod, unsigned int asic, float energy );
 	float CaenEnergy( unsigned int mod, unsigned int chan, unsigned short raw );
     unsigned int CaenThreshold( unsigned int mod, unsigned int chan );
 	long CaenTime( unsigned int mod, unsigned int chan );
@@ -60,13 +60,20 @@ private:
 	std::vector< std::vector< std::vector<unsigned int> > > fAsicThreshold;
 	std::vector< std::vector<long> > fAsicTime;
 	std::vector< std::vector<bool> > fAsicEnabled;
-	std::vector< std::vector< std::vector<float> > > fAsicWalk;
+	std::vector< std::vector< std::vector<double> > > fAsicWalk;
 
 	std::vector< std::vector<float> > fCaenOffset;
 	std::vector< std::vector<float> > fCaenGain;
 	std::vector< std::vector<float> > fCaenGainQuadr;
 	std::vector< std::vector<unsigned int> > fCaenThreshold;
 	std::vector< std::vector<long> > fCaenTime;
+
+	float fAsicOffsetDefault;
+	float fAsicGainDefault;
+	float fAsicGainQuadrDefault;
+	float fCaenOffsetDefault;
+	float fCaenGainDefault;
+	float fCaenGainQuadrDefault;
 
 	//ClassDef(Calibration, 1)
    

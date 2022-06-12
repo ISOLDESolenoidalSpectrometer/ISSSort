@@ -53,7 +53,7 @@ class EventBuilder {
 public:
 
 	EventBuilder( Settings *myset );
-	virtual ~EventBuilder();
+	virtual inline ~EventBuilder(){};
 
 	void	SetInputFile( std::string input_file_name );
 	void	SetInputTree( TTree* user_tree );
@@ -76,10 +76,6 @@ public:
 	void ElumFinder();
 	void ZeroDegreeFinder();
 	//void GammaFinder(); // in the future :-)
-	
-	// Geometry functions
-	float GetZ( int layer, int strip );
-	TVector2 GetPhiXY( int sector, int strip );
 	
 	inline TFile* GetFile(){ return output_file; };
 	inline TTree* GetTree(){ return output_tree; };

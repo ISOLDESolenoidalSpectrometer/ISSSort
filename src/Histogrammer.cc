@@ -7,9 +7,6 @@ Histogrammer::Histogrammer( Reaction *myreact, Settings *myset ){
 		
 }
 
-Histogrammer::~Histogrammer(){}
-
-
 void Histogrammer::MakeHists() {
 
 	std::string hname, htitle;
@@ -564,9 +561,9 @@ void Histogrammer::MakeHists() {
 
 	// EBIS time windows
 	output_file->cd( "Timing" );
-	ebis_td_recoil = new TH1F( "ebis_td_recoil", "Recoil time with respect to EBIS;#Deltat;Counts per 20 #mus", 5e3, 0, 1e8  );
-	ebis_td_array = new TH1F( "ebis_td_array", "Array time with respect to EBIS;#Deltat;Counts per 20 #mus", 5e3, 0, 1e8  );
-	ebis_td_elum = new TH1F( "ebis_td_elum", "ELUM time with respect to EBIS;#Deltat;Counts per 20 #mus", 5e3, 0, 1e8  );
+	ebis_td_recoil = new TH1F( "ebis_td_recoil", "Recoil time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
+	ebis_td_array = new TH1F( "ebis_td_array", "Array time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
+	ebis_td_elum = new TH1F( "ebis_td_elum", "ELUM time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 
 	
 	// For ELUM sectors
@@ -883,8 +880,19 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 				
 				elum_ebis->Fill( elum_evt->GetEnergy() );
 				elum_ebis_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
+				elum_ebis_on->Fill( elum_evt->GetEnergy() );
+				elum_ebis_on_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
+
+			} // ebis
+			
+			else {
 				
-			} // ebis	
+				elum_ebis->Fill( elum_evt->GetEnergy(), -1.0 * react->GetEBISRatio() );
+				elum_ebis_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy(), -1.0 * react->GetEBISRatio() );
+				elum_ebis_off->Fill( elum_evt->GetEnergy() );
+				elum_ebis_off_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
+				
+			}
 			
 			// Loop over recoil events
 			for( unsigned int k = 0; k < read_evts->GetRecoilMultiplicity(); ++k ){
@@ -939,8 +947,10 @@ unsigned long Histogrammer::FillHists( unsigned long start_fill ) {
 
 		if( i % (n_entries/100) == 0 || i+1 == n_entries ) {
 			
+			// Percent complete
+			float percent = (float)(i+1)*100.0/(float)n_entries;
 			std::cout << " " << std::setw(6) << std::setprecision(4);
-			std::cout << (float)(i+1)*100.0/(float)n_entries << "%    \r";
+			std::cout << percent << "%    \r";
 			std::cout.flush();
 			
 		}

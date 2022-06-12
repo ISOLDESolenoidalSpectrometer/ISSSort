@@ -351,6 +351,7 @@ int main( int argc, char *argv[] ){
 	// Run conversion to ROOT //
 	//------------------------//
 	Converter conv( myset );
+	conv.AddCalibration( mycal );
 	std::cout << "\n +++ ISS Analysis:: processing Converter +++" << std::endl;
 
 	TFile *rtest;
@@ -391,7 +392,6 @@ int main( int argc, char *argv[] ){
 			if( flag_source ) conv.SourceOnly();
 			conv.MakeTree();
 			conv.MakeHists();
-			conv.AddCalibration( mycal );
 			conv.ConvertFile( name_input_file );
 			conv.CloseOutput();
 
