@@ -49,9 +49,9 @@ Reaction::Reaction( std::string filename, Settings *myset ){
 	ReadReaction();
 	
 	// Root finder algorithm
-	fa = std::make_unique<TF1>( "alpha_function", alpha_function, 0.0, TMath::Pi()/2.0, 4 );
-	fb = std::make_unique<TF1>( "alpha_derivative", alpha_derivative, 0.0, TMath::Pi()/2.0, 4 );
-	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
+	fa = new TF1( "alpha_function", alpha_function, 0.0, TMath::Pi()/2.0, 4 );
+	fb = new TF1( "alpha_derivative", alpha_derivative, 0.0, TMath::Pi()/2.0, 4 );
+	rf = new ROOT::Math::RootFinder( ROOT::Math::RootFinder::kGSL_NEWTON );
 	
 }
 
@@ -297,7 +297,7 @@ void Reaction::ReadReaction() {
 	// Get the stopping powers
 	stopping = true;
 	for( unsigned int i = 0; i < 3; ++i )
-		gStopping.push_back( std::make_unique<TGraph>() );
+		gStopping.push_back( new TGraph() );
 	stopping *= ReadStoppingPowers( Beam.GetIsotope(), Target.GetIsotope(), gStopping[0] );
 	stopping *= ReadStoppingPowers( Ejectile.GetIsotope(), Target.GetIsotope(), gStopping[1] );
 	stopping *= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[2] );
@@ -329,7 +329,7 @@ void Reaction::ReadReaction() {
 
 }
 
-double Reaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> &g ) {
+double Reaction::GetEnergyLoss( double Ei, double dist, TGraph *g ) {
 
 	/// Returns the energy loss at a given initial energy and distance travelled
 	/// A negative distance will add the energy back on, i.e. travelling backwards
@@ -349,7 +349,7 @@ double Reaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> 
 
 }
 
-bool Reaction::ReadStoppingPowers( std::string isotope1, std::string isotope2, std::unique_ptr<TGraph> &g ) {
+bool Reaction::ReadStoppingPowers( std::string isotope1, std::string isotope2, TGraph *g ) {
 	 
 	/// Open stopping power files and make TGraphs of data
 	

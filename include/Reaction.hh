@@ -197,8 +197,8 @@ public:
 	inline void SetOffsetY( double y ){ y_offset = y; };
 
 	// Energy loss and stopping powers
-	double GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> &g );
-	bool ReadStoppingPowers( std::string isotope1, std::string isotope2, std::unique_ptr<TGraph> &g );
+	double GetEnergyLoss( double Ei, double dist, TGraph *g );
+	bool ReadStoppingPowers( std::string isotope1, std::string isotope2, TGraph *g );
 
 	// Get cuts
 	inline TCutG* GetRecoilCut( unsigned int i ){
@@ -235,8 +235,8 @@ private:
 	double Eb;		///< laboratory beam energy in keV/u
 	
 	// Stuff for the Ex calculation
-	std::unique_ptr<ROOT::Math::RootFinder> rf;
-	std::unique_ptr<TF1> fa, fb;
+	ROOT::Math::RootFinder *rf;
+	TF1 *fa, *fb;
 	double alpha;
 	double params[4];
 	double e3_cm;
@@ -268,7 +268,7 @@ private:
 	std::vector<TCutG*> e_vs_z_cut;
 
 	// Stopping powers
-	std::vector<std::unique_ptr<TGraph>> gStopping;
+	std::vector<TGraph*> gStopping;
 	bool stopping;
 
 };
