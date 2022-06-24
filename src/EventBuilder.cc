@@ -305,7 +305,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 	for( unsigned long i = start_build; i < n_entries; ++i ) {
 		
 		// Current event data
-		input_tree->GetEntry(i);
+		if( i == start_build ) input_tree->GetEntry(i);
 		
 		// Get the time of the event
 		mytime = in_data->GetTime();
@@ -682,7 +682,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 		else {
 			
 			// if this is first datum included in Event
-			if( hit_ctr == 1 ) {
+			if( hit_ctr == 1 && !noise_flag ) {
 				
 				time_min	= mytime;
 				time_max	= mytime;
