@@ -28,7 +28,7 @@ class ISSCalibration {
 public:
 
 	ISSCalibration( std::string filename, ISSSettings *myset );
-	virtual ~ISSCalibration();
+	inline virtual ~ISSCalibration() {};
 	void ReadCalibration();
 	void PrintCalibration( std::ostream &stream, std::string opt );
 	void SetFile( std::string filename ){

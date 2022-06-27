@@ -32,7 +32,7 @@
 
 // Default parameters and name
 std::string output_name;
-std::string datadir_name = "/eos/experiment/isolde-iss/2021/ISS";
+std::string datadir_name = "/eos/experiment/isolde-iss/2022/ISS";
 std::string name_set_file;
 std::string name_cal_file;
 std::string name_react_file;
@@ -89,11 +89,16 @@ int port_num = 8030;
 void* monitor_run( void* ptr ){
 //void monitor_run(){
 	
-	// This function is called to run when monitoring
-	ISSConverter conv_mon( ((thptr*)ptr)->myset );
+	/// This function is called to run when monitoring
+	
+	// Get the settings, file etc.
+	thptr *calfiles = (thptr*)ptr;
+	
+	// Setup the different steps
+	ISSConverter conv_mon( calfiles->myset );
 	ISSTimeSorter sort_mon;
-	ISSEventBuilder eb_mon( ((thptr*)ptr)->myset );
-	ISSHistogrammer hist_mon( ((thptr*)ptr)->myreact, ((thptr*)ptr)->myset );
+	ISSEventBuilder eb_mon( calfiles->myset );
+	ISSHistogrammer hist_mon( calfiles->myreact, calfiles->myset );
 
 	// Data/Event counters
 	int start_block = 0;
@@ -628,7 +633,7 @@ int main( int argc, char *argv[] ){
 		gSystem->ProcessEvents();
 
 		// Thread for the monitor process
-		TThread *th = new TThread( "monitor", monitor_run, &data );
+		TThread *th = new TThread( "monitor", monitor_run, (void*) &data );
 		th->Run();
 		
 		// Just call monitor process without threading

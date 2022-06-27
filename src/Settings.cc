@@ -7,12 +7,6 @@ ISSSettings::ISSSettings( std::string filename ) {
 	
 }
 
-ISSSettings::~ISSSettings() {
-	
-	//std::cout << "destructor" << std::endl;
-	
-}
-
 void ISSSettings::ReadSettings() {
 	
 	TEnv *config = new TEnv( fInputFile.data() );

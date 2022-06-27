@@ -8,12 +8,6 @@ ISSCalibration::ISSCalibration( std::string filename, ISSSettings *myset ) {
 		
 }
 
-ISSCalibration::~ISSCalibration() {
-
-	//std::cout << "destructor" << std::endl;
-
-}
-
 void ISSCalibration::ReadCalibration() {
 
 	TEnv *config = new TEnv( fInputFile.data() );

@@ -138,7 +138,7 @@ public:
 	
 	// setup functions
 	ISSReaction( std::string filename, ISSSettings *myset, bool source );
-	~ISSReaction();
+	virtual ~ISSReaction();
 	
 	// Main functions
 	void AddBindingEnergy( short Ai, short Zi, TString ame_be_str );

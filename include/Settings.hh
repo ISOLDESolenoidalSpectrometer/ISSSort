@@ -17,7 +17,7 @@ class ISSSettings {
 public:
 
 	ISSSettings( std::string filename );
-	virtual ~ISSSettings();
+	inline virtual ~ISSSettings() {};
 	
 	void ReadSettings();
 	void PrintSettings();
