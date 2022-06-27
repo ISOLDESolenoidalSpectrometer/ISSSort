@@ -131,36 +131,41 @@ void* monitor_run( void* ptr ){
 		nblocks = conv_mon.ConvertFile( curFileMon, start_block );
 		start_block = nblocks;
 		
-		// Sort
-		if( bFirstRun ) {
-			sort_mon.SetInputTree( conv_mon.GetTree() );
-			sort_mon.SetOutput( "monitor_sort.root" );
-			serv->Hide("/Files/monitor_sort.root");
-		}
-		nsort = sort_mon.SortFile( start_sort );
-		start_sort = nsort;
+		// Only do the rest if it is not a source run
+		if( !flag_source ) {
+		
+			// Sort
+			if( bFirstRun ) {
+				sort_mon.SetInputTree( conv_mon.GetTree() );
+				sort_mon.SetOutput( "monitor_sort.root" );
+				serv->Hide("/Files/monitor_sort.root");
+			}
+			nsort = sort_mon.SortFile( start_sort );
+			start_sort = nsort;
 
-		// Event builder
-		if( bFirstRun ) {
-			eb_mon.SetInputTree( sort_mon.GetTree() );
-			eb_mon.SetOutput( "monitor_events.root" );
-		}
-		nbuild = eb_mon.BuildEvents( start_build );
-		start_build = nbuild;
-		
-		// Histogrammer
-		if( bFirstRun ) {
-			hist_mon.SetInputTree( eb_mon.GetTree() );
-			hist_mon.SetOutput( "monitor_hists.root" );
-		}
-		nfill = hist_mon.FillHists( start_fill );
-		start_fill = nfill;
-		
-		// If this was the first time we ran, do stuff?
-		if( bFirstRun ) {
+			// Event builder
+			if( bFirstRun ) {
+				eb_mon.SetInputTree( sort_mon.GetTree() );
+				eb_mon.SetOutput( "monitor_events.root" );
+			}
+			nbuild = eb_mon.BuildEvents( start_build );
+			start_build = nbuild;
 			
-			bFirstRun = kFALSE;
+			// Histogrammer
+			if( bFirstRun ) {
+				hist_mon.SetInputTree( eb_mon.GetTree() );
+				hist_mon.SetOutput( "monitor_hists.root" );
+			}
+			nfill = hist_mon.FillHists( start_fill );
+			start_fill = nfill;
 			
+			// If this was the first time we ran, do stuff?
+			if( bFirstRun ) {
+				
+				bFirstRun = kFALSE;
+				
+			}
+		
 		}
 		
 		// Now we can unlock the main thread again
@@ -221,6 +226,7 @@ void do_convert(){
 	//------------------------//
 	ISSConverter conv( myset );
 	conv.AddCalibration( mycal );
+	if( flag_source ) conv.SourceOnly();
 	std::cout << "\n +++ ISS Analysis:: processing Converter +++" << std::endl;
 
 	TFile *rtest;
@@ -258,7 +264,6 @@ void do_convert(){
 			std::cout << name_output_file << std::endl;
 			
 			conv.SetOutput( name_output_file );
-			if( flag_source ) conv.SourceOnly();
 			conv.MakeTree();
 			conv.MakeHists();
 			conv.ConvertFile( name_input_file );
