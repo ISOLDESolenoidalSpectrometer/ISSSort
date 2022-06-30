@@ -17,18 +17,18 @@ const int gPeakChannelUpperThreshold = 700;			// Set to 4096 if you want to samp
 
 // CALIBRATION
 // Nuclides used here are 148Gd, 239Pu, 241Am, 244Cm. Energies listed in order of energy (keV).
-// Energies taken from NNDC in 2022 --> just the strongest peaks at the moment
+// Energies taken from NNDC in 2022 --> centroids using weighted average with intensities
 const float gAlphaParticleEnergy[gNumberOfAlphaPeaks] = {
-	3182.690,	// 100    % 148Gd
-	5156.59,	//  70.77 % 239Pu
-	5485.56,	//  84.8  % 241Am
-	5804.77 	//  76.90 % 244Cm
+	3182.69,	// % 148Gd
+	5134.70,	// % 239Pu
+	5478.57,	// % 241Am
+	5795.00 	// % 244Cm
 };
 const float gAlphaParticleErrors[gNumberOfAlphaPeaks] = {
 	0.024,	// 100    % 148Gd
-	0.14,	//  70.77 % 239Pu
-	0.12,	//  84.8  % 241Am
-	0.05 	//  76.90 % 244Cm
+	0.5,	//  70.77 % 239Pu
+	0.14,	//  84.8  % 241Am
+	1 	//  76.90 % 244Cm
 };
 
 // --------------------------------------------------------------------------------------------- //
