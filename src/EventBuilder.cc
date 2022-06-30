@@ -1,5 +1,8 @@
 #include "EventBuilder.hh"
-
+///////////////////////////////////////////////////////////////////////////////
+/// This constructs the event-builder object, setting parameters for this process by grabbing information from the settings file (or using default parameters defined in the constructor)
+/// \param[in] myset The ISSSettings object which is constructed by the ISSSettings constructor used in iss_sort.cc
+///////////////////////////////////////////////////////////////////////////////
 ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
 	
 	// First get the settings
@@ -16,6 +19,7 @@ ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
 	// ------------------------------------------------------------------------ //
 	build_window = set->GetEventWindow();
 
+	// Resize 17 vectors to match modules of detectors
 	n_fpga_pulser.resize( set->GetNumberOfArrayModules() );
 	n_asic_pulser.resize( set->GetNumberOfArrayModules() );
 	n_asic_pause.resize( set->GetNumberOfArrayModules() );
@@ -50,6 +54,8 @@ ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
 	asic_row.push_back(3); // asic 5 = row 3 p-side
 
 	array_row.resize( set->GetNumberOfArrayASICs() );
+	array_pid.resize( set->GetNumberOfArrayASICs() );
+	array_nid.resize( set->GetNumberOfArrayASICs() );
 	
 	
 	// Loop over ASICs in a module
@@ -58,62 +64,72 @@ ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
 		// Loop over channels in each ASIC
 		for( unsigned int j = 0; j < set->GetNumberOfArrayChannels(); ++j ) {
 
-			// Sort out the rows 
-			// pside all ok
-			// nside need incrementing for odd wafers
-			array_row.at(i).push_back( asic_row.at(i) );
-			
-			// p-side: all channels used
+			// p-side: all channels used; fill n-side with -1; fill array_row with row number for p-side
 			if( asic_side.at(i) == 0 ) {
-				
-				mystrip = j + set->GetNumberOfArrayPstrips() * asic_row.at(i);
-				array_pid.push_back( mystrip );
+			
+				array_pid[i].push_back( j );
+				array_nid[i].push_back( -1 );
+				array_row.at(i).push_back( asic_row.at(i) );
 				
 			}
 			
-			// n-side: 11 channels per ASIC 0/2A
+			// n-side: 11 channels per ASIC 0/2A; fill p-side with -1; fill array row for n-side
 			else if( j >= 11 && j <= 21 ) {
 				
 				mystrip = j - 11;
-				array_nid.push_back( mystrip );
+				array_nid[i].push_back( mystrip );
+				array_pid[i].push_back( -1 );
+				array_row.at(i).push_back( asic_row.at(i) );
 				
 			}
 			
-			// n-side: 11 channels per ASIC 0/2B
+			// n-side: 11 channels per ASIC 0/2B; fill p-side with -1; fill array row for n-side
 			else if( j >= 28 && j <= 38 ) {
 				
 				mystrip = 38 - j + set->GetNumberOfArrayNstrips();
-				array_nid.push_back( mystrip );
+				array_nid[i].push_back( mystrip );
+				array_pid[i].push_back( -1 );
+				array_row.at(i).push_back( asic_row.at(i) );
 
 			}
 			
-			// n-side: 11 channels per ASIC 1/3B
+			// n-side: 11 channels per ASIC 1/3B; fill p-side with -1; fill array row for n-side
 			else if( j >= 89 && j <= 99 ) {
 				
 				mystrip = j - 89 + set->GetNumberOfArrayNstrips();
-				array_nid.push_back( mystrip );
-				array_row.at(i).at(j)++;
+				array_nid[i].push_back( mystrip );
+				array_pid[i].push_back( -1 );
+				array_row.at(i).push_back( asic_row.at(i) + 1 ); // nside need incrementing for odd wafers
 
 			}
 			
-			// n-side: 11 channels per ASIC 1/3A
+			// n-side: 11 channels per ASIC 1/3A; fill p-side with -1; fill array row for n-side
 			else if( j >= 106 && j <= 116 ) {
 				
 				mystrip = 116 - j;
-				array_nid.push_back( mystrip );
-				array_row.at(i).at(j)++;
+				array_nid[i].push_back( mystrip );
+				array_pid[i].push_back( -1 );
+				array_row.at(i).push_back( asic_row.at(i) + 1 ); // nside need incrementing for odd wafers
 
 			}
 			
-			// n-side: empty channels
-			else array_nid.push_back(-1);
+			// n-side and p-side: empty channels -> set to -1; set array_row to 0
+			else{
+				array_nid[i].push_back(-1);
+				array_pid[i].push_back( -1 );
+				array_row.at(i).push_back( 0 );	// N.B. these should only be for unused channels for the n-sides, but this is an actual row number so could run into problems down the line...
+			}
 	
 		}
 		
 	}
 	
+	return;
+	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Reset private-member counters, arrays and flags for processing the next input file. Called in the ISSEventBuilder::SetInputFile and ISSEventBuilder::SetInputTree functions
 void ISSEventBuilder::StartFile(){
 	
 	// Call for every new file
@@ -177,6 +193,9 @@ void ISSEventBuilder::StartFile(){
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// The ROOT file is opened in read-only mode to avoid modification. If the file is not found, an error message is printed and the function does not set an input tree, and does not call ISSEventBuilder::StartFile.
+/// \param [in] input_file_name The ROOT file containing the time-sorted events from that run (typical suffix is "_sort.root")
 void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
 	
 	/// Overloaded function for a single file or multiple files
@@ -201,6 +220,9 @@ void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Sets the private member input_tree to the parameter user_tree, sets the branch address and calls the ISSEventBuilder::StartFile function
+/// \param [in] user_tree The name of the tree in the ROOT file containing the time-sorted events
 void ISSEventBuilder::SetInputTree( TTree *user_tree ){
 	
 	// Find the tree and set branch addresses
@@ -213,6 +235,9 @@ void ISSEventBuilder::SetInputTree( TTree *user_tree ){
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Constructs a number of objects for storing measurements from different detectors, that can then be wrapped up into physics events. Also creates an output file and output tree, and calls the ISSEventBuilder::MakeEventHists function
+/// \param [in] output_file_name The ROOT file for storing the events from the event-building process (typical suffix is "_events.root")
 void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 
 	// These are the branches we need
@@ -236,6 +261,8 @@ void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Clears the vectors that store energies, time differences, ids, module numbers, row numbers, recoil sectors etc. Also resets flags that are relevant for building events
 void ISSEventBuilder::Initialise(){
 
 	/// This is called at the end of every execution/loop
@@ -280,6 +307,10 @@ void ISSEventBuilder::Initialise(){
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// This loops over all events found in the input file and wraps them up and stores them in the output file
+/// \param[in] start_build [Default 0] Determines which entry in the time-sorted tree to begin with
+/// \return The number of entries in the tree that have been sorted (=0 if there is an error)
 unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 	
 	/// Function to loop over the sort tree and build array and recoil events
@@ -358,7 +389,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 				mythres = asic_data->IsOverThreshold();
 			
 			}
-			
+
 			// If it's below zero in energy, consider it below threshold
 			if( myenergy < 0 ) mythres = false;
 			
@@ -366,14 +397,14 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			if( !mythres ) noise_flag = true;
 			else event_open = true;
 
-			
+			// ---- TODO ---- QUESTIONABLE CODING??? ---- TODO ---- //
 			// p-side event
 			if( myside == 0 && mythres ) {
 			
 			// test here about hit bit value
 			//if( myside == 0 && !asic_data->GetHitBit() ) {
 
-				mystrip = array_pid.at( asic_data->GetChannel() );
+				mystrip = array_pid.at( asic_data->GetAsic() ).at( asic_data->GetChannel() );
 				
 				pen_list.push_back( myenergy );
 				ptd_list.push_back( mytime + mywalk );
@@ -391,7 +422,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			// test here about hit bit value
 			//else if( myside == 1 && asic_data->GetHitBit() ) {
 
-				mystrip = array_nid.at( asic_data->GetChannel() );
+				mystrip = array_nid.at( asic_data->GetAsic() ).at( asic_data->GetChannel() );
 				
 				nen_list.push_back( myenergy );
 				ntd_list.push_back( mytime + mywalk );
@@ -402,7 +433,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 				hit_ctr++; // increase counter for bits of data included in this event
 
 			}
-			
+			// ---- TODO ---- QUESTIONABLE CODING??? ---- TODO ---- //
 			// Is it the start event?
 			if( asic_time_start.at( mymod ) == 0 )
 				asic_time_start.at( mymod ) = mytime;
@@ -852,7 +883,8 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 	
 }
 
-
+////////////////////////////////////////////////////////////////////////////////
+/// TODO function does stuff
 void ISSEventBuilder::ArrayFinder() {
 	
 	std::vector<unsigned int> pindex;
@@ -1390,6 +1422,8 @@ void ISSEventBuilder::ArrayFinder() {
 
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// TODO function does stuff
 void ISSEventBuilder::RecoilFinder() {
 		
 	// Checks to prevent re-using events
@@ -1446,6 +1480,8 @@ void ISSEventBuilder::RecoilFinder() {
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// TODO function does stuff
 void ISSEventBuilder::MwpcFinder() {
 
 	// Checks to prevent re-using events
@@ -1506,6 +1542,8 @@ void ISSEventBuilder::MwpcFinder() {
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// TODO function does stuff
 void ISSEventBuilder::ElumFinder() {
 	
 	// Loop over ELUM events
@@ -1526,6 +1564,8 @@ void ISSEventBuilder::ElumFinder() {
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// TODO function does stuff
 void ISSEventBuilder::ZeroDegreeFinder() {
 	
 	// Checks to prevent re-using events
@@ -1577,6 +1617,8 @@ void ISSEventBuilder::ZeroDegreeFinder() {
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// *This function doesn't fill any histograms*, but just creates them. Called by the ISSEventBuilder::SetOutput function
 void ISSEventBuilder::MakeEventHists(){
 	
 	std::string hname, htitle;
@@ -1859,6 +1901,8 @@ void ISSEventBuilder::MakeEventHists(){
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// TODO function does stuff
 void ISSEventBuilder::CleanHists() {
 
 	// Clean up the histograms to save memory for later

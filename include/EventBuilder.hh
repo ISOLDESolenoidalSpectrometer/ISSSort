@@ -49,110 +49,122 @@
 # include "Histogrammer.hh"
 #endif
 
-
+///
+/// The ISSEventBuilder Class takes a list of time-sorted events from all of the detectors, and packages them up into a series of physics events. 
+/// TODO Describe some of the logic for the class here.
+///
+/// The constructor for this class requires an ISSSettings object, which allows it to use parameters defined in the ``settings.dat'' file. This includes:
+/// - Settings which encode the wiring of the detectors e.g. the number of CAEN modules used.
+/// - The size of the event window used to combine events
+///
+/// This size of the event window is crucial for determining which signals belong to which events. The default parameter for this is 3 microseconds *which is currently a blind choice that seems to work*. Perhaps you, dear reader, can come up with a more rigorous reason!
 
 class ISSEventBuilder {
 	
 public:
-
-	ISSEventBuilder( ISSSettings *myset );
+	
+	ISSEventBuilder( ISSSettings *myset ); ///< Constructor
+	/// Destructor (currently empty)
 	virtual ~ISSEventBuilder(){};
 
-	void	SetInputFile( std::string input_file_name );
-	void	SetInputTree( TTree* user_tree );
-	void	SetOutput( std::string output_file_name );
-	void	StartFile();	///< called for every file
-	void	Initialise();	///< called for every event
-	void	MakeEventHists();
+	void	SetInputFile( std::string input_file_name ); ///< Function to set the input file from which events are built
+	void	SetInputTree( TTree* user_tree ); ///< Grabs the input tree from the input file defined in ISSEventBuilder::SetInputFile
+	void	SetOutput( std::string output_file_name ); ///< TODO Brief description.
+	void	StartFile();	///< Called for every file
+	void	Initialise();	///< Called for every event
+	void	MakeEventHists(); ///< Creates histograms for events that occur
 	
+	/// Adds the calibration from the external calibration file to the class
+	/// \param[in] mycal The ISSCalibration object which is constructed by the ISSCalibration constructor used in iss_sort.cc
 	inline void AddCalibration( ISSCalibration *mycal ){
 		cal = mycal;
 		overwrite_cal = true;
 	};
 	
-	unsigned long	BuildEvents( unsigned long start_build = 0 );
+	unsigned long	BuildEvents( unsigned long start_build = 0 ); ///< The heart of this class
 
 	// Resolve multiplicities etc
-	void ArrayFinder();
-	void RecoilFinder();
-	void MwpcFinder();
-	void ElumFinder();
-	void ZeroDegreeFinder();
+	void ArrayFinder(); ///< TODO Brief description.
+	void RecoilFinder(); ///< TODO Brief description.
+	void MwpcFinder(); ///< TODO Brief description.
+	void ElumFinder(); ///< TODO Brief description.
+	void ZeroDegreeFinder(); ///< TODO Brief description.
 	//void GammaFinder(); // in the future :-)
 		
-	inline TFile* GetFile(){ return output_file; };
-	inline TTree* GetTree(){ return output_tree; };
+	inline TFile* GetFile(){ return output_file; }; ///< TODO Brief description.
+	inline TTree* GetTree(){ return output_tree; }; ///< TODO Brief description.
+	
 	inline void CloseOutput(){
 		output_file->Close();
-	};
-	void CleanHists();
+	}; ///< TODO Brief description.
+	void CleanHists(); ///< TODO Brief description.
 
 	inline void AddProgressBar( std::shared_ptr<TGProgressBar> myprog ){
 		prog = myprog;
 		_prog_ = true;
-	};
+	}; ///< TODO Brief description.
 
 
 private:
 	
 	/// Input tree
-	TFile *input_file;
-	TTree *input_tree;
-	ISSDataPackets *in_data = 0;
-	ISSAsicData *asic_data;
-	ISSCaenData *caen_data;
-	ISSInfoData *info_data;
+	TFile *input_file; ///< Pointer to the time-sorted input ROOT file
+	TTree *input_tree; ///< Pointer to the TTree in the input file
+	ISSDataPackets *in_data = 0; ///< Pointer to the TBranch containing the data in the time-sorted input ROOT file
+	ISSAsicData *asic_data; ///< TODO Brief description.
+	ISSCaenData *caen_data; ///< TODO Brief description.
+	ISSInfoData *info_data; ///< TODO Brief description.
 
 	/// Outputs
-	TFile *output_file;
-	TTree *output_tree;
-	ISSEvts *write_evts;
-	ISSArrayEvt *array_evt;
-	ISSArrayPEvt *arrayp_evt;
-	ISSRecoilEvt *recoil_evt;
-	ISSMwpcEvt *mwpc_evt;
-	ISSElumEvt *elum_evt;
-	ISSZeroDegreeEvt *zd_evt;
+	TFile *output_file; ///< Pointer to the output ROOT file containing events
+	TTree *output_tree; ///< Pointer to the output ROOT tree containing events
+	ISSEvts *write_evts; ///< Container for storing measurements from all detectors in order to construct events
+	ISSArrayEvt *array_evt; ///< Container for storing measurements from the array
+	ISSArrayPEvt *arrayp_evt; ///< Container for storing measurements from the array that are only on the p-side detectors
+	ISSRecoilEvt *recoil_evt; ///< Container for storing measurements from the recoil detectors
+	ISSMwpcEvt *mwpc_evt; ///< Container for storing measurements from the MWPCs
+	ISSElumEvt *elum_evt; ///< Container for storing measurements from the luminosity detector
+	ISSZeroDegreeEvt *zd_evt; ///< Container for storing measurements from the zero-degree detector
 	
 	// Do calibration
-	ISSCalibration *cal;
-	bool overwrite_cal;
+	ISSCalibration *cal; ///< Pointer to an ISSCalibration object, used for accessing gain-matching parameters and thresholds
+	bool overwrite_cal; ///< Boolean determining whether an energy calibration should be used (true) or not (false). Set in the ISSEventBuilder::AddCalibration function
 	
 	// Settings file
-	ISSSettings *set;
+	ISSSettings *set; ///< Pointer to the settings object. Assigned in constructor
 	
 	// Progress bar
-	bool _prog_;
-	std::shared_ptr<TGProgressBar> prog;
+	bool _prog_; ///< TODO Brief description.
+	std::shared_ptr<TGProgressBar> prog; ///< TODO Brief description.
 
 	// These things should probably be in the settings file
-	long build_window;  /// length of build window in ns
+	long build_window;  ///< Length of build window in ns
 	
 	// Some more things that should be in a settings file
-	std::vector<unsigned char> asic_side;
-	std::vector<unsigned char> asic_row;
-	std::vector<std::vector<unsigned char>> array_row;
-	std::vector<int> array_pid;
-	std::vector<int> array_nid;
+	std::vector<unsigned char> asic_side; ///< Vector containing 0 for p-side and 1 for n-side where the index is the asic number
+	std::vector<unsigned char> asic_row; ///< Vector containing the smallest row number for a given p/n-side asic where the index is the asic number
+	std::vector<std::vector<unsigned char>> array_row; ///< array_row[i][0] = asic_row[i] -> vector of vectors each with a single element. This is incremented for each n-side strip which is in asic 4 ???
+	std::vector<std::vector<int>> array_pid; ///< Gives each p-side strip on the array a unique number for identification (accessed via row number and channel number on strip)
+	std::vector<std::vector<int>> array_nid; ///< Gives each n-side strip on the array a number for identification (accessed via row number and channel number on strip)
 
 	// Flags
-	bool flag_close_event;
-	bool flag_caen_pulser;
-	std::vector<bool> flag_pause, flag_resume;
-	bool noise_flag, event_open;
+	bool flag_close_event; ///< TODO Brief description.
+	bool flag_caen_pulser; ///< TODO Brief description.
+	std::vector<bool> flag_pause, flag_resume; ///< TODO Brief description.
+	bool noise_flag, event_open; ///< TODO Brief description.
 
 	// Time variables
-	long		 		time_diff;
-	unsigned long long	time_prev, time_min, time_max, time_first;
-	unsigned long long  ebis_time, t1_time, ebis_prev, t1_prev;
-	unsigned long long	caen_time, caen_prev;
-	double asic_hz, fpga_hz, caen_hz, ebis_hz, t1_hz;
-	double fpga_tdiff, asic_tdiff;
-	std::vector<unsigned long long> fpga_time, fpga_prev;
-	std::vector<unsigned long long> asic_time, asic_prev;
-	std::vector<unsigned long long> pause_time, resume_time, asic_dead_time;
-	std::vector<unsigned long long> asic_time_start, asic_time_stop;
-	std::vector<unsigned long long> caen_time_start, caen_time_stop;
+	long		 		time_diff; ///< TODO Brief description.
+	unsigned long long	time_prev, time_min, time_max, time_first; ///< TODO Brief description.
+	unsigned long long  ebis_time, t1_time, ebis_prev, t1_prev; ///< TODO Brief description.
+	unsigned long long	caen_time, caen_prev; ///< TODO Brief description.
+	double asic_hz, fpga_hz, caen_hz, ebis_hz, t1_hz; ///< TODO Brief description.
+	double fpga_tdiff, asic_tdiff; ///< TODO Brief description.
+	std::vector<unsigned long long> fpga_time, fpga_prev; ///< TODO Brief description.
+	std::vector<unsigned long long> asic_time, asic_prev; ///< TODO Brief description.
+	std::vector<unsigned long long> pause_time, resume_time, asic_dead_time; ///< TODO Brief description.
+	std::vector<unsigned long long> asic_time_start, asic_time_stop; ///< TODO Brief description.
+	std::vector<unsigned long long> caen_time_start, caen_time_stop; ///< TODO Brief description.
 
 	// Data variables - generic
 	unsigned char		mymod;		///< module number
@@ -208,51 +220,51 @@ private:
 	std::vector<int>	zid_list;	///< list of ZeroDegree IDs/layers for ELUMFinder
 
 	// Counters
-	unsigned int		hit_ctr, array_ctr, arrayp_ctr, recoil_ctr, mwpc_ctr, elum_ctr, zd_ctr;
-	unsigned long		n_asic_data, n_caen_data, n_info_data;
-	unsigned long long	n_entries;
-	unsigned long		n_caen_pulser;
-	unsigned long		n_ebis, n_t1;
-	std::vector<unsigned long>	n_fpga_pulser;
-	std::vector<unsigned long>	n_asic_pause, n_asic_resume, n_asic_pulser;
+	unsigned int		hit_ctr, array_ctr, arrayp_ctr, recoil_ctr, mwpc_ctr, elum_ctr, zd_ctr; ///< TODO Brief description.
+	unsigned long		n_asic_data, n_caen_data, n_info_data; ///< TODO Brief description.
+	unsigned long long	n_entries; ///< TODO Brief description.
+	unsigned long		n_caen_pulser; ///< TODO Brief description.
+	unsigned long		n_ebis, n_t1; ///< TODO Brief description.
+	std::vector<unsigned long>	n_fpga_pulser; ///< TODO Brief description.
+	std::vector<unsigned long>	n_asic_pause, n_asic_resume, n_asic_pulser; ///< TODO Brief description.
 
 	// Array Histograms
-	std::vector<std::vector<TH2F*>> pn_11;
-	std::vector<std::vector<TH2F*>> pn_12;
-	std::vector<std::vector<TH2F*>> pn_21;
-	std::vector<std::vector<TH2F*>> pn_22;
-	std::vector<std::vector<TH2F*>> pn_ab;
-	std::vector<std::vector<TH2F*>> pn_nab;
-	std::vector<std::vector<TH2F*>> pn_pab;
-	std::vector<std::vector<TH2F*>> pn_max;
-	std::vector<std::vector<TH1F*>> pn_td;
-	std::vector<std::vector<TH1F*>> pp_td;
-	std::vector<std::vector<TH1F*>> nn_td;
-	std::vector<std::vector<TH2F*>> pn_mult;
+	std::vector<std::vector<TH2F*>> pn_11; ///< TODO Brief description.
+	std::vector<std::vector<TH2F*>> pn_12; ///< TODO Brief description.
+	std::vector<std::vector<TH2F*>> pn_21; ///< TODO Brief description.
+	std::vector<std::vector<TH2F*>> pn_22; ///< TODO Brief description.
+	std::vector<std::vector<TH2F*>> pn_ab; ///< TODO Brief description.
+	std::vector<std::vector<TH2F*>> pn_nab; ///< TODO Brief description.
+	std::vector<std::vector<TH2F*>> pn_pab; ///< TODO Brief description.
+	std::vector<std::vector<TH2F*>> pn_max; ///< TODO Brief description.
+	std::vector<std::vector<TH1F*>> pn_td; ///< TODO Brief description.
+	std::vector<std::vector<TH1F*>> pp_td; ///< TODO Brief description.
+	std::vector<std::vector<TH1F*>> nn_td; ///< TODO Brief description.
+	std::vector<std::vector<TH2F*>> pn_mult; ///< TODO Brief description.
 
 	// Timing histograms
-	TH1F *tdiff, *tdiff_clean;
-	TProfile *caen_freq, *ebis_freq, *t1_freq;
-	std::vector<TH1F*> fpga_td, asic_td;
-	std::vector<TProfile*> fpga_pulser_loss, fpga_freq_diff;
-	std::vector<TProfile*> fpga_freq, fpga_sync;
-	std::vector<TProfile*> asic_pulser_loss, asic_freq_diff;
-	std::vector<TProfile*> asic_freq, asic_sync;
+	TH1F *tdiff, *tdiff_clean; ///< TODO Brief description.
+	TProfile *caen_freq, *ebis_freq, *t1_freq; ///< TODO Brief description.
+	std::vector<TH1F*> fpga_td, asic_td; ///< TODO Brief description.
+	std::vector<TProfile*> fpga_pulser_loss, fpga_freq_diff; ///< TODO Brief description.
+	std::vector<TProfile*> fpga_freq, fpga_sync; ///< TODO Brief description.
+	std::vector<TProfile*> asic_pulser_loss, asic_freq_diff; ///< TODO Brief description.
+	std::vector<TProfile*> asic_freq, asic_sync; ///< TODO Brief description.
 
 	// Recoil histograms
-	std::vector<TH2F*> recoil_EdE;
-	std::vector<TH2F*> recoil_dEsum;
+	std::vector<TH2F*> recoil_EdE; ///< TODO Brief description.
+	std::vector<TH2F*> recoil_dEsum; ///< TODO Brief description.
 
 	// MWPC histograms
-	std::vector<std::vector<TH1F*>> mwpc_tac_axis;
-	std::vector<TH1F*> mwpc_hit_axis;
-	TH2F *mwpc_pos;
+	std::vector<std::vector<TH1F*>> mwpc_tac_axis; ///< TODO Brief description.
+	std::vector<TH1F*> mwpc_hit_axis; ///< TODO Brief description.
+	TH2F *mwpc_pos; ///< TODO Brief description.
 
 	// ELUM histograms
-	TH2F *elum;
+	TH2F *elum; ///< TODO Brief description.
 	
 	// ZeroDegree histograms
-	TH2F *zd;
+	TH2F *zd; ///< TODO Brief description.
 	
 };
 
