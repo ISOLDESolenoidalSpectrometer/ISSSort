@@ -141,7 +141,9 @@ void ISSEventBuilder::StartFile(){
 	time_first = 0;
 	caen_time = 0;
 	caen_prev = 0;
+	ebis_time = 0;
 	ebis_prev = 0;
+	t1_time = 0;
 	t1_prev = 0;
 
 	n_asic_data	= 0;
@@ -214,8 +216,6 @@ void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
 	// Set the input tree
 	SetInputTree( (TTree*)input_file->Get("iss_sort") );
 
-	StartFile();
-
 	return;
 	
 }
@@ -272,6 +272,7 @@ void ISSEventBuilder::Initialise(){
 	
 	hit_ctr = 0;
 	
+	// Clear all vectors with the standard method
 	pen_list.clear();
 	nen_list.clear();
 	ptd_list.clear();
@@ -301,6 +302,36 @@ void ISSEventBuilder::Initialise(){
 	ztd_list.clear();
 	zid_list.clear();
 	
+	// Now swap all these vectors with empty vectors to ensure they are fully cleared
+	std::vector<float>().swap(pen_list);
+	std::vector<float>().swap(nen_list);
+	std::vector<long>().swap(ptd_list);
+	std::vector<long>().swap(ntd_list);
+	std::vector<int>().swap(pid_list);
+	std::vector<int>().swap(nid_list);
+	std::vector<int>().swap(pmod_list);
+	std::vector<int>().swap(nmod_list);
+	std::vector<int>().swap(prow_list);
+	std::vector<int>().swap(nrow_list);
+	
+	std::vector<float>().swap(ren_list);
+	std::vector<long>().swap(rtd_list);
+	std::vector<int>().swap(rid_list);
+	std::vector<int>().swap(rsec_list);
+	
+	std::vector<unsigned short>().swap(mwpctac_list);
+	std::vector<long>().swap(mwpctd_list);
+	std::vector<int>().swap(mwpcaxis_list);
+	std::vector<int>().swap(mwpcid_list);
+
+	std::vector<float>().swap(een_list);
+	std::vector<long>().swap(etd_list);
+	std::vector<int>().swap(esec_list);
+	
+	std::vector<float>().swap(zen_list);
+	std::vector<long>().swap(ztd_list);
+	std::vector<int>().swap(zid_list);
+
 	write_evts->ClearEvt();
 	
 	return;
@@ -352,8 +383,8 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 		// record time of this event
 		time_prev = mytime;
 		
-		// assume this isn't noise for now
-		noise_flag = false;
+		// assume this is above threshold initially
+		mythres = true;
 
 		
 		// ------------------------------------------ //
@@ -376,9 +407,11 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 									 mych, asic_data->GetAdcValue() );
 				mywalk = cal->AsicWalk( mymod, myasic, myenergy );
 			
-				if( asic_data->GetAdcValue() > cal->AsicThreshold( mymod, myasic, mych ) )
+				/*if( asic_data->GetAdcValue() > cal->AsicThreshold( mymod, myasic, mych ) )
 					mythres = true;
-				else mythres = false;
+				else mythres = false;*/
+				if( asic_data->GetAdcValue() < cal->AsicThreshold( mymod, myasic, mych ) )
+					mythres = false;
 				
 			}
 			
@@ -394,10 +427,9 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			if( myenergy < 0 ) mythres = false;
 			
 			// If it's below threshold do not use as window opener
-			if( !mythres ) noise_flag = true;
-			else event_open = true;
+			if ( mythres ) event_open = true;
+			
 
-			// ---- TODO ---- QUESTIONABLE CODING??? ---- TODO ---- //
 			// p-side event
 			if( myside == 0 && mythres ) {
 			
@@ -433,7 +465,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 				hit_ctr++; // increase counter for bits of data included in this event
 
 			}
-			// ---- TODO ---- QUESTIONABLE CODING??? ---- TODO ---- //
+
 			// Is it the start event?
 			if( asic_time_start.at( mymod ) == 0 )
 				asic_time_start.at( mymod ) = mytime;
@@ -446,7 +478,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 		// ------------------------------------------ //
 		// Find recoils and other things
 		// ------------------------------------------ //
-		if( in_data->IsCaen() ) {
+		else if( in_data->IsCaen() ) {
 			
 			// Increment event counter
 			n_caen_data++;
@@ -459,9 +491,11 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 				myenergy = cal->CaenEnergy( mymod, mych,
 									caen_data->GetQlong() );
 				
-				if( caen_data->GetQlong() > cal->CaenThreshold( mymod, mych ) )
+				/*if( caen_data->GetQlong() > cal->CaenThreshold( mymod, mych ) )
 					mythres = true;
-				else mythres = false;
+				else mythres = false;*/
+				if( caen_data->GetQlong() < cal->CaenThreshold( mymod, mych ) )
+					mythres = false;
 
 			}
 			
@@ -473,10 +507,10 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 			
 			// If it's below threshold do not use as window opener
-			if( !mythres ) noise_flag = true;
-			else event_open = true;
+			if ( mythres ) event_open = true;
 
 
+			// DETERMINE WHICH TYPE OF CAEN EVENT THIS IS
 			// Is it a recoil?
 			if( set->IsRecoil( mymod, mych ) && mythres ) {
 				
@@ -535,6 +569,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 
 			}
 			
+			
 			// Is it the start event?
 			if( caen_time_start.at( mymod ) == 0 )
 				caen_time_start.at( mymod ) = mytime;
@@ -548,46 +583,53 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 		// ------------------------------------------ //
 		// Find info events, like timestamps etc
 		// ------------------------------------------ //
-		if( in_data->IsInfo() ) {
+		else if( in_data->IsInfo() ) {
 			
 			// Increment event counter
 			n_info_data++;
-			
 			info_data = in_data->GetInfoData();
 			
-			// if there are no data so far, set this as time_first
+			// if there are no data so far, set this as time_first - multiple info events will just update this so won't be a problem
 			if( hit_ctr == 0 )
 				time_first = mytime;
 			
+			
+			// CHECK ALL OF THE INFO DATA CODE VALUES
 			// Update EBIS time
-			if( info_data->GetCode() == set->GetEBISCode() &&
-			    TMath::Abs( (double)ebis_time - (double)info_data->GetTime() ) > 1e3 ) {
-				
-				ebis_time = info_data->GetTime();
-				ebis_hz = 1e9 / ( (double)ebis_time - (double)ebis_prev );
-				if( ebis_prev != 0 ) ebis_freq->Fill( ebis_time, ebis_hz );
-				ebis_prev = ebis_time;
-				n_ebis++;
+			// N.B. if you are exceeding the limits of long long, then your DAQ has been running too long
+			if( info_data->GetCode() == set->GetEBISCode() ){
+			
+				// Each ASIC module sends ebis_time signal, so make sure difference between last ebis pulse and now is longer than the time it takes for them all to enter the DAQ
+				if ( TMath::Abs( (long long)ebis_time - (long long)info_data->GetTime() ) > 1e3 ){
+					
+					ebis_time = info_data->GetTime();
+					ebis_hz = 1e9 / ( (long long)ebis_time - (long long)ebis_prev );
+					if( ebis_prev != 0 ) ebis_freq->Fill( ebis_time, ebis_hz );
+					ebis_prev = ebis_time;
+					n_ebis++;
+				}
 				
 			}
 		
 			// Update T1 time
-			if( info_data->GetCode() == set->GetT1Code() &&
-				TMath::Abs( (double)t1_time - (double)info_data->GetTime() ) > 1e3 ){
+			else if( info_data->GetCode() == set->GetT1Code() ){
 				
-				t1_time = info_data->GetTime();
-				t1_hz = 1e9 / ( (double)t1_time - (double)t1_prev );
-				if( t1_prev != 0 ) t1_freq->Fill( t1_time, t1_hz );
-				t1_prev = t1_time;
-				n_t1++;
+				if ( TMath::Abs( (long long)t1_time - (long long)info_data->GetTime() ) > 1e3 ){
+				
+					t1_time = info_data->GetTime();
+					t1_hz = 1e9 / ( (long long)t1_time - (long long)t1_prev );
+					if( t1_prev != 0 ) t1_freq->Fill( t1_time, t1_hz );
+					t1_prev = t1_time;
+					n_t1++;
+				}
 
 			}
 			
 			// Update CAEN pulser time
-			if( info_data->GetCode() == set->GetCAENPulserCode() ) {
+			else if( info_data->GetCode() == set->GetCAENPulserCode() ) {
 				
 				caen_time = info_data->GetTime();
-				caen_hz = 1e9 / ( (double)caen_time - (double)caen_prev );
+				caen_hz = 1e9 / ( (long long)caen_time - (long long)caen_prev );
 				if( caen_prev != 0 ) caen_freq->Fill( caen_time, caen_hz );
 
 				flag_caen_pulser = true;
@@ -596,10 +638,10 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 
 			// Update ISS pulser time in FPGA
-			if( info_data->GetCode() == set->GetExternalTriggerCode() ) {
+			else if( info_data->GetCode() == set->GetExternalTriggerCode() ) {
 			   
 				fpga_time[info_data->GetModule()] = info_data->GetTime();
-				fpga_hz = 1e9 / ( (double)fpga_time[info_data->GetModule()] - (double)fpga_prev[info_data->GetModule()] );
+				fpga_hz = 1e9 / ( (long long)fpga_time[info_data->GetModule()] - (long long)fpga_prev[info_data->GetModule()] );
 
 				if( fpga_prev[info_data->GetModule()] != 0 )
 					fpga_freq[info_data->GetModule()]->Fill( fpga_time[info_data->GetModule()], fpga_hz );
@@ -609,10 +651,10 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 			
 			// Update ISS pulser time in ASICs
-			if( info_data->GetCode() == set->GetArrayPulserCode() ) {
+			else if( info_data->GetCode() == set->GetArrayPulserCode() ) {
 			   
 				asic_time[info_data->GetModule()] = info_data->GetTime();
-				asic_hz = 1e9 / ( (double)asic_time[info_data->GetModule()] - (double)asic_prev[info_data->GetModule()] );
+				asic_hz = 1e9 / ( (long long)asic_time[info_data->GetModule()] - (long long)asic_prev[info_data->GetModule()] );
 
 				if( asic_prev[info_data->GetModule()] != 0 )
 					asic_freq[info_data->GetModule()]->Fill( asic_time[info_data->GetModule()], asic_hz );
@@ -622,7 +664,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			}
 			
 			// Check the pause events for each module
-			if( info_data->GetCode() == set->GetPauseCode() ) {
+			else if( info_data->GetCode() == set->GetPauseCode() ) {
 				
 				if( info_data->GetModule() < set->GetNumberOfArrayModules() ) {
 				
@@ -632,31 +674,41 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 				
 				}
 				
-				else
+				else{
+				
 					std::cerr << "Bad pause event in module " << (int)info_data->GetModule() << std::endl;
+					
+				}
 				
 			}
 			
 			// Check the resume events for each module
-			if( info_data->GetCode() == set->GetResumeCode() ) {
+			else if( info_data->GetCode() == set->GetResumeCode() ) {
 				
 				if( info_data->GetModule() < set->GetNumberOfArrayModules() ) {
 				
 					n_asic_resume[info_data->GetModule()]++;
 					flag_resume[info_data->GetModule()] = true;
 					resume_time[info_data->GetModule()] = info_data->GetTime();
-					
-					// Work out the dead time
-					asic_dead_time[info_data->GetModule()] += resume_time[info_data->GetModule()];
-					asic_dead_time[info_data->GetModule()] -= pause_time[info_data->GetModule()];
 
-					// If we have didn't get the pause, module was stuck at start of run
+					// If we didn't get the pause, module was stuck at start of run
 					if( !flag_pause[info_data->GetModule()] ) {
 
 						std::cout << "Module " << info_data->GetModule();
 						std::cout << " was blocked at start of run for ";
 						std::cout << (double)resume_time[info_data->GetModule()]/1e9;
 						std::cout << " seconds" << std::endl;
+
+					}
+					else{
+					
+						// Do have pause and resume -> work out the dead time
+						asic_dead_time[info_data->GetModule()] += resume_time[info_data->GetModule()];
+						asic_dead_time[info_data->GetModule()] -= pause_time[info_data->GetModule()];
+						
+						// Reset flags
+						flag_pause[info_data->GetModule()] = false;
+						flag_resume[info_data->GetModule()] = false;
 					
 					}
 				
@@ -667,7 +719,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 				
 			}
 
-			// If we a pulser event from the CAEN DAQs, fill time difference
+			// If we have a pulser event from the CAEN DAQs, fill time difference
 			if( flag_caen_pulser ) {
 			
 				for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
@@ -710,10 +762,10 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 		
 		// Sort out the timing for the event window
 		// but only if it isn't an info event, i.e only for real data
-		else {
+		if ( !in_data->IsInfo() ){
 			
 			// if this is first datum included in Event
-			if( hit_ctr == 1 && !noise_flag ) {
+			if( hit_ctr == 1 && mythres ) {
 				
 				time_min	= mytime;
 				time_max	= mytime;
@@ -761,7 +813,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			if( !in_data->IsInfo() ) {
 				
 				tdiff->Fill( time_diff );
-				if( !noise_flag )
+				if( mythres )
 					tdiff_clean->Fill( time_diff );
 			
 			}
@@ -836,6 +888,8 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 		
 		
 	} // End of main loop over TTree to process raw MIDAS data entries (for n_entries)
+	
+	// TODO -> if we end on a pause with no resume, add any remaining time to the dead time
 	
 	//--------------------------
 	// Clean up
