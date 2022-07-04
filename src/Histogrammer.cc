@@ -948,8 +948,15 @@ unsigned long ISSHistogrammer::FillHists( unsigned long start_fill ) {
 												recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
 			
 		} // recoils
-
-		if( i % (n_entries/100) == 0 || i+1 == n_entries ) {
+		
+		// Progress bar
+		bool update_progress = false;
+		if( n_entries < 200 )
+			update_progress = true;
+		else if( i % (n_entries/100) == 0 || i+1 == n_entries )
+			update_progress = true;
+		
+		if( update_progress ) {
 			
 			// Percent complete
 			float percent = (float)(i+1)*100.0/(float)n_entries;

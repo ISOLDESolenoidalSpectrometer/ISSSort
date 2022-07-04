@@ -98,7 +98,14 @@ unsigned long ISSTimeSorter::SortFile( unsigned long start_sort ) {
 			input_tree->GetEntry( idx );
 			output_tree->Fill();
 			
-			if( i % (nb_idx/100) == 0 || i+1 == nb_idx ) {
+			// Progress bar
+			bool update_progress = false;
+			if( nb_idx < 200 )
+				update_progress = true;
+			else if( i % (nb_idx/100) == 0 || i+1 == nb_idx )
+				update_progress = true;
+			
+			if( update_progress ) {
 				
 				// Percent complete
 				float percent = (float)(i+1)*100.0/(float)nb_idx;
