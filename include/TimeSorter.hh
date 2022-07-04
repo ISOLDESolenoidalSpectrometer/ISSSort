@@ -59,6 +59,9 @@ private:
 	
 	// Sort time
 	time_t t_start;
+	
+	// Flag for input file I/O
+	bool flag_input_file;
 
 	// Progress bar
 	bool _prog_;

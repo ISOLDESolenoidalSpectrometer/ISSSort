@@ -1,9 +1,12 @@
 #include "TimeSorter.hh"
 
-ISSTimeSorter::ISSTimeSorter( ){
+ISSTimeSorter::ISSTimeSorter(){
 	
 	// No progress bar by default
 	_prog_ = false;
+	
+	// No input file yet
+	flag_input_file = false;
 
 }
 
@@ -17,6 +20,8 @@ bool ISSTimeSorter::SetInputFile( std::string input_file_name ){
 		return false;
 		
 	}
+	
+	flag_input_file = true;
 	
 	// Set the input tree
 	SetInputTree( (TTree*)input_file->Get("iss") );
@@ -122,10 +127,15 @@ unsigned long ISSTimeSorter::SortFile( unsigned long start_sort ) {
 	
 
 	// Write histograms, trees and clean up
-	std::cout << "Read " << input_file->GetBytesRead();
-	std::cout << " bytes in " << input_file->GetReadCalls();
-	std::cout << " transactions" << std::endl;
-	//input_tree->PrintCacheStats();
+	if( flag_input_file ) {
+		
+		std::cout << "Read " << input_file->GetBytesRead();
+		std::cout << " bytes in " << input_file->GetReadCalls();
+		std::cout << " transactions" << std::endl;
+		
+	}
+	else input_tree->PrintCacheStats();
+	
 	output_tree->Write( 0, TObject::kWriteDelete );
 	output_file->SaveSelf();
 	//output_file->Print();
