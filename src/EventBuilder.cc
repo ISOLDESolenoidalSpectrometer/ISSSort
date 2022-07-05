@@ -438,14 +438,19 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 
 				mystrip = array_pid.at( asic_data->GetAsic() ).at( asic_data->GetChannel() );
 				
-				pen_list.push_back( myenergy );
-				ptd_list.push_back( mytime + mywalk );
-				pmod_list.push_back( mymod );
-				pid_list.push_back( mystrip );
-				prow_list.push_back( myrow );
+				// Only use if it is an event from a detector
+				if( mystrip >= 0 ) {
+							
+					pen_list.push_back( myenergy );
+					ptd_list.push_back( mytime + mywalk );
+					pmod_list.push_back( mymod );
+					pid_list.push_back( mystrip );
+					prow_list.push_back( myrow );
 
-				hit_ctr++; // increase counter for bits of data included in this event
+					hit_ctr++; // increase counter for bits of data included in this event
 
+				}
+				
 			}
 
 			// n-side event
@@ -455,15 +460,20 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			//else if( myside == 1 && asic_data->GetHitBit() ) {
 
 				mystrip = array_nid.at( asic_data->GetAsic() ).at( asic_data->GetChannel() );
+
+				// Only use if it is an event from a detector
+				if( mystrip >= 0 ) {
+							
+					nen_list.push_back( myenergy );
+					ntd_list.push_back( mytime + mywalk );
+					nmod_list.push_back( mymod );
+					nid_list.push_back( mystrip );
+					nrow_list.push_back( myrow );
+
+					hit_ctr++; // increase counter for bits of data included in this event
+
+				}
 				
-				nen_list.push_back( myenergy );
-				ntd_list.push_back( mytime + mywalk );
-				nmod_list.push_back( mymod );
-				nid_list.push_back( mystrip );
-				nrow_list.push_back( myrow );
-
-				hit_ctr++; // increase counter for bits of data included in this event
-
 			}
 
 			// Is it the start event?
