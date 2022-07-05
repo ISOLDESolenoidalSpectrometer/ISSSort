@@ -1714,7 +1714,7 @@ void ISSEventBuilder::MakeEventHists(){
 		hname = "asic_td_" + std::to_string(i);
 		htitle = "Time difference between ASIC and CAEN pulser events in module ";
 		htitle += std::to_string(i) + ";#Delta t [ns]";
-		asic_td[i] = new TH1F( hname.data(), htitle.data(), 16e3 , -400e3, 400e3 );
+		asic_td[i] = new TH1F( hname.data(), htitle.data(), 1.6e3 , -4e3, 4e3 );
 		
 		hname = "asic_freq_" + std::to_string(i);
 		htitle = "Frequency of pulser in ISS DAQ (ASICs) as a function of time in module ";
@@ -1739,7 +1739,7 @@ void ISSEventBuilder::MakeEventHists(){
 		hname = "fpga_td_" + std::to_string(i);
 		htitle = "Time difference between FPGA and CAEN pulser events in module ";
 		htitle += std::to_string(i) + ";#Delta t [ns]";
-		fpga_td[i] = new TH1F( hname.data(), htitle.data(), 16e3 , -400e3, 400e3 );
+		fpga_td[i] = new TH1F( hname.data(), htitle.data(), 1.6e3 , -4e3, 4e3 );
 
 		hname = "fpga_freq_" + std::to_string(i);
 		htitle = "Frequency of pulser in ISS DAQ (FPGA) as a function of time in module ";
