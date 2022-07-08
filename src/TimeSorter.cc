@@ -158,8 +158,7 @@ unsigned long ISSTimeSorter::SortTree( unsigned long start_sort ) {
 	else input_tree->PrintCacheStats();
 	
 	output_tree->Write( 0, TObject::kWriteDelete );
-	output_file->SaveSelf();
-	//output_file->Print();
+	if( flag_output_file ) output_file->SaveSelf();
 	
 	std::cout << "End ISSTimeSorter: time elapsed = " << time(NULL)-t_start << " sec." << std::endl;
 	
