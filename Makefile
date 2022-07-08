@@ -21,8 +21,10 @@ endif
 PLATFORM:=$(shell uname)
 ifeq ($(PLATFORM),Darwin)
 SHAREDSWITCH = -Qunused-arguments -shared -undefined dynamic_lookup -dynamiclib -Wl,-install_name,'@executable_path/../lib/'# NO ENDING SPACE
+OSDEF = -DMACOSX
 else
 SHAREDSWITCH = -shared -Wl,-soname,# NO ENDING SPACE
+OSDEF = -DLINUX
 endif
 
 
@@ -39,7 +41,7 @@ CC           = $(shell root-config --cc)
 # Flags for compiler.
 CPPFLAGS	 = -c -Wall -Wextra $(ROOTCPPFLAGS) -g -fPIC
 CFLAGS		 = -c -Wall -Wextra $(ROOTCFLAGS) -g -fPIC
-CFLAGS		+= -DUNIX -DPOSIX -DMACOSX
+CFLAGS		+= -DUNIX -DPOSIX $(OSDEF)
 INCLUDES	+= -I$(INC_DIR) -I.
 
 # Pass in the data file locations
