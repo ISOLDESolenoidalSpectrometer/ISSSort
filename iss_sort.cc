@@ -205,6 +205,10 @@ void* monitor_run( void* ptr ){
 
 	}
 	
+	// Close the dataSpy before exiting
+	//dataSpyClose( id );
+
+	
 	conv_mon.CloseOutput();
 	sort_mon.CloseOutput();
 	eb_mon.CloseOutput();
