@@ -359,6 +359,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 
 	std::cout << " Event Building: number of entries in input tree = ";
 	std::cout << n_entries << std::endl;
+	std::cout << " Start build at event " << start_build << std::endl;
 
 	
 	// ------------------------------------------------------------------------ //

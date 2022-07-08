@@ -26,20 +26,25 @@ SHAREDSWITCH = -shared -Wl,-soname,# NO ENDING SPACE
 endif
 
 
-ROOTCFLAGS   := $(shell root-config --cflags)
-ROOTLDFLAGS  := $(shell root-config --ldflags)
-ROOTLIBS     := $(shell root-config --glibs) -lRHTTP -lThread
-LIBS         := $(ROOTLIBS)
+ROOTCPPFLAGS	:= $(shell root-config --cflags)
+ROOTCFLAGS		:= $(shell root-config --noauxcflags --cflags)
+ROOTLDFLAGS		:= $(shell root-config --ldflags)
+ROOTLIBS		:= $(shell root-config --glibs) -lRHTTP -lThread
+LIBS			:= $(ROOTLIBS)
 
 # Compiler.
-CC          = $(shell root-config --cxx)
+CXX          = $(shell root-config --cxx)
+CC           = $(shell root-config --cc)
+
 # Flags for compiler.
-CFLAGS		= -c -Wall -Wextra $(ROOTCFLAGS) -g -fPIC
+CPPFLAGS	 = -c -Wall -Wextra $(ROOTCPPFLAGS) -g -fPIC
+CFLAGS		 = -c -Wall -Wextra $(ROOTCFLAGS) -g -fPIC
+CFLAGS		+= -DUNIX -DPOSIX -DMACOSX
 INCLUDES	+= -I$(INC_DIR) -I.
 
 # Pass in the data file locations
-CFLAGS		+= -DAME_FILE=$(AME_FILE)
-CFLAGS		+= -DSRIM_DIR=$(SRIM_DIR)
+CPPFLAGS		+= -DAME_FILE=$(AME_FILE)
+CPPFLAGS		+= -DSRIM_DIR=$(SRIM_DIR)
 
 # Linker.
 LD          = $(shell root-config --ld)
@@ -52,6 +57,7 @@ OBJECTS =  		$(SRC_DIR)/AutoCalibrator.o \
 				$(SRC_DIR)/CommandLineInterface.o \
 				$(SRC_DIR)/Converter.o \
 				$(SRC_DIR)/DataPackets.o \
+				$(SRC_DIR)/DataSpy.o \
 				$(SRC_DIR)/Histogrammer.o \
 				$(SRC_DIR)/ISSEvts.o \
 				$(SRC_DIR)/ISSGUI.o \
@@ -66,6 +72,7 @@ DEPENDENCIES =  $(INC_DIR)/AutoCalibrator.hh \
 				$(INC_DIR)/CommandLineInterface.hh \
 				$(INC_DIR)/Converter.hh \
 				$(INC_DIR)/DataPackets.hh \
+				$(INC_DIR)/DataSpy.h \
 				$(INC_DIR)/Histogrammer.hh \
 				$(INC_DIR)/ISSEvts.hh \
 				$(INC_DIR)/ISSGUI.hh \
@@ -87,15 +94,18 @@ $(BIN_DIR)/iss_sort: iss_sort.o $(OBJECTS) iss_sortDict.o
 	$(LD) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 iss_sort.o: iss_sort.cc
-	$(CC) $(CFLAGS) $(INCLUDES) $^
+	$(CXX) $(CPPFLAGS) $(INCLUDES) $^
 
 $(SRC_DIR)/%.o: $(SRC_DIR)/%.cc $(INC_DIR)/%.hh
+	$(CXX) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
+
+$(SRC_DIR)/%.o: $(SRC_DIR)/%.c $(INC_DIR)/%.h
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 iss_sortDict.o: iss_sortDict.cc iss_sortDict$(DICTEXT) $(INC_DIR)/RootLinkDef.h
 	mkdir -p $(BIN_DIR)
 	mkdir -p $(LIB_DIR)
-	$(CC) -fPIC $(CFLAGS) $(INCLUDES) -c $<
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDES) -c $<
 	cp iss_sortDict$(DICTEXT) $(BIN_DIR)/
 	cp iss_sortDict$(DICTEXT) $(LIB_DIR)/
 

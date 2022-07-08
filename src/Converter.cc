@@ -522,7 +522,7 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 			// Decide if this is an ASIC or CAEN event
 			// ISS/R3B ASICs will have 28th bit of word_1 set to 1
 			// This is for data after to R3B data format change (June 2021)
-			// Otherwise, we rely on the #define directive at the top of Converter.hh
+			// Otherwise, we read it in from the settings file
 			if( ((word_1 >> 28) & 0x00000001) == 0x00000001 ||
 			    set->IsASICOnly() ){
 
