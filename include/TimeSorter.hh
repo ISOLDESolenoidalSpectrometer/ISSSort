@@ -23,15 +23,16 @@ public:
 	ISSTimeSorter();
 	virtual ~ISSTimeSorter(){};
 	
-	unsigned long SortFile( unsigned long start_sort = 0 );
+	unsigned long SortTree( unsigned long start_sort = 0 );
 	
 	bool	SetInputFile( std::string input_file_name );
 	void	SetInputTree( TTree* user_tree );
 	void	SetOutput( std::string output_file_name );
+	void	SetOutputFile( std::string output_file_name );
+	void	MakeTree();
 	inline void CloseOutput(){
 		output_file->Close();
 		input_file->Close(); // Close TFile
-		log_file.close(); //?? to close or not to close?
 	};
 	inline TFile* GetFile(){ return output_file; };
 	inline TTree* GetTree(){ return output_tree; };
@@ -49,8 +50,6 @@ private:
 	TFile *output_file;
 	TTree *output_tree;
 	
-	std::ofstream log_file;
-	
 	TTreeIndex *att_index;
 
 	// Counters
@@ -62,6 +61,7 @@ private:
 	
 	// Flag for input file I/O
 	bool flag_input_file;
+	bool flag_output_file;
 
 	// Progress bar
 	bool _prog_;

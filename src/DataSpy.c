@@ -171,10 +171,10 @@ int dataSpyClose( int id ) {
  length is in units of bytes
  */
 
-int dataSpyReadWithSeq( int id, char *data, int length, int *seq ) {
+int dataSpyReadWithSeq( int id, char *data, unsigned int length, int *seq ) {
 	
 	int *bufferaddress;
-	int len;
+	unsigned int len;
 	int *ptr;
 	
 	
@@ -195,7 +195,7 @@ retry:
 			current_age[id] = baseaddress->buffer_age[next_index[id]];
 			
 			len = baseaddress->buffer_length;
-			if (!len) len = MAX_BUFFER_SIZE;
+			if( !len ) len = MAX_BUFFER_SIZE;
 			
 			bufferaddress = (int *) ((char *)shm_bufferarea[id] + buffers_offset[id] + (len * next_index[id]));
 			
@@ -245,7 +245,7 @@ retry:
  * provided for compatibility with earlier version
  */
 
-int dataSpyRead( int id, char *data, int length ) {
+int dataSpyRead( int id, char *data, unsigned int length ) {
 
 	int seq;
 	

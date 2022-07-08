@@ -8,6 +8,7 @@
 #include "Histogrammer.hh"
 #include "AutoCalibrator.hh"
 #include "ISSGUI.hh"
+#include "DataSpy.h"
 
 // ROOT include.
 #include <TTree.h>
@@ -87,7 +88,6 @@ int port_num = 8030;
 
 // Function to call the monitoring loop
 void* monitor_run( void* ptr ){
-//void monitor_run(){
 	
 	/// This function is called to run when monitoring
 	
@@ -99,12 +99,22 @@ void* monitor_run( void* ptr ){
 	ISSTimeSorter sort_mon;
 	ISSEventBuilder eb_mon( calfiles->myset );
 	ISSHistogrammer hist_mon( calfiles->myreact, calfiles->myset );
+	
+	// Data blocks
+	//if( set->GetBlockSize() != 0x10000 ) {
+	//
+	//	// only 64 kB supported atm
+	//	std::cerr << "Currently only supporting 64 kB block size" << std::endl;
+	//	exit(1);
+	//
+	//}
+	//long long buffer[8*1024];
+	//int file_id = 0; ///> TapeServer volume = /dev/file/<id> ... <id> = 0 on issdaqpc2
+	//int i = dataSpyOpen( file_id );
 
 	// Data/Event counters
 	int start_block = 0;
 	int nblocks = 0;
-	//unsigned long start_calib = 0;
-	//unsigned long ncalib = 0;
 	unsigned long start_sort = 0;
 	unsigned long nsort = 0;
 	unsigned long start_build = 0;
@@ -132,9 +142,19 @@ void* monitor_run( void* ptr ){
 		// Lock the main thread
 		//TThread::Lock();
 		
-		// Convert
+		// Convert - from file
 		nblocks = conv_mon.ConvertFile( curFileMon, start_block );
 		start_block = nblocks;
+		
+		// Convert - from shared memory
+		//while( !dataSpyRead( id, (char*)buffer, set->GetBlockSize() ) ){
+		//
+		//	std::cout << "No data... Waiting " << std::to_string( mon_time );
+		//	std::cout << " seconds" << std::endl;
+		//	gSystem->Sleep( mon_time * 1e3 );
+		//
+		//}
+		//nblocks = conv_mon.ConvertBlock( buffer );
 		
 		// Only do the rest if it is not a source run
 		if( !flag_source ) {
@@ -142,10 +162,10 @@ void* monitor_run( void* ptr ){
 			// Sort
 			if( bFirstRun ) {
 				sort_mon.SetInputTree( conv_mon.GetTree() );
-				sort_mon.SetOutput( "monitor_sort.root" );
-				serv->Hide("/Files/monitor_sort.root");
+				//sort_mon.SetOutput( "monitor_sort.root" );
+				//serv->Hide("/Files/monitor_sort.root");
 			}
-			nsort = sort_mon.SortFile( start_sort );
+			nsort = sort_mon.SortTree( start_sort );
 			start_sort = nsort;
 
 			// Event builder
@@ -330,7 +350,7 @@ void do_sort(){
 
 			sort.SetInputFile( name_input_file );
 			sort.SetOutput( name_output_file );
-			sort.SortFile();
+			sort.SortTree();
 			sort.CloseOutput();
 
 			force_sort = false;

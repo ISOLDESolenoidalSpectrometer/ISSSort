@@ -43,9 +43,12 @@ public:
 
 	int ConvertFile( std::string input_file_name,
 					unsigned long start_block = 0,
-					long end_block = -1);
+					long end_block = -1 );
+	int ConvertBlock( char *input_block, int nblock );
 	void MakeHists();
 	void MakeTree();
+
+	bool ProcessCurrentBlock( int nblock );
 
 	void SetBlockHeader( char *input_header );
 	void ProcessBlockHeader( unsigned long nblock );

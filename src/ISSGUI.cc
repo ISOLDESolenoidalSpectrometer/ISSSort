@@ -644,7 +644,7 @@ void ISSGUI::gui_sort(){
 
 			sort.SetInputFile( name_input_file.Data() );
 			sort.SetOutput( name_output_file.Data() );
-			sort.SortFile();
+			sort.SortTree();
 			sort.CloseOutput();
 
 			force_sort = false;

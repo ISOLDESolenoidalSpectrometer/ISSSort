@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -96,6 +97,7 @@ public:
 	
 	inline void CloseOutput(){
 		output_file->Close();
+		log_file.close(); //?? to close or not to close?
 	}; ///< TODO Brief description.
 	void CleanHists(); ///< TODO Brief description.
 
@@ -136,6 +138,12 @@ private:
 	// Progress bar
 	bool _prog_; ///< TODO Brief description.
 	std::shared_ptr<TGProgressBar> prog; ///< TODO Brief description.
+
+	// Log file
+	std::ofstream log_file;
+	
+	// Flag to know we've opened a file on disk
+	bool flag_input_file;
 
 	// These things should probably be in the settings file
 	long build_window;  ///< Length of build window in ns

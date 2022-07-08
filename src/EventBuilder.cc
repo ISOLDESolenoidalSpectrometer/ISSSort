@@ -11,6 +11,9 @@ ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
 	// No calibration file by default
 	overwrite_cal = false;
 	
+	// No input file at the start by default
+	flag_input_file = false;
+	
 	// No progress bar by default
 	_prog_ = false;
 
@@ -213,6 +216,8 @@ void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
 		
 	}
 	
+	flag_input_file = true;
+	
 	// Set the input tree
 	SetInputTree( (TTree*)input_file->Get("iss_sort") );
 
@@ -256,6 +261,11 @@ void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 	output_tree = new TTree( "evt_tree", "evt_tree" );
 	output_tree->Branch( "ISSEvts", "ISSEvts", &write_evts );
 
+	// Create log file.
+	std::string log_file_name = output_file_name.substr( 0, output_file_name.find_last_of(".") );
+	log_file_name += ".log";
+	log_file.open( log_file_name.data(), std::ios::app );
+	
 	// Hisograms in separate function
 	MakeEventHists();
 	
@@ -911,39 +921,42 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 	//--------------------------
 	// Clean up
 	//--------------------------
-
-	std::cout << "\n ISSEventBuilder finished..." << std::endl;
-	std::cout << "  ASIC data packets = " << n_asic_data << std::endl;
+	std::stringstream ss_log;
+	ss_log << "\n ISSEventBuilder finished..." << std::endl;
+	ss_log << "  ASIC data packets = " << n_asic_data << std::endl;
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
-		std::cout << "   Module " << i << " pause = " << n_asic_pause[i] << std::endl;
-		std::cout << "           resume = " << n_asic_resume[i] << std::endl;
-		std::cout << "        dead time = " << (double)asic_dead_time[i]/1e9 << " s" << std::endl;
-		std::cout << "        live time = " << (double)(asic_time_stop[i]-asic_time_start[i])/1e9 << " s" << std::endl;
+		ss_log << "   Module " << i << " pause = " << n_asic_pause[i] << std::endl;
+		ss_log << "           resume = " << n_asic_resume[i] << std::endl;
+		ss_log << "        dead time = " << (double)asic_dead_time[i]/1e9 << " s" << std::endl;
+		ss_log << "        live time = " << (double)(asic_time_stop[i]-asic_time_start[i])/1e9 << " s" << std::endl;
 	}
-	std::cout << "  CAEN data packets = " << n_caen_data << std::endl;
+	ss_log << "  CAEN data packets = " << n_caen_data << std::endl;
 	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
-		std::cout << "   Module " << i << " live time = ";
-		std::cout << (double)(caen_time_stop[i]-caen_time_start[i])/1e9;
-		std::cout << " s" << std::endl;
+		ss_log << "   Module " << i << " live time = ";
+		ss_log << (double)(caen_time_stop[i]-caen_time_start[i])/1e9;
+		ss_log << " s" << std::endl;
 	}
-	std::cout << "  Info data packets = " << n_info_data << std::endl;
-	std::cout << "   Array p/n-side correlated events = " << array_ctr << std::endl;
-	std::cout << "   Array p-side only events = " << arrayp_ctr << std::endl;
-	std::cout << "   Recoil events = " << recoil_ctr << std::endl;
-	std::cout << "   MWPC events = " << mwpc_ctr << std::endl;
-	std::cout << "   ELUM events = " << elum_ctr << std::endl;
-	std::cout << "   ZeroDegree events = " << zd_ctr << std::endl;
-	std::cout << "   CAEN pulser = " << n_caen_pulser << std::endl;
-	std::cout << "   FPGA pulser" << std::endl;
+	ss_log << "  Info data packets = " << n_info_data << std::endl;
+	ss_log << "   Array p/n-side correlated events = " << array_ctr << std::endl;
+	ss_log << "   Array p-side only events = " << arrayp_ctr << std::endl;
+	ss_log << "   Recoil events = " << recoil_ctr << std::endl;
+	ss_log << "   MWPC events = " << mwpc_ctr << std::endl;
+	ss_log << "   ELUM events = " << elum_ctr << std::endl;
+	ss_log << "   ZeroDegree events = " << zd_ctr << std::endl;
+	ss_log << "   CAEN pulser = " << n_caen_pulser << std::endl;
+	ss_log << "   FPGA pulser" << std::endl;
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i )
-		std::cout << "    Module " << i << " = " << n_fpga_pulser[i] << std::endl;
-	std::cout << "   ASIC pulser" << std::endl;
+		ss_log << "    Module " << i << " = " << n_fpga_pulser[i] << std::endl;
+	ss_log << "   ASIC pulser" << std::endl;
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i )
-		std::cout << "    Module " << i << " = " << n_asic_pulser[i] << std::endl;
-	std::cout << "   EBIS events = " << n_ebis << std::endl;
-	std::cout << "   T1 events = " << n_t1 << std::endl;
-	std::cout << "  Tree entries = " << output_tree->GetEntries() << std::endl;
+		ss_log << "    Module " << i << " = " << n_asic_pulser[i] << std::endl;
+	ss_log << "   EBIS events = " << n_ebis << std::endl;
+	ss_log << "   T1 events = " << n_t1 << std::endl;
+	ss_log << "  Tree entries = " << output_tree->GetEntries() << std::endl;
 
+	std::cout << ss_log.str();
+	if( log_file.is_open() && flag_input_file ) log_file << ss_log.str();
+	
 	output_file->Write( 0, TObject::kWriteDelete );
 	//output_file->Print();
 	//output_file->Close();

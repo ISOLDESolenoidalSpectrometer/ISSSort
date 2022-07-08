@@ -1,19 +1,16 @@
-/*******************************************************************************
-* dataspy.h     function declarations for data spy library   
-*/
-#ifndef INClibspyH
-#define INClibspyH
+// function declarations for data spy library
+#ifndef _DataSpy_h
+#define _DataSpy_h
 
-extern int dataSpyOpen   (int stream);
-extern int dataSpyClose  (int stream);
-extern int dataSpyRead   (int stream, char *data, int length);
-extern int dataSpyReadWithSeq (int stream, char *data, int length, int * tag);
-extern void dataSpyVerbose (int opt);
+extern int dataSpyOpen( int stream );
+extern int dataSpyClose( int stream );
+extern int dataSpyRead( int stream, char *data, unsigned int length );
+extern int dataSpyReadWithSeq( int stream, char *data, unsigned int length, int * tag );
+extern void dataSpyVerbose( int opt);
 
-/*    format of the data buffer area header */
-
-#define NBLOCKS 64         /*  current number of buffers used - must be 2**n */
-#define MAX_BUFFERS 128    /*  unchangeable max because of header structure */
+// format of the data buffer area header
+#define NBLOCKS 64         // current number of buffers used - must be 2**n
+#define MAX_BUFFERS 128    // unchangeable max because of header structure
 
 typedef struct s_buffer_header {
     int buffer_offset;                 //    offset to first buffer

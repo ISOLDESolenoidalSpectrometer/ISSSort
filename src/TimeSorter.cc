@@ -5,8 +5,9 @@ ISSTimeSorter::ISSTimeSorter(){
 	// No progress bar by default
 	_prog_ = false;
 	
-	// No input file yet
+	// No input/output files yet
 	flag_input_file = false;
+	flag_output_file = false;
 
 }
 
@@ -37,41 +38,61 @@ void ISSTimeSorter::SetInputTree( TTree* user_tree ){
 	// Find the tree and set branch addresses
 	input_tree = user_tree;
 	input_tree->SetCacheSize(200000000); // 200 MB
-	input_tree->SetCacheEntryRange(0,input_tree->GetEntries()-1);
+	input_tree->SetCacheEntryRange( 0, input_tree->GetEntries()-1 );
 	input_tree->AddBranchToCache( "*", kTRUE );
 	//input_tree->StopCacheLearningPhase();
+	
+	// Need to make a clone for the output
+	MakeTree();
+	
 	return;
 	
 }
 
 void ISSTimeSorter::SetOutput( std::string output_file_name ){
+
+	// Open ROOT file
+	SetOutputFile( output_file_name );
+	
+	// Create output tree
+	MakeTree();
+	
+}
+
+void ISSTimeSorter::SetOutputFile( std::string output_file_name ){
 	
 	// Open root file
 	output_file = new TFile( output_file_name.data(), "recreate", "Time sorted ISS data" );
 	//output_file->SetCompressionLevel(0);
-
-	// Create output Root file and Tree.
 	output_file->cd();
-	output_tree = (TTree*)input_tree->CloneTree(0);
-	output_tree->SetDirectory( output_file->GetDirectory("/") );
-	output_tree->SetName( "iss_sort" );
-	output_tree->SetTitle( "Time sorted, calibrated ISS data" );
-	//output_tree->SetBasketSize( "*", 16000 );
-	//output_tree->SetAutoFlush( 30*1024*1024 );	// 30 MB
-	//output_tree->SetAutoSave( 100*1024*1024 );	// 100 MB
-	output_tree->AutoSave();
-	//output_tree->GetBranch( "data" )->SetCompressionLevel(0);
 
-	// Create log file.
-	std::string log_file_name = output_file_name.substr( 0, output_file_name.find_last_of(".") );
-	log_file_name += ".log";
-	log_file.open( log_file_name.data(), std::ios::app );
+	flag_output_file = true;
 
 	return;
 	
 };
 
-unsigned long ISSTimeSorter::SortFile( unsigned long start_sort ) {
+void ISSTimeSorter::MakeTree(){
+
+	// Create output Root file and Tree.
+	output_tree = (TTree*)input_tree->CloneTree(0);
+	output_tree->SetName( "iss_sort" );
+	output_tree->SetTitle( "Time sorted, calibrated ISS data" );
+	if( flag_output_file ) {
+		output_tree->SetDirectory( output_file->GetDirectory("/") );
+		//output_tree->SetBasketSize( "*", 16000 );
+		//output_tree->SetAutoFlush( 30*1024*1024 );	// 30 MB
+		//output_tree->SetAutoSave( 100*1024*1024 );	// 100 MB
+		output_tree->AutoSave();
+		//output_tree->GetBranch( "data" )->SetCompressionLevel(0);
+	}
+
+	return;
+	
+};
+
+
+unsigned long ISSTimeSorter::SortTree( unsigned long start_sort ) {
 
 	// Start timer
 	time( &t_start );
@@ -79,7 +100,6 @@ unsigned long ISSTimeSorter::SortFile( unsigned long start_sort ) {
 	// Time sort all entries of the tree
 	n_entries = input_tree->GetEntries();
 	std::cout << " Sorting: number of entries in input tree = " << n_entries << std::endl;
-	log_file << " Sorting: number of entries in input tree = " << n_entries << std::endl;
 
 	if( n_entries > 0 && start_sort < n_entries  ) {
 		
@@ -88,7 +108,6 @@ unsigned long ISSTimeSorter::SortFile( unsigned long start_sort ) {
 		att_index = (TTreeIndex*)input_tree->GetTreeIndex();
 	
 		std::cout << " Sorting: size of the sorted index = " << nb_idx << std::endl;
-		log_file << " Sorting: size of the sorted index = " << nb_idx << std::endl;
 
 		// Loop on t_raw entries and fill t
 		for( unsigned long i = 0; i < nb_idx; ++i ) {
@@ -125,12 +144,7 @@ unsigned long ISSTimeSorter::SortFile( unsigned long start_sort ) {
 
 	}
 	
-	else {
-		
-		std::cout << " Sorting: nothing to sort " << std::endl;
-		log_file << " Sorting: nothing to sort " << std::endl;
-		
-	}
+	else std::cout << " Sorting: nothing to sort " << std::endl;
 	
 
 	// Write histograms, trees and clean up
@@ -148,7 +162,6 @@ unsigned long ISSTimeSorter::SortFile( unsigned long start_sort ) {
 	//output_file->Print();
 	
 	std::cout << "End ISSTimeSorter: time elapsed = " << time(NULL)-t_start << " sec." << std::endl;
-	log_file << "End ISSTimeSorter: time elapsed = " << time(NULL)-t_start << " sec." << std::endl;
 	
 	
 	return n_entries;

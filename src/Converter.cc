@@ -1005,6 +1005,42 @@ void ISSConverter::ProcessInfoData(){
 	
 }
 
+bool ISSConverter::ProcessCurrentBlock( int nblock ) {
+	
+	// Process header.
+	ProcessBlockHeader( nblock );
+
+	// Process the main block data until terminator found
+	data = (ULong64_t *)(block_data);
+	ProcessBlockData( nblock );
+			
+	// Check once more after going over left overs....
+	if( !flag_terminator && flag_asic_data ){
+
+		std::cout << std::endl << __PRETTY_FUNCTION__ << std::endl;
+		std::cout << "\tERROR - Terminator sequence not found in data.\n";
+		return false;
+		
+	}
+	
+	return true;
+
+}
+
+int ISSConverter::ConvertBlock( char *input_block, int nblock ) {
+	
+	// Get the header.
+	std::memcpy( block_header, &input_block[0], HEADER_SIZE );
+	
+	// Get the block
+	std::memcpy( block_data, &input_block[HEADER_SIZE], MAIN_SIZE );
+	
+	// Process the data
+	ProcessCurrentBlock( nblock );
+
+	return nblock+1;
+	
+}
 
 // Function to run the conversion for a single file
 int ISSConverter::ConvertFile( std::string input_file_name,
@@ -1088,21 +1124,8 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 			continue;
 
 
-		// Process header.
-		ProcessBlockHeader( nblock );
-
-		// Process the main block data until terminator found
-		data = (ULong64_t *)(block_data);
-		ProcessBlockData( nblock );
-				
-		// Check once more after going over left overs....
-		if( !flag_terminator && flag_asic_data ){
-
-			std::cout << std::endl << __PRETTY_FUNCTION__ << std::endl;
-			std::cout << "\tERROR - Terminator sequence not found in data.\n";
-			break;
-			
-		}
+		// Process current block. If it's the end, stop.
+		if( !ProcessCurrentBlock( nblock ) ) break;
 		
 		
 	} // loop - nblock < BLOCKS_NUM
