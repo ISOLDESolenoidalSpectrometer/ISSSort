@@ -32,7 +32,7 @@ ROOTCPPFLAGS	:= $(shell root-config --cflags)
 ROOTCFLAGS		:= $(shell root-config --noauxcflags --cflags)
 ROOTLDFLAGS		:= $(shell root-config --ldflags)
 ROOTLIBS		:= $(shell root-config --glibs) -lRHTTP -lThread
-LIBS			:= $(ROOTLIBS)
+LIBS			:= $(ROOTLIBS) -lrt
 
 # Compiler.
 CXX          = $(shell root-config --cxx)
