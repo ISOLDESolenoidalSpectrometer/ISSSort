@@ -25,6 +25,7 @@ OSDEF = -DMACOSX
 else
 SHAREDSWITCH = -shared -Wl,-soname,# NO ENDING SPACE
 OSDEF = -DLINUX
+LIBEXTRA = -lrt
 endif
 
 
@@ -32,7 +33,7 @@ ROOTCPPFLAGS	:= $(shell root-config --cflags)
 ROOTCFLAGS		:= $(shell root-config --noauxcflags --cflags)
 ROOTLDFLAGS		:= $(shell root-config --ldflags)
 ROOTLIBS		:= $(shell root-config --glibs) -lRHTTP -lThread
-LIBS			:= $(ROOTLIBS) -lrt
+LIBS			:= $(ROOTLIBS) $(LIBEXTRA)
 
 # Compiler.
 CXX          = $(shell root-config --cxx)
