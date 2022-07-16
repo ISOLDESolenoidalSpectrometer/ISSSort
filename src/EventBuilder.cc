@@ -753,6 +753,8 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 					else if( fpga_tdiff < -5e6 ) fpga_tdiff = (double)caen_time - (double)fpga_prev[j];
 					if( asic_tdiff > 5e6 ) asic_tdiff = (double)caen_prev - (double)asic_time[j];
 					else if( asic_tdiff < -5e6 ) asic_tdiff = (double)caen_time - (double)asic_prev[j];
+					
+					// ??? Could be the case that |fpga_tdiff| > 5e6 after these conditional statements...change to while loop? Or have an extra condition?
 
 					fpga_td[j]->Fill( fpga_tdiff );
 					fpga_sync[j]->Fill( fpga_time[j], fpga_tdiff );
@@ -1509,11 +1511,12 @@ void ISSEventBuilder::ArrayFinder() {
 ////////////////////////////////////////////////////////////////////////////////
 /// TODO function does stuff
 void ISSEventBuilder::RecoilFinder() {
-		
+
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
 	bool flag_skip;
 	
+	// ??? All dE events are stored, but E's without dE are not...
 	// Loop over recoil events
 	for( unsigned int i = 0; i < ren_list.size(); ++i ) {
 		
@@ -1534,7 +1537,6 @@ void ISSEventBuilder::RecoilFinder() {
 				flag_skip = false;
 				for( unsigned int k = 0; k < index.size(); ++k )
 					if( index[k] == j ) flag_skip = true;
-
 				
 				// Found a match
 				if( i != j && !flag_skip &&
@@ -1549,10 +1551,16 @@ void ISSEventBuilder::RecoilFinder() {
 			}
 			
 			// Histogram the recoils
+			double tdiff = (double)((long long)recoil_evt->GetETime() - (long long)recoil_evt->GetdETime() );
+			//if ( TMath::Abs(tdiff) < 20 ){
 			recoil_EdE[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyLossDepth() ),
 								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
 			recoil_dEsum[rsec_list[i]]->Fill( recoil_evt->GetEnergyTotal(),
 								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
+			recoil_E_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyLossDepth() ) );
+			recoil_dE_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
+			recoil_E_dE_tdiff[rsec_list[i]]->Fill( tdiff );
+			//}
 			
 			// Fill the tree and get ready for next recoil event
 			write_evts->AddEvt( recoil_evt );
@@ -1561,7 +1569,7 @@ void ISSEventBuilder::RecoilFinder() {
 		}
 		
 	}
-	
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1913,6 +1921,9 @@ void ISSEventBuilder::MakeEventHists(){
 	// ----------------- //
 	recoil_EdE.resize( set->GetNumberOfRecoilSectors() );
 	recoil_dEsum.resize( set->GetNumberOfRecoilSectors() );
+	recoil_E_singles.resize( set->GetNumberOfRecoilSectors() );
+	recoil_dE_singles.resize( set->GetNumberOfRecoilSectors() );
+	recoil_E_dE_tdiff.resize( set->GetNumberOfRecoilSectors() );
 	
 	// Loop over number of recoil sectors
 	for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
@@ -1926,8 +1937,23 @@ void ISSEventBuilder::MakeEventHists(){
 		htitle = "Recoil dE vs Esum for sector " + std::to_string(i);
 		htitle += ";Total energy, Esum [keV];Energy loss, dE [keV];Counts";
 		recoil_dEsum[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 200000, 2000, 0, 200000 );
-			
+	
+		hname = "recoil_E_singles" + std::to_string(i);		
+		htitle = "Recoil E singles in sector " + std::to_string(i);
+		htitle += "; E [keV]; Counts";
+		recoil_E_singles[i] = new TH1F( hname.data(), htitle.data(), 2000, 0, 200000 );
+		
+		hname = "recoil_dE_singles" + std::to_string(i);		
+		htitle = "Recoil dE singles in sector " + std::to_string(i);
+		htitle += "; dE [keV]; Counts";
+		recoil_dE_singles[i] = new TH1F( hname.data(), htitle.data(), 2000, 0, 200000 );
+		
+		hname = "recoil_E_dE_tdiff" + std::to_string(i);		
+		htitle = "Recoil E-dE time difference " + std::to_string(i);
+		htitle += "; #Delta t [ns]; Counts";
+		recoil_E_dE_tdiff[i] = new TH1F( hname.data(), htitle.data(), 2000, -6e3, 6e3 );
 	}
+	
 	
 	// ---------------- //
 	// MWPC histograms //
@@ -2067,6 +2093,15 @@ void ISSEventBuilder::CleanHists() {
 	
 	for( unsigned int i = 0; i < recoil_dEsum.size(); i++ )
 		delete (recoil_dEsum[i]);
+		
+	for( unsigned int i = 0; i < recoil_E_singles.size(); i++ )
+		delete (recoil_E_singles[i]);
+		
+	for( unsigned int i = 0; i < recoil_dE_singles.size(); i++ )
+		delete (recoil_dE_singles[i]);
+		
+	for( unsigned int i = 0; i < recoil_E_dE_tdiff.size(); i++ )
+		delete (recoil_E_dE_tdiff[i]);
 
 	pn_12.clear();
 	pn_21.clear();
@@ -2081,6 +2116,9 @@ void ISSEventBuilder::CleanHists() {
 	pn_mult.clear();
 	recoil_EdE.clear();
 	recoil_dEsum.clear();
+	recoil_E_singles.clear();
+	recoil_dE_singles.clear();
+	recoil_E_dE_tdiff.clear();
 	
 	for( unsigned int i = 0; i < mwpc_tac_axis.size(); i++ ) {
 		for( unsigned int j = 0; j < mwpc_tac_axis.at(i).size(); j++ )
