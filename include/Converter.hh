@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <sstream>
 #include <string>
+#include <cstring>
 
 #include <TFile.h>
 #include <TTree.h>
