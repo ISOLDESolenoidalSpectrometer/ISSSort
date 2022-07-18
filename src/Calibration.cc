@@ -1,10 +1,40 @@
 #include "Calibration.hh"
 
+double walk_function( double *x, double *params ){
+	
+	// Root to solve
+	double root = params[0];
+	root += params[1] * x[0];
+	root += TMath::Exp( params[2] + params[3] * x[0] );
+	root -= params[4];
+	
+	return root;
+	
+}
+
+double walk_derivative( double *x, double *params ){
+
+	// Derivative of root to solve
+	double root = TMath::Exp( params[2] + params[3] * x[0] );
+	root *= params[3];
+	root += params[1];
+	root -= params[4];
+	
+	return root;
+}
+
+
 ISSCalibration::ISSCalibration( std::string filename, ISSSettings *myset ) {
 
 	SetFile( filename );
 	set = myset;
 	ReadCalibration();
+	
+	// Root finder algorithm
+	fa = std::make_unique<TF1>( "walk_function", walk_function, 0.0, 0.0, 4 );
+	fb = std::make_unique<TF1>( "walk_derivative", walk_derivative, 0.0, 0.0, 4 );
+	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
+
 		
 }
 
@@ -46,8 +76,9 @@ void ISSCalibration::ReadCalibration() {
 			fAsicTime[mod][asic] = config->GetValue( Form( "asic_%d_%d.Time", mod, asic ), 0 );
 			fAsicEnabled[mod][asic] = config->GetValue( Form( "asic_%d_%d.Enabled", mod, asic ), true );
 
-			fAsicWalk[mod][asic].resize( 3 );
-			for( unsigned int i = 0; i < 3; i++ )
+			fAsicWalk[mod][asic].resize( 4 );
+			fAsicWalk[mod][asic][0] = config->GetValue( Form( "asic_%d_%d.Walk%d", mod, asic, 0 ), -1.0 );
+			for( unsigned int i = 1; i < 4; i++ )
 				fAsicWalk[mod][asic][i] = config->GetValue( Form( "asic_%d_%d.Walk%d", mod, asic, i ), 0.0 );
 
 			for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
@@ -179,10 +210,29 @@ float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energ
 	if( mod < set->GetNumberOfArrayModules() &&
 	   asic < set->GetNumberOfArrayASICs() ) {
 
-		// p - q*exp(-r*x)
-		walk = TMath::Exp( -1.0 * fAsicWalk[mod][asic][2] * energy );
-		walk *= -1.0 * fAsicWalk[mod][asic][1];
-		walk += fAsicWalk[mod][asic][0];
+		// Params for time walk function ROOT finder
+		walk_params[0] = fAsicWalk[mod][asic][0];
+		walk_params[1] = fAsicWalk[mod][asic][1];
+		walk_params[2] = fAsicWalk[mod][asic][2];
+		walk_params[3] = fAsicWalk[mod][asic][3];
+		walk_params[4] = energy;
+
+		// Build the function and derivative, the solve
+		gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
+		ROOT::Math::GradFunctor1D wf( *fa, *fb );
+		rf->SetFunction( wf, 0.0 ); // with derivatives
+		rf->Solve( 500, 1e-5, 1e-6 );
+
+		// Set parameters
+		fa->SetParameters( walk_params );
+		fb->SetParameters( walk_params );
+	
+		// Check result
+		if( rf->Status() ){
+			walk = TMath::QuietNaN();
+		}
+		else walk = rf->Root();
+		gErrorIgnoreLevel = kInfo; // print info and above again
 		
 		return walk;
 		
