@@ -49,6 +49,10 @@ void ISSSettings::ReadSettings() {
 	
 	// Event builder
 	event_window = config->GetValue( "EventWindow", 3e3 );
+	recoil_hit_window = config->GetValue( "RecoilHitWindow", 20 );
+	recoil_array_window = config->GetValue( "RecoilArrayWindow", 80 );
+	array_hit_window = config->GetValue( "ArrayHitWindow", 20 );
+
 	
 	// Data things
 	block_size = config->GetValue( "DataBlockSize", 0x10000 );
@@ -252,6 +256,40 @@ int ISSSettings::GetRecoilLayer( unsigned int mod, unsigned int ch ) {
 		return -1;
 		
 	}
+	
+}
+
+int ISSSettings::GetRecoilModule( unsigned char sec, unsigned int layer ){
+	
+	// Returns the module of the recoil detector
+	if( sec < n_recoil_sector && layer < n_recoil_layer )
+		return recoil_mod[(int)sec][layer];
+	
+	else {
+		
+		std::cerr << "Bad recoil event: sector = " << (int)sec;
+		std::cerr << " layer = " << layer << std::endl;
+		return -1;
+		
+	}
+	
+	
+}
+
+int ISSSettings::GetRecoilChannel( unsigned char sec, unsigned int layer ){
+	
+	// Returns the channel of the recoil detector
+	if( sec < n_recoil_sector && layer < n_recoil_layer )
+		return recoil_ch[(int)sec][layer];
+	
+	else {
+		
+		std::cerr << "Bad recoil event: sector = " << (int)sec;
+		std::cerr << " layer = " << layer << std::endl;
+		return -1;
+		
+	}
+	
 	
 }
 

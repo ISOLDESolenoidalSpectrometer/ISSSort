@@ -755,7 +755,7 @@ void ISSGUI::gui_hist(){
 	//------------------------------//
 	// Finally make some histograms //
 	//------------------------------//
-	ISSHistogrammer hist( myrea.get(), myset.get() );
+	ISSHistogrammer hist( myrea.get(), myset.get(), mycal.get() );
 	hist.AddProgressBar( prog_hist );
 	std::cout << "\n +++ ISS Analysis:: processing Histogrammer +++" << std::endl;
 

@@ -72,6 +72,9 @@ public:
 
 	// Event builder
 	inline double GetEventWindow(){ return event_window; };
+	inline double GetRecoilHitWindow(){ return recoil_hit_window; }
+	inline double GetRecoilArrayWindow(){ return recoil_array_window; }
+	inline double GetArrayHitWindow(){ return array_hit_window; }
 	
 	
 	// Data settings
@@ -87,6 +90,8 @@ public:
 	inline unsigned int GetRecoilEnergyLossDepth(){ return recoil_eloss_depth; };
 	int GetRecoilSector( unsigned int mod, unsigned int ch );
 	int GetRecoilLayer( unsigned int mod, unsigned int ch );
+	int GetRecoilModule( unsigned char sec, unsigned int layer );
+	int GetRecoilChannel( unsigned char sec, unsigned int layer );
 	bool IsRecoil( unsigned int mod, unsigned int ch );
 	
 	// MWPC
@@ -151,6 +156,10 @@ private:
 	
 	// Event builder
 	double event_window;			///< Event builder time window in ns
+	double recoil_hit_window;		///< Time window in ns for correlating recoil E-dE hits
+	double recoil_array_window;		///< Time window in ns for correlating array-dE hits
+	double array_hit_window;		///< Time window in ns for correlating hits on the array
+	
 	
 	// Data format
 	unsigned int block_size;		///< not yet implemented, needs C++ style reading of data files

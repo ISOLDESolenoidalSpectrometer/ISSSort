@@ -34,12 +34,17 @@
 # include "Settings.hh"
 #endif
 
+// Calibration header
+#ifndef __CALIBRATION_HH
+# include "Calibration.hh"
+#endif
+
 
 class ISSHistogrammer {
 	
 public:
 
-	ISSHistogrammer( ISSReaction *myreact, ISSSettings *myset );
+	ISSHistogrammer( ISSReaction *myreact, ISSSettings *myset, ISSCalibration *mycal );
 	virtual ~ISSHistogrammer(){};
 	
 	void MakeHists();
@@ -68,21 +73,54 @@ public:
 	
 	// Coincidence conditions (to be put in settings file eventually)
 	// Time walk corrections can also be added here
+	// PROMPT COINCIDENCES
+	// E-dE prompt coincidence
+	inline bool PromptCoincidence( ISSRecoilEvt *r ){
+		if ( TMath::Abs( (double)r->GetdETime() - (
+				(double)r->GetETime() + 
+				cal->CaenTime( 
+					set->GetRecoilModule( r->GetSector(), 1 ), 
+					set->GetRecoilChannel( r->GetSector(), 1 ) 
+				)
+			)
+		) < set->GetRecoilHitWindow() ) return true;
+		else return false;
+	}
+	
+	// dE - array coincidence
 	inline bool	PromptCoincidence( ISSRecoilEvt *r, ISSArrayEvt *a ){
 		if( (double)r->GetTime() - (double)a->GetTime() > -350 &&
 			(double)r->GetTime() - (double)a->GetTime() < 250 ) return true;
 		else return false;
 	};
-	inline bool	RandomCoincidence( ISSRecoilEvt *r, ISSArrayEvt *a ){
-		if( (double)r->GetTime() - (double)a->GetTime() > 600 &&
-			(double)r->GetTime() - (double)a->GetTime() < 1200 ) return true;
-		else return false;
-	};
+	
+	// dE - elum coincidence
 	inline bool	PromptCoincidence( ISSRecoilEvt *r, ISSElumEvt *e ){
 		if( (double)r->GetTime() - (double)e->GetTime() > -400 &&
 			(double)r->GetTime() - (double)e->GetTime() < 100 ) return true;
 		else return false;
 	};
+	
+
+	// RANDOM COINCIDENCES
+	// E-dE random coincidence
+	inline bool RandomCoincidence( ISSRecoilEvt *r ){
+		if ( TMath::Abs( (double)r->GetdETime() - (
+				(double)r->GetETime() + 
+				cal->CaenTime( 
+					set->GetRecoilModule( r->GetSector(), 1 ), 
+					set->GetRecoilChannel( r->GetSector(), 1 ) 
+				)
+			)
+		) < 5*set->GetRecoilHitWindow() ) return true;
+		else return false;
+	}
+	inline bool	RandomCoincidence( ISSRecoilEvt *r, ISSArrayEvt *a ){
+		if( (double)r->GetTime() - (double)a->GetTime() > 600 &&
+			(double)r->GetTime() - (double)a->GetTime() < 1200 ) return true;
+		else return false;
+	};
+	
 	inline bool	RandomCoincidence( ISSRecoilEvt *r, ISSElumEvt *e ){
 		if( (double)r->GetTime() - (double)e->GetTime() > 500 &&
 			(double)r->GetTime() - (double)e->GetTime() < 1500 ) return true;
@@ -144,6 +182,9 @@ private:
 	// Settings file
 	ISSSettings *set;
 	
+	// Calibration file
+	ISSCalibration *cal;
+	
 	/// Input tree
 	TChain *input_tree;
 	ISSEvts *read_evts = 0;
@@ -173,9 +214,12 @@ private:
 	TH2F *recoil_array_tw;
 	TProfile *recoil_array_tw_prof;
 	TH1F *ebis_td_recoil, *ebis_td_array, *ebis_td_elum;
-
+	std::vector<TH1F*> recoilEdE_td;
+	std::vector<TH1F*> recoilEdE_td_shift;
+	
 	// Recoils
 	std::vector<TH2F*> recoil_EdE;
+	std::vector<TH2F*> recoil_EdE_prompt;
 	std::vector<TH2F*> recoil_EdE_cut;
 	std::vector<TH2F*> recoil_EdE_array;
 

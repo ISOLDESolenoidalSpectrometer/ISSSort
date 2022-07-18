@@ -1540,27 +1540,25 @@ void ISSEventBuilder::RecoilFinder() {
 				
 				// Found a match
 				if( i != j && !flag_skip &&
-				    rsec_list[i] == rsec_list[j] ){
+				    rsec_list[i] == rsec_list[j] &&
+				    rid_list[i] != rid_list[j]){
 					
 					index.push_back(j);
 					recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
-					if( rid_list[j] == (int)set->GetRecoilEnergyLossDepth() ) recoil_evt->SetETime( rtd_list[j] );
-										
+					if( rid_list[j] == (int)set->GetRecoilEnergyLossDepth() ) recoil_evt->SetETime( rtd_list[j] );		
 				}
 				
 			}
 			
-			// Histogram the recoils
-			double tdiff = (double)((long long)recoil_evt->GetETime() - (long long)recoil_evt->GetdETime() );
-			//if ( TMath::Abs(tdiff) < 20 ){
+			// Histogram the recoils N.B. this doesn't take coincidences into account!
+			double recoil_tdiff = (double)((long long)recoil_evt->GetETime() - (long long)recoil_evt->GetdETime() );
 			recoil_EdE[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyLossDepth() ),
 								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
 			recoil_dEsum[rsec_list[i]]->Fill( recoil_evt->GetEnergyTotal(),
 								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
 			recoil_E_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyLossDepth() ) );
 			recoil_dE_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
-			recoil_E_dE_tdiff[rsec_list[i]]->Fill( tdiff );
-			//}
+			recoil_E_dE_tdiff[rsec_list[i]]->Fill( recoil_tdiff );
 			
 			// Fill the tree and get ready for next recoil event
 			write_evts->AddEvt( recoil_evt );

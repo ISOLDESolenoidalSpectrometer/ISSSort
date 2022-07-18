@@ -145,8 +145,11 @@ private:
 	// Flag to know we've opened a file on disk
 	bool flag_input_file;
 
-	// These things should probably be in the settings file
+	// These things are in the settings file
 	long build_window;  ///< Length of build window in ns
+	long recoil_hit_window;  ///< Length of build window in ns
+	long recoil_array_window;  ///< Length of build window in ns
+	long array_hit_window;  ///< Length of build window in ns
 	
 	// Some more things that should be in a settings file
 	std::vector<unsigned char> asic_side; ///< Vector containing 0 for p-side and 1 for n-side where the index is the asic number
@@ -162,11 +165,11 @@ private:
 	bool event_open; ///< TODO Brief description.
 
 	// Time variables
-	long		 		time_diff;	///< TODO Brief description.
-	unsigned long long	time_prev;	///< TODO Brief description.
-	unsigned long long	time_min;	///< TODO Brief description.
-	unsigned long long	time_max;	///< TODO Brief description.
-	unsigned long long	time_first;	///< TODO Brief description.
+	long		 		time_diff;	///< Time difference between first hit in event and current hit
+	unsigned long long	time_prev;	///< Holds time of previous event
+	unsigned long long	time_min;	///< The minimum time in an event containing hits
+	unsigned long long	time_max;	///< The maximum time in an event containing hits
+	unsigned long long	time_first;	///< Time of the first caen/asic/info event in a file
 	unsigned long long  ebis_time;	///< TODO Brief description.
 	unsigned long long  t1_time;	///< TODO Brief description.
 	unsigned long long  ebis_prev;	///< TODO Brief description.

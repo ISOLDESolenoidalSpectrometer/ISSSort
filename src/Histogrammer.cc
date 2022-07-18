@@ -1,9 +1,10 @@
 #include "Histogrammer.hh"
 
-ISSHistogrammer::ISSHistogrammer( ISSReaction *myreact, ISSSettings *myset ){
+ISSHistogrammer::ISSHistogrammer( ISSReaction *myreact, ISSSettings *myset, ISSCalibration *mycal ){
 	
 	react = myreact;
 	set = myset;
+	cal = mycal;
 	
 	// No progress bar by default
 	_prog_ = false;
@@ -484,7 +485,7 @@ void ISSHistogrammer::MakeHists() {
 	
 	// For timing
 	dirname = "Timing";
-	output_file->mkdir( dirname.data() );
+	output_file->mkdir( dirname.data() );	
 	
 	// For recoil sectors
 	dirname = "RecoilDetector";
@@ -494,8 +495,11 @@ void ISSHistogrammer::MakeHists() {
 	recoil_array_td.resize( set->GetNumberOfRecoilSectors() );
 	recoil_elum_td.resize( set->GetNumberOfRecoilSectors() );
 	recoil_EdE.resize( set->GetNumberOfRecoilSectors() );
+	recoil_EdE_prompt.resize( set->GetNumberOfRecoilSectors() );
 	recoil_EdE_cut.resize( set->GetNumberOfRecoilSectors() );
 	recoil_EdE_array.resize( set->GetNumberOfRecoilSectors() );
+	recoilEdE_td.resize( set->GetNumberOfRecoilSectors() );
+	recoilEdE_td_shift.resize( set->GetNumberOfRecoilSectors() );
 
 	// Loop over each recoil sector
 	for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
@@ -509,6 +513,12 @@ void ISSHistogrammer::MakeHists() {
 		htitle = "Recoil dE-E plot for sector " + std::to_string(i);
 		htitle += " - singles;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 		recoil_EdE[i] = new TH2F( hname.data(), htitle.data(),
+									2000, 0, 200000, 2000, 0, 200000 );
+									
+		hname = "recoil_EdE_prompt" + std::to_string(i);
+		htitle = "Recoil dE-E with prompt coincidences " + std::to_string(i);
+		htitle += ";Rest energy, E [keV];Energy loss, dE [keV];Counts";
+		recoil_EdE_prompt[i] = new TH2F( hname.data(), htitle.data(),
 									2000, 0, 200000, 2000, 0, 200000 );
 
 		hname = "recoil_EdE_cut_sec" + std::to_string(i);
@@ -527,7 +537,18 @@ void ISSHistogrammer::MakeHists() {
 		output_file->cd( "Timing" );
 		recoil_array_td[i].resize( set->GetNumberOfArrayModules() );
 		recoil_elum_td[i].resize( set->GetNumberOfELUMSectors() );
-	
+		
+		// Time difference between E-dE per sector
+		hname = "recoilEdE_td_sec" + std::to_string(i);
+		htitle = "Time difference between E and dE in recoil detector " + std::to_string(i);
+		htitle += ";#Delta t [ns];Counts";
+		recoilEdE_td[i] = new TH1F( hname.data(), htitle.data(), (int)(0.25*20*set->GetRecoilHitWindow()),-10*set->GetRecoilHitWindow(), 10*set->GetRecoilHitWindow() );
+		
+		hname = "recoilEdE_td_shift_sec" + std::to_string(i);
+		htitle = "Time difference between E and dE in recoil detector " + std::to_string(i);
+		htitle += " shifted;#Delta t [ns];Counts";
+		recoilEdE_td_shift[i] = new TH1F( hname.data(), htitle.data(), (int)(0.25*20*set->GetRecoilHitWindow()),-10*set->GetRecoilHitWindow(), 10*set->GetRecoilHitWindow() );
+		
 		// For array modules
 		for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
 		
@@ -941,6 +962,15 @@ unsigned long ISSHistogrammer::FillHists( unsigned long start_fill ) {
 			// Energy EdE plot, unconditioned
 			recoil_EdE[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyLossDepth() ),
 												recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
+												
+			if ( PromptCoincidence( recoil_evt ) ){
+				recoil_EdE_prompt[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyLossDepth() ),
+												recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
+			}
+			
+			recoilEdE_td[ recoil_evt->GetSector() ]->Fill( (double)( (long long)recoil_evt->GetETime() - (long long) recoil_evt->GetdETime() ) );
+			
+			recoilEdE_td_shift[ recoil_evt->GetSector() ]->Fill( (double)( (long long)recoil_evt->GetETime() - (long long) recoil_evt->GetdETime() - cal->CaenTime( set->GetRecoilModule( recoil_evt->GetSector(), 1 ), set->GetRecoilChannel( recoil_evt->GetSector(), 1 ) ) ) );			
 			
 			// Energy EdE plot, after cut
 			if( RecoilCut( recoil_evt ) )
