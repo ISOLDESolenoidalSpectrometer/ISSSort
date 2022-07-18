@@ -1515,16 +1515,18 @@ void ISSEventBuilder::RecoilFinder() {
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
 	bool flag_skip;
+	bool found_E;
 	
 	// ??? All dE events are stored, but E's without dE are not...
 	// Loop over recoil events
 	for( unsigned int i = 0; i < ren_list.size(); ++i ) {
+		found_E = false;
 		
 		// Find the dE event, usually the trigger
 		if( rid_list[i] == 0 || set->GetNumberOfRecoilLayers() == 13 ){
 			
 			recoil_evt->ClearEvent();
-			recoil_evt->SetdETime( rtd_list[i] );
+			recoil_evt->SetdETime( rtd_list[i] + cal->CaenTime( set->GetRecoilModule( rsec_list[i], rid_list[i] ), set->GetRecoilChannel( rsec_list[i], rid_list[i] ) ) );
 			recoil_evt->SetSector( rsec_list[i] );
 			recoil_evt->AddRecoil( ren_list[i], rid_list[i] );
 			
@@ -1539,31 +1541,43 @@ void ISSEventBuilder::RecoilFinder() {
 					if( index[k] == j ) flag_skip = true;
 				
 				// Found a match
-				if( i != j && !flag_skip &&
-				    rsec_list[i] == rsec_list[j] &&
-				    rid_list[i] != rid_list[j]){
-					
+				// ^^^ Not sure if this will work with the ionisation chamber!
+				if( 
+					i != j && 		// Not looking at the same hit
+					!flag_skip &&	// Not looking at a previously-used hit
+				    rsec_list[i] == rsec_list[j] &&		// They are in the same sector
+				    rid_list[i] != rid_list[j] &&		// They are not in the same layer
+				    TMath::Abs(
+				    	( rtd_list[j]  + cal->CaenTime( set->GetRecoilModule( rsec_list[j], rid_list[j] ), set->GetRecoilChannel( rsec_list[j], rid_list[j] ) ) ) - 
+				    	( (long)recoil_evt->GetdETime() )
+				    ) < set->GetRecoilHitWindow()		// The hits lie within the recoil hit window (WITH OFFSET!)
+				){
+				
 					index.push_back(j);
 					recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
-					if( rid_list[j] == (int)set->GetRecoilEnergyLossDepth() ) recoil_evt->SetETime( rtd_list[j] );		
+					
+					if( rid_list[j] == (int)set->GetRecoilEnergyLossDepth() ){
+					
+						recoil_evt->SetETime( rtd_list[j] + cal->CaenTime( set->GetRecoilModule( rsec_list[j], rid_list[j] ), set->GetRecoilChannel( rsec_list[j], rid_list[j] ) ) );
+						
+					}
+					
 				}
 				
 			}
 			
-			// Histogram the recoils N.B. this doesn't take coincidences into account!
-			double recoil_tdiff = (double)((long long)recoil_evt->GetETime() - (long long)recoil_evt->GetdETime() );
+			// Histogram the recoils
 			recoil_EdE[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyLossDepth() ),
 								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
 			recoil_dEsum[rsec_list[i]]->Fill( recoil_evt->GetEnergyTotal(),
 								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
 			recoil_E_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyLossDepth() ) );
 			recoil_dE_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
-			recoil_E_dE_tdiff[rsec_list[i]]->Fill( recoil_tdiff );
 			
 			// Fill the tree and get ready for next recoil event
 			write_evts->AddEvt( recoil_evt );
 			recoil_ctr++;
-						
+
 		}
 		
 	}
