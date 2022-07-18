@@ -76,8 +76,9 @@ void ISSCalibration::ReadCalibration() {
 			fAsicTime[mod][asic] = config->GetValue( Form( "asic_%d_%d.Time", mod, asic ), 0 );
 			fAsicEnabled[mod][asic] = config->GetValue( Form( "asic_%d_%d.Enabled", mod, asic ), true );
 
-			fAsicWalk[mod][asic].resize( 3 );
-			for( unsigned int i = 0; i < 3; i++ )
+			fAsicWalk[mod][asic].resize( 4 );
+			fAsicWalk[mod][asic][0] = config->GetValue( Form( "asic_%d_%d.Walk%d", mod, asic, 0 ), -1.0 );
+			for( unsigned int i = 1; i < 4; i++ )
 				fAsicWalk[mod][asic][i] = config->GetValue( Form( "asic_%d_%d.Walk%d", mod, asic, i ), 0.0 );
 
 			for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
