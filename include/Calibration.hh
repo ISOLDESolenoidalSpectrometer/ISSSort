@@ -12,6 +12,10 @@
 #include "TEnv.h"
 #include "TRandom.h"
 #include "TMath.h"
+#include "TF1.h"
+#include "Math/RootFinder.h"
+#include "Math/Functor.h"
+
 
 // Settings header
 #ifndef __SETTINGS_HH
@@ -125,6 +129,12 @@ private:
 	float fCaenOffsetDefault;
 	float fCaenGainDefault;
 	float fCaenGainQuadrDefault;
+	
+	// Stuff for the time walk calculation
+	std::unique_ptr<ROOT::Math::RootFinder> rf;
+	std::unique_ptr<TF1> fa, fb;
+	double walk_params[5];
+
 
 	//ClassDef(ISSCalibration, 1)
    
