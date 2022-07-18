@@ -1690,7 +1690,7 @@ void ISSEventBuilder::ZeroDegreeFinder() {
 					if( zid_list[j] == 1 ) zd_evt->SetETime( ztd_list[i] );
 					
 					// Histogram the ZeroDegree
-					zd->Fill( zid_list[i], zen_list[j] );
+					zd->Fill( zen_list[i], zen_list[j] );
 
 				}
 				
