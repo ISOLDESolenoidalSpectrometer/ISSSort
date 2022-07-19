@@ -33,7 +33,7 @@ ISSCalibration::ISSCalibration( std::string filename, ISSSettings *myset ) {
 	// Root finder algorithm
 	fa = std::make_unique<TF1>( "walk_function", walk_function, 0.0, 0.0, 4 );
 	fb = std::make_unique<TF1>( "walk_derivative", walk_derivative, 0.0, 0.0, 4 );
-	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
+	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kBRENT );
 
 		
 }
@@ -217,22 +217,22 @@ float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energ
 		walk_params[3] = fAsicWalk[mod][asic][3];
 		walk_params[4] = energy;
 
-		// Build the function and derivative, the solve
-		gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
-		ROOT::Math::GradFunctor1D wf( *fa, *fb );
-		rf->SetFunction( wf, 0.0 ); // with derivatives
-		rf->Solve( 500, 1e-5, 1e-6 );
-
 		// Set parameters
 		fa->SetParameters( walk_params );
 		fb->SetParameters( walk_params );
-	
+		
+		// Build the function and derivative, the solve
+		//gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
+		ROOT::Math::GradFunctor1D wf( *fa, *fb );
+		rf->SetFunction( wf, -20000, 5000 ); // limits
+		rf->Solve( 500, 1e-3, 1e-4 );
+
 		// Check result
 		if( rf->Status() ){
 			walk = TMath::QuietNaN();
 		}
 		else walk = rf->Root();
-		gErrorIgnoreLevel = kInfo; // print info and above again
+		//gErrorIgnoreLevel = kInfo; // print info and above again
 		
 		return walk;
 		
