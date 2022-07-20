@@ -147,9 +147,6 @@ private:
 
 	// These things are in the settings file
 	long build_window;  ///< Length of build window in ns
-	long recoil_hit_window;  ///< Length of build window in ns
-	long recoil_array_window;  ///< Length of build window in ns
-	long array_hit_window;  ///< Length of build window in ns
 	
 	// Some more things that should be in a settings file
 	std::vector<unsigned char> asic_side; ///< Vector containing 0 for p-side and 1 for n-side where the index is the asic number

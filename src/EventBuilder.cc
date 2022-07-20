@@ -1526,7 +1526,7 @@ void ISSEventBuilder::RecoilFinder() {
 		if( rid_list[i] == 0 || set->GetNumberOfRecoilLayers() == 13 ){
 			
 			recoil_evt->ClearEvent();
-			recoil_evt->SetdETime( rtd_list[i] + cal->CaenTime( set->GetRecoilModule( rsec_list[i], rid_list[i] ), set->GetRecoilChannel( rsec_list[i], rid_list[i] ) ) );
+			recoil_evt->SetdETime( rtd_list[i] );
 			recoil_evt->SetSector( rsec_list[i] );
 			recoil_evt->AddRecoil( ren_list[i], rid_list[i] );
 			
@@ -1542,23 +1542,19 @@ void ISSEventBuilder::RecoilFinder() {
 				
 				// Found a match
 				// ^^^ Not sure if this will work with the ionisation chamber!
-				if( 
-					i != j && 		// Not looking at the same hit
+				if( i != j && 		// Not looking at the same hit
 					!flag_skip &&	// Not looking at a previously-used hit
 				    rsec_list[i] == rsec_list[j] &&		// They are in the same sector
 				    rid_list[i] != rid_list[j] &&		// They are not in the same layer
-				    TMath::Abs(
-				    	( rtd_list[j]  + cal->CaenTime( set->GetRecoilModule( rsec_list[j], rid_list[j] ), set->GetRecoilChannel( rsec_list[j], rid_list[j] ) ) ) - 
-				    	( (long)recoil_evt->GetdETime() )
-				    ) < set->GetRecoilHitWindow()		// The hits lie within the recoil hit window (WITH OFFSET!)
-				){
+				    TMath::Abs( rtd_list[i] - rtd_list[j] ) < set->GetRecoilHitWindow() // The hits lie within the recoil hit window
+				   ){
 				
 					index.push_back(j);
 					recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
 					
 					if( rid_list[j] == (int)set->GetRecoilEnergyLossDepth() ){
 					
-						recoil_evt->SetETime( rtd_list[j] + cal->CaenTime( set->GetRecoilModule( rsec_list[j], rid_list[j] ), set->GetRecoilChannel( rsec_list[j], rid_list[j] ) ) );
+						recoil_evt->SetETime( rtd_list[j] );
 						
 					}
 					
