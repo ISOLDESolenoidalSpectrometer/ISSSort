@@ -569,6 +569,27 @@ void ISSHistogrammer::MakeHists() {
 						800, 0, 16000 );
 	recoil_array_tw_prof = new TProfile( "tw_recoil_array_prof", "Time-walk profile for recoil-array coincidences;Array energy;#Delta t", 2000, 0, 60000 );
 
+    recoil_array_tw_row.resize( set->GetNumberOfArrayModules() );
+
+	// Loop over ISS modules
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
+		
+		recoil_array_tw_row[i].resize( set->GetNumberOfArrayRows() );
+		
+		// Loop over rows of the array
+		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
+			
+			hname = "tw_recoil_array_mod_" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "Time-walk histogram for array-reocil coincidences (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");Deltat [ns];Array energy [keV];Counts";
+			recoil_array_tw_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
+												 800, 0, 16000 );
+		
+		}
+		
+	}
+
+	
 	// EBIS time windows
 	output_file->cd( "Timing" );
 	ebis_td_recoil = new TH1F( "ebis_td_recoil", "Recoil time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
@@ -804,6 +825,12 @@ unsigned long ISSHistogrammer::FillHists( unsigned long start_fill ) {
 				recoil_array_td[recoil_evt->GetSector()][array_evt->GetModule()]->Fill( tdiff );		
 				recoil_array_tw->Fill( tdiff, array_evt->GetEnergy() );
 				recoil_array_tw_prof->Fill( array_evt->GetEnergy(), tdiff );
+
+				for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i )
+					for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j )
+						if ( array_evt->GetModule() == i && array_evt->GetRow() == j )
+							recoil_array_tw_row[i][j]->Fill( tdiff, array_evt->GetEnergy() );
+
 
 				// Check for prompt events with recoils
 				if( PromptCoincidence( recoil_evt, array_evt ) ){

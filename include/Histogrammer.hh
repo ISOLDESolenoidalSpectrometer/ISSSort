@@ -69,52 +69,20 @@ public:
 		prog = myprog;
 		_prog_ = true;
 	};
-
 	
-	// Coincidence conditions (to be put in settings file eventually)
-	// Time walk corrections can also be added here
-	// PROMPT COINCIDENCES
-	// E-dE prompt coincidence
-	/*inline bool PromptCoincidence( ISSRecoilEvt *r ){
-		if ( TMath::Abs( (double)r->GetdETime() - (
-				(double)r->GetETime() + 
-				cal->CaenTime( 
-					set->GetRecoilModule( r->GetSector(), 1 ), 
-					set->GetRecoilChannel( r->GetSector(), 1 ) 
-				)
-			)
-		) < set->GetRecoilHitWindow() ) return true;
-		else return false;
-	}*/
-	
-	// dE - array coincidence
+	// Recoil - array coincidence (numbers to go to reaction file?)
 	inline bool	PromptCoincidence( ISSRecoilEvt *r, ISSArrayEvt *a ){
 		if( (double)r->GetTime() - (double)a->GetTime() > -350 &&
 			(double)r->GetTime() - (double)a->GetTime() < 250 ) return true;
 		else return false;
 	};
 	
-	// dE - elum coincidence
+	// Recoil - elum coincidence
 	inline bool	PromptCoincidence( ISSRecoilEvt *r, ISSElumEvt *e ){
 		if( (double)r->GetTime() - (double)e->GetTime() > -400 &&
 			(double)r->GetTime() - (double)e->GetTime() < 100 ) return true;
 		else return false;
 	};
-	
-
-	// RANDOM COINCIDENCES
-	// E-dE random coincidence
-	/*inline bool RandomCoincidence( ISSRecoilEvt *r ){
-		if ( TMath::Abs( (double)r->GetdETime() - (
-				(double)r->GetETime() + 
-				cal->CaenTime( 
-					set->GetRecoilModule( r->GetSector(), 1 ), 
-					set->GetRecoilChannel( r->GetSector(), 1 ) 
-				)
-			)
-		) < 5*set->GetRecoilHitWindow() ) return true;
-		else return false;
-	}*/
 	
 	inline bool	RandomCoincidence( ISSRecoilEvt *r, ISSArrayEvt *a ){
 		if( (double)r->GetTime() - (double)a->GetTime() > 600 &&
@@ -213,6 +181,7 @@ private:
 	std::vector<std::vector<TH1F*>> recoil_array_td;
 	std::vector<std::vector<TH1F*>> recoil_elum_td;
 	TH2F *recoil_array_tw;
+    std::vector<std::vector<TH2F*>> recoil_array_tw_row;
 	TProfile *recoil_array_tw_prof;
 	TH1F *ebis_td_recoil, *ebis_td_array, *ebis_td_elum;
 	std::vector<TH1F*> recoilEdE_td;
