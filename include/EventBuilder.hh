@@ -273,6 +273,8 @@ private:
 	std::vector<std::vector<TH1F*>> pn_td; ///< TODO Brief description.
 	std::vector<std::vector<TH1F*>> pp_td; ///< TODO Brief description.
 	std::vector<std::vector<TH1F*>> nn_td; ///< TODO Brief description.
+    std::vector<std::vector<TH2F*>> pn_td_Ep; ///< TODO Brief description.
+    std::vector<std::vector<TH2F*>> pn_td_En; ///< TODO Brief description.
 	std::vector<std::vector<TH2F*>> pn_mult; ///< TODO Brief description.
 
 	// Timing histograms

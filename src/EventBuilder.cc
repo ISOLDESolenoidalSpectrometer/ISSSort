@@ -1042,10 +1042,14 @@ void ISSEventBuilder::ArrayFinder() {
 
 			// Time difference hists
 			// p-n time
-			for( unsigned int k = 0; k < pindex.size(); ++k )
-				for( unsigned int l = 0; l < nindex.size(); ++l )
+			for( unsigned int k = 0; k < pindex.size(); ++k ) {
+				for( unsigned int l = 0; l < nindex.size(); ++l ) {
 					pn_td[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ) );
-
+					pn_td_Ep[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ), pen_list.at( pindex.at(k) ) );
+					pn_td_En[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ), nen_list.at( nindex.at(l) ) );
+				}
+			}
+			
 			// p-p time
 			for( unsigned int k = 0; k < pindex.size(); ++k )
 				for( unsigned int l = k+1; l < pindex.size(); ++l )
@@ -1515,12 +1519,10 @@ void ISSEventBuilder::RecoilFinder() {
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
 	bool flag_skip;
-	bool found_E;
 	
 	// ??? All dE events are stored, but E's without dE are not...
 	// Loop over recoil events
 	for( unsigned int i = 0; i < ren_list.size(); ++i ) {
-		found_E = false;
 		
 		// Find the dE event, usually the trigger
 		if( rid_list[i] == 0 || set->GetNumberOfRecoilLayers() == 13 ){
@@ -1822,6 +1824,8 @@ void ISSEventBuilder::MakeEventHists(){
 	pn_pab.resize( set->GetNumberOfArrayModules() );
 	pn_max.resize( set->GetNumberOfArrayModules() );
 	pn_td.resize( set->GetNumberOfArrayModules() );
+	pn_td_Ep.resize( set->GetNumberOfArrayModules() );
+	pn_td_En.resize( set->GetNumberOfArrayModules() );
 	pp_td.resize( set->GetNumberOfArrayModules() );
 	nn_td.resize( set->GetNumberOfArrayModules() );
 	pn_mult.resize( set->GetNumberOfArrayModules() );
@@ -1844,6 +1848,8 @@ void ISSEventBuilder::MakeEventHists(){
 		pn_pab[i].resize( set->GetNumberOfArrayRows() );
 		pn_max[i].resize( set->GetNumberOfArrayRows() );
 		pn_td[i].resize( set->GetNumberOfArrayRows() );
+		pn_td_Ep[i].resize( set->GetNumberOfArrayRows() );
+		pn_td_En[i].resize( set->GetNumberOfArrayRows() );
 		pp_td[i].resize( set->GetNumberOfArrayRows() );
 		nn_td[i].resize( set->GetNumberOfArrayRows() );
 		pn_mult[i].resize( set->GetNumberOfArrayRows() );
@@ -1896,6 +1902,16 @@ void ISSEventBuilder::MakeEventHists(){
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];counts";
 			pn_td[i][j] = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
 			
+			hname = "pn_td_Ep_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "p-side n-side time difference vs p-side energy (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];p-side energy [keV]";
+			pn_td_Ep[i][j] = new TH2F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20, 2e3, 0, 2e4 );
+			
+			hname = "pn_td_En_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "p-side n-side time difference vs n-side energy (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];n-side energy [keV]";
+			pn_td_En[i][j] = new TH2F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20, 2e3, 0, 2e4  );
+						
 			hname = "pp_td_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side vs. p-side time difference (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];counts";
@@ -2078,6 +2094,18 @@ void ISSEventBuilder::CleanHists() {
 		pn_td.clear();
 	}
 
+	for( unsigned int i = 0; i < pn_td_Ep.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_td_Ep.at(i).size(); j++ )
+			delete (pn_td_Ep[i][j]);
+		pn_td_Ep.clear();
+	}
+	
+	for( unsigned int i = 0; i < pn_td_En.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_td_En.at(i).size(); j++ )
+			delete (pn_td_En[i][j]);
+		pn_td_En.clear();
+		}
+	
 	for( unsigned int i = 0; i < pp_td.size(); i++ ) {
 		for( unsigned int j = 0; j < pp_td.at(i).size(); j++ )
 			delete (pp_td[i][j]);
@@ -2119,6 +2147,8 @@ void ISSEventBuilder::CleanHists() {
 	pn_pab.clear();
 	pn_max.clear();
 	pn_td.clear();
+    pn_td_Ep.clear();
+    pn_td_En.clear();
 	pp_td.clear();
 	nn_td.clear();
 	pn_mult.clear();
