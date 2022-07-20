@@ -98,7 +98,7 @@ void* monitor_run( void* ptr ){
 	ISSConverter conv_mon( calfiles->myset );
 	ISSTimeSorter sort_mon;
 	ISSEventBuilder eb_mon( calfiles->myset );
-	ISSHistogrammer hist_mon( calfiles->myreact, calfiles->myset, ((thptr*)ptr)->mycal );
+	ISSHistogrammer hist_mon( calfiles->myreact, calfiles->myset );
 	
 	// Data blocks
 	//if( set->GetBlockSize() != 0x10000 ) {
@@ -438,7 +438,7 @@ void do_hist(){
 	//------------------------------//
 	// Finally make some histograms //
 	//------------------------------//
-	ISSHistogrammer hist( myreact, myset, mycal );
+	ISSHistogrammer hist( myreact, myset );
 	std::cout << "\n +++ ISS Analysis:: processing Histogrammer +++" << std::endl;
 
 	std::ifstream ftest;

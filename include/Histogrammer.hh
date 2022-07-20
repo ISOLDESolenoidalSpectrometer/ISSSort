@@ -44,7 +44,7 @@ class ISSHistogrammer {
 	
 public:
 
-	ISSHistogrammer( ISSReaction *myreact, ISSSettings *myset, ISSCalibration *mycal );
+	ISSHistogrammer( ISSReaction *myreact, ISSSettings *myset );
 	virtual ~ISSHistogrammer(){};
 	
 	void MakeHists();
@@ -75,7 +75,7 @@ public:
 	// Time walk corrections can also be added here
 	// PROMPT COINCIDENCES
 	// E-dE prompt coincidence
-	inline bool PromptCoincidence( ISSRecoilEvt *r ){
+	/*inline bool PromptCoincidence( ISSRecoilEvt *r ){
 		if ( TMath::Abs( (double)r->GetdETime() - (
 				(double)r->GetETime() + 
 				cal->CaenTime( 
@@ -85,7 +85,7 @@ public:
 			)
 		) < set->GetRecoilHitWindow() ) return true;
 		else return false;
-	}
+	}*/
 	
 	// dE - array coincidence
 	inline bool	PromptCoincidence( ISSRecoilEvt *r, ISSArrayEvt *a ){
@@ -104,7 +104,7 @@ public:
 
 	// RANDOM COINCIDENCES
 	// E-dE random coincidence
-	inline bool RandomCoincidence( ISSRecoilEvt *r ){
+	/*inline bool RandomCoincidence( ISSRecoilEvt *r ){
 		if ( TMath::Abs( (double)r->GetdETime() - (
 				(double)r->GetETime() + 
 				cal->CaenTime( 
@@ -114,7 +114,8 @@ public:
 			)
 		) < 5*set->GetRecoilHitWindow() ) return true;
 		else return false;
-	}
+	}*/
+	
 	inline bool	RandomCoincidence( ISSRecoilEvt *r, ISSArrayEvt *a ){
 		if( (double)r->GetTime() - (double)a->GetTime() > 600 &&
 			(double)r->GetTime() - (double)a->GetTime() < 1200 ) return true;
@@ -215,11 +216,9 @@ private:
 	TProfile *recoil_array_tw_prof;
 	TH1F *ebis_td_recoil, *ebis_td_array, *ebis_td_elum;
 	std::vector<TH1F*> recoilEdE_td;
-	std::vector<TH1F*> recoilEdE_td_shift;
 	
 	// Recoils
 	std::vector<TH2F*> recoil_EdE;
-	std::vector<TH2F*> recoil_EdE_prompt;
 	std::vector<TH2F*> recoil_EdE_cut;
 	std::vector<TH2F*> recoil_EdE_array;
 

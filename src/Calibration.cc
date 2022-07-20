@@ -292,7 +292,8 @@ unsigned int ISSCalibration::CaenThreshold( unsigned int mod, unsigned int chan 
 long ISSCalibration::CaenTime( unsigned int mod, unsigned int chan ){
 	
 	if( mod < set->GetNumberOfCAENModules() &&
-	   chan < set->GetNumberOfCAENChannels() ) {
+	   chan < set->GetNumberOfCAENChannels() &&
+	   mod >= 0 && chan >= 0 ) {
 
 		return fCaenTime[mod][chan];
 		

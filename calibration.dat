@@ -18,7 +18,7 @@
 # caen_<mod>_<ch>.Offset:		// energy calibration offset (default = 0.0)
 # caen_<mod>_<ch>.Gain:			// energy calibration gain (default = 1.0)
 # caen_<mod>_<ch>.GainQuadr:	// energy calibration quadratic term (default = 0.0)
-# caen_<mod>_<ch>.Time:			// time offset in ns (default = 0). Note that signals are all aligned to dE, so keep that offset as 0
+# caen_<mod>_<ch>.Time:			// time offset in ns (default = 0). Note that signals are all aligned to dE, so keep that offset as 0 unless you want a hard time
 # caen_<mod>_<ch>.Threshold:	// software threshold in adc units (default = 0)
 
 
