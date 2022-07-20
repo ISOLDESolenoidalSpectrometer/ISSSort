@@ -77,8 +77,7 @@ void ISSCalibration::ReadCalibration() {
 			fAsicEnabled[mod][asic] = config->GetValue( Form( "asic_%d_%d.Enabled", mod, asic ), true );
 
 			fAsicWalk[mod][asic].resize( 4 );
-			fAsicWalk[mod][asic][0] = config->GetValue( Form( "asic_%d_%d.Walk%d", mod, asic, 0 ), -1.0 );
-			for( unsigned int i = 1; i < 4; i++ )
+			for( unsigned int i = 0; i < 4; i++ )
 				fAsicWalk[mod][asic][i] = config->GetValue( Form( "asic_%d_%d.Walk%d", mod, asic, i ), 0.0 );
 
 			for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
@@ -209,36 +208,48 @@ float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energ
 	
 	if( mod < set->GetNumberOfArrayModules() &&
 	   asic < set->GetNumberOfArrayASICs() ) {
-
-		// Params for time walk function ROOT finder
-		walk_params[0] = fAsicWalk[mod][asic][0];
-		walk_params[1] = fAsicWalk[mod][asic][1];
-		walk_params[2] = fAsicWalk[mod][asic][2];
-		walk_params[3] = fAsicWalk[mod][asic][3];
-		walk_params[4] = energy;
-
-		// Set parameters
-		fa->SetParameters( walk_params );
-		fb->SetParameters( walk_params );
 		
-		// Build the function and derivative, then solve
-		gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
-		ROOT::Math::GradFunctor1D wf( *fa, *fb );
-		rf->SetFunction( wf, -2e4, 2e4 ); // limits
-		rf->Solve( 500, 1e-4, 1e-5 );
-
-		// Check result
-		if( rf->Status() ){
-			walk = TMath::QuietNaN();
+		if( TMath::Abs( fAsicWalk[mod][asic][0] ) < 1.0e-6 &&
+		    TMath::Abs( fAsicWalk[mod][asic][1] ) < 1.0e-6 &&
+		    TMath::Abs( fAsicWalk[mod][asic][2] ) < 1.0e-6 &&
+		    TMath::Abs( fAsicWalk[mod][asic][3] ) < 1.0e-6
+		   ) {
+			
+			walk = 0;
+			
 		}
-		else walk = rf->Root();
-		gErrorIgnoreLevel = kInfo; // print info and above again
-		
-		return walk;
-		
+
+		else {
+			
+			// Params for time walk function ROOT finder
+			walk_params[0] = fAsicWalk[mod][asic][0];
+			walk_params[1] = fAsicWalk[mod][asic][1];
+			walk_params[2] = fAsicWalk[mod][asic][2];
+			walk_params[3] = fAsicWalk[mod][asic][3];
+			walk_params[4] = energy;
+
+			// Set parameters
+			fa->SetParameters( walk_params );
+			fb->SetParameters( walk_params );
+			
+			// Build the function and derivative, then solve
+			gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
+			ROOT::Math::GradFunctor1D wf( *fa, *fb );
+			rf->SetFunction( wf, -2e4, 2e4 ); // limits
+			rf->Solve( 500, 1e-4, 1e-5 );
+
+			// Check result
+			if( rf->Status() ){
+				walk = TMath::QuietNaN();
+			}
+			else walk = rf->Root();
+			gErrorIgnoreLevel = kInfo; // print info and above again
+			
+		}
+				
 	}
 	
-	return 0;
+	return walk;
 	
 }
 
