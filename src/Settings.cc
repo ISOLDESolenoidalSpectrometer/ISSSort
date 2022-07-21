@@ -49,9 +49,8 @@ void ISSSettings::ReadSettings() {
 	
 	// Event builder
 	event_window = config->GetValue( "EventWindow", 3e3 );
-	recoil_hit_window = config->GetValue( "RecoilHitWindow", 20 );
-	recoil_array_window = config->GetValue( "RecoilArrayWindow", 80 );
-	array_hit_window = config->GetValue( "ArrayHitWindow", 20 );
+	recoil_hit_window = config->GetValue( "RecoilHitWindow", 300 );
+	array_hit_window = config->GetValue( "ArrayHitWindow", 300 );
 
 	
 	// Data things
