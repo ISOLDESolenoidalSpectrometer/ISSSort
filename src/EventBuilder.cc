@@ -1542,13 +1542,17 @@ void ISSEventBuilder::RecoilFinder() {
 				for( unsigned int k = 0; k < index.size(); ++k )
 					if( index[k] == j ) flag_skip = true;
 				
+				// Time difference
+				double tdiff = (double)rtd_list[i] - (double)rtd_list[j];
+				recoil_EdE_tdiff[rsec_list[i]]->Fill( tdiff );
+				
 				// Found a match
 				// ^^^ Not sure if this will work with the ionisation chamber!
 				if( i != j && 		// Not looking at the same hit
 					!flag_skip &&	// Not looking at a previously-used hit
 				    rsec_list[i] == rsec_list[j] &&		// They are in the same sector
 				    rid_list[i] != rid_list[j] &&		// They are not in the same layer
-				    TMath::Abs( rtd_list[i] - rtd_list[j] ) < set->GetRecoilHitWindow() // The hits lie within the recoil hit window
+				    TMath::Abs( tdiff ) < set->GetRecoilHitWindow() // The hits lie within the recoil hit window
 				   ){
 				
 					index.push_back(j);
@@ -1651,16 +1655,21 @@ void ISSEventBuilder::ElumFinder() {
 	// Loop over ELUM events
 	for( unsigned int i = 0; i < een_list.size(); ++i ) {
 
-		// Set the ELUM event (nice and easy)
-		elum_evt->SetEvent( een_list[i], 0,
-						    esec_list[i], etd_list[i] );
-
-		// Write event to tree
-		write_evts->AddEvt( elum_evt );
-		elum_ctr++;
+		// Reject high-energy events - TEMPORARY MEASURE!! THIS SHOULD BE DONE A LOT BETTER
+		if ( een_list[i] < 8000 ){
 		
-		// Histogram the data
-		elum->Fill( esec_list[i], een_list[i] );
+			// Set the ELUM event (nice and easy)
+			elum_evt->SetEvent( een_list[i], 0,
+								esec_list[i], etd_list[i] );
+
+			// Write event to tree
+			write_evts->AddEvt( elum_evt );
+			elum_ctr++;
+			
+			// Histogram the data
+			elum->Fill( esec_list[i], een_list[i] );
+		
+		}
 		
 	}
 	
@@ -1694,6 +1703,10 @@ void ISSEventBuilder::ZeroDegreeFinder() {
 					if( index[k] == j ) flag_skip = true;
 
 				
+				// Time difference
+				double tdiff = (double)ztd_list[i] - (double)ztd_list[j];
+				zd_tdiff->Fill( tdiff );
+
 				// Found a match
 				if( i != j && zid_list[j] != 0 && !flag_skip &&
 				  TMath::Abs( ztd_list[i] - ztd_list[j] ) < set->GetZeroDegreeHitWindow() ){
@@ -1948,7 +1961,7 @@ void ISSEventBuilder::MakeEventHists(){
 	recoil_dEsum.resize( set->GetNumberOfRecoilSectors() );
 	recoil_E_singles.resize( set->GetNumberOfRecoilSectors() );
 	recoil_dE_singles.resize( set->GetNumberOfRecoilSectors() );
-	recoil_E_dE_tdiff.resize( set->GetNumberOfRecoilSectors() );
+	recoil_EdE_tdiff.resize( set->GetNumberOfRecoilSectors() );
 	
 	// Loop over number of recoil sectors
 	for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
@@ -1973,10 +1986,11 @@ void ISSEventBuilder::MakeEventHists(){
 		htitle += "; dE [keV]; Counts";
 		recoil_dE_singles[i] = new TH1F( hname.data(), htitle.data(), 2000, 0, 200000 );
 		
-		hname = "recoil_E_dE_tdiff" + std::to_string(i);		
+		hname = "recoil_EdE_tdiff" + std::to_string(i);
 		htitle = "Recoil E-dE time difference " + std::to_string(i);
 		htitle += "; #Delta t [ns]; Counts";
-		recoil_E_dE_tdiff[i] = new TH1F( hname.data(), htitle.data(), 2000, -6e3, 6e3 );
+		recoil_EdE_tdiff[i] = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
+
 	}
 	
 	
@@ -2031,6 +2045,10 @@ void ISSEventBuilder::MakeEventHists(){
 	hname = "zd";
 	htitle = "ZeroDegree dE vs E;Rest Energy [keV];Energy Loss [keV];Counts";
 	zd = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 200000 );
+
+	hname = "zd_tdiff";
+	htitle = "ZeroDegree E-dE time difference; #Delta t [ns]; Counts";
+	zd_tdiff = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
 
 	return;
 	
@@ -2137,8 +2155,8 @@ void ISSEventBuilder::CleanHists() {
 	for( unsigned int i = 0; i < recoil_dE_singles.size(); i++ )
 		delete (recoil_dE_singles[i]);
 		
-	for( unsigned int i = 0; i < recoil_E_dE_tdiff.size(); i++ )
-		delete (recoil_E_dE_tdiff[i]);
+	for( unsigned int i = 0; i < recoil_EdE_tdiff.size(); i++ )
+		delete (recoil_EdE_tdiff[i]);
 
 	pn_12.clear();
 	pn_21.clear();
@@ -2157,7 +2175,7 @@ void ISSEventBuilder::CleanHists() {
 	recoil_dEsum.clear();
 	recoil_E_singles.clear();
 	recoil_dE_singles.clear();
-	recoil_E_dE_tdiff.clear();
+	recoil_EdE_tdiff.clear();
 	
 	for( unsigned int i = 0; i < mwpc_tac_axis.size(); i++ ) {
 		for( unsigned int j = 0; j < mwpc_tac_axis.at(i).size(); j++ )
