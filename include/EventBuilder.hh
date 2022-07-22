@@ -293,7 +293,7 @@ private:
 	std::vector<TH2F*> recoil_dEsum; ///< TODO Brief description.
 	std::vector<TH1F*> recoil_E_singles;	///< Histogram containing the single E signals
 	std::vector<TH1F*> recoil_dE_singles;	///<  Histogram containing the single dE signals
-	std::vector<TH1F*> recoil_E_dE_tdiff;	///<  Histogram calculating the time difference between E and dE signals
+	std::vector<TH1F*> recoil_EdE_tdiff;	///<  Histogram calculating the time difference between E and dE signals
 
 	// MWPC histograms
 	std::vector<std::vector<TH1F*>> mwpc_tac_axis; ///< TODO Brief description.
@@ -305,7 +305,8 @@ private:
 	
 	// ZeroDegree histograms
 	TH2F *zd; ///< TODO Brief description.
-	
+	TH1F *zd_tdiff;	///< Hisogram of the time difference between dE and E events in the ZeroDegree detector
+
 };
 
 #endif
