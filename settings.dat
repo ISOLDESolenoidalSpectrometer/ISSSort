@@ -59,9 +59,9 @@
 # Event builder #
 #---------------#
 #EventWindow: 3e3 # in ns. Default is 3 µs
-#RecoilHitWindow: 20 # in ns. Default is 20 ns
-#RecoilArrayWindow: 80 # in ns. Default is 80 ns
-#ArrayHitWindow: 20 # in ns. Default is 20 ns
+#RecoilHitWindow: 500 # in ns. Default is 500 ns
+#ArrayHitWindow: 500 # in ns. Default is 500 ns
+#ZeroDegreeHitWindow: 500 # in ns. Default is 500 ns
 
 #-----------------#
 # Recoil Detector #
