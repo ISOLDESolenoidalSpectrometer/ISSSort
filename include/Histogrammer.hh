@@ -72,27 +72,27 @@ public:
 	
 	// Recoil - array coincidence (numbers to go to reaction file?)
 	inline bool	PromptCoincidence( ISSRecoilEvt *r, ISSArrayEvt *a ){
-		if( (double)r->GetTime() - (double)a->GetTime() > -350 &&
-			(double)r->GetTime() - (double)a->GetTime() < 250 ) return true;
+		if( (double)r->GetTime() - (double)a->GetTime() > -200 &&
+			(double)r->GetTime() - (double)a->GetTime() < 300 ) return true;
 		else return false;
 	};
 	
 	// Recoil - elum coincidence
 	inline bool	PromptCoincidence( ISSRecoilEvt *r, ISSElumEvt *e ){
-		if( (double)r->GetTime() - (double)e->GetTime() > -400 &&
-			(double)r->GetTime() - (double)e->GetTime() < 100 ) return true;
+		if( (double)r->GetTime() - (double)e->GetTime() > -200 &&
+			(double)r->GetTime() - (double)e->GetTime() < 200 ) return true;
 		else return false;
 	};
 	
 	inline bool	RandomCoincidence( ISSRecoilEvt *r, ISSArrayEvt *a ){
-		if( (double)r->GetTime() - (double)a->GetTime() > 600 &&
-			(double)r->GetTime() - (double)a->GetTime() < 1200 ) return true;
+		if( (double)r->GetTime() - (double)a->GetTime() > 1000 &&
+			(double)r->GetTime() - (double)a->GetTime() < 1500 ) return true;
 		else return false;
 	};
 	
 	inline bool	RandomCoincidence( ISSRecoilEvt *r, ISSElumEvt *e ){
-		if( (double)r->GetTime() - (double)e->GetTime() > 500 &&
-			(double)r->GetTime() - (double)e->GetTime() < 1500 ) return true;
+		if( (double)r->GetTime() - (double)e->GetTime() > 1000 &&
+			(double)r->GetTime() - (double)e->GetTime() < 1400 ) return true;
 		else return false;
 	};
 	inline bool	OnBeam( ISSRecoilEvt *r ){

@@ -1695,14 +1695,15 @@ void ISSEventBuilder::ZeroDegreeFinder() {
 
 				
 				// Found a match
-				if( i != j && zid_list[j] != 0 && !flag_skip ){
+				if( i != j && zid_list[j] != 0 && !flag_skip &&
+				  TMath::Abs( ztd_list[i] - ztd_list[j] ) < set->GetZeroDegreeHitWindow() ){
 					
 					index.push_back(j);
 					zd_evt->AddZeroDegree( zen_list[j], zid_list[j] );
 					if( zid_list[j] == 1 ) zd_evt->SetETime( ztd_list[i] );
 					
 					// Histogram the ZeroDegree
-					zd->Fill( zen_list[i], zen_list[j] );
+					zd->Fill( zen_list[j], zen_list[i] );
 
 				}
 				
@@ -2028,7 +2029,7 @@ void ISSEventBuilder::MakeEventHists(){
 	// --------------------- //
 	output_file->cd();
 	hname = "zd";
-	htitle = "ZeroDegree dE vs E;Energy Loss [keV]; Rest Energy [keV];Counts";
+	htitle = "ZeroDegree dE vs E;Rest Energy [keV];Energy Loss [keV];Counts";
 	zd = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 200000 );
 
 	return;

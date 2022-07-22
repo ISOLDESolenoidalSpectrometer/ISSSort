@@ -73,9 +73,9 @@ public:
 	// Event builder
 	inline double GetEventWindow(){ return event_window; };
 	inline double GetRecoilHitWindow(){ return recoil_hit_window; }
-	inline double GetRecoilArrayWindow(){ return recoil_array_window; }
 	inline double GetArrayHitWindow(){ return array_hit_window; }
-	
+	inline double GetZeroDegreeHitWindow(){ return zd_hit_window; }
+
 	
 	// Data settings
 	inline unsigned int GetBlockSize(){ return block_size; };
@@ -157,9 +157,9 @@ private:
 	// Event builder
 	double event_window;			///< Event builder time window in ns
 	double recoil_hit_window;		///< Time window in ns for correlating recoil E-dE hits
-	double recoil_array_window;		///< Time window in ns for correlating array-dE hits
 	double array_hit_window;		///< Time window in ns for correlating hits on the array
-	
+	double zd_hit_window;			///< Time window in ns for correlating ZeroDegree E-dE hits
+
 	
 	// Data format
 	unsigned int block_size;		///< not yet implemented, needs C++ style reading of data files
