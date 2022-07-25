@@ -1,11 +1,12 @@
-# Makefile for Midas to Root for ISS
-.PHONY: clean all
+# Makefile for ISSSort
+.PHONY: clean all doc
 
 PWD			:= $(shell pwd)
 BIN_DIR     := ./bin
 SRC_DIR     := ./src
 LIB_DIR     := ./lib
 INC_DIR     := ./include
+DOC_DIR		:= ./doc
 AME_FILE	:= \"$(PWD)/data/mass_1.mas20\"
 SRIM_DIR	:= \"$(PWD)/srim/\"
 
@@ -28,6 +29,10 @@ OSDEF = -DLINUX
 LIBEXTRA = -lrt
 endif
 
+# Documentation
+DOC			:= doxygen
+DOC_FILE	:= Doxyfile
+DOC_HTML	:= documentation.html
 
 ROOTCPPFLAGS	:= $(shell root-config --cflags)
 ROOTCFLAGS		:= $(shell root-config --noauxcflags --cflags)
@@ -84,8 +89,7 @@ DEPENDENCIES =  $(INC_DIR)/AutoCalibrator.hh \
 				$(INC_DIR)/TimeSorter.hh \
 				$(INC_DIR)/EventBuilder.hh \
 				$(INC_DIR)/FitFunctions.hh
- 
-.PHONY : all
+
 all: $(BIN_DIR)/iss_sort $(LIB_DIR)/libiss_sort.so
  
 $(LIB_DIR)/libiss_sort.so: iss_sort.o $(OBJECTS) iss_sortDict.o
@@ -115,6 +119,13 @@ iss_sortDict.o: iss_sortDict.cc iss_sortDict$(DICTEXT) $(INC_DIR)/RootLinkDef.h
 iss_sortDict.cc: $(DEPENDENCIES) $(INC_DIR)/RootLinkDef.h
 	$(ROOTDICT) -f $@ -c $(INCLUDES) $(DEPENDENCIES) $(INC_DIR)/RootLinkDef.h
 
-
 clean:
 	rm -vf $(BIN_DIR)/iss_sort $(SRC_DIR)/*.o $(SRC_DIR)/*~ $(INC_DIR)/*.gch *.o $(BIN_DIR)/*.pcm *.pcm $(BIN_DIR)/*Dict* *Dict* $(LIB_DIR)/*
+	
+doc:
+	mkdir -p $(DOC_DIR)
+	$(DOC) $(DOC_FILE)
+	ln -sf $(DOC_DIR)/index.html $(DOC_HTML)
+	
+doc-clean:
+	rm -rvf $(DOC_DIR)/* $(DOC_HTML) 

@@ -1,3 +1,16 @@
+// ============================================================================================= //
+/*! \mainpage The ISOLDE Solenoidal Spectrometer (ISS) sort code
+* **Author**: Liam Gaffney [(liam.gaffney@liverpool.ac.uk)](mailto:liam.gaffney@liverpool.ac.uk), University of Liverpool
+*
+* **Documentation and bug fixes**: Patrick MacGregor [(patrick.macgregor@manchester.ac.uk)](mailto:patrick.macgregor@manchester.ac.uk),
+* The University of Manchester
+*
+* See the [GitHub page](https://github.com/ISOLDESolenoidalSpectrometer/ISSSort) for installation 
+* instructions, to submit bug reports, and to understand the sorting philosophy. The documentation 
+* here focuses on the purpose of different variables and functions. N.B. it's not complete, but
+* should become more complete over time.
+*/
+// ============================================================================================= //
 // My code include.
 #include "Settings.hh"
 #include "Calibration.hh"

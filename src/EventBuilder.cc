@@ -970,7 +970,7 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// TODO function does stuff
+/// This function processes a series of vectors that are populated in a given build window, and deals with the signals accordingly. This is currently done on a case-by-case basis i.e. each different number of p-side and n-side hits is dealt with in it's own section. Charge addback is implemented for neighbouring strips that fall within a prompt coincidence window defined by the user in the ISSSettings file.
 void ISSEventBuilder::ArrayFinder() {
 	
 	std::vector<unsigned int> pindex; // Stores the index of the p-side hits in a given module and row
@@ -1829,11 +1829,13 @@ void ISSEventBuilder::ArrayFinder() {
 		} // j; row
 
 	} // i; module
+	
+	return;
 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Function that processes a series of hits on the recoil detector and 
+/// This function takes a series of E and dE signals on the silicon recoil detector and determines what hits to keep from these using sensible conditions including a prompt coincidence window. Signals are triggered by the dE detector, but if a corresponding E signal is not found, then a hit at E = 0 is still recorded.
 void ISSEventBuilder::RecoilFinder() {
 
 	// Checks to prevent re-using events
@@ -1898,11 +1900,13 @@ void ISSEventBuilder::RecoilFinder() {
 		}
 		
 	}
+	
+	return;
 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// TODO function does stuff
+/// Assesses the validity of hits in the MWPC detector
 void ISSEventBuilder::MwpcFinder() {
 
 	// Checks to prevent re-using events
@@ -1964,13 +1968,13 @@ void ISSEventBuilder::MwpcFinder() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// TODO function does stuff
+/// Assesses the validity of events in the ELUM detector
 void ISSEventBuilder::ElumFinder() {
 	
 	// Loop over ELUM events
 	for( unsigned int i = 0; i < een_list.size(); ++i ) {
 	
-		// Reject high-energy events - TEMPORARY MEASURE!! THIS SHOULD BE DONE A LOT BETTER
+		// Reject high-energy events - TODO TEMPORARY MEASURE!! THIS SHOULD BE DONE A LOT BETTER
 		if ( een_list[i] < 8000 ){
 
 			// Set the ELUM event (nice and easy)
@@ -1991,7 +1995,9 @@ void ISSEventBuilder::ElumFinder() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// TODO function does stuff
+/// Assesses the validity of events in the zero degree detector. All dE events are recorded because they act
+/// as the trigger, even though there may not be a corresponding E signal on this detector. Also imposes a 
+/// prompt coincidence on these hits, which can be altered in the ISSSettings file
 void ISSEventBuilder::ZeroDegreeFinder() {
 	
 	// Checks to prevent re-using events
@@ -2037,10 +2043,11 @@ void ISSEventBuilder::ZeroDegreeFinder() {
 			write_evts->AddEvt( zd_evt );
 			zd_ctr++;
 			
-			
 		}
 		
 	}
+	
+	return;
 	
 }
 
@@ -2385,7 +2392,7 @@ void ISSEventBuilder::MakeEventHists(){
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// TODO function does stuff
+/// This function cleans up all of the histograms used in the EventBuilder class, by deleting them and clearing all histogram vectors.
 void ISSEventBuilder::CleanHists() {
 
 	// Clean up the histograms to save memory for later
@@ -2442,18 +2449,6 @@ void ISSEventBuilder::CleanHists() {
 			delete (pn_td[i][j]);
 		pn_td.clear();
 	}
-
-	for( unsigned int i = 0; i < pn_td_Ep.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_td_Ep.at(i).size(); j++ )
-			delete (pn_td_Ep[i][j]);
-		pn_td_Ep.clear();
-	}
-	
-	for( unsigned int i = 0; i < pn_td_En.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_td_En.at(i).size(); j++ )
-			delete (pn_td_En[i][j]);
-		pn_td_En.clear();
-		}
 	
 	for( unsigned int i = 0; i < pp_td.size(); i++ ) {
 		for( unsigned int j = 0; j < pp_td.at(i).size(); j++ )
@@ -2465,6 +2460,24 @@ void ISSEventBuilder::CleanHists() {
 		for( unsigned int j = 0; j < nn_td.at(i).size(); j++ )
 			delete (nn_td[i][j]);
 		nn_td.clear();
+	}
+
+	for( unsigned int i = 0; i < pn_td_Ep.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_td_Ep.at(i).size(); j++ )
+			delete (pn_td_Ep[i][j]);
+		pn_td_Ep.clear();
+	}
+	
+	for( unsigned int i = 0; i < pn_td_En.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_td_En.at(i).size(); j++ )
+			delete (pn_td_En[i][j]);
+		pn_td_En.clear();
+	}
+	
+	for( unsigned int i = 0; i < pn_mult.size(); i++ ) {
+		for( unsigned int j = 0; j < pn_mult.at(i).size(); j++ )
+			delete (pn_mult[i][j]);
+		pn_mult.clear();
 	}
 	
 	for( unsigned int i = 0; i < pn_td_prompt.size(); i++ ) {
@@ -2483,12 +2496,6 @@ void ISSEventBuilder::CleanHists() {
 		for( unsigned int j = 0; j < nn_td_prompt.at(i).size(); j++ )
 			delete (nn_td_prompt[i][j]);
 		nn_td_prompt.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_mult.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_mult.at(i).size(); j++ )
-			delete (pn_mult[i][j]);
-		pn_mult.clear();
 	}
 
 
@@ -2529,15 +2536,15 @@ void ISSEventBuilder::CleanHists() {
 
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
 		delete (fpga_td[i]);
-		delete (fpga_sync[i]);
-		delete (fpga_freq[i]);
-		delete (fpga_freq_diff[i]);
-		delete (fpga_pulser_loss[i]);
 		delete (asic_td[i]);
-		delete (asic_sync[i]);
-		delete (asic_freq[i]);
-		delete (asic_freq_diff[i]);
+		delete (fpga_pulser_loss[i]);
+		delete (fpga_freq_diff[i]);
+		delete (fpga_freq[i]);
+		delete (fpga_sync[i]);
 		delete (asic_pulser_loss[i]);
+		delete (asic_freq_diff[i]);
+		delete (asic_freq[i]);
+		delete (asic_sync[i]);
 	}
 		
 	fpga_td.clear();

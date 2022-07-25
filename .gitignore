@@ -10,3 +10,5 @@ src/.*o
 .DS_Store
 */.DS_Store
 srim/*.pdf
+doc/*
+*.html
