@@ -270,15 +270,17 @@ private:
 	std::vector<std::vector<TH2F*>> pn_nab; ///< Vector of vector of 2D histograms with p singles and n addback
 	std::vector<std::vector<TH2F*>> pn_pab; ///< Vector of vector of 2D histograms with p addback and n singles
 	std::vector<std::vector<TH2F*>> pn_max; ///< Vector of vector of 2D histograms with p and n-side max energy
-	std::vector<std::vector<TH1F*>> pn_td; ///< Vector of vector of 2D histograms with p vs n side time difference
-	std::vector<std::vector<TH1F*>> pp_td; ///< Vector of vector of 2D histograms with p-side time differences
-	std::vector<std::vector<TH1F*>> nn_td; ///< Vector of vector of 2D histograms with n-side time differences
+	std::vector<std::vector<TH1F*>> pn_td; ///< Vector of vector of 1D histograms with p vs n side time difference
+	std::vector<std::vector<TH1F*>> pp_td; ///< Vector of vector of 1D histograms with p-side time differences
+	std::vector<std::vector<TH1F*>> nn_td; ///< Vector of vector of 1D histograms with n-side time differences
     std::vector<std::vector<TH2F*>> pn_td_Ep; ///< Vector of vector of 2D histograms pn-time difference vs p-side energy
     std::vector<std::vector<TH2F*>> pn_td_En; ///< Vector of vector of 2D histograms pn-time difference vs n-side energy
 	std::vector<std::vector<TH2F*>> pn_mult; ///< Vector of vector of 2D histograms p-side vs n-side multiplicity
 	
-	std::vector<std::vector<TH2F*>> pn_11_prompt; ///< Vector of vector of 2D histograms holding prompt events with 1p and 1n hists
-
+	std::vector<std::vector<TH1F*>> pn_td_prompt; ///< Vector of vector of 1D histograms with p vs n side time difference (prompt coincidence imposed)
+	std::vector<std::vector<TH1F*>> pp_td_prompt; ///< Vector of vector of 1D histograms with p-side time differences (prompt coincidence imposed)
+	std::vector<std::vector<TH1F*>> nn_td_prompt; ///< Vector of vector of 1D histograms with n-side time differences (prompt coincidence imposed)
+	
 	// Timing histograms
 	TH1F *tdiff, *tdiff_clean; ///< TODO Brief description.
 	TProfile *caen_freq;	///< TODO Brief description.
@@ -295,7 +297,7 @@ private:
 	std::vector<TH2F*> recoil_dEsum; ///< TODO Brief description.
 	std::vector<TH1F*> recoil_E_singles;	///< Histogram containing the single E signals
 	std::vector<TH1F*> recoil_dE_singles;	///<  Histogram containing the single dE signals
-	std::vector<TH1F*> recoil_EdE_tdiff;	///<  Histogram calculating the time difference between E and dE signals
+	std::vector<TH1F*> recoil_E_dE_tdiff;	///<  Histogram calculating the time difference between E and dE signals
 
 	// MWPC histograms
 	std::vector<std::vector<TH1F*>> mwpc_tac_axis; ///< TODO Brief description.
