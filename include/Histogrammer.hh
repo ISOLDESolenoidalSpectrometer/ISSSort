@@ -34,11 +34,6 @@
 # include "Settings.hh"
 #endif
 
-// Calibration header
-#ifndef __CALIBRATION_HH
-# include "Calibration.hh"
-#endif
-
 
 class ISSHistogrammer {
 	
@@ -150,9 +145,6 @@ private:
 	
 	// Settings file
 	ISSSettings *set;
-	
-	// Calibration file
-	ISSCalibration *cal;
 	
 	/// Input tree
 	TChain *input_tree;
