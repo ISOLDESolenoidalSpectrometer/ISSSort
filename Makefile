@@ -128,4 +128,4 @@ doc:
 	ln -sf $(DOC_DIR)/index.html $(DOC_HTML)
 	
 doc-clean:
-	rm -rvf $(DOC_DIR)/* $(DOC_HTML) 
+	rm -rvf $(DOC_DIR)/* $(DOC_DIR)/.??* $(DOC_HTML) 
