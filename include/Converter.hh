@@ -70,7 +70,7 @@ public:
 		std::cout << "Writing events and closing the file" << std::endl;
 		output_file->Write( 0, TObject::kWriteDelete );
 		output_file->Close();
-		delete output_tree;
+		output_tree->Delete();
 		delete data_packet;
 		delete asic_data;
 		delete caen_data;
