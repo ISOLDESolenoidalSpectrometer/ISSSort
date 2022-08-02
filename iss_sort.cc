@@ -113,13 +113,11 @@ void* monitor_run( void* ptr ){
 	
 	// Setup the different steps
 	ISSConverter conv_mon( calfiles->myset );
-	ISSTimeSorter sort_mon;
+	//ISSTimeSorter sort_mon;
 	ISSEventBuilder eb_mon( calfiles->myset );
 	ISSHistogrammer hist_mon( calfiles->myreact, calfiles->myset );
 	
 	// Data blocks for Data spy
-	DataSpy myspy;
-	
 	if( flag_spy && myset->GetBlockSize() != 0x10000 ) {
 	
 		// only 64 kB supported atm
@@ -127,6 +125,7 @@ void* monitor_run( void* ptr ){
 		exit(1);
 	
 	}
+	DataSpy myspy;
 	long long buffer[8*1024];
 	int file_id = 0; ///> TapeServer volume = /dev/file/<id> ... <id> = 0 on issdaqpc2
 	if( flag_spy ) myspy.Open( file_id ); /// open the data spy
@@ -173,6 +172,7 @@ void* monitor_run( void* ptr ){
 		else {
 		
 			// First check if we have data
+			std::cout << "Looking for data from DataSpy" << std::endl;
 			spy_length = myspy.Read( file_id, (char*)buffer, myset->GetBlockSize() );
 			if( spy_length == 0 && bFirstRun ) {
 				  std::cout << "No data yet on first pass" << std::endl;
@@ -180,13 +180,16 @@ void* monitor_run( void* ptr ){
 				  continue;
 			}
 
-			//
+			// Keep reading until we have all the data
 			while( spy_length ){
 			
+				std::cout << "Got some data from DataSpy" << std::endl;
 				nblocks = conv_mon.ConvertBlock( (char*)buffer, 0 );
-				spy_length = myspy.Read( file_id, (char*)buffer, myset->GetBlockSize() );
 				nsort = conv_mon.SortTree();
 				
+				// Read a new block
+				spy_length = myspy.Read( file_id, (char*)buffer, myset->GetBlockSize() );
+
 			}
 		
 		}
@@ -251,7 +254,7 @@ void* monitor_run( void* ptr ){
 
 	// Close all outputs
 	conv_mon.CloseOutput();
-	sort_mon.CloseOutput();
+	//sort_mon.CloseOutput();
 	eb_mon.CloseOutput();
 	hist_mon.CloseOutput();
 
@@ -617,7 +620,7 @@ int main( int argc, char *argv[] ){
 	// Check we have data files
 	if( !input_names.size() && !flag_spy ) {
 			
-			std::cout << "You have to provide at least one input file!" << std::endl;
+			std::cout << "You have to provide at least one input file unless you are in DataSpy mode!" << std::endl;
 			return 1;
 			
 	}
@@ -628,6 +631,7 @@ int main( int argc, char *argv[] ){
 	// Check if we should be monitoring the input
 	if( flag_spy ) {
 		
+		flag_monitor = true;
 		if( mon_time < 0 ) mon_time = 10;
 		std::cout << "Getting data from shared memory every " << mon_time;
 		std::cout << " seconds using DataSpy" << std::endl;
@@ -650,8 +654,14 @@ int main( int argc, char *argv[] ){
 	}
 	
 	// Check the ouput file name
-	if( output_name.length() == 0 )
-		output_name = input_names.at(0) + "_hists.root";
+	if( output_name.length() == 0 ) {
+	
+		if( bool( input_names.size() ) )
+			output_name = input_names.at(0) + "_hists.root";
+		
+		else output_name = "spy_hists.root";
+	
+	}
 	
 	// Check we have a Settings file
 	if( name_set_file.length() > 0 ) {
@@ -731,6 +741,7 @@ int main( int argc, char *argv[] ){
 			gSystem->ProcessEvents();
 			
 		}
+		std::cout << "Finished" << std::endl;
 		
 		return 0;
 		
