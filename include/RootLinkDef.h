@@ -6,7 +6,6 @@
 #pragma link C++ class ISSSettings+;
 //#pragma link C++ class CommandLineInterface+;
 #pragma link C++ class ISSConverter+;
-#pragma link C++ class ISSTimeSorter+;
 #pragma link C++ class ISSEventBuilder+;
 #pragma link C++ class ISSEvts+;
 #pragma link C++ class ISSArrayEvt+;

@@ -67,7 +67,6 @@ void ISSConverter::MakeTree() {
 		sorted_tree->SetName("iss_sort");
 		sorted_tree->SetTitle( "Time sorted, calibrated ISS data" );
 		sorted_tree->SetDirectory( output_file->GetDirectory("/") );
-		output_tree->SetDirectory(0);
 		
 	}
 	
@@ -452,6 +451,8 @@ void ISSConverter::ProcessBlockHeader( unsigned long nblock ){
 		exit(0);
 	
 	}
+	
+	//std::cout << nblock << "\t" << header_DataLen << std::endl;
 	
 	return;
 	
@@ -1168,6 +1169,9 @@ unsigned long long ISSConverter::SortTree(){
 	
 	// Reset the sorted tree so it's empty before we start
 	sorted_tree->Reset();
+	
+	// Load the full tree if possible
+	output_tree->LoadBaskets();
 	
 	// Check we have entries and build time-ordered index
 	if( output_tree->GetEntries() ){
