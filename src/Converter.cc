@@ -519,7 +519,7 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 			return;
 			
 		}
-		else if( i > header_DataLen/sizeof(ULong64_t) ){
+		else if( i >= header_DataLen/sizeof(ULong64_t) ){
 			
 			flag_terminator = true;
 			return;
