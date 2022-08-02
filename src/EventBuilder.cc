@@ -194,8 +194,7 @@ void ISSEventBuilder::StartFile(){
 	
 	// Some flags must be false to start
 	flag_caen_pulser = false;
-
-	
+		
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -220,6 +219,7 @@ void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
 	
 	// Set the input tree
 	SetInputTree( (TTree*)input_file->Get("iss_sort") );
+	StartFile();
 
 	return;
 	
@@ -232,9 +232,9 @@ void ISSEventBuilder::SetInputTree( TTree *user_tree ){
 	
 	// Find the tree and set branch addresses
 	input_tree = user_tree;
-	input_tree->SetBranchAddress( "data", &in_data );
-
-	StartFile();
+	in_data = nullptr;
+	//input_tree->ResetBranchAddresses();
+	input_tree->SetBranchAddress( "data", &in_data, &data_branch );
 
 	return;
 	
@@ -350,9 +350,8 @@ void ISSEventBuilder::Initialise(){
 
 ////////////////////////////////////////////////////////////////////////////////
 /// This loops over all events found in the input file and wraps them up and stores them in the output file
-/// \param[in] start_build [Default 0] Determines which entry in the time-sorted tree to begin with
 /// \return The number of entries in the tree that have been sorted (=0 if there is an error)
-unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
+unsigned long ISSEventBuilder::BuildEvents() {
 	
 	/// Function to loop over the sort tree and build array and recoil events
 
@@ -369,19 +368,20 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 
 	std::cout << " Event Building: number of entries in input tree = ";
 	std::cout << n_entries << std::endl;
-	std::cout << " Start build at event " << start_build << std::endl;
 
 	
 	// ------------------------------------------------------------------------ //
 	// Main loop over TTree to find events
 	// ------------------------------------------------------------------------ //
-	for( unsigned long i = start_build; i < n_entries; ++i ) {
+	for( unsigned long i = 0; i < n_entries; ++i ) {
 		
 		// Current event data
-		if( i == start_build ) input_tree->GetEntry(i);
+		if( i == 0 ) input_tree->GetEntry(i);
 		
 		// Get the time of the event
 		mytime = in_data->GetTime();
+		
+		//std::cout << i << "\t" << mytime << std::endl;
 				
 		// check time stamp monotonically increases!
 		if( time_prev > mytime ) {
@@ -905,13 +905,17 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 			float percent = (float)(i+1)*100.0/(float)n_entries;
 
 			// Progress bar in GUI
-			if( _prog_ ) prog->SetPosition( percent );
+			if( _prog_ ) {
+				
+				prog->SetPosition( percent );
+				gSystem->ProcessEvents();
+				
+			}
 
 			// Progress bar in terminal
 			std::cout << " " << std::setw(6) << std::setprecision(4);
 			std::cout << percent << "%    \r";
 			std::cout.flush();
-			gSystem->ProcessEvents();
 
 		}
 		
@@ -959,12 +963,14 @@ unsigned long ISSEventBuilder::BuildEvents( unsigned long start_build ) {
 	std::cout << ss_log.str();
 	if( log_file.is_open() && flag_input_file ) log_file << ss_log.str();
 	
+	std::cout << "Writing output file...\r";
+	std::cout.flush();
 	output_file->Write( 0, TObject::kWriteDelete );
 	//output_file->Print();
 	//output_file->Close();
 	
-	std::cout << std::endl;
-	
+	std::cout << "Writing output file... Done!" << std::endl << std::endl;
+
 	return n_entries;
 	
 }

@@ -85,7 +85,7 @@ public:
 		overwrite_cal = true;
 	};
 	
-	unsigned long	BuildEvents( unsigned long start_build = 0 ); ///< The heart of this class
+	unsigned long	BuildEvents(); ///< The heart of this class
 
 	// Resolve multiplicities etc
 	void ArrayFinder(); ///< Processes all hits on the array that fall within the build window
@@ -115,6 +115,7 @@ private:
 	/// Input tree
 	TFile *input_file; ///< Pointer to the time-sorted input ROOT file
 	TTree *input_tree; ///< Pointer to the TTree in the input file
+	TBranch *data_branch; ///< Pointer to the branch containing the input data
 	ISSDataPackets *in_data = 0; ///< Pointer to the TBranch containing the data in the time-sorted input ROOT file
 	ISSAsicData *asic_data; ///< Pointer to a given entry in the tree of some data from the ASICs
 	ISSCaenData *caen_data; ///< Pointer to a given entry in the tree of some data from the CAEN

@@ -7,7 +7,7 @@ ISSConverter::ISSConverter( ISSSettings *myset ) {
 
 	my_tm_stp_msb = 0;
 	my_tm_stp_hsb = 0;
-
+	
 	// Start counters at zero
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 				
@@ -36,8 +36,8 @@ ISSConverter::ISSConverter( ISSSettings *myset ) {
 void ISSConverter::SetOutput( std::string output_file_name ){
 	
 	// Open output file
-	output_file = new TFile( output_file_name.data(), "recreate", 0 );
-	if( !flag_source ) output_file->SetCompressionLevel(0);
+	output_file = new TFile( output_file_name.data(), "recreate" );
+	//if( !flag_source ) output_file->SetCompressionLevel(0);
 	
 	return;
 
@@ -48,18 +48,26 @@ void ISSConverter::MakeTree() {
 
 	// Create Root tree
 	const int splitLevel = 0; // don't split branches = 0, full splitting = 99
+	const int bufsize = sizeof(ISSCaenData) + sizeof(ISSAsicData) + sizeof(ISSInfoData);
 	if( gDirectory->GetListOfKeys()->Contains( "iss" ) ) {
 		
 		output_tree = (TTree*)gDirectory->Get("iss");
 		output_tree->SetBranchAddress( "data", &data_packet );
+		sorted_tree = (TTree*)gDirectory->Get("iss_sort");
 
 	}
 	
 	else {
 	
 		output_tree = new TTree( "iss", "iss" );
-		data_packet = new ISSDataPackets();
-		output_tree->Branch( "data", "ISSDataPackets", &data_packet, splitLevel );
+		data_packet = new ISSDataPackets;
+		data_branch = output_tree->Branch( "data", "ISSDataPackets", &data_packet, bufsize, splitLevel );
+		
+		sorted_tree = (TTree*)output_tree->CloneTree(0);
+		sorted_tree->SetName("iss_sort");
+		sorted_tree->SetTitle( "Time sorted, calibrated ISS data" );
+		sorted_tree->SetDirectory( output_file->GetDirectory("/") );
+		output_tree->SetDirectory(0);
 		
 	}
 	
@@ -479,7 +487,7 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 		// However, that is not all, the words may also be swapped, so check
 		// for that. Bits 31:30 should always be zero in the timestamp word
 		for( UInt_t i = 0; i < WORD_SIZE; i++ ) {
-			ULong64_t word = (swap & SWAP_ENDIAN) ? Swap64(data[i]) : data[i];
+			word = (swap & SWAP_ENDIAN) ? Swap64(data[i]) : data[i];
 			if( word & 0xC000000000000000LL ) {
 				swap |= SWAP_KNOWN;
 				break;
@@ -496,7 +504,7 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 	
 	// Process all words
 	for( UInt_t i = 0; i < WORD_SIZE; i++ ) {
-		
+				
 		word = GetWord(i);
 		word_0 = (word & 0xFFFFFFFF00000000) >> 32;
 		word_1 = (word & 0x00000000FFFFFFFF);
@@ -511,6 +519,13 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 			return;
 			
 		}
+		else if( i > header_DataLen/sizeof(ULong64_t) ){
+			
+			flag_terminator = true;
+			return;
+			
+		}
+
 		
 			
 		// Data type is highest two bits
@@ -1030,13 +1045,16 @@ bool ISSConverter::ProcessCurrentBlock( int nblock ) {
 int ISSConverter::ConvertBlock( char *input_block, int nblock ) {
 	
 	// Get the header.
-	std::memcpy( block_header, &input_block[0], HEADER_SIZE );
+	std::memmove( &block_header, &input_block[0], HEADER_SIZE );
 	
 	// Get the block
-	std::memcpy( block_data, &input_block[HEADER_SIZE], MAIN_SIZE );
+	std::memmove( &block_data, &input_block[HEADER_SIZE], MAIN_SIZE );
 	
 	// Process the data
 	ProcessCurrentBlock( nblock );
+	
+	// Print time
+	std::cout << "Last time stamp of block = " << my_tm_stp << std::endl;
 
 	return nblock+1;
 	
@@ -1102,13 +1120,17 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 			float percent = (float)(nblock+1)*100.0/(float)BLOCKS_NUM;
 			
 			// Progress bar in GUI
-			if( _prog_ ) prog->SetPosition( percent );
+			if( _prog_ ) {
+				
+				prog->SetPosition( percent );
+				gSystem->ProcessEvents();
+				
+			}
 
 			// Progress bar in terminal
 			std::cout << " " << std::setw(8) << std::setprecision(4);
 			std::cout << percent << "%\r";
 			std::cout.flush();
-			gSystem->ProcessEvents();
 
 		}
 
@@ -1130,10 +1152,80 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 		
 	} // loop - nblock < BLOCKS_NUM
 	
+	// Close input
 	input_file.close();
-	output_file->Write( 0, TObject::kWriteDelete );
-	//output_file->Print();
+	
+	// Print time
+	std::cout << "Last time stamp in file = " << my_tm_stp << std::endl;
+	
+	// Sort the tree before writing and closing
+	if( !flag_source ) SortTree();
 	
 	return BLOCKS_NUM;
+	
+}
+
+unsigned long long ISSConverter::SortTree(){
+	
+	// Reset the sorted tree so it's empty before we start
+	sorted_tree->Reset();
+	
+	// Check we have entries and build time-ordered index
+	if( output_tree->GetEntries() ){
+
+		std::cout << "Building time-ordered index of events..." << std::endl;
+		output_tree->BuildIndex( "data.GetTime()" );
+
+	}
+	else return 0;
+	
+	// Get index and prepare for sorting
+	TTreeIndex *att_index = (TTreeIndex*)output_tree->GetTreeIndex();
+	unsigned long long nb_idx = att_index->GetN();
+	std::cout << " Sorting: size of the sorted index = " << nb_idx << std::endl;
+
+	// Loop on t_raw entries and fill t
+	for( unsigned long i = 0; i < nb_idx; ++i ) {
+		
+		unsigned long long idx = att_index->GetIndex()[i];
+		//std::cout << idx << "\t";
+		//std::cout << output_tree->GetEntry( idx );
+		//std::cout << "\t" << data_packet->GetTime() << std::endl;
+		output_tree->GetEntry( idx );
+		sorted_tree->Fill();
+
+		// Progress bar
+		bool update_progress = false;
+		if( nb_idx < 200 )
+			update_progress = true;
+		else if( i % (nb_idx/100) == 0 || i+1 == nb_idx )
+			update_progress = true;
+		
+		if( update_progress ) {
+			
+			// Percent complete
+			float percent = (float)(i+1)*100.0/(float)nb_idx;
+			
+			// Progress bar in GUI
+			if( _prog_ ) {
+				
+				prog->SetPosition( percent );
+				gSystem->ProcessEvents();
+				
+			}
+			
+			// Progress bar in terminal
+			std::cout << " " << std::setw(6) << std::setprecision(4);
+			std::cout << percent << "%    \r";
+			std::cout.flush();
+
+		}
+
+	}
+	
+	// Reset the output tree so it's empty after we've finished
+	output_tree->Reset();
+
+	return nb_idx;
 	
 }

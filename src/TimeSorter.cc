@@ -37,8 +37,9 @@ void ISSTimeSorter::SetInputTree( TTree* user_tree ){
 
 	// Find the tree and set branch addresses
 	input_tree = user_tree;
+	input_tree->SetBranchAddress( "data", &in_data );
 	input_tree->SetCacheSize(200000000); // 200 MB
-	input_tree->SetCacheEntryRange( 0, input_tree->GetEntries()-1 );
+	//input_tree->SetCacheEntryRange( 0, input_tree->GetEntries()-1 );
 	input_tree->AddBranchToCache( "*", kTRUE );
 	//input_tree->StopCacheLearningPhase();
 	
@@ -101,21 +102,26 @@ unsigned long ISSTimeSorter::SortTree( unsigned long start_sort ) {
 	n_entries = input_tree->GetEntries();
 	std::cout << " Sorting: number of entries in input tree = " << n_entries << std::endl;
 
-	if( n_entries > 0 && start_sort < n_entries  ) {
+	if( n_entries > 0 && start_sort < n_entries ) {
 		
-		nb_idx = input_tree->BuildIndex( "data.GetTimeMSB()", "data.GetTimeLSB()" );
-		//nb_idx = input_tree->BuildIndex( "0", "data.GetTime()" );
+		// Build time-ordered index
+		std::cout << "Building time-ordered index of events..." << std::endl;
+		input_tree->BuildIndex( "data.GetTimeMSB()", "data.GetTimeLSB()" );
+		//input_tree->BuildIndex( "data.GetTime()" );
+
 		att_index = (TTreeIndex*)input_tree->GetTreeIndex();
-	
+		nb_idx = att_index->GetN();
+		
 		std::cout << " Sorting: size of the sorted index = " << nb_idx << std::endl;
 
 		// Loop on t_raw entries and fill t
-		for( unsigned long i = 0; i < nb_idx; ++i ) {
+		for( unsigned long i = start_sort; i < n_entries; ++i ) {
 			
 			idx = att_index->GetIndex()[i];
-			if( idx < start_sort ) continue;
 			input_tree->GetEntry( idx );
 			output_tree->Fill();
+			
+			//std::cout << idx << "\t" << in_data->GetTime() << std::endl;
 			
 			// Progress bar
 			bool update_progress = false;
@@ -130,13 +136,17 @@ unsigned long ISSTimeSorter::SortTree( unsigned long start_sort ) {
 				float percent = (float)(i+1)*100.0/(float)nb_idx;
 				
 				// Progress bar in GUI
-				if( _prog_ ) prog->SetPosition( percent );
-
+				if( _prog_ ) {
+					
+					prog->SetPosition( percent );
+					gSystem->ProcessEvents();
+					
+				}
+				
 				// Progress bar in terminal
 				std::cout << " " << std::setw(6) << std::setprecision(4);
 				std::cout << percent << "%    \r";
 				std::cout.flush();
-				gSystem->ProcessEvents();
 
 			}
 

@@ -21,7 +21,7 @@
 #include "Histogrammer.hh"
 #include "AutoCalibrator.hh"
 #include "ISSGUI.hh"
-#include "DataSpy.h"
+#include "DataSpy.hh"
 
 // ROOT include.
 #include <TTree.h>
@@ -69,6 +69,10 @@ bool gui_flag = false;
 // Flag for somebody needing help on command line
 bool help_flag = false;
 
+// DataSpy
+bool flag_spy = false;
+int open_spy_data = -1;
+
 // Monitoring input file
 bool flag_monitor = false;
 int mon_time = -1; // update time in seconds
@@ -113,26 +117,26 @@ void* monitor_run( void* ptr ){
 	ISSEventBuilder eb_mon( calfiles->myset );
 	ISSHistogrammer hist_mon( calfiles->myreact, calfiles->myset );
 	
-	// Data blocks
-	//if( set->GetBlockSize() != 0x10000 ) {
-	//
-	//	// only 64 kB supported atm
-	//	std::cerr << "Currently only supporting 64 kB block size" << std::endl;
-	//	exit(1);
-	//
-	//}
-	//long long buffer[8*1024];
-	//int file_id = 0; ///> TapeServer volume = /dev/file/<id> ... <id> = 0 on issdaqpc2
-	//int i = dataSpyOpen( file_id );
+	// Data blocks for Data spy
+	DataSpy myspy;
+	
+	if( flag_spy && myset->GetBlockSize() != 0x10000 ) {
+	
+		// only 64 kB supported atm
+		std::cerr << "Currently only supporting 64 kB block size" << std::endl;
+		exit(1);
+	
+	}
+	long long buffer[8*1024];
+	int file_id = 0; ///> TapeServer volume = /dev/file/<id> ... <id> = 0 on issdaqpc2
+	if( flag_spy ) myspy.Open( file_id ); /// open the data spy
+	int spy_length = 0;
 
 	// Data/Event counters
 	int start_block = 0;
 	int nblocks = 0;
-	unsigned long start_sort = 0;
 	unsigned long nsort = 0;
-	unsigned long start_build = 0;
 	unsigned long nbuild = 0;
-	unsigned long start_fill = 0;
 	unsigned long nfill = 0;
 
 	// Converter setup
@@ -144,58 +148,82 @@ void* monitor_run( void* ptr ){
 	
 	// Update server settings
 	// title of web page
-	std::string toptitle = curFileMon.substr( curFileMon.find_last_of("/")+1,
+	std::string toptitle;
+	if( !flag_spy ) toptitle = curFileMon.substr( curFileMon.find_last_of("/")+1,
 							curFileMon.length()-curFileMon.find_last_of("/")-1 );
+	else toptitle = "DataSpy ";
 	toptitle += " (" + std::to_string( mon_time ) + " s)";
 	serv->SetItemField("/", "_toptitle", toptitle.data() );
 
-
+	// While the sort is running, bRunMon is true
 	while( bRunMon ) {
 		
 		// Lock the main thread
 		//TThread::Lock();
 		
 		// Convert - from file
-		nblocks = conv_mon.ConvertFile( curFileMon, start_block );
-		start_block = nblocks;
+		if( !flag_spy ) {
+			
+			nblocks = conv_mon.ConvertFile( curFileMon, start_block );
+			start_block = nblocks;
+
+		}
 		
 		// Convert - from shared memory
-		//while( !dataSpyRead( id, (char*)buffer, set->GetBlockSize() ) ){
-		//
-		//	std::cout << "No data... Waiting " << std::to_string( mon_time );
-		//	std::cout << " seconds" << std::endl;
-		//	gSystem->Sleep( mon_time * 1e3 );
-		//
-		//}
-		//nblocks = conv_mon.ConvertBlock( buffer );
+		else {
 		
+			// First check if we have data
+			spy_length = myspy.Read( file_id, (char*)buffer, myset->GetBlockSize() );
+			if( spy_length == 0 && bFirstRun ) {
+				  std::cout << "No data yet on first pass" << std::endl;
+				  gSystem->Sleep( 1e3 );
+				  continue;
+			}
+
+			//
+			while( spy_length ){
+			
+				nblocks = conv_mon.ConvertBlock( (char*)buffer, 0 );
+				spy_length = myspy.Read( file_id, (char*)buffer, myset->GetBlockSize() );
+				nsort = conv_mon.SortTree();
+				
+			}
+		
+		}
+										 
 		// Only do the rest if it is not a source run
 		if( !flag_source ) {
 		
 			// Sort
-			if( bFirstRun ) {
-				sort_mon.SetInputTree( conv_mon.GetTree() );
-				//sort_mon.SetOutput( "monitor_sort.root" );
-				//serv->Hide("/Files/monitor_sort.root");
-			}
-			nsort = sort_mon.SortTree( start_sort );
-			start_sort = nsort;
+			//if( bFirstRun ) {
+			//	sort_mon.SetInputTree( conv_mon.GetTree() );
+			//	//sort_mon.SetOutput( "monitor_sort.root" );
+			//	//serv->Hide("/Files/monitor_sort.root");
+			//}
+			//else
+			//nsort = sort_mon.SortTree( start_sort );
+			//start_sort = nsort;
 
 			// Event builder
 			if( bFirstRun ) {
-				eb_mon.SetInputTree( sort_mon.GetTree() );
+				//eb_mon.SetInputTree( sort_mon.GetTree() );
+				//eb_mon.SetInputTree( conv_mon.GetSortedTree() );
 				eb_mon.SetOutput( "monitor_events.root" );
+				eb_mon.StartFile();
+
 			}
-			nbuild = eb_mon.BuildEvents( start_build );
-			start_build = nbuild;
+			TTree *sorted_tree = conv_mon.GetSortedTree()->CloneTree();
+			eb_mon.SetInputTree( sorted_tree );
+			eb_mon.GetTree()->Reset();
+			nbuild = eb_mon.BuildEvents();
+			delete sorted_tree;
 			
 			// Histogrammer
 			if( bFirstRun ) {
 				hist_mon.SetInputTree( eb_mon.GetTree() );
 				hist_mon.SetOutput( "monitor_hists.root" );
 			}
-			nfill = hist_mon.FillHists( start_fill );
-			start_fill = nfill;
+			if( nbuild ) nfill = hist_mon.FillHists();
 			
 			// If this was the first time we ran, do stuff?
 			if( bFirstRun ) {
@@ -219,9 +247,9 @@ void* monitor_run( void* ptr ){
 	}
 	
 	// Close the dataSpy before exiting
-	//dataSpyClose( id );
+	if( flag_spy ) myspy.Close( file_id );
 
-	
+	// Close all outputs
 	conv_mon.CloseOutput();
 	sort_mon.CloseOutput();
 	eb_mon.CloseOutput();
@@ -285,7 +313,17 @@ void do_convert(){
 
 		force_convert.push_back( false );
 
-		// If it doesn't exist, we have to convert it anyway
+		// If input doesn't exist, skip it
+		ftest.open( name_input_file.data() );
+		if( !ftest.is_open() ) {
+			
+			std::cerr << name_input_file << " does not exist" << std::endl;
+			continue;
+			
+		}
+		else ftest.close();
+		
+		// If output doesn't exist, we have to convert it anyway
 		// The convert flag will force it to be converted
 		ftest.open( name_output_file.data() );
 		if( !ftest.is_open() ) force_convert.at(i) = true;
@@ -399,7 +437,8 @@ void do_build(){
 	// Do event builder for each file individually
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 			
-		name_input_file = input_names.at(i) + "_sort.root";
+		name_input_file = input_names.at(i) + ".root";
+		//name_input_file = input_names.at(i) + "_sort.root";
 		name_output_file = input_names.at(i) + "_events.root";
 
 		// We need to do event builder if we just converted it
@@ -547,6 +586,7 @@ int main( int argc, char *argv[] ){
 	interface->Add("-d", "Data directory to add to the monitor", &datadir_name );
 	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
 	interface->Add("-e", "Flag to force new event builder (new calibration)", &flag_events );
+	interface->Add("-spy", "Flag to run the DataSpy", &flag_spy );
 	interface->Add("-source", "Flag to define an source only run", &flag_source );
 	interface->Add("-autocal", "Flag to perform automatic calibration of alpha source data", &flag_autocal );
 	interface->Add("-s", "Settings file", &name_set_file );
@@ -575,7 +615,7 @@ int main( int argc, char *argv[] ){
 	}
 
 	// Check we have data files
-	if( !input_names.size() ) {
+	if( !input_names.size() && !flag_spy ) {
 			
 			std::cout << "You have to provide at least one input file!" << std::endl;
 			return 1;
@@ -586,7 +626,15 @@ int main( int argc, char *argv[] ){
 	if( flag_autocal ) flag_source = true;
 	
 	// Check if we should be monitoring the input
-	if( mon_time > 0 && input_names.size() == 1 ) {
+	if( flag_spy ) {
+		
+		if( mon_time < 0 ) mon_time = 10;
+		std::cout << "Getting data from shared memory every " << mon_time;
+		std::cout << " seconds using DataSpy" << std::endl;
+		
+	}
+	
+	else if( mon_time > 0 && input_names.size() == 1 ) {
 		
 		flag_monitor = true;
 		std::cout << "Running iss_sort in a loop every " << mon_time;
@@ -653,7 +701,7 @@ int main( int argc, char *argv[] ){
 	//-------------------//
 	// Online monitoring //
 	//-------------------//
-	if( flag_monitor ) {
+	if( flag_monitor || flag_spy ) {
 		
 		// Thread for the HTTP server
 		//TThread *th = new TThread( "http_server", start_http, (void*)nullptr );
@@ -694,7 +742,7 @@ int main( int argc, char *argv[] ){
 	//------------------//
 	do_convert();
 	if( !flag_source && !flag_autocal ) {
-		do_sort();
+		//do_sort();
 		do_build();
 		do_hist();
 	}

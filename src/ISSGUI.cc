@@ -534,7 +534,17 @@ void ISSGUI::gui_convert(){
 		// Skip the file if it's deleted
 		if( !filestatus.at(i) ) continue;
 
-		// If it doesn't exist, we have to convert it anyway
+		// If input doesn't exist, skip it
+		ftest.open( name_input_file.Data() );
+		if( !ftest.is_open() ) {
+			
+			std::cerr << name_input_file << " does not exist" << std::endl;
+			continue;
+			
+		}
+		else ftest.close();
+		
+		// If output doesn't exist, we have to convert it anyway
 		// The convert flag will force it to be converted
 		ftest.open( name_output_file );
 		if( !ftest.is_open() ) force_convert.at(i) = true;
@@ -689,7 +699,8 @@ void ISSGUI::gui_build(){
 	// Do event builder for each file individually
 	for( unsigned int i = 0; i < filelist.size(); i++ ){
 
-		name_input_file = filelist.at(i) + "_sort.root";
+		name_input_file = filelist.at(i) + ".root";
+		//name_input_file = filelist.at(i) + "_sort.root";
 		name_output_file = filelist.at(i) + "_events.root";
 
 		// Skip the file if it's deleted
@@ -909,7 +920,7 @@ void ISSGUI::on_sort_clicked() {
 	//------------------//
 	gui_convert();
 	if( !flag_source ) {
-		gui_sort();
+		//gui_sort();
 		gui_build();
 		gui_hist();
 	}

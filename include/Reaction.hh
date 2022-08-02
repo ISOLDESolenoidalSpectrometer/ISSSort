@@ -243,12 +243,13 @@ private:
 	// Stuff for the Ex calculation
 	std::unique_ptr<ROOT::Math::RootFinder> rf;
 	std::unique_ptr<TF1> fa, fb;
-	double alpha;
 	double params[4];
 	double e3_cm;
 	double Ex;
 	double theta_cm;
-	
+	double theta_lab;
+	double alpha;
+
 	// EBIS time windows
 	double EBIS_On;		///< beam on max time in ns
 	double EBIS_Off;	///< beam off max time in ns

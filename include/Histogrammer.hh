@@ -43,7 +43,7 @@ public:
 	virtual ~ISSHistogrammer(){};
 	
 	void MakeHists();
-	unsigned long FillHists( unsigned long start_fill = 0 );
+	unsigned long FillHists();
 	void Terminate();
 	
 	void SetInputFile( std::vector<std::string> input_file_names );

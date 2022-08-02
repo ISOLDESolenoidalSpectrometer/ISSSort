@@ -36,6 +36,28 @@ double alpha_derivative( double *x, double *params ){
 
 }
 
+// This solves for z using Peter Butler's method
+double butler_function( double *x, double *params ){
+
+	// Equation to solve for z, LHS = 0
+	double z = x[0];
+	double z_meas = params[0];
+	double rho = params[1];
+	double p = params[2];
+	double qb = params[3];
+	
+	
+	double root = rho * qb;
+	root /= p * TMath::Sin( TMath::ACos( qb * z / p ) );
+	root = TMath::ASin( root );
+	root /= TMath::Pi();
+	root -= 1.0;
+	root *= z;
+	root += z_meas;
+
+	return root;
+
+}
 
 // Reaction things
 ISSReaction::ISSReaction( std::string filename, ISSSettings *myset, bool source ){
@@ -51,9 +73,17 @@ ISSReaction::ISSReaction( std::string filename, ISSSettings *myset, bool source 
 	SetFile( filename );
 	ReadReaction();
 	
-	// Root finder algorithm
-	fa = std::make_unique<TF1>( "alpha_function", alpha_function, 0.0, TMath::Pi()/2.0, 4 );
-	fb = std::make_unique<TF1>( "alpha_derivative", alpha_derivative, 0.0, TMath::Pi()/2.0, 4 );
+	// Root finder algorithm - for alpha like Ryan does
+	//fa = std::make_unique<TF1>( "alpha_function", alpha_function, 0.0, TMath::Pi()/2.0, 4 );
+	//fb = std::make_unique<TF1>( "alpha_derivative", alpha_derivative, 0.0, TMath::Pi()/2.0, 4 );
+	//rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
+	
+	// Root finder algorithm - The Peter Butler method
+	double low_limit = z0;
+	double upp_limit = z0;
+	if( z0 < 0.0 ) low_limit -= 600.0;
+	else upp_limit += 600.0;
+	fa = std::make_unique<TF1>( "butler_function", butler_function, low_limit, upp_limit, 4 );
 	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
 	
 }
@@ -548,25 +578,36 @@ float ISSReaction::SimulateDecay( TVector3 vec, double en ){
 		
 	// Set parameters
 	fa->SetParameters( params );
-	fb->SetParameters( params );
+	//fb->SetParameters( params );
 	
-	// Build the function and derivative, the solve
+	// Build the function and derivative, then solve (for alpha)
 	gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
-	ROOT::Math::GradFunctor1D wf( *fa, *fb );
-	rf->SetFunction( wf, 0.2 * TMath::Pi() ); // with derivatives
-	rf->Solve( 500, 1e-5, 1e-6 );
+	//ROOT::Math::GradFunctor1D wf( *fa, *fb );
+	//rf->SetFunction( wf, 0.2 * TMath::Pi() ); // with derivatives
+	//rf->Solve( 500, 1e-5, 1e-6 );
 	
+	// Or use Butler's method
+	ROOT::Math::Functor1D wf( *fa ); // Butler method
+	rf->SetFunction( wf, z - 100., z + 100. ); // without derivatives
+	rf->Solve( 500, 1e-5, 1e-6 );
+
 	// Check result
 	if( rf->Status() ){
-		alpha = TMath::QuietNaN();
+		z = TMath::QuietNaN();
 	}
-	else alpha = rf->Root();
+	else z = rf->Root();
 	gErrorIgnoreLevel = kInfo; // print info and above again
 
+	// Calculate the lab angle from z position (Butler method)
+	alpha  = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
+	alpha /= TMath::TwoPi(); 							// qb/2pi
+	alpha *= z / Ejectile.GetMomentumLab();				// * z/p
+	alpha  = TMath::ACos( alpha );
+
 	// Get the real z value at beam axis and lab angle
-	if( z_meas < 0 ) z = z_meas - rho * TMath::Tan( alpha );
-	else z = z_meas + rho * TMath::Tan( alpha );
-	Ejectile.SetThetaLab( TMath::PiOver2() + alpha );
+	//if( z_meas < 0 ) z = z_meas - rho * TMath::Tan( alpha );
+	//else z = z_meas + rho * TMath::Tan( alpha );
+	//Ejectile.SetThetaLab( TMath::PiOver2() + alpha );
 	
 	// Calculate the energy loss
 	// Distance is postive because energy is lost
@@ -621,12 +662,20 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	
 	// Apply the energy loss correction and solve again
 	// Keep going for 50 iterations or until we are better than 0.01% change
-	alpha = 0.5 * TMath::PiOver2();
-	double alpha_prev = 9999.;
+	//alpha = 0.5 * TMath::PiOver2();
+	z = z_meas;
+	double z_prev = 0.0;
 	unsigned int iter = 0;
+		
 	gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
-	while( TMath::Abs( ( alpha - alpha_prev ) / alpha ) > 0.0001 && iter < 50 ) {
+	while( TMath::Abs( ( z - z_prev ) / z ) > 0.0001 && iter < 50 ) {
 	
+		// Calculate the lab angle from z position (Butler method)
+		alpha  = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
+		alpha /= TMath::TwoPi(); 							// qb/2pi
+		alpha *= z / Ejectile.GetMomentumLab();				// * z/p
+		alpha  = TMath::ACos( alpha );
+
 		// Distance is negative because energy needs to be recovered
 		// First we recover the energy lost in the Si dead layer
 		double dist = -1.0 * deadlayer / TMath::Abs( TMath::Cos( alpha ) );
@@ -639,33 +688,45 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
 		
 		// Set parameters
-		alpha_prev = alpha;
-		params[2] = Ejectile.GetMomentumLab();			// p
+		z_prev = z;
+		params[2] = Ejectile.GetMomentumLab(); // p
 		fa->SetParameters( params );
-		fb->SetParameters( params );
+		//fb->SetParameters( params ); // not calculated for Butler function
 		
 		// Build the function and derivative, the solve
-		ROOT::Math::GradFunctor1D wf( *fa, *fb );
-		rf->SetFunction( wf, 0.2 * TMath::Pi() ); // with derivatives
+		//ROOT::Math::GradFunctor1D wf( *fa, *fb ); // alpha method
+		//rf->SetFunction( wf, 0.2 * TMath::Pi() ); // with derivatives
+		ROOT::Math::Functor1D wf( *fa ); // Butler method
+		rf->SetFunction( wf, z - 100., z + 100. ); // without derivatives
 		rf->Solve( 500, 1e-5, 1e-6 );
 		
 		// Check result
 		if( rf->Status() ){
-			alpha = TMath::QuietNaN();
+			z = TMath::QuietNaN();
 			break;
 		}
-		else alpha = rf->Root();
+		else z = rf->Root();
+		
+		std::cout << "Iter " << iter << ": z = " << z << std::endl;
 		
 		iter++;
-	
+			
 	}
 	
 	gErrorIgnoreLevel = kInfo; // print info and above again
 
-	// Get the real z value at beam axis and lab angle
-	if( z_meas < 0 ) z = z_meas - rho * TMath::Tan( alpha );
-	else z = z_meas + rho * TMath::Tan( alpha );
-	Ejectile.SetThetaLab( TMath::PiOver2() + alpha );
+	// Get the real z value at beam axis and lab angle (alpha method)
+	//if( z_meas < 0 ) z = z_meas - rho * TMath::Tan( alpha );
+	//else z = z_meas + rho * TMath::Tan( alpha );
+	//Ejectile.SetThetaLab( TMath::PiOver2() + alpha );
+	
+	// Calculate the lab angle from z position (Butler method)
+	alpha  = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
+	alpha /= TMath::TwoPi(); 							// qb/2pi
+	alpha *= z / Ejectile.GetMomentumLab();				// * z/p
+	alpha  = TMath::ACos( alpha );
+	theta_lab  = alpha + TMath::PiOver2();
+	Ejectile.SetThetaLab( theta_lab );
 
 	// Total energy of ejectile in centre of mass
 	e3_cm = Ejectile.GetEnergyTotLab();
@@ -693,21 +754,21 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	
 	
 	// Debug output
-	if( alpha > 0 || alpha < 0 ){
+	if( z > 0 || z < 0 ){
 		
-//		std::cout << "z_meas = " << z_meas << std::endl;
-//		std::cout << "Ep = " << en << std::endl;
-//		std::cout << "alpha = " << alpha*TMath::RadToDeg() << std::endl;
-//		std::cout << "z_corr = " << z << std::endl;
-//		std::cout << "e3_cm = " << e3_cm << std::endl;
-//		std::cout << "e4_cm = " << Recoil.GetEnergyTotCM() << std::endl;
-//		std::cout << "etot_cm = " << GetEnergyTotCM() << std::endl;
-//		std::cout << "etot_lab = " << GetEnergyTotLab() << std::endl;
-//		std::cout << "gamma = " << GetGamma() << std::endl;
-//		std::cout << "beta = " << GetBeta() << std::endl;
-//		std::cout << "theta_cm = " << Recoil.GetThetaCM()*TMath::RadToDeg() << std::endl;
-//		std::cout << "Ex = " << Recoil.GetEx() << std::endl;
-//		std::cout << std::endl;
+		std::cout << "z_meas = " << z_meas << std::endl;
+		std::cout << "z_corr = " << z << std::endl;
+		std::cout << "Ep = " << en << std::endl;
+		std::cout << "alpha = " << alpha*TMath::RadToDeg() << std::endl;
+		std::cout << "e3_cm = " << e3_cm << std::endl;
+		std::cout << "e4_cm = " << Recoil.GetEnergyTotCM() << std::endl;
+		std::cout << "etot_cm = " << GetEnergyTotCM() << std::endl;
+		std::cout << "etot_lab = " << GetEnergyTotLab() << std::endl;
+		std::cout << "gamma = " << GetGamma() << std::endl;
+		std::cout << "beta = " << GetBeta() << std::endl;
+		std::cout << "theta_cm = " << Recoil.GetThetaCM()*TMath::RadToDeg() << std::endl;
+		std::cout << "Ex = " << Recoil.GetEx() << std::endl;
+		std::cout << std::endl;
 
 	}
 

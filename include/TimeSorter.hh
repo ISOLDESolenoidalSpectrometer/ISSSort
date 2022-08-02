@@ -15,6 +15,11 @@
 #include <TGProgressBar.h>
 #include <TSystem.h>
 
+// Data packets header
+#ifndef __DATAPACKETS_hh
+# include "DataPackets.hh"
+#endif
+
 
 class ISSTimeSorter {
 
@@ -49,7 +54,8 @@ private:
 	TTree *input_tree;
 	TFile *output_file;
 	TTree *output_tree;
-	
+	ISSDataPackets *in_data = 0; ///< Pointer to the TBranch containing the data in the time-sorted input ROOT file
+
 	TTreeIndex *att_index;
 
 	// Counters

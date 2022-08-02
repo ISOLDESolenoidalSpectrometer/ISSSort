@@ -35,7 +35,6 @@ DOC_FILE	:= Doxyfile
 DOC_HTML	:= documentation.html
 
 ROOTCPPFLAGS	:= $(shell root-config --cflags)
-ROOTCFLAGS		:= $(shell root-config --noauxcflags --cflags)
 ROOTLDFLAGS		:= $(shell root-config --ldflags)
 ROOTLIBS		:= $(shell root-config --glibs) -lRHTTP -lThread
 LIBS			:= $(ROOTLIBS) $(LIBEXTRA)
@@ -46,8 +45,7 @@ CC           = $(shell root-config --cc)
 
 # Flags for compiler.
 CPPFLAGS	 = -c -Wall -Wextra $(ROOTCPPFLAGS) -g -fPIC
-CFLAGS		 = -c -Wall -Wextra $(ROOTCFLAGS) -g -fPIC
-CFLAGS		+= -DUNIX -DPOSIX $(OSDEF)
+CPPFLAGS	+= -DUNIX -DPOSIX $(OSDEF)
 INCLUDES	+= -I$(INC_DIR) -I.
 
 # Pass in the data file locations
@@ -80,7 +78,7 @@ DEPENDENCIES =  $(INC_DIR)/AutoCalibrator.hh \
 				$(INC_DIR)/CommandLineInterface.hh \
 				$(INC_DIR)/Converter.hh \
 				$(INC_DIR)/DataPackets.hh \
-				$(INC_DIR)/DataSpy.h \
+				$(INC_DIR)/DataSpy.hh \
 				$(INC_DIR)/Histogrammer.hh \
 				$(INC_DIR)/ISSEvts.hh \
 				$(INC_DIR)/ISSGUI.hh \
@@ -105,9 +103,6 @@ iss_sort.o: iss_sort.cc
 
 $(SRC_DIR)/%.o: $(SRC_DIR)/%.cc $(INC_DIR)/%.hh
 	$(CXX) $(CPPFLAGS) $(INCLUDES) -c $< -o $@
-
-$(SRC_DIR)/%.o: $(SRC_DIR)/%.c $(INC_DIR)/%.h
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 iss_sortDict.o: iss_sortDict.cc iss_sortDict$(DICTEXT) $(INC_DIR)/RootLinkDef.h
 	mkdir -p $(BIN_DIR)

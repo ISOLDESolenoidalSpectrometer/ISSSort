@@ -12,6 +12,7 @@
 
 #include <TFile.h>
 #include <TTree.h>
+#include <TTreeIndex.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TProfile.h>
@@ -43,11 +44,12 @@ public:
 	
 
 	int ConvertFile( std::string input_file_name,
-					unsigned long start_block = 0,
-					long end_block = -1 );
+					 unsigned long start_block = 0,
+					 long end_block = -1 );
 	int ConvertBlock( char *input_block, int nblock );
 	void MakeHists();
 	void MakeTree();
+	unsigned long long SortTree();
 
 	bool ProcessCurrentBlock( int nblock );
 
@@ -65,14 +67,21 @@ public:
 	void SetOutput( std::string output_file_name );
 	
 	inline void CloseOutput(){
+		std::cout << "Writing events and closing the file" << std::endl;
+		output_file->Write( 0, TObject::kWriteDelete );
 		output_file->Close();
+		delete output_tree;
 		delete data_packet;
-		//delete asic_data;
-		//delete caen_data;
-		//delete info_data;
+		delete asic_data;
+		delete caen_data;
+		delete info_data;
+		//delete data;
+		//delete set;
+		//delete cal;
 	};
 	inline TFile* GetFile(){ return output_file; };
 	inline TTree* GetTree(){ return output_tree; };
+	inline TTree* GetSortedTree(){ return sorted_tree; };
 
 	inline void AddCalibration( ISSCalibration *mycal ){ cal = mycal; };
 	inline void SourceOnly(){ flag_source = true; };
@@ -215,11 +224,13 @@ private:
 	ISSAsicData *asic_data;
 	ISSCaenData *caen_data;
 	ISSInfoData *info_data;
+	TBranch *data_branch;
 	
 	// Output stuff
 	TFile *output_file;
 	TTree *output_tree;
-	
+	TTree *sorted_tree;
+
 	// Counters
 	std::vector<unsigned long> ctr_asic_hit;		// hits on each ISS module
 	std::vector<unsigned long> ctr_asic_ext;		// external (pulser) ISS timestamps
