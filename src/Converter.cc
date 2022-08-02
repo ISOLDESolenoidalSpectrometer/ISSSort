@@ -1054,7 +1054,7 @@ int ISSConverter::ConvertBlock( char *input_block, int nblock ) {
 	ProcessCurrentBlock( nblock );
 	
 	// Print time
-	std::cout << "Last time stamp of block = " << my_tm_stp << std::endl;
+	//std::cout << "Last time stamp of block = " << my_tm_stp << std::endl;
 
 	return nblock+1;
 	
@@ -1156,7 +1156,7 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 	input_file.close();
 	
 	// Print time
-	std::cout << "Last time stamp in file = " << my_tm_stp << std::endl;
+	//std::cout << "Last time stamp in file = " << my_tm_stp << std::endl;
 	
 	// Sort the tree before writing and closing
 	if( !flag_source ) SortTree();
