@@ -634,7 +634,7 @@ int main( int argc, char *argv[] ){
 	if( flag_spy ) {
 		
 		flag_monitor = true;
-		if( mon_time < 0 ) mon_time = 10;
+		if( mon_time < 0 ) mon_time = 15;
 		std::cout << "Getting data from shared memory every " << mon_time;
 		std::cout << " seconds using DataSpy" << std::endl;
 		
