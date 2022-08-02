@@ -69,7 +69,6 @@ OBJECTS =  		$(SRC_DIR)/AutoCalibrator.o \
 				$(SRC_DIR)/ISSGUI.o \
 				$(SRC_DIR)/Reaction.o \
 				$(SRC_DIR)/Settings.o \
-				$(SRC_DIR)/TimeSorter.o \
 				$(SRC_DIR)/EventBuilder.o
  
 # The header files.
@@ -84,7 +83,6 @@ DEPENDENCIES =  $(INC_DIR)/AutoCalibrator.hh \
 				$(INC_DIR)/ISSGUI.hh \
 				$(INC_DIR)/Reaction.hh \
 				$(INC_DIR)/Settings.hh \
-				$(INC_DIR)/TimeSorter.hh \
 				$(INC_DIR)/EventBuilder.hh \
 				$(INC_DIR)/FitFunctions.hh
 

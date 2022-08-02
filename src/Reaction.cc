@@ -345,10 +345,10 @@ void ISSReaction::ReadReaction() {
 		gStopping.push_back( std::make_unique<TGraph>() );
 	
 	if( !flag_source ) {
-		stopping *= ReadStoppingPowers( Beam.GetIsotope(), Target.GetIsotope(), gStopping[0] );
-		stopping *= ReadStoppingPowers( Ejectile.GetIsotope(), Target.GetIsotope(), gStopping[1] );
+		stopping &= ReadStoppingPowers( Beam.GetIsotope(), Target.GetIsotope(), gStopping[0] );
+		stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), Target.GetIsotope(), gStopping[1] );
 	}
-	stopping *= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[2] );
+	stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[2] );
 
 	// Some diagnostics and info
 	if( !flag_source ) {

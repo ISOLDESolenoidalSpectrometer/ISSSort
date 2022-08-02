@@ -233,7 +233,6 @@ void ISSEventBuilder::SetInputTree( TTree *user_tree ){
 	// Find the tree and set branch addresses
 	input_tree = user_tree;
 	in_data = nullptr;
-	//input_tree->ResetBranchAddresses();
 	input_tree->SetBranchAddress( "data", &in_data, &data_branch );
 
 	return;

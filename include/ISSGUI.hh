@@ -31,7 +31,6 @@
 #include "Settings.hh"
 #include "Calibration.hh"
 #include "Converter.hh"
-#include "TimeSorter.hh"
 #include "EventBuilder.hh"
 #include "Reaction.hh"
 #include "Histogrammer.hh"

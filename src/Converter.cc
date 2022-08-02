@@ -1020,6 +1020,7 @@ void ISSConverter::ProcessInfoData(){
 	
 }
 
+// Common function called to process data in a block from file or DataSpy
 bool ISSConverter::ProcessCurrentBlock( int nblock ) {
 	
 	// Process header.
@@ -1042,6 +1043,7 @@ bool ISSConverter::ProcessCurrentBlock( int nblock ) {
 
 }
 
+// Function to convert a block of data from DataSpy
 int ISSConverter::ConvertBlock( char *input_block, int nblock ) {
 	
 	// Get the header.
@@ -1157,9 +1159,6 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 	
 	// Print time
 	//std::cout << "Last time stamp in file = " << my_tm_stp << std::endl;
-	
-	// Sort the tree before writing and closing
-	if( !flag_source ) SortTree();
 	
 	return BLOCKS_NUM;
 	

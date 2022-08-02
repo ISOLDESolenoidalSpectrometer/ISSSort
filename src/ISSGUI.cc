@@ -465,6 +465,7 @@ void ISSGUI::SaveSetup( TString setupfile ) {
 	}
 
 	fSetup->SetValue( "filelist", list_of_files );
+	fSetup->SetValue( "source", check_source->IsOn() );
 	fSetup->SetValue( "force", check_force->IsOn() );
 	fSetup->SetValue( "events", check_event->IsOn() );
 
@@ -500,6 +501,7 @@ void ISSGUI::LoadSetup( TString setupfile ) {
 
 	run_list_box->Layout();
 
+	check_source->SetOn( fSetup->GetValue( "source", false ) );
 	check_force->SetOn( fSetup->GetValue( "force", false ) );
 	check_event->SetOn( fSetup->GetValue( "event", false ) );
 
@@ -524,7 +526,7 @@ void ISSGUI::gui_convert(){
 	
 	// Check each file
 	for( unsigned int i = 0; i < filelist.size(); i++ ){
-			
+
 		name_input_file = filelist.at(i);
 		if( flag_source ) name_output_file = filelist.at(i) + "_source.root";
 		else name_output_file = filelist.at(i) + ".root";
@@ -575,98 +577,33 @@ void ISSGUI::gui_convert(){
 			conv.MakeTree();
 			conv.MakeHists();
 			conv.ConvertFile( name_input_file.Data() );
-			conv.CloseOutput();
 
-		}
-		
-		prog_format  = "Converter complete";
-		prog_conv->ShowPosition( true, false, prog_format.data() );
+			prog_format  = "Converter complete";
+			prog_conv->ShowPosition( true, false, prog_format.data() );
 
-		// Update everything
-		gSystem->ProcessEvents();
-		
-	}
-	
-	return;
-	
-}
+			// Time sorting
+			if( !flag_source ) {
 
-void ISSGUI::gui_sort(){
-	
-	//-------------------------//
-	// Do time sorting of data //
-	//-------------------------//
-	ISSTimeSorter sort;
-	sort.AddProgressBar( prog_sort );
-	std::cout << "\n +++ ISS Analysis:: processing TimeSorter +++" << std::endl;
-	
-	// Update everything
-	gSystem->ProcessEvents();
-
-	// Progress bar and filename
-	std::string prog_format;
-	TFile *rtest;
-	std::ifstream ftest;
-	TString name_input_file;
-	TString name_output_file;
-	
-	// Check each file
-	for( unsigned int i = 0; i < filelist.size(); i++ ){
-			
-		name_input_file = filelist.at(i) + ".root";
-		name_output_file = filelist.at(i) + "_sort.root";
-
-		// Skip the file if it's deleted
-		if( !filestatus.at(i) ) continue;
-
-		// We need to time sort it if we just converted it
-		if( flag_convert || force_convert.at(i) )
-			force_sort = true;
-			
-		// If it doesn't exist, we have to sort it anyway
-		else {
-			
-			ftest.open( name_output_file );
-			if( !ftest.is_open() ) force_sort = true;
-			else {
-				
-				ftest.close();
-				rtest = new TFile( name_output_file );
-				if( rtest->IsZombie() ) force_sort = true;
-				if( !force_sort )
-					std::cout << name_output_file << " already sorted" << std::endl;
-				rtest->Close();
+				prog_format  = "Time ordering ";
+				prog_format += name_input_file( name_input_file.Last('/') + 1,
+											   name_input_file.Length() - name_input_file.Last('/') ).Data();
+				prog_format += ": %.0f%%";
+				prog_sort->ShowPosition( true, false, prog_format.data() );
+				conv.AddProgressBar( prog_sort );
+				conv.SortTree();
 				
 			}
 			
-		}
+			conv.CloseOutput();
 
-		if( force_sort ) {
-		
-			std::cout << name_input_file << " --> ";
-			std::cout << name_output_file << std::endl;
-			
-			prog_format  = "Sorting ";
-			prog_format += name_input_file( name_input_file.Last('/') + 1,
-						name_input_file.Length() - name_input_file.Last('/') ).Data();
-			prog_format += ": %.0f%%";
+			prog_format  = "Time ordering complete";
 			prog_sort->ShowPosition( true, false, prog_format.data() );
 
-			sort.SetInputFile( name_input_file.Data() );
-			sort.SetOutput( name_output_file.Data() );
-			sort.SortTree();
-			sort.CloseOutput();
-
-			force_sort = false;
-
 		}
-	
-		prog_format  = "TimeSorter complete";
-		prog_sort->ShowPosition( true, false, prog_format.data() );
 
 		// Update everything
 		gSystem->ProcessEvents();
-
+		
 	}
 	
 	return;
@@ -700,7 +637,6 @@ void ISSGUI::gui_build(){
 	for( unsigned int i = 0; i < filelist.size(); i++ ){
 
 		name_input_file = filelist.at(i) + ".root";
-		//name_input_file = filelist.at(i) + "_sort.root";
 		name_output_file = filelist.at(i) + "_events.root";
 
 		// Skip the file if it's deleted

@@ -15,7 +15,6 @@
 #include "Settings.hh"
 #include "Calibration.hh"
 #include "Converter.hh"
-#include "TimeSorter.hh"
 #include "EventBuilder.hh"
 #include "Reaction.hh"
 #include "Histogrammer.hh"
@@ -113,7 +112,6 @@ void* monitor_run( void* ptr ){
 	
 	// Setup the different steps
 	ISSConverter conv_mon( calfiles->myset );
-	//ISSTimeSorter sort_mon;
 	ISSEventBuilder eb_mon( calfiles->myset );
 	ISSHistogrammer hist_mon( calfiles->myreact, calfiles->myset );
 	
@@ -138,6 +136,7 @@ void* monitor_run( void* ptr ){
 
 	// Converter setup
 	if( !flag_spy ) curFileMon = input_names.at(0); // maybe change in GUI later?
+	if( flag_source ) conv_mon.SourceOnly();
 	conv_mon.AddCalibration( calfiles->mycal );
 	conv_mon.SetOutput( "monitor_singles.root" );
 	conv_mon.MakeTree();
@@ -198,16 +197,6 @@ void* monitor_run( void* ptr ){
 		// Only do the rest if it is not a source run
 		if( !flag_source ) {
 		
-			// Sort
-			//if( bFirstRun ) {
-			//	sort_mon.SetInputTree( conv_mon.GetTree() );
-			//	//sort_mon.SetOutput( "monitor_sort.root" );
-			//	//serv->Hide("/Files/monitor_sort.root");
-			//}
-			//else
-			//nsort = sort_mon.SortTree( start_sort );
-			//start_sort = nsort;
-
 			// Event builder
 			if( bFirstRun ) {
 				//eb_mon.SetInputTree( sort_mon.GetTree() );
@@ -259,7 +248,6 @@ void* monitor_run( void* ptr ){
 
 	// Close all outputs
 	conv_mon.CloseOutput();
-	//sort_mon.CloseOutput();
 	eb_mon.CloseOutput();
 	hist_mon.CloseOutput();
 
@@ -355,6 +343,9 @@ void do_convert(){
 			conv.MakeTree();
 			conv.MakeHists();
 			conv.ConvertFile( name_input_file );
+
+			// Sort the tree before writing and closing
+			if( !flag_source ) conv.SortTree();
 			conv.CloseOutput();
 
 		}
@@ -365,66 +356,6 @@ void do_convert(){
 	
 }
 
-void do_sort(){
-	
-	//-------------------------//
-	// Do time sorting of data //
-	//-------------------------//
-	ISSTimeSorter sort;
-	std::cout << "\n +++ ISS Analysis:: processing TimeSorter +++" << std::endl;
-
-	TFile *rtest;
-	std::ifstream ftest;
-	std::string name_input_file;
-	std::string name_output_file;
-	
-	// Check each file
-	for( unsigned int i = 0; i < input_names.size(); i++ ){
-
-		name_input_file = input_names.at(i) + ".root";
-		name_output_file = input_names.at(i) + "_sort.root";
-
-		// We need to time sort it if we just converted it
-		if( flag_convert || force_convert.at(i) )
-			force_sort = true;
-
-		// If it doesn't exist, we have to sort it anyway
-		else {
-
-			ftest.open( name_output_file.data() );
-			if( !ftest.is_open() ) force_sort = true;
-			else {
-
-				ftest.close();
-				rtest = new TFile( name_output_file.data() );
-				if( rtest->IsZombie() ) force_sort = true;
-				if( !force_sort )
-					std::cout << name_output_file << " already sorted" << std::endl;
-				rtest->Close();
-
-			}
-
-		}
-
-		if( force_sort ) {
-
-			std::cout << name_input_file << " --> ";
-			std::cout << name_output_file << std::endl;
-
-			sort.SetInputFile( name_input_file );
-			sort.SetOutput( name_output_file );
-			sort.SortTree();
-			sort.CloseOutput();
-
-			force_sort = false;
-
-		}
-
-	}
-	
-	return;
-	
-}
 
 void do_build(){
 	
@@ -588,18 +519,18 @@ int main( int argc, char *argv[] ){
 	CommandLineInterface *interface = new CommandLineInterface();
 
 	interface->Add("-i", "List of input files", &input_names );
-	interface->Add("-m", "Monitor input file every X seconds", &mon_time );
-	interface->Add("-p", "Port number for web server (default 8030)", &port_num );
 	interface->Add("-o", "Output file for histogram file", &output_name );
-	interface->Add("-d", "Data directory to add to the monitor", &datadir_name );
-	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
-	interface->Add("-e", "Flag to force new event builder (new calibration)", &flag_events );
-	interface->Add("-spy", "Flag to run the DataSpy", &flag_spy );
-	interface->Add("-source", "Flag to define an source only run", &flag_source );
-	interface->Add("-autocal", "Flag to perform automatic calibration of alpha source data", &flag_autocal );
 	interface->Add("-s", "Settings file", &name_set_file );
 	interface->Add("-c", "Calibration file", &name_cal_file );
 	interface->Add("-r", "Reaction file", &name_react_file );
+	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
+	interface->Add("-e", "Flag to force new event builder (new calibration)", &flag_events );
+	interface->Add("-source", "Flag to define an source only run", &flag_source );
+	interface->Add("-autocal", "Flag to perform automatic calibration of alpha source data", &flag_autocal );
+	interface->Add("-spy", "Flag to run the DataSpy", &flag_spy );
+	interface->Add("-m", "Monitor input file every X seconds", &mon_time );
+	interface->Add("-p", "Port number for web server (default 8030)", &port_num );
+	interface->Add("-d", "Data directory to add to the monitor", &datadir_name );
 	interface->Add("-g", "Launch the GUI", &gui_flag );
 	interface->Add("-h", "Print this help", &help_flag );
 
@@ -646,7 +577,7 @@ int main( int argc, char *argv[] ){
 	else if( mon_time > 0 && input_names.size() == 1 ) {
 		
 		flag_monitor = true;
-		std::cout << "Running iss_sort in a loop every " << mon_time;
+		std::cout << "Running sort in a loop every " << mon_time;
 		std::cout << " seconds\nMonitoring " << input_names.at(0) << std::endl;
 		
 	}
@@ -671,7 +602,23 @@ int main( int argc, char *argv[] ){
 	// Check we have a Settings file
 	if( name_set_file.length() > 0 ) {
 		
-		std::cout << "Settings file: " << name_set_file << std::endl;
+		// Test if the file exists
+		std::ifstream ftest;
+		ftest.open( name_set_file.data() );
+		if( !ftest.is_open() ) {
+			
+			std::cout << name_set_file << " does not exist.";
+			std::cout << " Using defaults" << std::endl;
+			name_set_file = "dummy";
+
+		}
+		
+		else {
+		
+			ftest.close();
+			std::cout << "Settings file: " << name_set_file << std::endl;
+		
+		}
 		
 	}
 	else {
@@ -684,8 +631,24 @@ int main( int argc, char *argv[] ){
 	// Check we have a calibration file
 	if( name_cal_file.length() > 0 ) {
 		
-		std::cout << "Calibration file: " << name_cal_file << std::endl;
-		overwrite_cal = true;
+		// Test if the file exists
+		std::ifstream ftest;
+		ftest.open( name_cal_file.data() );
+		if( !ftest.is_open() ) {
+			
+			std::cout << name_cal_file << " does not exist.";
+			std::cout << " Using defaults" << std::endl;
+			name_set_file = "dummy";
+
+		}
+		
+		else {
+			
+			ftest.close();
+			std::cout << "Calibration file: " << name_cal_file << std::endl;
+			overwrite_cal = true;
+			
+		}
 
 	}
 	else {
@@ -698,7 +661,23 @@ int main( int argc, char *argv[] ){
 	// Check we have a reaction file
 	if( name_react_file.length() > 0 ) {
 		
-		std::cout << "Reaction file: " << name_react_file << std::endl;
+		// Test if the file exists
+		std::ifstream ftest;
+		ftest.open( name_react_file.data() );
+		if( !ftest.is_open() ) {
+			
+			std::cout << name_react_file << " does not exist.";
+			std::cout << " Using defaults" << std::endl;
+			name_set_file = "dummy";
+
+		}
+		
+		else {
+		
+			ftest.close();
+			std::cout << "Reaction file: " << name_react_file << std::endl;
+
+		}
 		
 	}
 	else {
@@ -735,7 +714,7 @@ int main( int argc, char *argv[] ){
 		// wait until we finish
 		while( bRunMon ){
 			
-			gSystem->Sleep(100);
+			gSystem->Sleep(10);
 			gSystem->ProcessEvents();
 			
 		}
@@ -751,7 +730,6 @@ int main( int argc, char *argv[] ){
 	//------------------//
 	do_convert();
 	if( !flag_source && !flag_autocal ) {
-		//do_sort();
 		do_build();
 		do_hist();
 	}
