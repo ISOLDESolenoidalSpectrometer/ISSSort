@@ -176,7 +176,7 @@ void* monitor_run( void* ptr ){
 			spy_length = myspy.Read( file_id, (char*)buffer, myset->GetBlockSize() );
 			if( spy_length == 0 && bFirstRun ) {
 				  std::cout << "No data yet on first pass" << std::endl;
-				  gSystem->Sleep( 1e3 );
+				  gSystem->Sleep( 2e3 );
 				  continue;
 			}
 
@@ -185,12 +185,14 @@ void* monitor_run( void* ptr ){
 			
 				std::cout << "Got some data from DataSpy" << std::endl;
 				nblocks = conv_mon.ConvertBlock( (char*)buffer, 0 );
-				nsort = conv_mon.SortTree();
 				
 				// Read a new block
 				spy_length = myspy.Read( file_id, (char*)buffer, myset->GetBlockSize() );
 
 			}
+
+			// Sort the packets we just got, then do the rest of the analysis
+			nsort = conv_mon.SortTree();
 		
 		}
 										 
