@@ -134,13 +134,11 @@ void* monitor_run( void* ptr ){
 	// Data/Event counters
 	int start_block = 0;
 	int nblocks = 0;
-	unsigned long nsort = 0;
 	unsigned long nbuild = 0;
-	unsigned long nfill = 0;
 
 	// Converter setup
 	if( !flag_spy ) curFileMon = input_names.at(0); // maybe change in GUI later?
-	conv_mon.AddCalibration( ((thptr*)ptr)->mycal );
+	conv_mon.AddCalibration( calfiles->mycal );
 	conv_mon.SetOutput( "monitor_singles.root" );
 	conv_mon.MakeTree();
 	conv_mon.MakeHists();
@@ -173,7 +171,7 @@ void* monitor_run( void* ptr ){
 		
 			// First check if we have data
 			std::cout << "Looking for data from DataSpy" << std::endl;
-			spy_length = myspy.Read( file_id, (char*)buffer, myset->GetBlockSize() );
+			spy_length = myspy.Read( file_id, (char*)buffer, calfiles->myset->GetBlockSize() );
 			if( spy_length == 0 && bFirstRun ) {
 				  std::cout << "No data yet on first pass" << std::endl;
 				  gSystem->Sleep( 2e3 );
@@ -188,12 +186,12 @@ void* monitor_run( void* ptr ){
 
 				// Read a new block
 				//gSystem->Sleep( 10 ); // wait 10 ms
-				spy_length = myspy.Read( file_id, (char*)buffer, myset->GetBlockSize() );
+				spy_length = myspy.Read( file_id, (char*)buffer, calfiles->myset->GetBlockSize() );
 
 			}
 
 			// Sort the packets we just got, then do the rest of the analysis
-			nsort = conv_mon.SortTree();
+			conv_mon.SortTree();
 		
 		}
 										 
@@ -226,10 +224,14 @@ void* monitor_run( void* ptr ){
 			
 			// Histogrammer
 			if( bFirstRun ) {
-				hist_mon.SetInputTree( eb_mon.GetTree() );
 				hist_mon.SetOutput( "monitor_hists.root" );
 			}
-			if( nbuild ) nfill = hist_mon.FillHists();
+			if( nbuild ) {
+				TTree *evt_tree = eb_mon.GetTree()->CloneTree();
+				hist_mon.SetInputTree( eb_mon.GetTree() );
+				hist_mon.FillHists();
+				delete evt_tree;
+			}
 			
 			// If this was the first time we ran, do stuff?
 			if( bFirstRun ) {
