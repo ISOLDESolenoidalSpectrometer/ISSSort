@@ -68,8 +68,8 @@ public:
 	
 	inline void CloseOutput(){
 		std::cout << "Writing events and closing the file" << std::endl;
-		output_tree->Reset();
 		output_tree->SetDirectory(0);
+		output_tree->Delete();
 		output_file->Write( 0, TObject::kWriteDelete );
 		output_file->Close();
 		delete data_packet;

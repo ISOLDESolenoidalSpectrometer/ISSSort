@@ -67,6 +67,7 @@ void ISSConverter::MakeTree() {
 		sorted_tree->SetName("iss_sort");
 		sorted_tree->SetTitle( "Time sorted, calibrated ISS data" );
 		sorted_tree->SetDirectory( output_file->GetDirectory("/") );
+		output_tree->SetDirectory( output_file->GetDirectory("/") );
 		
 	}
 	
