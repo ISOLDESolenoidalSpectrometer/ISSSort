@@ -185,8 +185,9 @@ void* monitor_run( void* ptr ){
 			
 				std::cout << "Got some data from DataSpy" << std::endl;
 				nblocks = conv_mon.ConvertBlock( (char*)buffer, 0 );
-				
+
 				// Read a new block
+				gSystem->Sleep( 200 ); // wait 200 ms
 				spy_length = myspy.Read( file_id, (char*)buffer, myset->GetBlockSize() );
 
 			}
