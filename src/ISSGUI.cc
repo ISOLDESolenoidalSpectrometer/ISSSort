@@ -468,6 +468,11 @@ void ISSGUI::SaveSetup( TString setupfile ) {
 	fSetup->SetValue( "source", check_source->IsOn() );
 	fSetup->SetValue( "force", check_force->IsOn() );
 	fSetup->SetValue( "events", check_event->IsOn() );
+	
+	fSetup->SetValue( "settings", text_set_file->GetText() );
+	fSetup->SetValue( "calibration", text_cal_file->GetText() );
+	fSetup->SetValue( "reaction", text_rea_file->GetText() );
+	fSetup->SetValue( "output", text_out_file->GetText() );
 
 	fSetup->WriteFile( setupfile );
 
@@ -504,6 +509,11 @@ void ISSGUI::LoadSetup( TString setupfile ) {
 	check_source->SetOn( fSetup->GetValue( "source", false ) );
 	check_force->SetOn( fSetup->GetValue( "force", false ) );
 	check_event->SetOn( fSetup->GetValue( "event", false ) );
+
+	text_set_file->SetText( fSetup->GetValue( "settings", "dummy" ) );
+	text_cal_file->SetText( fSetup->GetValue( "calibration", "dummy" ) );
+	text_rea_file->SetText( fSetup->GetValue( "reaction", "dummy" ) );
+	text_out_file->SetText( fSetup->GetValue( "output", "output.root" ) );
 
 }
 
