@@ -228,7 +228,7 @@ void* monitor_run( void* ptr ){
 			}
 			if( nbuild ) {
 				TTree *evt_tree = eb_mon.GetTree()->CloneTree();
-				hist_mon.SetInputTree( eb_mon.GetTree() );
+				hist_mon.SetInputTree( evt_tree );
 				hist_mon.FillHists();
 				delete evt_tree;
 			}
