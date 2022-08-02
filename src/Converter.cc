@@ -48,28 +48,17 @@ void ISSConverter::MakeTree() {
 
 	// Create Root tree
 	const int splitLevel = 0; // don't split branches = 0, full splitting = 99
-	const int bufsize = sizeof(ISSCaenData) + sizeof(ISSAsicData) + sizeof(ISSInfoData);
-	if( gDirectory->GetListOfKeys()->Contains( "iss" ) ) {
-		
-		output_tree = (TTree*)gDirectory->Get("iss");
-		output_tree->SetBranchAddress( "data", &data_packet );
-		sorted_tree = (TTree*)gDirectory->Get("iss_sort");
-
-	}
+	const int bufsize = sizeof(ISSCaenData) + sizeof(ISSAsicData) + sizeof(ISSInfoData);output_tree = new TTree( "iss", "iss" );
+	data_packet = new ISSDataPackets;
+	data_branch = output_tree->Branch( "data", "ISSDataPackets", &data_packet, bufsize, splitLevel );
 	
-	else {
+	sorted_tree = (TTree*)output_tree->CloneTree(0);
+	sorted_tree->SetName("iss_sort");
+	sorted_tree->SetTitle( "Time sorted, calibrated ISS data" );
+	sorted_tree->SetDirectory( output_file->GetDirectory("/") );
+	output_tree->SetDirectory( output_file->GetDirectory("/") );
 	
-		output_tree = new TTree( "iss", "iss" );
-		data_packet = new ISSDataPackets;
-		data_branch = output_tree->Branch( "data", "ISSDataPackets", &data_packet, bufsize, splitLevel );
-		
-		sorted_tree = (TTree*)output_tree->CloneTree(0);
-		sorted_tree->SetName("iss_sort");
-		sorted_tree->SetTitle( "Time sorted, calibrated ISS data" );
-		sorted_tree->SetDirectory( output_file->GetDirectory("/") );
-		output_tree->SetDirectory( output_file->GetDirectory("/") );
-		
-	}
+	sorted_tree->SetAutoFlush();
 	
 	asic_data = new ISSAsicData();
 	caen_data = new ISSCaenData();
