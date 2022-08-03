@@ -34,11 +34,11 @@ ISSConverter::ISSConverter( ISSSettings *myset ) {
 }
 
 void ISSConverter::SetOutput( std::string output_file_name ){
-	
+
 	// Open output file
 	output_file = new TFile( output_file_name.data(), "recreate" );
 	//if( !flag_source ) output_file->SetCompressionLevel(0);
-	
+
 	return;
 
 };
@@ -51,19 +51,23 @@ void ISSConverter::MakeTree() {
 	const int bufsize = sizeof(ISSCaenData) + sizeof(ISSAsicData) + sizeof(ISSInfoData);output_tree = new TTree( "iss", "iss" );
 	data_packet = new ISSDataPackets;
 	data_branch = output_tree->Branch( "data", "ISSDataPackets", &data_packet, bufsize, splitLevel );
-	
+
 	sorted_tree = (TTree*)output_tree->CloneTree(0);
 	sorted_tree->SetName("iss_sort");
 	sorted_tree->SetTitle( "Time sorted, calibrated ISS data" );
 	sorted_tree->SetDirectory( output_file->GetDirectory("/") );
 	output_tree->SetDirectory( output_file->GetDirectory("/") );
 	
+	output_tree->SetAutoFlush();
 	sorted_tree->SetAutoFlush();
-	
+
+	output_tree->SetCacheSize(1e9);
+	sorted_tree->SetCacheSize(1e9);
+
 	asic_data = new ISSAsicData();
 	caen_data = new ISSCaenData();
 	info_data = new ISSInfoData();
-	
+
 	asic_data->ClearData();
 	caen_data->ClearData();
 	info_data->ClearData();
@@ -1161,7 +1165,10 @@ unsigned long long ISSConverter::SortTree(){
 	sorted_tree->Reset();
 	
 	// Load the full tree if possible
-	output_tree->LoadBaskets(2000000000);
+	output_tree->SetMaxVirtualSize(2e9); // 2GB
+	sorted_tree->SetMaxVirtualSize(2e9); // 2GB
+	output_tree->LoadBaskets(2e9); // Load 2 GB of data to memory
+	//output_tree->OptimizeBaskets(2000000000);
 	
 	// Check we have entries and build time-ordered index
 	if( output_tree->GetEntries() ){
@@ -1181,9 +1188,6 @@ unsigned long long ISSConverter::SortTree(){
 	for( unsigned long i = 0; i < nb_idx; ++i ) {
 		
 		unsigned long long idx = att_index->GetIndex()[i];
-		//std::cout << idx << "\t";
-		//std::cout << output_tree->GetEntry( idx );
-		//std::cout << "\t" << data_packet->GetTime() << std::endl;
 		output_tree->GetEntry( idx );
 		sorted_tree->Fill();
 
