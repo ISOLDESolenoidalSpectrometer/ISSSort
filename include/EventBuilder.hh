@@ -69,7 +69,7 @@ public:
 	
 	ISSEventBuilder( ISSSettings *myset ); ///< Constructor
 	/// Destructor (currently empty)
-	virtual ~ISSEventBuilder(){};
+	virtual ~ISSEventBuilder();
 
 	void	SetInputFile( std::string input_file_name ); ///< Function to set the input file from which events are built
 	void	SetInputTree( TTree* user_tree ); ///< Grabs the input tree from the input file defined in ISSEventBuilder::SetInputFile
@@ -100,6 +100,14 @@ public:
 	
 	inline void CloseOutput(){
 		output_file->Close();
+		input_file->Close();
+		delete write_evts;
+		//delete array_evt;
+		//delete arrayp_evt;
+		//delete recoil_evt;
+		//delete mwpc_evt;
+		//delete elum_evt;
+		//delete zd_evt;
 		log_file.close(); //?? to close or not to close?
 	}; ///< Closes the output files from this class
 	void CleanHists(); ///< Deletes histograms from memory and clears vectors that store histograms
@@ -112,7 +120,7 @@ public:
 
 private:
 	
-	/// Input tree
+	/// Input treze
 	TFile *input_file; ///< Pointer to the time-sorted input ROOT file
 	TTree *input_tree; ///< Pointer to the TTree in the input file
 	TBranch *data_branch; ///< Pointer to the branch containing the input data
@@ -125,12 +133,12 @@ private:
 	TFile *output_file; ///< Pointer to the output ROOT file containing events
 	TTree *output_tree; ///< Pointer to the output ROOT tree containing events
 	ISSEvts *write_evts; ///< Container for storing hits on all detectors in order to construct events
-	ISSArrayEvt *array_evt; ///< Container for storing hits on the array
-	ISSArrayPEvt *arrayp_evt; ///< Container for storing hits on the array that are only on the p-side detectors
-	ISSRecoilEvt *recoil_evt; ///< Container for storing hits on the recoil detectors
-	ISSMwpcEvt *mwpc_evt; ///< Container for storing hits on the MWPCs
-	ISSElumEvt *elum_evt; ///< Container for storing hits on the luminosity detector
-	ISSZeroDegreeEvt *zd_evt; ///< Container for storing hits on the zero-degree detector
+	//ISSArrayEvt *array_evt; ///< Container for storing hits on the array
+	//ISSArrayPEvt *arrayp_evt; ///< Container for storing hits on the array that are only on the p-side detectors
+	//ISSRecoilEvt *recoil_evt; ///< Container for storing hits on the recoil detectors
+	//ISSMwpcEvt *mwpc_evt; ///< Container for storing hits on the MWPCs
+	//ISSElumEvt *elum_evt; ///< Container for storing hits on the luminosity detector
+	//ISSZeroDegreeEvt *zd_evt; ///< Container for storing hits on the zero-degree detector
 	
 	// Do calibration
 	ISSCalibration *cal; ///< Pointer to an ISSCalibration object, used for accessing gain-matching parameters and thresholds

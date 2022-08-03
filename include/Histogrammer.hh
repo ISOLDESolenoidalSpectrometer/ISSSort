@@ -44,7 +44,6 @@ public:
 	
 	void MakeHists();
 	unsigned long FillHists();
-	void Terminate();
 	
 	void SetInputFile( std::vector<std::string> input_file_names );
 	void SetInputFile( std::string input_file_name );
@@ -56,6 +55,7 @@ public:
 	};
 	inline void CloseOutput( ){
 		output_file->Close();
+		input_tree->Delete();
 	};
 
 	inline TFile* GetFile(){ return output_file; };

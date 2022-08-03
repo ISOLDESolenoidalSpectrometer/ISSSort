@@ -1021,13 +1021,6 @@ unsigned long ISSHistogrammer::FillHists() {
 	
 }
 
-void ISSHistogrammer::Terminate() {
-	
-	// Close output file
-	output_file->Close();
-	
-}
-
 void ISSHistogrammer::SetInputFile( std::vector<std::string> input_file_names ) {
 	
 	/// Overlaaded function for a single file or multiple files

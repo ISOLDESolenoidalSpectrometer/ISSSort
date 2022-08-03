@@ -93,6 +93,10 @@ void ISSDataPackets::ClearData(){
 	caen_packets.clear();
 	info_packets.clear();
 	
+	std::vector<ISSAsicData>().swap(asic_packets);
+	std::vector<ISSCaenData>().swap(caen_packets);
+	std::vector<ISSInfoData>().swap(info_packets);
+
 	return;
 	
 }
