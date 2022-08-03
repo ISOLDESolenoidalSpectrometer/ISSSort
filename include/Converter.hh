@@ -68,17 +68,11 @@ public:
 	
 	inline void CloseOutput(){
 		std::cout << "\nWriting events and closing the file" << std::endl;
-		output_tree->SetDirectory(0);
-		output_tree->Delete();
+		//output_tree->SetDirectory(0);
 		output_file->Write( 0, TObject::kWriteDelete );
 		output_file->Close();
-		delete data_packet;
-		delete asic_data;
-		delete caen_data;
-		delete info_data;
-		//delete data;
-		//delete set;
-		//delete cal;
+		//output_tree->ResetBranchAddresses();
+		//sorted_tree->ResetBranchAddresses();
 	};
 	inline TFile* GetFile(){ return output_file; };
 	inline TTree* GetTree(){ return output_tree; };
@@ -221,11 +215,10 @@ private:
 	UInt_t block_test;
 
 	// Data types
-	ISSDataPackets *data_packet;
-	ISSAsicData *asic_data;
-	ISSCaenData *caen_data;
-	ISSInfoData *info_data;
-	TBranch *data_branch;
+	std::unique_ptr<ISSDataPackets> data_packet;
+	std::shared_ptr<ISSAsicData> asic_data;
+	std::shared_ptr<ISSCaenData> caen_data;
+	std::shared_ptr<ISSInfoData> info_data;
 	
 	// Output stuff
 	TFile *output_file;

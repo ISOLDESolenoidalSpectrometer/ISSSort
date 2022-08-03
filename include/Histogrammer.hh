@@ -53,9 +53,9 @@ public:
 		output_file = new TFile( output_file_name.data(), "recreate" );
 		MakeHists();
 	};
-	inline void CloseOutput( ){
+	inline void CloseOutput(){
 		output_file->Close();
-		input_tree->Delete();
+		input_tree->ResetBranchAddresses();
 	};
 
 	inline TFile* GetFile(){ return output_file; };
@@ -66,73 +66,73 @@ public:
 	};
 	
 	// Recoil - array coincidence (numbers to go to reaction file?)
-	inline bool	PromptCoincidence( ISSRecoilEvt *r, ISSArrayEvt *a ){
+	inline bool	PromptCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSArrayEvt> a ){
 		if( (double)r->GetTime() - (double)a->GetTime() > -200 &&
 			(double)r->GetTime() - (double)a->GetTime() < 300 ) return true;
 		else return false;
 	};
 	
 	// Recoil - elum coincidence
-	inline bool	PromptCoincidence( ISSRecoilEvt *r, ISSElumEvt *e ){
+	inline bool	PromptCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSElumEvt> e ){
 		if( (double)r->GetTime() - (double)e->GetTime() > -200 &&
 			(double)r->GetTime() - (double)e->GetTime() < 200 ) return true;
 		else return false;
 	};
 	
-	inline bool	RandomCoincidence( ISSRecoilEvt *r, ISSArrayEvt *a ){
+	inline bool	RandomCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSArrayEvt> a ){
 		if( (double)r->GetTime() - (double)a->GetTime() > 1000 &&
 			(double)r->GetTime() - (double)a->GetTime() < 1500 ) return true;
 		else return false;
 	};
 	
-	inline bool	RandomCoincidence( ISSRecoilEvt *r, ISSElumEvt *e ){
+	inline bool	RandomCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSElumEvt> e ){
 		if( (double)r->GetTime() - (double)e->GetTime() > 1000 &&
 			(double)r->GetTime() - (double)e->GetTime() < 1400 ) return true;
 		else return false;
 	};
-	inline bool	OnBeam( ISSRecoilEvt *r ){
+	inline bool	OnBeam( std::shared_ptr<ISSRecoilEvt> r ){
 		if( (double)r->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
 			(double)r->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
-	inline bool	OnBeam( ISSElumEvt *e ){
+	inline bool	OnBeam( std::shared_ptr<ISSElumEvt> e ){
 		if( (double)e->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
 			(double)e->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
-	inline bool	OnBeam( ISSArrayEvt *a ){
+	inline bool	OnBeam( std::shared_ptr<ISSArrayEvt> a ){
 		if( (double)a->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
 			(double)a->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
-	inline bool	OnBeam( ISSZeroDegreeEvt *z ){
+	inline bool	OnBeam( std::shared_ptr<ISSZeroDegreeEvt> z ){
 		if( (double)z->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
 			(double)z->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
-	inline bool	OffBeam( ISSRecoilEvt *r ){
+	inline bool	OffBeam( std::shared_ptr<ISSRecoilEvt> r ){
 		if( (double)r->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
 			(double)r->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
-	inline bool	OffBeam( ISSElumEvt *e ){
+	inline bool	OffBeam( std::shared_ptr<ISSElumEvt> e ){
 		if( (double)e->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
 			(double)e->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
-	inline bool	OffBeam( ISSArrayEvt *a ){
+	inline bool	OffBeam( std::shared_ptr<ISSArrayEvt> a ){
 		if( (double)a->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
 			(double)a->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
-	inline bool	OffBeam( ISSZeroDegreeEvt *z ){
+	inline bool	OffBeam( std::shared_ptr<ISSZeroDegreeEvt> z ){
 		if( (double)z->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
 			(double)z->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
 
 	// Recoil energy gate
-	inline bool RecoilCut( ISSRecoilEvt *r ){
+	inline bool RecoilCut( std::shared_ptr<ISSRecoilEvt> r ){
 		if( react->GetRecoilCut( r->GetSector() )->IsInside( r->GetEnergyRest(), r->GetEnergyLoss() ) )
 			return true;
 		else return false;
@@ -149,11 +149,11 @@ private:
 	/// Input tree
 	TChain *input_tree;
 	ISSEvts *read_evts = 0;
-	ISSArrayEvt *array_evt;
-	ISSArrayPEvt *arrayp_evt;
-	ISSRecoilEvt *recoil_evt;
-	ISSElumEvt *elum_evt;
-	ISSZeroDegreeEvt *zd_evt;
+	std::shared_ptr<ISSArrayEvt> array_evt;
+	std::shared_ptr<ISSArrayPEvt> arrayp_evt;
+	std::shared_ptr<ISSRecoilEvt> recoil_evt;
+	std::shared_ptr<ISSElumEvt> elum_evt;
+	std::shared_ptr<ISSZeroDegreeEvt> zd_evt;
 	
 	/// Output file
 	TFile *output_file;

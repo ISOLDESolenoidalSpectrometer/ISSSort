@@ -68,8 +68,7 @@ class ISSEventBuilder {
 public:
 	
 	ISSEventBuilder( ISSSettings *myset ); ///< Constructor
-	/// Destructor (currently empty)
-	virtual ~ISSEventBuilder();
+	virtual ~ISSEventBuilder(){}; /// Destructor (currently empty)
 
 	void	SetInputFile( std::string input_file_name ); ///< Function to set the input file from which events are built
 	void	SetInputTree( TTree* user_tree ); ///< Grabs the input tree from the input file defined in ISSEventBuilder::SetInputFile
@@ -99,15 +98,11 @@ public:
 	inline TTree* GetTree(){ return output_tree; }; ///< Getter for the output tree pointer
 	
 	inline void CloseOutput(){
+		output_tree->ResetBranchAddresses();
 		output_file->Close();
+		input_tree->ResetBranchAddresses();
 		input_file->Close();
-		delete write_evts;
-		//delete array_evt;
-		//delete arrayp_evt;
-		//delete recoil_evt;
-		//delete mwpc_evt;
-		//delete elum_evt;
-		//delete zd_evt;
+		delete in_data;
 		log_file.close(); //?? to close or not to close?
 	}; ///< Closes the output files from this class
 	void CleanHists(); ///< Deletes histograms from memory and clears vectors that store histograms
@@ -123,22 +118,23 @@ private:
 	/// Input treze
 	TFile *input_file; ///< Pointer to the time-sorted input ROOT file
 	TTree *input_tree; ///< Pointer to the TTree in the input file
-	TBranch *data_branch; ///< Pointer to the branch containing the input data
-	ISSDataPackets *in_data = 0; ///< Pointer to the TBranch containing the data in the time-sorted input ROOT file
-	ISSAsicData *asic_data; ///< Pointer to a given entry in the tree of some data from the ASICs
-	ISSCaenData *caen_data; ///< Pointer to a given entry in the tree of some data from the CAEN
-	ISSInfoData *info_data; ///< Pointer to a given entry in the tree of the "info" datatype
+	ISSDataPackets *in_data; ///< Pointer to the TBranch containing the data in the time-sorted input ROOT file
+	std::shared_ptr<ISSAsicData> asic_data; ///< Pointer to a given entry in the tree of some data from the ASICs
+	std::shared_ptr<ISSCaenData> caen_data; ///< Pointer to a given entry in the tree of some data from the CAEN
+	std::shared_ptr<ISSInfoData> info_data; ///< Pointer to a given entry in the tree of the "info" datatype
+
+	/// Event structures
+	std::shared_ptr<ISSArrayEvt> array_evt;
+	std::shared_ptr<ISSArrayPEvt> arrayp_evt;
+	std::shared_ptr<ISSRecoilEvt> recoil_evt;
+	std::shared_ptr<ISSMwpcEvt> mwpc_evt;
+	std::shared_ptr<ISSElumEvt> elum_evt;
+	std::shared_ptr<ISSZeroDegreeEvt> zd_evt;
 
 	/// Outputs
 	TFile *output_file; ///< Pointer to the output ROOT file containing events
 	TTree *output_tree; ///< Pointer to the output ROOT tree containing events
-	ISSEvts *write_evts; ///< Container for storing hits on all detectors in order to construct events
-	//ISSArrayEvt *array_evt; ///< Container for storing hits on the array
-	//ISSArrayPEvt *arrayp_evt; ///< Container for storing hits on the array that are only on the p-side detectors
-	//ISSRecoilEvt *recoil_evt; ///< Container for storing hits on the recoil detectors
-	//ISSMwpcEvt *mwpc_evt; ///< Container for storing hits on the MWPCs
-	//ISSElumEvt *elum_evt; ///< Container for storing hits on the luminosity detector
-	//ISSZeroDegreeEvt *zd_evt; ///< Container for storing hits on the zero-degree detector
+	std::unique_ptr<ISSEvts> write_evts; ///< Container for storing hits on all detectors in order to construct events
 	
 	// Do calibration
 	ISSCalibration *cal; ///< Pointer to an ISSCalibration object, used for accessing gain-matching parameters and thresholds

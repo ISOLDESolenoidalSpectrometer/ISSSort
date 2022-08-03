@@ -24,7 +24,7 @@ public:
 				   unsigned char mymod, unsigned char row );
 	
 	// Copy event
-	void CopyEvent( ISSArrayEvt *in );
+	void CopyEvent( std::shared_ptr<ISSArrayEvt> in );
 	
 	// Return functions
 	inline float 			GetEnergy(){ return pen; };
@@ -311,12 +311,12 @@ public:
 	ISSEvts();
 	~ISSEvts();
 	
-	void AddEvt( ISSArrayEvt *event );
-	void AddEvt( ISSArrayPEvt *event );
-	void AddEvt( ISSRecoilEvt *event );
-	void AddEvt( ISSMwpcEvt *event );
-	void AddEvt( ISSElumEvt *event );
-	void AddEvt( ISSZeroDegreeEvt *event );
+	void AddEvt( std::shared_ptr<ISSArrayEvt> event );
+	void AddEvt( std::shared_ptr<ISSArrayPEvt> event );
+	void AddEvt( std::shared_ptr<ISSRecoilEvt> event );
+	void AddEvt( std::shared_ptr<ISSMwpcEvt> event );
+	void AddEvt( std::shared_ptr<ISSElumEvt> event );
+	void AddEvt( std::shared_ptr<ISSZeroDegreeEvt> event );
 	
 	inline unsigned int GetArrayMultiplicity(){ return array_event.size(); };
 	inline unsigned int GetArrayPMultiplicity(){ return arrayp_event.size(); };
@@ -325,28 +325,28 @@ public:
 	inline unsigned int GetElumMultiplicity(){ return elum_event.size(); };
 	inline unsigned int GetZeroDegreeMultiplicity(){ return zd_event.size(); };
 	
-	inline ISSArrayEvt* GetArrayEvt( unsigned int i ){
-		if( i < array_event.size() ) return &array_event.at(i);
+	inline std::shared_ptr<ISSArrayEvt> GetArrayEvt( unsigned int i ){
+		if( i < array_event.size() ) return std::make_shared<ISSArrayEvt>( array_event.at(i) );
 		else return nullptr;
 	};
-	inline ISSArrayPEvt* GetArrayPEvt( unsigned int i ){
-		if( i < arrayp_event.size() ) return &arrayp_event.at(i);
+	inline std::shared_ptr<ISSArrayPEvt> GetArrayPEvt( unsigned int i ){
+		if( i < arrayp_event.size() ) return std::make_shared<ISSArrayPEvt>( arrayp_event.at(i) );
 		else return nullptr;
 	};
-	inline ISSRecoilEvt* GetRecoilEvt( unsigned int i ){
-		if( i < recoil_event.size() ) return &recoil_event.at(i);
+	inline std::shared_ptr<ISSRecoilEvt> GetRecoilEvt( unsigned int i ){
+		if( i < recoil_event.size() ) return std::make_shared<ISSRecoilEvt>( recoil_event.at(i) );
 		else return nullptr;
 	};
-	inline ISSMwpcEvt* GetMwpcEvt( unsigned int i ){
-		if( i < mwpc_event.size() ) return &mwpc_event.at(i);
+	inline std::shared_ptr<ISSMwpcEvt> GetMwpcEvt( unsigned int i ){
+		if( i < mwpc_event.size() ) return std::make_shared<ISSMwpcEvt>( mwpc_event.at(i) );
 		else return nullptr;
 	};
-	inline ISSElumEvt* GetElumEvt( unsigned int i ){
-		if( i < elum_event.size() ) return &elum_event.at(i);
+	inline std::shared_ptr<ISSElumEvt> GetElumEvt( unsigned int i ){
+		if( i < elum_event.size() ) return std::make_shared<ISSElumEvt>( elum_event.at(i) );
 		else return nullptr;
 	};
-	inline ISSZeroDegreeEvt* GetZeroDegreeEvt( unsigned int i ){
-		if( i < zd_event.size() ) return &zd_event.at(i);
+	inline std::shared_ptr<ISSZeroDegreeEvt> GetZeroDegreeEvt( unsigned int i ){
+		if( i < zd_event.size() ) return std::make_shared<ISSZeroDegreeEvt>( zd_event.at(i) );
 		else return nullptr;
 	};
 

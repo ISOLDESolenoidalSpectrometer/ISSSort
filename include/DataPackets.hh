@@ -154,17 +154,14 @@ public:
 	inline bool	IsCaen() { return caen_packets.size(); };
 	inline bool	IsInfo() { return info_packets.size(); };
 	
-	//inline void SetData( AsicData *data ) { ClearData(); asic_packets.push_back( data ); };
-	//inline void SetData( CaenData *data ) { ClearData(); caen_packets.push_back( data ); };
-	//inline void SetData( InfoData *data ) { ClearData(); info_packets.push_back( data ); };
-	void SetData( ISSAsicData *data );
-	void SetData( ISSCaenData *data );
-	void SetData( ISSInfoData *data );
+	void SetData( std::shared_ptr<ISSAsicData> data );
+	void SetData( std::shared_ptr<ISSCaenData> data );
+	void SetData( std::shared_ptr<ISSInfoData> data );
 
 	// These methods are not very safe for access
-	inline ISSAsicData* GetAsicData() { return &asic_packets.at(0); };
-	inline ISSCaenData* GetCaenData() { return &caen_packets.at(0); };
-	inline ISSInfoData* GetInfoData() { return &info_packets.at(0); };
+	inline std::shared_ptr<ISSAsicData> GetAsicData() { return std::make_shared<ISSAsicData>( asic_packets.at(0) ); };
+	inline std::shared_ptr<ISSCaenData> GetCaenData() { return std::make_shared<ISSCaenData>( caen_packets.at(0) ); };
+	inline std::shared_ptr<ISSInfoData> GetInfoData() { return std::make_shared<ISSInfoData>( info_packets.at(0) ); };
 	
 	// Complicated way to get the time...
 	unsigned long GetTime();

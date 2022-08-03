@@ -39,7 +39,7 @@ void ISSEvts::ClearEvt() {
 
 }
 
-void ISSEvts::AddEvt( ISSArrayEvt *event ) {
+void ISSEvts::AddEvt( std::shared_ptr<ISSArrayEvt> event ) {
 	
 	// Make a copy of the event and push it back
 	ISSArrayEvt fill_evt;
@@ -56,7 +56,7 @@ void ISSEvts::AddEvt( ISSArrayEvt *event ) {
 	
 }
 
-void ISSEvts::AddEvt( ISSArrayPEvt *event ) {
+void ISSEvts::AddEvt( std::shared_ptr<ISSArrayPEvt> event ) {
 	
 	// Make a copy of the event and push it back
 	ISSArrayPEvt fill_evt;
@@ -73,7 +73,7 @@ void ISSEvts::AddEvt( ISSArrayPEvt *event ) {
 	
 }
 
-void ISSEvts::AddEvt( ISSRecoilEvt *event ) {
+void ISSEvts::AddEvt( std::shared_ptr<ISSRecoilEvt> event ) {
 	
 	// Make a copy of the event and push it back
 	ISSRecoilEvt fill_evt;
@@ -87,7 +87,7 @@ void ISSEvts::AddEvt( ISSRecoilEvt *event ) {
 	
 }
 
-void ISSEvts::AddEvt( ISSMwpcEvt *event ) {
+void ISSEvts::AddEvt( std::shared_ptr<ISSMwpcEvt> event ) {
 	
 	// Make a copy of the event and push it back
 	ISSMwpcEvt fill_evt;
@@ -99,7 +99,7 @@ void ISSEvts::AddEvt( ISSMwpcEvt *event ) {
 	
 }
 
-void ISSEvts::AddEvt( ISSElumEvt *event ) {
+void ISSEvts::AddEvt( std::shared_ptr<ISSElumEvt> event ) {
 	
 	// Make a copy of the event and push it back
 	ISSElumEvt fill_evt;
@@ -112,7 +112,7 @@ void ISSEvts::AddEvt( ISSElumEvt *event ) {
 	
 }
 
-void ISSEvts::AddEvt( ISSZeroDegreeEvt *event ) {
+void ISSEvts::AddEvt( std::shared_ptr<ISSZeroDegreeEvt> event ) {
 	
 	// Make a copy of the event and push it back
 	ISSZeroDegreeEvt fill_evt;
@@ -152,7 +152,7 @@ void ISSArrayEvt::SetEvent( float mypen, float mynen,
 	
 }
 
-void ISSArrayEvt::CopyEvent( ISSArrayEvt *in ){
+void ISSArrayEvt::CopyEvent( std::shared_ptr<ISSArrayEvt> in ){
 	
 	pen 	= in->GetPEnergy();
 	ptime	= in->GetPTime();

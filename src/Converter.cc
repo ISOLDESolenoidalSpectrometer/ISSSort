@@ -47,10 +47,11 @@ void ISSConverter::SetOutput( std::string output_file_name ){
 void ISSConverter::MakeTree() {
 
 	// Create Root tree
-	const int splitLevel = 0; // don't split branches = 0, full splitting = 99
-	const int bufsize = sizeof(ISSCaenData) + sizeof(ISSAsicData) + sizeof(ISSInfoData);output_tree = new TTree( "iss", "iss" );
-	data_packet = new ISSDataPackets;
-	data_branch = output_tree->Branch( "data", "ISSDataPackets", &data_packet, bufsize, splitLevel );
+	const int splitLevel = 2; // don't split branches = 0, full splitting = 99
+	const int bufsize = sizeof(ISSCaenData) + sizeof(ISSAsicData) + sizeof(ISSInfoData);
+	output_tree = new TTree( "iss", "iss" );
+	data_packet = std::make_unique<ISSDataPackets>();
+	output_tree->Branch( "data", "ISSDataPackets", data_packet.get(), bufsize, splitLevel );
 
 	sorted_tree = (TTree*)output_tree->CloneTree(0);
 	sorted_tree->SetName("iss_sort");
@@ -58,15 +59,12 @@ void ISSConverter::MakeTree() {
 	sorted_tree->SetDirectory( output_file->GetDirectory("/") );
 	output_tree->SetDirectory( output_file->GetDirectory("/") );
 	
-	output_tree->SetAutoFlush();
-	sorted_tree->SetAutoFlush();
+	output_tree->SetAutoFlush(-1e9);
+	sorted_tree->SetAutoFlush(-1e9);
 
-	output_tree->SetCacheSize(1e9);
-	sorted_tree->SetCacheSize(1e9);
-
-	asic_data = new ISSAsicData();
-	caen_data = new ISSCaenData();
-	info_data = new ISSInfoData();
+	asic_data = std::make_shared<ISSAsicData>();
+	caen_data = std::make_shared<ISSCaenData>();
+	info_data = std::make_shared<ISSInfoData>();
 
 	asic_data->ClearData();
 	caen_data->ClearData();

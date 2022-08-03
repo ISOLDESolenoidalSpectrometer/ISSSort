@@ -55,7 +55,7 @@ CPPFLAGS		+= -DSRIM_DIR=$(SRIM_DIR)
 # Linker.
 LD          = $(shell root-config --ld)
 # Flags for linker.
-LDFLAGS 	+= $(ROOTLDFLAGS)
+LDFLAGS 	+= $(ROOTLDFLAGS) -g
 
 # The object files.
 OBJECTS =  		$(SRC_DIR)/AutoCalibrator.o \

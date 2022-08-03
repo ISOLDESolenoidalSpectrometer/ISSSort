@@ -131,12 +131,6 @@ ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
 	
 }
 
-ISSEventBuilder::~ISSEventBuilder(){
-
-	delete in_data;
-	
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 /// Reset private-member counters, arrays and flags for processing the next input file. Called in the ISSEventBuilder::SetInputFile and ISSEventBuilder::SetInputTree functions
 void ISSEventBuilder::StartFile(){
@@ -239,7 +233,7 @@ void ISSEventBuilder::SetInputTree( TTree *user_tree ){
 	// Find the tree and set branch addresses
 	input_tree = user_tree;
 	in_data = nullptr;
-	input_tree->SetBranchAddress( "data", &in_data, &data_branch );
+	input_tree->SetBranchAddress( "data", &in_data );
 
 	return;
 	
@@ -251,20 +245,20 @@ void ISSEventBuilder::SetInputTree( TTree *user_tree ){
 void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 
 	// These are the branches we need
-	write_evts = new ISSEvts();
-	//array_evt = new ISSArrayEvt();
-	//arrayp_evt = new ISSArrayPEvt();
-	//recoil_evt = new ISSRecoilEvt();
-	//mwpc_evt = new ISSMwpcEvt();
-	//elum_evt = new ISSElumEvt();
-	//zd_evt = new ISSZeroDegreeEvt();
+	write_evts	= std::make_unique<ISSEvts>();
+	array_evt	= std::make_shared<ISSArrayEvt>();
+	arrayp_evt	= std::make_shared<ISSArrayPEvt>();
+	recoil_evt	= std::make_shared<ISSRecoilEvt>();
+	mwpc_evt	= std::make_shared<ISSMwpcEvt>();
+	elum_evt	= std::make_shared<ISSElumEvt>();
+	zd_evt		= std::make_shared<ISSZeroDegreeEvt>();
 
 	// ------------------------------------------------------------------------ //
 	// Create output file and create events tree
 	// ------------------------------------------------------------------------ //
 	output_file = new TFile( output_file_name.data(), "recreate" );
 	output_tree = new TTree( "evt_tree", "evt_tree" );
-	output_tree->Branch( "ISSEvts", "ISSEvts", &write_evts );
+	output_tree->Branch( "ISSEvts", "ISSEvts", write_evts.get() );
 	output_tree->SetAutoFlush();
 
 	// Create log file.
@@ -382,6 +376,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	for( unsigned long i = 0; i < n_entries; ++i ) {
 		
 		// Current event data
+		//in_data->ClearData();
 		if( i == 0 ) input_tree->GetEntry(i);
 		
 		// Get the time of the event
@@ -992,9 +987,6 @@ void ISSEventBuilder::ArrayFinder() {
 	float pmax_en, nmax_en;		// Stores the maximum energy for the p-side and n-side hits
 	float psum_en, nsum_en;		// Stores the summed energy for the p-side and n-side hits
 
-	// Event structures
-	ISSArrayEvt *array_evt = new ISSArrayEvt();
-	ISSArrayPEvt *arrayp_evt = new ISSArrayPEvt();
 	
 	// Do each module and row individually
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
@@ -1847,8 +1839,8 @@ void ISSEventBuilder::ArrayFinder() {
 	} // i; module
 	
 	// Clean up
-	delete array_evt;
-	delete arrayp_evt;
+	//delete array_evt;
+	//delete arrayp_evt;
 	
 	return;
 
@@ -1861,9 +1853,6 @@ void ISSEventBuilder::RecoilFinder() {
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
 	bool flag_skip;
-
-	// Event structure
-	ISSRecoilEvt *recoil_evt = new ISSRecoilEvt();
 	
 	// Loop over recoil events
 	for( unsigned int i = 0; i < ren_list.size(); ++i ) {
@@ -1925,7 +1914,7 @@ void ISSEventBuilder::RecoilFinder() {
 	}
 	
 	// Clean up
-	delete recoil_evt;
+	//delete recoil_evt;
 	
 	return;
 
@@ -1940,9 +1929,6 @@ void ISSEventBuilder::MwpcFinder() {
 	bool flag_skip;
 	int tac_diff;
 
-	// Event structure
-	ISSMwpcEvt *mwpc_evt = new ISSMwpcEvt();
-	
 	// Loop over MWPC events
 	for( unsigned int i = 0; i < mwpctac_list.size(); ++i ) {
 
@@ -1995,7 +1981,7 @@ void ISSEventBuilder::MwpcFinder() {
 	}
 
 	// Clean up
-	delete mwpc_evt;
+	//delete mwpc_evt;
 
 	return;
 	
@@ -2004,9 +1990,6 @@ void ISSEventBuilder::MwpcFinder() {
 ////////////////////////////////////////////////////////////////////////////////
 /// Assesses the validity of events in the ELUM detector
 void ISSEventBuilder::ElumFinder() {
-	
-	// Event structure
-	ISSElumEvt *elum_evt = new ISSElumEvt();
 	
 	// Loop over ELUM events
 	for( unsigned int i = 0; i < een_list.size(); ++i ) {
@@ -2030,7 +2013,7 @@ void ISSEventBuilder::ElumFinder() {
 	}
 	
 	// Clean up
-	delete elum_evt;
+	//delete elum_evt;
 	
 	return;
 	
@@ -2041,9 +2024,6 @@ void ISSEventBuilder::ElumFinder() {
 /// as the trigger, even though there may not be a corresponding E signal on this detector. Also imposes a 
 /// prompt coincidence on these hits, which can be altered in the ISSSettings file
 void ISSEventBuilder::ZeroDegreeFinder() {
-	
-	// Event structure
-	ISSZeroDegreeEvt *zd_evt = new ISSZeroDegreeEvt();
 
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
@@ -2093,7 +2073,7 @@ void ISSEventBuilder::ZeroDegreeFinder() {
 	}
 	
 	// Clean up
-	delete zd_evt;
+	//delete zd_evt;
 
 	return;
 	

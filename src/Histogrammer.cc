@@ -683,7 +683,6 @@ unsigned long ISSHistogrammer::FillHists() {
 	for( unsigned int i = 0; i < n_entries; ++i ){
 
 		// Current event data
-		read_evts->ClearEvt();
 		input_tree->GetEntry(i);
 		
 		// tdiff variable
