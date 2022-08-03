@@ -29,6 +29,7 @@ ISSCalibration::ISSCalibration( std::string filename, ISSSettings *myset ) {
 	SetFile( filename );
 	set = myset;
 	ReadCalibration();
+	fRand = new TRandom();
 	
 	// Root finder algorithm
 	fa = std::make_unique<TF1>( "walk_function", walk_function, -2e4, 2e4, 5 );
@@ -133,7 +134,6 @@ void ISSCalibration::ReadCalibration() {
 float ISSCalibration::AsicEnergy( unsigned int mod, unsigned int asic, unsigned int chan, unsigned short raw ) {
 	
 	float energy, raw_rand;
-	TRandom *fRand = new TRandom();
 	
 	if( mod < set->GetNumberOfArrayModules() &&
 	   asic < set->GetNumberOfArrayASICs() &&
@@ -155,9 +155,7 @@ float ISSCalibration::AsicEnergy( unsigned int mod, unsigned int asic, unsigned 
 		else return energy;
 		
 	}
-	
-	delete fRand;
-	
+		
 	return -1;
 	
 }
@@ -256,7 +254,6 @@ float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energ
 float ISSCalibration::CaenEnergy( unsigned int mod, unsigned int chan, unsigned short raw ) {
 	
 	float energy, raw_rand;
-	TRandom *fRand = new TRandom();
 	
 	//std::cout << "mod=" << mod << "; chan=" << chan << std::endl;
 
@@ -280,9 +277,7 @@ float ISSCalibration::CaenEnergy( unsigned int mod, unsigned int chan, unsigned 
 		else return energy;
 		
 	}
-	
-	delete fRand;
-	
+
 	return -1;
 	
 }

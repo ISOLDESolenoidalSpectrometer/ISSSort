@@ -1178,7 +1178,7 @@ unsigned long long ISSConverter::SortTree(){
 	// Check we have entries and build time-ordered index
 	if( output_tree->GetEntries() ){
 
-		std::cout << "Building time-ordered index of events..." << std::endl;
+		std::cout << "\n Building time-ordered index of events..." << std::endl;
 		output_tree->BuildIndex( "data.GetTime()" );
 
 	}

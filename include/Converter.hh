@@ -67,7 +67,7 @@ public:
 	void SetOutput( std::string output_file_name );
 	
 	inline void CloseOutput(){
-		std::cout << "Writing events and closing the file" << std::endl;
+		std::cout << "\nWriting events and closing the file" << std::endl;
 		output_tree->SetDirectory(0);
 		output_tree->Delete();
 		output_file->Write( 0, TObject::kWriteDelete );

@@ -32,7 +32,9 @@ class ISSCalibration {
 public:
 
 	ISSCalibration( std::string filename, ISSSettings *myset );
-	inline virtual ~ISSCalibration() {};
+	inline virtual ~ISSCalibration() {
+		delete fRand;
+	};
 	void ReadCalibration();
 	void PrintCalibration( std::ostream &stream, std::string opt );
 	void SetFile( std::string filename ){
@@ -108,6 +110,8 @@ private:
 	std::string fInputFile;
 	
 	ISSSettings *set;
+	
+	TRandom *fRand;
 
 	std::vector< std::vector< std::vector<float> > > fAsicOffset;
 	std::vector< std::vector< std::vector<float> > > fAsicGain;
