@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "TVector2.h"
 #include "TVector3.h"

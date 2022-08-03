@@ -1,6 +1,8 @@
 #ifndef __DATAPACKETS_hh
 #define __DATAPACKETS_hh
 
+#include <memory>
+
 #include "TObject.h"
 
 class ISSAsicData : public TObject {

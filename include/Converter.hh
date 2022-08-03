@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <cstring>
+#include <memory>
 
 #include <TFile.h>
 #include <TTree.h>
