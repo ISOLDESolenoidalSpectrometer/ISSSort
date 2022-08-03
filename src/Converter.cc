@@ -1188,6 +1188,7 @@ unsigned long long ISSConverter::SortTree(){
 	for( unsigned long i = 0; i < nb_idx; ++i ) {
 		
 		unsigned long long idx = att_index->GetIndex()[i];
+		if( output_tree->MemoryFull(3000) ) output_tree->DropBaskets();
 		output_tree->GetEntry( idx );
 		sorted_tree->Fill();
 
@@ -1221,6 +1222,7 @@ unsigned long long ISSConverter::SortTree(){
 	}
 	
 	// Reset the output tree so it's empty after we've finished
+	output_tree->FlushBaskets();
 	output_tree->Reset();
 
 	return nb_idx;
