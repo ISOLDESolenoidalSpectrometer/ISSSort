@@ -1187,6 +1187,7 @@ unsigned long long ISSConverter::SortTree(){
 	// Loop on t_raw entries and fill t
 	for( unsigned long i = 0; i < nb_idx; ++i ) {
 		
+		data_packet->ClearData();
 		unsigned long long idx = att_index->GetIndex()[i];
 		if( output_tree->MemoryFull(3000) ) output_tree->DropBaskets();
 		output_tree->GetEntry( idx );
