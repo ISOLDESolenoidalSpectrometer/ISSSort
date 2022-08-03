@@ -1161,7 +1161,7 @@ unsigned long long ISSConverter::SortTree(){
 	sorted_tree->Reset();
 	
 	// Load the full tree if possible
-	output_tree->LoadBaskets();
+	output_tree->LoadBaskets(2000000000);
 	
 	// Check we have entries and build time-ordered index
 	if( output_tree->GetEntries() ){
