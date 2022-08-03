@@ -98,6 +98,10 @@ void ISSConverter::MakeHists() {
 		subdirname = "/module_" + std::to_string(i);
 		dirname = maindirname + subdirname;
 		
+		if( !output_file->GetDirectory( dirname.data() ) )
+			output_file->mkdir( dirname.data() );
+		output_file->cd( dirname.data() );
+			
 		// calibrated p-side sum
 		hname = "pside_mod" + std::to_string(i);
 		htitle = "Calibrated p-side ASIC spectra for module " + std::to_string(i);

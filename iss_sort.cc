@@ -762,7 +762,7 @@ int main( int argc, char *argv[] ){
 		do_autocal();
 	}
 	std::cout << "\n\nFinished!\n";
-			
+
 	return 0;
 
 }
