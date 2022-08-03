@@ -379,6 +379,17 @@ void do_build(){
 		name_input_file = input_names.at(i) + ".root";
 		//name_input_file = input_names.at(i) + "_sort.root";
 		name_output_file = input_names.at(i) + "_events.root";
+		
+		// Check if the input file exists
+		ftest.open( name_input_file.data() );
+		if( !ftest.is_open() ) {
+			
+			std::cerr << name_input_file << " does not exist" << std::endl;
+			continue;
+			
+		}
+		else ftest.close();
+
 
 		// We need to do event builder if we just converted it
 		// specific request to do new event build with -e
@@ -434,22 +445,36 @@ void do_hist(){
 
 	std::ifstream ftest;
 	std::string name_input_file;
-	std::string name_output_file;
 	
-	hist.SetOutput( output_name );
 	std::vector<std::string> name_hist_files;
 	
 	// We are going to chain all the event files now
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 
-		name_output_file = input_names.at(i) + "_events.root";
-		name_hist_files.push_back( name_output_file );
+		name_input_file = input_names.at(i) + "_events.root";
+
+		ftest.open( name_input_file.data() );
+		if( !ftest.is_open() ) {
+			
+			std::cerr << name_input_file << " does not exist" << std::endl;
+			continue;
+			
+		}
+		else ftest.close();
+
+		name_hist_files.push_back( name_input_file );
 		
 	}
 
-	hist.SetInputFile( name_hist_files );
-	hist.FillHists();
-	hist.CloseOutput();
+	// Only do something if there are valid files
+	if( name_hist_files.size() ) {
+		
+		hist.SetOutput( output_name );
+		hist.SetInputFile( name_hist_files );
+		hist.FillHists();
+		hist.CloseOutput();
+	
+	}
 	
 	return;
 	
