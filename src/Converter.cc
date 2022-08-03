@@ -661,6 +661,7 @@ void ISSConverter::ProcessASICData(){
 			data_packet->SetData( info_data );
 			if( !flag_source ) output_tree->Fill();
 			info_data->Clear();
+			data_packet->ClearData();
 			
 		}
 		
@@ -704,6 +705,7 @@ void ISSConverter::ProcessASICData(){
 		data_packet->SetData( asic_data );
 		if( !flag_source ) output_tree->Fill();
 		asic_data->Clear();
+		data_packet->ClearData();
 		
 		// Count asic hit per module
 		ctr_asic_hit[my_mod_id]++;
@@ -865,6 +867,7 @@ void ISSConverter::FinishCAENData(){
 			data_packet->SetData( info_data );
 			if( !flag_source ) output_tree->Fill();
 			info_data->Clear();
+			data_packet->ClearData();
 
 			// Fill histograms for external trigger
 			if( my_info_code == set->GetCAENPulserCode() ) {
@@ -886,6 +889,7 @@ void ISSConverter::FinishCAENData(){
 			caen_data->SetTime( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
 			data_packet->SetData( caen_data );
 			if( !flag_source ) output_tree->Fill();
+			data_packet->ClearData();
 			
 			//std::cout << "Complete CAEN event" << std::endl;
 			//std::cout << "Trace length = " << caen_data->GetTraceLength() << std::endl;
@@ -1008,6 +1012,7 @@ void ISSConverter::ProcessInfoData(){
 		data_packet->SetData( info_data );
 		if( !flag_source ) output_tree->Fill();
 		info_data->Clear();
+		data_packet->ClearData();
 
 	}
 
