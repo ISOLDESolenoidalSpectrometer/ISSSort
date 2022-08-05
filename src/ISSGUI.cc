@@ -762,7 +762,7 @@ void ISSGUI::gui_autocal(){
 	//-----------------------------------//
 	// Run automatic calibration routine //
 	//-----------------------------------//
-	ISSAutoCalibrator autocal( myset.get(), myrea.get() );
+	ISSAutoCalibrator autocal( myset.get(), myrea.get(), "" ); // TODO implement autocal file here!
 	autocal.AddProgressBar( prog_hist );
 	autocal.AddCalibration( mycal.get() );
 	std::cout << "\n +++ ISS Analysis:: processing AutoCalibration +++" << std::endl;
@@ -824,7 +824,7 @@ void ISSGUI::gui_autocal(){
 	gSystem->Exec( cmd.data() );
 	
 	// Give this file to the autocalibrator
-	if( autocal.SetInputFile( name_output_file ) ) return;
+	if( autocal.SetOutputFile( name_output_file ) ) return;
 	autocal.DoFits();
 	autocal.SaveCalFile( name_results_file );
 	

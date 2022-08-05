@@ -2,7 +2,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// This constructs the event-builder object, setting parameters for this process by grabbing information from the settings file (or using default parameters defined in the constructor)
 /// \param[in] myset The ISSSettings object which is constructed by the ISSSettings constructor used in iss_sort.cc
-///////////////////////////////////////////////////////////////////////////////
 ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
 	
 	// First get the settings
@@ -1867,7 +1866,7 @@ void ISSEventBuilder::RecoilFinder() {
 			
 			index.push_back(i);
 
-			// Look for matching dE events
+			// Look for matching E events
 			for( unsigned int j = 0; j < ren_list.size(); ++j ) {
 
 				// Check if we already used this hit
@@ -1886,6 +1885,7 @@ void ISSEventBuilder::RecoilFinder() {
 				
 					index.push_back(j);
 					recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
+					recoil_EdE[rsec_list[i]]->Fill( ren_list[j], ren_list[i] );
 					
 					if( rid_list[j] == (int)set->GetRecoilEnergyLossDepth() ){
 					
@@ -1993,22 +1993,23 @@ void ISSEventBuilder::ElumFinder() {
 	
 	// Loop over ELUM events
 	for( unsigned int i = 0; i < een_list.size(); ++i ) {
-	
-		// Reject high-energy events - TODO TEMPORARY MEASURE!! THIS SHOULD BE DONE A LOT BETTER
-		if ( een_list[i] < 8000 ){
 
-			// Set the ELUM event (nice and easy)
-			elum_evt->SetEvent( een_list[i], 0,
-								esec_list[i], etd_list[i] );
+		// Set the ELUM event (nice and easy)
+		elum_evt->SetEvent( een_list[i], 0,
+							esec_list[i], etd_list[i] );
 
-			// Write event to tree
-			write_evts->AddEvt( elum_evt );
-			elum_ctr++;
-			
-			// Histogram the data
-			elum->Fill( esec_list[i], een_list[i] );
+		// Write event to tree
+		write_evts->AddEvt( elum_evt );
+		elum_ctr++;
 		
-		}
+		// Histogram the data
+		elum->Fill( esec_list[i], een_list[i] );
+		
+		/*if ( een_list[i] > 8000 ){
+			std::cout << std::setw(2) << esec_list[i] <<
+			std::setw(8) << een_list[i] <<
+			std::setw(16) << etd_list[i] << std::endl;
+		}*/
 		
 	}
 	
@@ -2345,6 +2346,11 @@ void ISSEventBuilder::MakeEventHists(){
 		htitle = "Recoil dE vs Esum for sector " + std::to_string(i);
 		htitle += ";Total energy, Esum [keV];Energy loss, dE [keV];Counts";
 		recoil_dEsum[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 200000, 2000, 0, 200000 );
+		
+		hname = "recoil_EdE_raw" + std::to_string(i);
+		htitle = "Recoil dE vs E for sector " + std::to_string(i);
+		htitle += ";Rest energy, E [arb.];Energy loss, dE [arb.];Counts";
+		recoil_EdE_raw[i] = new TH2F( hname.data(), htitle.data(), 2048, 0, 65536, 2048, 0, 65536 );
 	
 		hname = "recoil_E_singles" + std::to_string(i);		
 		htitle = "Recoil E singles in sector " + std::to_string(i);
@@ -2534,6 +2540,10 @@ void ISSEventBuilder::CleanHists() {
 	for( unsigned int i = 0; i < recoil_dEsum.size(); i++ )
 		delete (recoil_dEsum[i]);
 	recoil_dEsum.clear();
+	
+	for( unsigned int i = 0; i < recoil_EdE_raw.size(); i++ )
+		delete (recoil_EdE_raw[i]);
+	recoil_EdE_raw.clear();
 		
 	for( unsigned int i = 0; i < recoil_E_singles.size(); i++ )
 		delete (recoil_E_singles[i]);

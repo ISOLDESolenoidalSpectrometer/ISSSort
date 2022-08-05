@@ -49,6 +49,7 @@ std::string datadir_name = "/eos/experiment/isolde-iss/2022/ISS";
 std::string name_set_file;
 std::string name_cal_file;
 std::string name_react_file;
+std::string name_autocal_file;
 std::vector<std::string> input_names;
 
 // a flag at the input to force or not the conversion
@@ -485,9 +486,18 @@ void do_autocal(){
 	//-----------------------------------//
 	// Run automatic calibration routine //
 	//-----------------------------------//
-	ISSAutoCalibrator autocal( myset, myreact );
+	ISSAutoCalibrator autocal( myset, myreact, name_autocal_file );
 	autocal.AddCalibration( mycal );
 	std::cout << "\n +++ ISS Analysis:: processing AutoCalibration +++" << std::endl;
+	
+	// Autocal debug messages
+	if ( autocal.GetDebugStatus() ){
+		std::cout << "  !  AUTOCAL DEBUG MODE" << std::endl;
+		std::cout << "  !  Fitting " << autocal.GetFitShapeName() << "s" << std::endl;
+		if ( autocal.OnlyManualFitStatus() ){
+			std::cout << "  !  Doing manual fits only" << std::endl;
+		}
+	}
 
 	TFile *rtest;
 	std::ifstream ftest;
@@ -532,7 +542,7 @@ void do_autocal(){
 	gSystem->Exec( cmd.data() );
 	
 	// Give this file to the autocalibrator
-	if( autocal.SetInputFile( name_output_file ) ) return;
+	if( autocal.SetOutputFile( name_output_file ) ) return;
 	autocal.DoFits();
 	autocal.SaveCalFile( name_results_file );
 	
@@ -548,6 +558,7 @@ int main( int argc, char *argv[] ){
 	interface->Add("-s", "Settings file", &name_set_file );
 	interface->Add("-c", "Calibration file", &name_cal_file );
 	interface->Add("-r", "Reaction file", &name_react_file );
+	interface->Add("-autocalfile", "Alpha source fit control file", &name_autocal_file );
 	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
 	interface->Add("-e", "Flag to force new event builder (new calibration)", &flag_events );
 	interface->Add("-source", "Flag to define an source only run", &flag_source );
@@ -587,7 +598,19 @@ int main( int argc, char *argv[] ){
 	}
 	
 	// Check if this is a source run
-	if( flag_autocal ) flag_source = true;
+	if( flag_autocal ){
+		flag_source = true;
+		
+		if ( name_autocal_file.length() > 0 ){
+			std::cout << "Autocal file: " << name_autocal_file << std::endl;
+		}
+		else{
+			std::cout << "No autocal file provided. Using defaults." << std::endl;
+			name_autocal_file = "dummy";
+		}
+		
+	}
+	
 	
 	// Check if we should be monitoring the input
 	if( flag_spy ) {

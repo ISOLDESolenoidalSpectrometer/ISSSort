@@ -57,7 +57,7 @@
 * \details The ISSEventBuilder Class takes a list of time-sorted events from all of the detectors, and packages them up into a series of physics events. The time-sorted events are looped over, and each different data type (ASIC/CAEN/INFO) is dealt with appropriately, and stored as their respective different data types. Any ASIC or CAEN hit above threshold is able to open an event window (specified by the user in the settings file which goes with the ISSSettings class). The next entry in the tree is probed in order to work out whether the event window should be closed. 
 *
 * When the event window closes, each detector has its own "finder function": ISSEventBuilder::ArrayFinder, ISSEventBuilder::RecoilFinder, ISSEventBuilder::MwpcFinder, ISSEventBuilder::ElumFinder, and ISSEventBuilder::ZeroDegreeFinder. These functions process the events on each detector, imposing prompt coincidence conditions amongst other sanity checks. Once processed, all of these hits on the different detectors are packaged up into a single event in an ISSEvts tree.
-* The constructor for this class requires an ISSSettings object, which allows it to use parameters defined in the ``settings.dat'' file. This includes:
+* The constructor for this class requires an ISSSettings object, which allows it to use parameters defined in the "settings.dat" file. This includes:
 * - Settings which encode the wiring of the detectors e.g. the number of CAEN modules used.
 * - The size of the event window used to combine events
 *
@@ -111,7 +111,8 @@ public:
 	inline void AddProgressBar( std::shared_ptr<TGProgressBar> myprog ){
 		prog = myprog;
 		_prog_ = true;
-	}; ///< 
+	}; ///< Adds a progress bar to the GUI
+	///< \param[in] myprog pointer to the EventBuilder progress bar for the GUI
 
 
 private:
@@ -309,13 +310,14 @@ private:
 	std::vector<TProfile*> fpga_freq; 			///< TProfile containing the FPGA frequency as a function of FPGA time for a given module of the array
 	std::vector<TProfile*> fpga_sync;			///< TProfile containing the time difference between FPGA pulses as a function of FPGA time for a given module of the array
 	std::vector<TProfile*> asic_pulser_loss;	///< TProfile counting the difference between the number of ASIC pulses and CAEN pulses as a function of ASIC time for a given module of the array
-	std::vector<TProfile*> asic_freq_diff; 		///< TProfile detailing the differece between the ASIC frequency and the CAEN frequency as a function of ASIC time for a given module of the array
+	std::vector<TProfile*> asic_freq_diff; 		///< TProfile detailing the differece between the ASIC frequency and the CAEN frequency as a function of ASIC time for a given module of the array	
 	std::vector<TProfile*> asic_freq;			///< TProfile containing the ASIC frequency as a function of ASIC time for a given module of the array
 	std::vector<TProfile*> asic_sync;			///< TProfile containing the time difference between ASIC pulses as a function of ASIC time for a given module of the array
 
 	// Recoil histograms
-	std::vector<TH2F*> recoil_EdE;				///< Histogram for the recoil E-dE that are real
-	std::vector<TH2F*> recoil_dEsum;			///< Histogram for the recoil E+dE vs E
+	std::vector<TH2F*> recoil_EdE;				///< Histogram for the recoil E-dE that are real (calibrated)
+	std::vector<TH2F*> recoil_dEsum;			///< Histogram for the recoil E+dE vs E (calibrated)
+	std::vector<TH2F*> recoil_EdE_raw;			///< Histogram for the recoil E-dE that are real (raw)
 	std::vector<TH1F*> recoil_E_singles;		///< Histogram containing the single E signals
 	std::vector<TH1F*> recoil_dE_singles;		///<  Histogram containing the single dE signals
 	std::vector<TH1F*> recoil_E_dE_tdiff;		///<  Histogram calculating the time difference between E and dE signals

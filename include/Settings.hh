@@ -8,9 +8,11 @@
 #include "TSystem.h"
 #include "TEnv.h"
 
-/// A class to read in the settings file in ROOT's TConfig format.
-/// This has the number of modules, channels and things
-/// It also defines which detectors are which
+/*! \brief Class to implement user "settings" to the ISS sort code
+*
+* A class to read in the settings file in ROOT's TConfig format. The ISSSettings class contains all the information about detector layout, data settings, and defines which detector is which. These can be changed directly in the settings file that is fed into ISSSort using the "-s" flag.
+*
+*/ 
 
 class ISSSettings {
 

@@ -1,0 +1,68 @@
+# Autocal file for ISSSort
+#
+# Pass this file to iss_sort with the -autocalfile flag
+#
+# Patrick MacGregor - August 2022
+# patrick.macgregor@manchester.ac.uk
+#
+# Below are the default parameters that can be changed by uncommenting
+# and passing this file to iss_sort during the (optional) autocal stage.
+#
+#
+## Autocal global control options
+#AutocalDebug: 0			// This prints more files and text to the console (if true) for the autocal stage if you are running into problems! But it will make the code run slower...
+#AutocalOnlyManualFits: 0	// This only runs autocal on channels that have their fit parameters specified in this file
+#AutocalFitShape: 0 // This chooses which kind of fit the code uses. The options are:
+#					//		Gaussian = 0
+#					//		Crystal Ball = 1
+#AutocalRebinFactor: 1		// This decides how much to rebin the spectrum by. This must be an integer > 1 to do anything
+#AutocalImageFileType: png	// The file type for images it prints. Make sure it's one ROOT can use (and is lowercase)!
+#AutocalPrintBadCalibrations: 0	// Prints the calibration parameters for fits that fail to converge
+#
+#
+## Autocal default fitting options
+## Here, you can decide to override the default fitting options. These
+## will apply globally to everything APART from the manually set
+## parameters below
+#DefaultFit.Background: 0.1							// Initial guess for background of alpha spectrum
+#DefaultFit.BackgroundLB: 0.0						// Lower limit for background of alpha spectrum
+#DefaultFit.BackgroundUB: 50.0						// Upper limit for background of alpha spectrum
+#DefaultFit.Sigma: 2.5								// Initial guess for sigma of each peak in alpha spectrum
+#DefaultFit.SigmaLB: 0.2							// Lower limit for sigma of each peak in alpha spectrum
+#DefaultFit.SigmaUB: 10.0							// Upper limit for sigma of each peak in alpha spectrum
+#DefaultFit.CrystalBallAlpha: 1						// Initial guess for alpha for crystal ball fit in alpha spectrum
+#DefaultFit.CrystalBallAlphaLB: 1e-6				// Lower limit for alpha for crystal ball fit in alpha spectrum
+#DefaultFit.CrystalBallAlphaUB: 10					// Upper limit for alpha for crystal ball fit in alpha spectrum
+#DefaultFit.CrystalBallN: 1							// Initial guess for n for crystal ball fit in alpha spectrum
+#DefaultFit.CrystalBallNLB: 1e-6					// Lower limit for n for crystal ball fit in alpha spectrum
+#DefaultFit.CrystalBallNUB: 20						// Upper limit for n for crystal ball fit in alpha spectrum
+#DefaultFit.AmplitudeFractionLB: 0.2				// The lower limit for the amplitude of a peak expressed as a fraction of the height of the bin
+#DefaultFit.AmplitudeFractionUB: 2.0				// The upper limit for the amplitude of a peak expressed as a fraction of the height of the bin
+#DefaultFit.PeakWidthEstimate: 30					// A guess for the width of a window, centred on the centroid guess, that determines the upper and lower bounds for the centroid parameter
+#DefaultFit.PeakHeightThresholdFraction: 0.08		// This fraction multiplied by the maximum amplitude in the spectrum determines a threshold on the number of counts, over which each peak must rise
+#DefaultFit.PeakHeightDipFraction: 0.6				// Ensures that the number of counts has dipped to this fraction of the height of the last peak before being ready to record another peak
+#DefaultFit.PeakChannelThresholdLB: 360				// Puts a lower limit on the channel number where peaks can be identified and fit
+#DefaultFit.PeakChannelThresholdUB: 700				// Puts an upper limit on the channel number where peaks can be identified and fit
+#
+## Autocal manual fitting options
+## Use this to set manual calibration parameters on particular modules, asics, 
+## and channels. This will to replace the "FindPeaks" function in the Autocal 
+## part of ISSSort, and gives a bit more fine tuning as to what the fitting does.
+#
+# The different parameters are:
+#   man_<mod>_<asic>_<ch>.Background:		# This is the estimate of the background in the spectrum
+#   man_<mod>_<asic>_<ch>.BackgroundLB:		# Lower bound constraint for background
+#   man_<mod>_<asic>_<ch>.BackgroundUB:		# Upper bound constraint for background
+#   man_<mod>_<asic>_<ch>.Sigma:			# This is the estimate of the standard deviation of your distribution
+#   man_<mod>_<asic>_<ch>.SigmaLB:			# Lower bound constraint for background
+#   man_<mod>_<asic>_<ch>.SigmaUB:			# Upper bound constraint for background
+#   man_<mod>_<asic>_<ch>.Centroid_<peak number>:		# This is the guess of where the centroid of the peak is
+#   man_<mod>_<asic>_<ch>.CentroidLB_<peak number>:		# Lower bound constraint for background
+#   man_<mod>_<asic>_<ch>.CentroidUB_<peak number>:		# Upper bound constraint for background
+#
+## Using any of these switches will turn on the manual fitting boolean. This
+## behaviour can also be controlled/override any behaviour here by using the 
+## switch:
+#   man_<mod>_<asic>_<ch>:	# 1 = turn on manual fitting; 0 = turn off, even if we have specified fitting parameters!
+
+
