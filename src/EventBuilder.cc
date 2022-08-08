@@ -354,6 +354,11 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	
 	/// Function to loop over the sort tree and build array and recoil events
 
+	// Load the full tree if possible
+	output_tree->SetMaxVirtualSize(2e9); // 2GB
+	input_tree->SetMaxVirtualSize(2e9); // 2GB
+	input_tree->LoadBaskets(1e9); // Load 2 GB of data to memory
+
 	if( input_tree->LoadTree(0) < 0 ){
 		
 		std::cout << " Event Building: nothing to do" << std::endl;
@@ -375,7 +380,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	for( unsigned long i = 0; i < n_entries; ++i ) {
 		
 		// Current event data
-		//in_data->ClearData();
+		if( input_tree->MemoryFull(30e6) )
+			input_tree->DropBaskets();
 		if( i == 0 ) input_tree->GetEntry(i);
 		
 		// Get the time of the event
@@ -883,6 +889,9 @@ unsigned long ISSEventBuilder::BuildEvents() {
 					write_evts->GetZeroDegreeMultiplicity() )
 					output_tree->Fill();
 
+				// Clean up if the next event is going to make the tree full
+				if( output_tree->MemoryFull(30e6) )
+					output_tree->DropBaskets();
 			}
 			
 			//--------------------------------------------------
@@ -963,13 +972,19 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	std::cout << ss_log.str();
 	if( log_file.is_open() && flag_input_file ) log_file << ss_log.str();
 	
-	std::cout << "Writing output file...\r";
+	std::cout << " Writing output file...\r";
 	std::cout.flush();
+	
+	// Force the rest of the events in the buffer to disk
+	output_tree->FlushBaskets();
 	output_file->Write( 0, TObject::kWriteDelete );
 	//output_file->Print();
 	//output_file->Close();
 	
-	std::cout << "Writing output file... Done!" << std::endl << std::endl;
+	// Dump the input buffers
+	input_tree->DropBaskets();
+
+	std::cout << " Writing output file... Done!" << std::endl << std::endl;
 
 	return n_entries;
 	

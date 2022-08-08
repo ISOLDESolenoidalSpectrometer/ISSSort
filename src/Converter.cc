@@ -59,8 +59,8 @@ void ISSConverter::MakeTree() {
 	sorted_tree->SetDirectory( output_file->GetDirectory("/") );
 	output_tree->SetDirectory( output_file->GetDirectory("/") );
 	
-	output_tree->SetAutoFlush(-1e9);
-	sorted_tree->SetAutoFlush(-1e9);
+	output_tree->SetAutoFlush(-10e6);
+	sorted_tree->SetAutoFlush(-10e6);
 
 	asic_data = std::make_shared<ISSAsicData>();
 	caen_data = std::make_shared<ISSCaenData>();
@@ -1148,6 +1148,11 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 		// Check if we are before the start block or after the end block
 		if( nblock < start_block || ( (long)nblock > end_block && end_block > 0 ) )
 			continue;
+		
+		
+		// Each time we have completed a block, optimise filling
+		if( nblock == start_block + 1 )
+			output_tree->OptimizeBaskets(30e6);	 // output tree basket size max 30 MB
 
 
 		// Process current block. If it's the end, stop.
@@ -1174,8 +1179,7 @@ unsigned long long ISSConverter::SortTree(){
 	// Load the full tree if possible
 	output_tree->SetMaxVirtualSize(2e9); // 2GB
 	sorted_tree->SetMaxVirtualSize(2e9); // 2GB
-	output_tree->LoadBaskets(2e9); // Load 2 GB of data to memory
-	//output_tree->OptimizeBaskets(2000000000);
+	output_tree->LoadBaskets(1e9); 		 // Load 1 GB of data to memory
 	
 	// Check we have entries and build time-ordered index
 	if( output_tree->GetEntries() ){
@@ -1194,11 +1198,24 @@ unsigned long long ISSConverter::SortTree(){
 	// Loop on t_raw entries and fill t
 	for( unsigned long i = 0; i < nb_idx; ++i ) {
 		
+		// Clean up old data
 		data_packet->ClearData();
+		
+		// Get time-ordered event index
 		unsigned long long idx = att_index->GetIndex()[i];
-		if( output_tree->MemoryFull(3000) ) output_tree->DropBaskets();
+		
+		// Check if the input or output trees are filling
+		if( output_tree->MemoryFull(30e6) )
+			output_tree->DropBaskets();
+		if( sorted_tree->MemoryFull(30e6) )
+			sorted_tree->FlushBaskets();
+		
+		// Get entry from unsorted tree and fill to sorted tree
 		output_tree->GetEntry( idx );
 		sorted_tree->Fill();
+
+		// Optimise filling tree
+		if( i == 100 ) sorted_tree->OptimizeBaskets(30e6);	 // sorted tree basket size max 30 MB
 
 		// Progress bar
 		bool update_progress = false;
@@ -1207,6 +1224,7 @@ unsigned long long ISSConverter::SortTree(){
 		else if( i % (nb_idx/100) == 0 || i+1 == nb_idx )
 			update_progress = true;
 		
+		// Print progress
 		if( update_progress ) {
 			
 			// Percent complete
