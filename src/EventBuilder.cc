@@ -2344,6 +2344,7 @@ void ISSEventBuilder::MakeEventHists(){
 	// Recoil histograms //
 	// ----------------- //
 	recoil_EdE.resize( set->GetNumberOfRecoilSectors() );
+	recoil_EdE_raw.resize( set->GetNumberOfRecoilSectors() );
 	recoil_dEsum.resize( set->GetNumberOfRecoilSectors() );
 	recoil_E_singles.resize( set->GetNumberOfRecoilSectors() );
 	recoil_dE_singles.resize( set->GetNumberOfRecoilSectors() );
