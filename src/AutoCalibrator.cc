@@ -863,7 +863,7 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 		}
 		
 		// Check the ub values are OK and reassign to manual values from user if specified
-		if ( my_centroid_ub[mod][asic][chan][i] <= centroids[i] && my_centroid_ub[mod][asic][chan][i] > 0  ){
+		if ( my_centroid_ub[mod][asic][chan][i] >= centroids[i] && my_centroid_ub[mod][asic][chan][i] > 0  ){
 		
 			ub = my_centroid_ub[mod][asic][chan][i];
 			
