@@ -200,8 +200,6 @@ void* monitor_run( void* ptr ){
 		
 			// Event builder
 			if( bFirstRun ) {
-				//eb_mon.SetInputTree( sort_mon.GetTree() );
-				//eb_mon.SetInputTree( conv_mon.GetSortedTree() );
 				eb_mon.SetOutput( "monitor_events.root" );
 				eb_mon.StartFile();
 
@@ -760,7 +758,7 @@ int main( int argc, char *argv[] ){
 		th->Run();
 		
 		// wait until we finish
-		while( bRunMon ){
+		while( true ){
 			
 			gSystem->Sleep(10);
 			gSystem->ProcessEvents();

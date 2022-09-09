@@ -892,6 +892,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				// Clean up if the next event is going to make the tree full
 				if( output_tree->MemoryFull(30e6) )
 					output_tree->DropBaskets();
+
 			}
 			
 			//--------------------------------------------------
