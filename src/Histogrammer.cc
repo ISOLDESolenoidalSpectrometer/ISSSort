@@ -58,7 +58,6 @@ void ISSHistogrammer::MakeHists() {
 		output_file->mkdir( dirname.data() );
 		output_file->cd( dirname.data() );
 
-		E_vs_z_cut.resize( set->GetNumberOfArrayModules() );
 		hname = "E_vs_z_cut" + std::to_string(j);
 		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 		htitle += ";z [mm];Energy [keV];Counts per mm per 20 keV";
