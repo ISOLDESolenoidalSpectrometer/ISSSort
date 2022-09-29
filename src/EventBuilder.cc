@@ -355,9 +355,9 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	/// Function to loop over the sort tree and build array and recoil events
 
 	// Load the full tree if possible
-	output_tree->SetMaxVirtualSize(2e9); // 2GB
-	input_tree->SetMaxVirtualSize(2e9); // 2GB
-	input_tree->LoadBaskets(1e9); // Load 2 GB of data to memory
+	//output_tree->SetMaxVirtualSize(2e9); // 2GB
+	//input_tree->SetMaxVirtualSize(2e9); // 2GB
+	//input_tree->LoadBaskets(1e9); // Load 2 GB of data to memory
 
 	if( input_tree->LoadTree(0) < 0 ){
 		
