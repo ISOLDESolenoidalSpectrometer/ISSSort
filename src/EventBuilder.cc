@@ -355,9 +355,9 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	/// Function to loop over the sort tree and build array and recoil events
 
 	// Load the full tree if possible
-	//output_tree->SetMaxVirtualSize(2e9); // 2GB
-	//input_tree->SetMaxVirtualSize(2e9); // 2GB
-	//input_tree->LoadBaskets(1e9); // Load 2 GB of data to memory
+	output_tree->SetMaxVirtualSize(5e8); // 500 MB
+	input_tree->SetMaxVirtualSize(5e8); // 500 MB
+	input_tree->LoadBaskets(5e8); // Load 500 MB of data to memory
 
 	if( input_tree->LoadTree(0) < 0 ){
 		
@@ -402,7 +402,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		
 		// assume this is above threshold initially
 		mythres = true;
-
+		
 		
 		// ------------------------------------------ //
 		// Find particles on the array
@@ -446,14 +446,13 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// If it's below threshold do not use as window opener
 			if ( mythres ) event_open = true;
 			
-
 			// p-side event
 			if( myside == 0 && mythres ) {
 			
 			// test here about hit bit value
 			//if( myside == 0 && !asic_data->GetHitBit() ) {
 
-				mystrip = array_pid.at( asic_data->GetAsic() ).at( asic_data->GetChannel() );
+				mystrip = array_pid.at( myasic ).at( mych );
 				
 				// Only use if it is an event from a detector
 				if( mystrip >= 0 ) {
@@ -863,7 +862,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		// if close this event or last entry
 		//----------------------------
 		if( flag_close_event || (i+1) == n_entries ) {
-
+			
 			// If we opened the event, then sort it out
 			if( event_open ) {
 			
@@ -995,6 +994,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 /// This function processes a series of vectors that are populated in a given build window, and deals with the signals accordingly. This is currently done on a case-by-case basis i.e. each different number of p-side and n-side hits is dealt with in it's own section. Charge addback is implemented for neighbouring strips that fall within a prompt coincidence window defined by the user in the ISSSettings file.
 void ISSEventBuilder::ArrayFinder() {
 	
+	//std::cout << __PRETTY_FUNCTION__ << std::endl;
+	
 	std::vector<unsigned int> pindex; // Stores the index of the p-side hits in a given module and row
 	std::vector<unsigned int> nindex; // Stores the index of the n-side hits in a given module and row
 	int pmax_idx, nmax_idx;		// Stores the maximum-energy index for the p-side and n-side hits
@@ -1013,10 +1014,10 @@ void ISSEventBuilder::ArrayFinder() {
 			nindex.clear();
 			std::vector<unsigned int>().swap(pindex);
 			std::vector<unsigned int>().swap(nindex);
-			pmax_idx = nmax_idx = 0;
+			pmax_idx = nmax_idx = -1;
 			pmax_en = nmax_en = -99999.;
 			psum_en = nsum_en = 0;
-
+			
 			// Loop over p-side events
 			for( unsigned int k = 0; k < pen_list.size(); ++k ) {
 				
@@ -1865,6 +1866,8 @@ void ISSEventBuilder::ArrayFinder() {
 /// This function takes a series of E and dE signals on the silicon recoil detector and determines what hits to keep from these using sensible conditions including a prompt coincidence window. Signals are triggered by the dE detector, but if a corresponding E signal is not found, then a hit at E = 0 is still recorded.
 void ISSEventBuilder::RecoilFinder() {
 
+	//std::cout << __PRETTY_FUNCTION__ << std::endl;
+	
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
 	bool flag_skip;
@@ -1940,6 +1943,8 @@ void ISSEventBuilder::RecoilFinder() {
 /// Assesses the validity of hits in the MWPC detector
 void ISSEventBuilder::MwpcFinder() {
 
+	//std::cout << __PRETTY_FUNCTION__ << std::endl;
+	
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
 	bool flag_skip;
@@ -2007,6 +2012,8 @@ void ISSEventBuilder::MwpcFinder() {
 /// Assesses the validity of events in the ELUM detector
 void ISSEventBuilder::ElumFinder() {
 	
+	//std::cout << __PRETTY_FUNCTION__ << std::endl;
+	
 	// Loop over ELUM events
 	for( unsigned int i = 0; i < een_list.size(); ++i ) {
 
@@ -2042,6 +2049,8 @@ void ISSEventBuilder::ElumFinder() {
 /// prompt coincidence on these hits, which can be altered in the ISSSettings file
 void ISSEventBuilder::ZeroDegreeFinder() {
 
+	//std::cout << __PRETTY_FUNCTION__ << std::endl;
+	
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
 	bool flag_skip;
