@@ -49,6 +49,7 @@ public:
 					 long end_block = -1 );
 	int ConvertBlock( char *input_block, int nblock );
 	void MakeHists();
+	void ResetHists();
 	void MakeTree();
 	unsigned long long SortTree();
 
@@ -211,9 +212,6 @@ private:
 
 	// For traces
 	unsigned int nsamples;
-	ULong64_t sample_packet;
-	unsigned char trace_test;
-	UInt_t block_test;
 
 	// Data types
 	std::unique_ptr<ISSDataPackets> data_packet;

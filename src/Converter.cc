@@ -391,6 +391,56 @@ void ISSConverter::MakeHists() {
 	
 }
 
+void ISSConverter::ResetHists() {
+	
+	std::cout << "in ISSConverter::ResetHist()" << std::endl;
+	
+	for( unsigned int i = 0; i < hasic_hit.size(); ++i )
+		hasic_hit[i]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hasic_ext.size(); ++i )
+		hasic_ext[i]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hasic_pause.size(); ++i )
+		hasic_pause[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < hasic_resume.size(); ++i )
+		hasic_resume[i]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hcaen_hit.size(); ++i )
+		hcaen_hit[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < hcaen_ext.size(); ++i )
+		hcaen_ext[i]->Reset("ICESM");
+	
+	asic_pulser_energy->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hasic.size(); ++i )
+		for( unsigned int j = 0; j < hasic[i].size(); ++j )
+			hasic[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < hasic_cal.size(); ++i )
+		for( unsigned int j = 0; j < hasic_cal[i].size(); ++j )
+			hasic_cal[i][j]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hcaen.size(); ++i )
+		for( unsigned int j = 0; j < hcaen[i].size(); ++j )
+			hcaen[i][j]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hcaen_cal.size(); ++i )
+		for( unsigned int j = 0; j < hcaen_cal[i].size(); ++j )
+			hcaen_cal[i][j]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hpside.size(); ++i )
+		hpside[i]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hnside.size(); ++i )
+		hnside[i]->Reset("ICESM");
+	
+	return;
+	
+}
+
 // Function to copy the header from a DataSpy, for example
 void ISSConverter::SetBlockHeader( char *input_header ){
 	
@@ -569,11 +619,10 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 			for( UInt_t j = 0; j < nsamples; j++ ){
 				
 				// get next word
-				i++;
-				sample_packet = GetWord(i);
-				
-				block_test = ( sample_packet >> 32 ) & 0x00000000FFFFFFFF;
-				trace_test = ( sample_packet >> 62 ) & 0x0000000000000003;
+				ULong64_t sample_packet = GetWord(i++);
+
+				UInt_t block_test = ( sample_packet >> 32 ) & 0x00000000FFFFFFFF;
+				unsigned char trace_test = ( sample_packet >> 62 ) & 0x0000000000000003;
 				
 				if( trace_test == 0 && block_test != 0x5E5E5E5E ){
 					
@@ -868,7 +917,6 @@ void ISSConverter::FinishCAENData(){
 			info_data->SetCode( my_info_code );
 			data_packet->SetData( info_data );
 			if( !flag_source ) output_tree->Fill();
-			info_data->Clear();
 			data_packet->ClearData();
 
 			// Fill histograms for external trigger
@@ -922,6 +970,7 @@ void ISSConverter::FinishCAENData(){
 	flag_caen_data1 = false;
 	flag_caen_data3 = false;
 	flag_caen_trace = false;
+	info_data->ClearData();
 	caen_data->ClearData();
 	
 	return;

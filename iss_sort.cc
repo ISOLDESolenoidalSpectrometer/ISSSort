@@ -22,26 +22,7 @@
 #include "ISSGUI.hh"
 #include "DataSpy.hh"
 
-// ROOT include.
-#include <TTree.h>
-#include <TFile.h>
-#include <THttpServer.h>
-#include <TThread.h>
-#include <TGClient.h>
-#include <TApplication.h>
-
-// C++ include.
-#include <iostream>
-#include <stdio.h>
-#include <string>
-#include <vector>
-#include <sstream>
-
-// Command line interface
-#ifndef __COMMAND_LINE_INTERFACE
-# include "CommandLineInterface.hh"
-#endif
-
+#include "iss_sort.hh"
 
 // Default parameters and name
 std::string output_name;
@@ -98,23 +79,49 @@ typedef struct thptr {
 
 // Server and controls for the GUI
 THttpServer *serv;
-Bool_t bRunMon = kTRUE;
-Bool_t bFirstRun = kTRUE;
-std::string curFileMon;
 int port_num = 8030;
+
+// Pointers to the thread events TODO: sort out inhereted class stuff
+std::shared_ptr<ISSConverter> conv_mon;
+std::shared_ptr<ISSEventBuilder> eb_mon;
+std::shared_ptr<ISSHistogrammer> hist_mon;
+
+void reset_conv_hists(){
+	conv_mon->ResetHists();
+}
+
+void reset_evnt_hists(){
+	eb_mon->ResetHists();
+}
+
+void reset_phys_hists(){
+	hist_mon->ResetHists();
+}
+
+void stop_monitor(){
+	bRunMon = kFALSE;
+}
+
+void start_monitor(){
+	bRunMon = kTRUE;
+}
 
 // Function to call the monitoring loop
 void* monitor_run( void* ptr ){
 	
 	/// This function is called to run when monitoring
-	
+
+	// Load macros in thread
+	std::string rootline = ".L " + std::string(CUR_DIR) + "include/MonitorMacros.hh";
+	gROOT->ProcessLine( rootline.data() );
+
 	// Get the settings, file etc.
 	thptr *calfiles = (thptr*)ptr;
 	
 	// Setup the different steps
-	ISSConverter conv_mon( calfiles->myset );
-	ISSEventBuilder eb_mon( calfiles->myset );
-	ISSHistogrammer hist_mon( calfiles->myreact, calfiles->myset );
+	conv_mon = std::make_shared<ISSConverter>( calfiles->myset );
+	eb_mon = std::make_shared<ISSEventBuilder>( calfiles->myset );
+	hist_mon = std::make_shared<ISSHistogrammer>( calfiles->myreact, calfiles->myset );
 	
 	// Data blocks for Data spy
 	if( flag_spy && myset->GetBlockSize() != 0x10000 ) {
@@ -137,11 +144,11 @@ void* monitor_run( void* ptr ){
 
 	// Converter setup
 	if( !flag_spy ) curFileMon = input_names.at(0); // maybe change in GUI later?
-	if( flag_source ) conv_mon.SourceOnly();
-	conv_mon.AddCalibration( calfiles->mycal );
-	conv_mon.SetOutput( "monitor_singles.root" );
-	conv_mon.MakeTree();
-	conv_mon.MakeHists();
+	if( flag_source ) conv_mon->SourceOnly();
+	conv_mon->AddCalibration( calfiles->mycal );
+	conv_mon->SetOutput( "monitor_singles.root" );
+	conv_mon->MakeTree();
+	conv_mon->MakeHists();
 	
 	// Update server settings
 	// title of web page
@@ -152,103 +159,103 @@ void* monitor_run( void* ptr ){
 	toptitle += " (" + std::to_string( mon_time ) + " s)";
 	serv->SetItemField("/", "_toptitle", toptitle.data() );
 
-	// While the sort is running, bRunMon is true
-	while( bRunMon ) {
+	// While the sort is running
+	while( true ) {
 		
-		// Lock the main thread
-		//TThread::Lock();
-		
-		// Convert - from file
-		if( !flag_spy ) {
+		// While the sort is running, bRunMon is true
+		while( bRunMon ) {
 			
-			nblocks = conv_mon.ConvertFile( curFileMon, start_block );
-			start_block = nblocks;
-
-		}
-		
-		// Convert - from shared memory
-		else {
-		
-			// First check if we have data
-			std::cout << "Looking for data from DataSpy" << std::endl;
-			spy_length = myspy.Read( file_id, (char*)buffer, calfiles->myset->GetBlockSize() );
-			if( spy_length == 0 && bFirstRun ) {
-				  std::cout << "No data yet on first pass" << std::endl;
-				  gSystem->Sleep( 2e3 );
-				  continue;
+			// Lock the main thread
+			//TThread::Lock();
+			
+			// Convert - from file
+			if( !flag_spy ) {
+				
+				nblocks = conv_mon->ConvertFile( curFileMon, start_block );
+				start_block = nblocks;
+				
 			}
-
-			// Keep reading until we have all the data
-			while( spy_length ){
 			
-				std::cout << "Got some data from DataSpy" << std::endl;
-				nblocks = conv_mon.ConvertBlock( (char*)buffer, 0 );
-
-				// Read a new block
-				//gSystem->Sleep( 10 ); // wait 10 ms
+			// Convert - from shared memory
+			else {
+				
+				// First check if we have data
+				std::cout << "Looking for data from DataSpy" << std::endl;
 				spy_length = myspy.Read( file_id, (char*)buffer, calfiles->myset->GetBlockSize() );
-
-			}
-
-			// Sort the packets we just got, then do the rest of the analysis
-			conv_mon.SortTree();
-		
-		}
-										 
-		// Only do the rest if it is not a source run
-		if( !flag_source ) {
-		
-			// Event builder
-			if( bFirstRun ) {
-				eb_mon.SetOutput( "monitor_events.root" );
-				eb_mon.StartFile();
-
-			}
-			TTree *sorted_tree = conv_mon.GetSortedTree()->CloneTree();
-			eb_mon.SetInputTree( sorted_tree );
-			eb_mon.GetTree()->Reset();
-			nbuild = eb_mon.BuildEvents();
-			delete sorted_tree;
-			
-			// Histogrammer
-			if( bFirstRun ) {
-				hist_mon.SetOutput( "monitor_hists.root" );
-			}
-			if( nbuild ) {
-				TTree *evt_tree = eb_mon.GetTree()->CloneTree();
-				hist_mon.SetInputTree( evt_tree );
-				hist_mon.FillHists();
-				delete evt_tree;
-			}
-			
-			// If this was the first time we ran, do stuff?
-			if( bFirstRun ) {
+				if( spy_length == 0 && bFirstRun ) {
+					std::cout << "No data yet on first pass" << std::endl;
+					gSystem->Sleep( 2e3 );
+					continue;
+				}
 				
-				bFirstRun = kFALSE;
+				// Keep reading until we have all the data
+				while( spy_length ){
+					
+					std::cout << "Got some data from DataSpy" << std::endl;
+					nblocks = conv_mon->ConvertBlock( (char*)buffer, 0 );
+					
+					// Read a new block
+					//gSystem->Sleep( 10 ); // wait 10 ms
+					spy_length = myspy.Read( file_id, (char*)buffer, calfiles->myset->GetBlockSize() );
+					
+				}
+				
+				// Sort the packets we just got, then do the rest of the analysis
+				conv_mon->SortTree();
 				
 			}
+			
+			// Only do the rest if it is not a source run
+			if( !flag_source ) {
+				
+				// Event builder
+				if( bFirstRun ) {
+					eb_mon->SetOutput( "monitor_events.root" );
+					eb_mon->StartFile();
+					
+				}
+				TTree *sorted_tree = conv_mon->GetSortedTree()->CloneTree();
+				eb_mon->SetInputTree( sorted_tree );
+				eb_mon->GetTree()->Reset();
+				nbuild = eb_mon->BuildEvents();
+				delete sorted_tree;
+				
+				// Histogrammer
+				if( bFirstRun ) {
+					hist_mon->SetOutput( "monitor_hists.root" );
+				}
+				if( nbuild ) {
+					TTree *evt_tree = eb_mon->GetTree()->CloneTree();
+					hist_mon->SetInputTree( evt_tree );
+					hist_mon->FillHists();
+					delete evt_tree;
+				}
+				
+				// If this was the first time we ran, do stuff?
+				if( bFirstRun ) {
+					
+					bFirstRun = kFALSE;
+					
+				}
+				
+			}
+			
+			// This makes things unresponsive!
+			// Unless we are threading?
+			gSystem->Sleep( mon_time * 1e3 );
+			
+		} // bRunMon
 		
-		}
-		
-		// Now we can unlock the main thread again
-		//TThread::UnLock();
-
-		// Update the Canvas, but not when in a thread
-		//gSystem->ProcessEvents();
-
-		// This makes things unresponsive!
-		// Unless we are threading?
-		gSystem->Sleep( mon_time * 1e3 );
-
-	}
+	} // always running
 	
+
 	// Close the dataSpy before exiting
 	if( flag_spy ) myspy.Close( file_id );
 
 	// Close all outputs
-	conv_mon.CloseOutput();
-	eb_mon.CloseOutput();
-	hist_mon.CloseOutput();
+	conv_mon->CloseOutput();
+	eb_mon->CloseOutput();
+	hist_mon->CloseOutput();
 
 	return 0;
 	
@@ -270,13 +277,19 @@ void start_http(){
 	serv->SetItemField("/","drawopt","[colz,hist]");
 	
 	// register simple start/stop commands
-	serv->RegisterCommand("/Start", "bRunMon=kTRUE;", "button;/usr/share/root/icons/ed_execute.png");
-	serv->RegisterCommand("/Stop",  "bRunMon=kFALSE;", "button;/usr/share/root/icons/ed_interrupt.png");
+	//serv->RegisterCommand("/Start", "bRunMon=kTRUE;", "button;/usr/share/root/icons/ed_execute.png");
+	//serv->RegisterCommand("/Stop",  "bRunMon=kFALSE;", "button;/usr/share/root/icons/ed_interrupt.png");
+	serv->RegisterCommand("/Start", "StartMonitor()");
+	serv->RegisterCommand("/Stop", "StopMonitor()");
+	serv->RegisterCommand("/ResetSingles", "ResetConv()");
+	serv->RegisterCommand("/ResetEvents", "ResetEvnt()");
+	serv->RegisterCommand("/ResetHists", "ResetHist()");
 
 	// hide commands so the only show as buttons
-	serv->Hide("/Start");
-	serv->Hide("/Stop");
-		
+	//serv->Hide("/Start");
+	//serv->Hide("/Stop");
+	//serv->Hide("/Reset");
+
 	// Add data directory
 	if( datadir_name.size() > 0 ) serv->AddLocation( "data/", datadir_name.data() );
 	
@@ -356,7 +369,7 @@ void do_convert(){
 }
 
 
-void do_build(){
+bool do_build(){
 	
 	//-----------------------//
 	// Physics event builder //
@@ -368,6 +381,7 @@ void do_build(){
 	std::ifstream ftest;
 	std::string name_input_file;
 	std::string name_output_file;
+	bool return_flag = false;
 	
 	// Update calibration file if given
 	if( overwrite_cal ) eb.AddCalibration( mycal );
@@ -387,8 +401,12 @@ void do_build(){
 			continue;
 			
 		}
-		else ftest.close();
+		else {
+			
+			return_flag = true;
+			ftest.close();
 
+		}
 
 		// We need to do event builder if we just converted it
 		// specific request to do new event build with -e
@@ -430,7 +448,7 @@ void do_build(){
 		
 	}
 	
-	return;
+	return return_flag;
 	
 }
 
@@ -472,7 +490,7 @@ void do_hist(){
 		hist.SetInputFile( name_hist_files );
 		hist.FillHists();
 		hist.CloseOutput();
-	
+
 	}
 	
 	return;
@@ -776,8 +794,8 @@ int main( int argc, char *argv[] ){
 	//------------------//
 	do_convert();
 	if( !flag_source && !flag_autocal ) {
-		do_build();
-		do_hist();
+		if( do_build() )
+			do_hist();
 	}
 	else if( flag_autocal ) {
 		do_autocal();

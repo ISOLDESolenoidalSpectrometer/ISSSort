@@ -76,8 +76,9 @@ public:
 	void	SetOutput( std::string output_file_name ); ///< Configures the output for the class
 	void	StartFile();	///< Called for every file
 	void	Initialise();	///< Called for every event
-	void	MakeEventHists(); ///< Creates histograms for events that occur
-	
+	void	MakeHists(); ///< Creates histograms for events that occur
+	void	ResetHists(); ///< Empties the histograms during the DataSpy
+
 	/// Adds the calibration from the external calibration file to the class
 	/// \param[in] mycal The ISSCalibration object which is constructed by the ISSCalibration constructor used in iss_sort.cc
 	inline void AddCalibration( ISSCalibration *mycal ){
