@@ -572,8 +572,6 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 			return;
 			
 		}
-
-		
 			
 		// Data type is highest two bits
 		my_type = ( word_0 >> 30 ) & 0x3;

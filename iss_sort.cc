@@ -189,10 +189,15 @@ void* monitor_run( void* ptr ){
 				}
 				
 				// Keep reading until we have all the data
+				int block_ctr = 0;
 				while( spy_length ){
 					
-					std::cout << "Got some data from DataSpy" << std::endl;
+					std::cout << "Got some data from DataSpy, block " << block_ctr << std::endl;
 					nblocks = conv_mon->ConvertBlock( (char*)buffer, 0 );
+					block_ctr += nblocks;
+					
+					// Stop after so long
+					if( block_ctr > 50 ) break;
 					
 					// Read a new block
 					//gSystem->Sleep( 10 ); // wait 10 ms
