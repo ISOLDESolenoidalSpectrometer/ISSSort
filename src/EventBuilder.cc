@@ -1064,16 +1064,6 @@ void ISSEventBuilder::ArrayFinder() {
 			if( pindex.size() || nindex.size() )
 				pn_mult[i][j]->Fill( pindex.size(), nindex.size() );
 
-			// Time difference hists (not prompt)
-			// p-n time
-			for( unsigned int k = 0; k < pindex.size(); ++k ) {
-				for( unsigned int l = 0; l < nindex.size(); ++l ) {
-					pn_td[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ) );
-					pn_td_Ep[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ), pen_list.at( pindex.at(k) ) );
-					pn_td_En[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ), nen_list.at( nindex.at(l) ) );
-				}
-			}
-			
 			// p-p time
 			for( unsigned int k = 0; k < pindex.size(); ++k )
 				for( unsigned int l = k+1; l < pindex.size(); ++l )
@@ -1090,8 +1080,18 @@ void ISSEventBuilder::ArrayFinder() {
 				// Fill 1p1n histogram
 				pn_11[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(0) ) );
 			
+				// Time difference hists (not prompt)
+				// p-n time
+				for( unsigned int k = 0; k < pindex.size(); ++k ) {
+					for( unsigned int l = 0; l < nindex.size(); ++l ) {
+						pn_td[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ) );
+						pn_td_Ep[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ), pen_list.at( pindex.at(k) ) );
+						pn_td_En[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ), nen_list.at( nindex.at(l) ) );
+					}
+				}
+				
 				// Prompt coincidence
-				if ( TMath::Abs( ptd_list.at( pindex.at(0) ) - ntd_list.at( nindex.at(0) ) ) < set->GetArrayHitWindow() ){
+				if( TMath::Abs( ptd_list.at( pindex.at(0) ) - ntd_list.at( nindex.at(0) ) ) < set->GetArrayHitWindow() ){
 				
 					// Fill 1p1n prompt histogram
 					pn_td_prompt[i][j]->Fill( ptd_list.at( pindex.at(0) ) - ntd_list.at( nindex.at(0) ) );
