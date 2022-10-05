@@ -1062,6 +1062,8 @@ unsigned long ISSHistogrammer::FillHists() {
 			// Loop over recoil events
 			for( unsigned int k = 0; k < read_evts->GetRecoilMultiplicity(); ++k ){
 				
+				// TODO: Handle double-counting issue
+				
 				// Get recoil event
 				recoil_evt = read_evts->GetRecoilEvt(k);
 				
