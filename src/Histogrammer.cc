@@ -759,10 +759,10 @@ void ISSHistogrammer::ResetHists() {
 	for( unsigned int i = 0; i < Ex_vs_theta_recoil_mod.size(); ++i )
 		Ex_vs_theta_recoil_mod[i]->Reset("ICESM");
 	
-	for (int i = 0; i<Ex_vs_theta_ebis_off_mod.size(); ++i )
+	for( unsigned int i = 0; i < Ex_vs_theta_ebis_off_mod.size(); ++i )
 		Ex_vs_theta_ebis_off_mod[i]->Reset("ICESM");
 	
-	for (int i = 0; i<Ex_vs_theta_ebis_on_mod.size(); ++i )
+	for( unsigned int i = 0; i < Ex_vs_theta_ebis_on_mod.size(); ++i )
 		Ex_vs_theta_ebis_on_mod[i]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < Ex_vs_theta_ebis_on_cut.size(); ++i )
@@ -771,7 +771,7 @@ void ISSHistogrammer::ResetHists() {
 	for( unsigned int i = 0; i < Ex_vs_theta_ebis_cut.size(); ++i )
 		Ex_vs_theta_ebis_cut[i]->Reset("ICESM");
 	
-	for (int i = 0; i<Ex_vs_theta_cut.size(); ++i )
+	for( unsigned int i = 0; i < Ex_vs_theta_cut.size(); ++i )
 		Ex_vs_theta_cut[i]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < Ex_vs_theta_recoilT_cut.size(); ++i )
@@ -780,7 +780,7 @@ void ISSHistogrammer::ResetHists() {
 	for( unsigned int i = 0; i < Ex_vs_theta_recoil_cut.size(); ++i )
 		Ex_vs_theta_recoil_cut[i]->Reset("ICESM");
 	
-	for (int i = 0; i<Ex_vs_theta_ebis_off_cut.size(); ++i )
+	for( unsigned int i = 0; i < Ex_vs_theta_ebis_off_cut.size(); ++i )
 		Ex_vs_theta_ebis_off_cut[i]->Reset("ICESM");
 	
 	// Array - Ex vs. z
@@ -1060,9 +1060,9 @@ unsigned long ISSHistogrammer::FillHists() {
 			} // off ebis
 			
 			// Loop over recoil events
+			double tdiff_min = 99999.;
+			int recoil_idx = -1;
 			for( unsigned int k = 0; k < read_evts->GetRecoilMultiplicity(); ++k ){
-				
-				// TODO: Handle double-counting issue
 				
 				// Get recoil event
 				recoil_evt = read_evts->GetRecoilEvt(k);
@@ -1079,6 +1079,23 @@ unsigned long ISSHistogrammer::FillHists() {
 							recoil_array_tw_row[i][j]->Fill( tdiff, array_evt->GetEnergy() );
 				
 				
+				// Check which is recoil closest in time
+				if( tdiff < tdiff_min ) {
+					
+					recoil_idx = k;
+					tdiff_min = tdiff;
+					
+				}
+				
+			} // k
+			
+			// Only use the recoil closest in time
+			// TODO: Improve this selection criteria
+			if( recoil_idx >= 0 ) {
+				
+				// Get recoil event
+				recoil_evt = read_evts->GetRecoilEvt( recoil_idx );
+
 				// Check for prompt events with recoils
 				if( PromptCoincidence( recoil_evt, array_evt ) ){
 					
@@ -1141,7 +1158,7 @@ unsigned long ISSHistogrammer::FillHists() {
 					
 				} // prompt
 				
-			} // recoils
+			} // just one recoil of interest
 			
 		} // array
 		
