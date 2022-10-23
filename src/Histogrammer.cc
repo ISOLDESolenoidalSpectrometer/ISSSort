@@ -784,9 +784,9 @@ void ISSHistogrammer::ResetHists() {
 		Ex_vs_theta_ebis_off_cut[i]->Reset("ICESM");
 	
 	// Array - Ex vs. z
-	Ex_vs_z ->Reset("ICESM");
-	Ex_vs_z_ebis ->Reset("ICESM");
-	Ex_vs_z_ebis_on ->Reset("ICESM");
+	Ex_vs_z->Reset("ICESM");
+	Ex_vs_z_ebis->Reset("ICESM");
+	Ex_vs_z_ebis_on->Reset("ICESM");
 	Ex_vs_z_ebis_off->Reset("ICESM");
 	Ex_vs_z_recoil->Reset("ICESM");
 	Ex_vs_z_recoilT->Reset("ICESM");
