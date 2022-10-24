@@ -1001,7 +1001,7 @@ void ISSConverter::FinishCAENData(){
 			hcaen_cal[caen_data->GetModule()][caen_data->GetChannel()]->Fill( my_energy );
 
 			// Check if it's over threshold
-			if( my_adc_data > cal->CaenThreshold( my_mod_id, my_ch_id ) )
+			if( my_adc_data > cal->CaenThreshold( caen_data->GetModule(), caen_data->GetChannel() ) )
 				caen_data->SetThreshold( true );
 			else caen_data->SetThreshold( false );
 
