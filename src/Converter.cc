@@ -195,13 +195,17 @@ void ISSConverter::MakeHists() {
 	maindirname = "caen_hists";
 	
 	// Resive vectors
-	hcaen.resize( set->GetNumberOfCAENModules() );
+	hcaen_qlong.resize( set->GetNumberOfCAENModules() );
+	hcaen_qshort.resize( set->GetNumberOfCAENModules() );
+	hcaen_qdiff.resize( set->GetNumberOfCAENModules() );
 	hcaen_cal.resize( set->GetNumberOfCAENModules() );
 
 	// Loop over CAEN modules
 	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
 		
-		hcaen[i].resize( set->GetNumberOfCAENChannels() );
+		hcaen_qlong[i].resize( set->GetNumberOfCAENChannels() );
+		hcaen_qshort[i].resize( set->GetNumberOfCAENChannels() );
+		hcaen_qdiff[i].resize( set->GetNumberOfCAENChannels() );
 		hcaen_cal[i].resize( set->GetNumberOfCAENChannels() );
 		dirname = maindirname + "/module_" + std::to_string(i);
 		
@@ -212,9 +216,10 @@ void ISSConverter::MakeHists() {
 		// Loop over channels of each CAEN module
 		for( unsigned int j = 0; j < set->GetNumberOfCAENChannels(); ++j ) {
 			
-			// Uncalibrated
+			// Uncalibrated - Qlong
 			hname = "caen_" + std::to_string(i);
 			hname += "_" + std::to_string(j);
+			hname += "_qlong";
 			
 			htitle = "Raw CAEN V1725 spectra for module " + std::to_string(i);
 			htitle += ", channel " + std::to_string(j);
@@ -222,14 +227,60 @@ void ISSConverter::MakeHists() {
 			htitle += ";Qlong;Counts";
 			
 			if( output_file->GetListOfKeys()->Contains( hname.data() ) )
-				hcaen[i][j] = (TH1F*)output_file->Get( hname.data() );
+				hcaen_qlong[i][j] = (TH1F*)output_file->Get( hname.data() );
 			
 			else {
 				
-				hcaen[i][j] = new TH1F( hname.data(), htitle.data(),
+				hcaen_qlong[i][j] = new TH1F( hname.data(), htitle.data(),
 										   65536, -0.5, 65535.5 );
 			
-				hcaen[i][j]->SetDirectory(
+				hcaen_qlong[i][j]->SetDirectory(
+						output_file->GetDirectory( dirname.data() ) );
+				
+			}
+			
+			// Uncalibrated - Qshort
+			hname = "caen_" + std::to_string(i);
+			hname += "_" + std::to_string(j);
+			hname += "_qshort";
+			
+			htitle = "Raw CAEN V1725 spectra for module " + std::to_string(i);
+			htitle += ", channel " + std::to_string(j);
+			
+			htitle += ";Qshort;Counts";
+			
+			if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+				hcaen_qshort[i][j] = (TH1F*)output_file->Get( hname.data() );
+			
+			else {
+				
+				hcaen_qshort[i][j] = new TH1F( hname.data(), htitle.data(),
+										   32768, -0.5, 32767.5 );
+			
+				hcaen_qshort[i][j]->SetDirectory(
+						output_file->GetDirectory( dirname.data() ) );
+				
+			}
+			
+			// Uncalibrated - Qshort
+			hname = "caen_" + std::to_string(i);
+			hname += "_" + std::to_string(j);
+			hname += "_qdiff";
+			
+			htitle = "Raw CAEN V1725 spectra for module " + std::to_string(i);
+			htitle += ", channel " + std::to_string(j);
+			
+			htitle += ";Qdiff;Counts";
+			
+			if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+				hcaen_qdiff[i][j] = (TH1F*)output_file->Get( hname.data() );
+			
+			else {
+				
+				hcaen_qdiff[i][j] = new TH1F( hname.data(), htitle.data(),
+										   65536, -0.5, 65535.5 );
+			
+				hcaen_qdiff[i][j]->SetDirectory(
 						output_file->GetDirectory( dirname.data() ) );
 				
 			}
@@ -423,9 +474,17 @@ void ISSConverter::ResetHists() {
 		for( unsigned int j = 0; j < hasic_cal[i].size(); ++j )
 			hasic_cal[i][j]->Reset("ICESM");
 	
-	for( unsigned int i = 0; i < hcaen.size(); ++i )
-		for( unsigned int j = 0; j < hcaen[i].size(); ++j )
-			hcaen[i][j]->Reset("ICESM");
+	for( unsigned int i = 0; i < hcaen_qlong.size(); ++i )
+		for( unsigned int j = 0; j < hcaen_qlong[i].size(); ++j )
+			hcaen_qlong[i][j]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hcaen_qshort.size(); ++i )
+		for( unsigned int j = 0; j < hcaen_qshort[i].size(); ++j )
+			hcaen_qshort[i][j]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hcaen_qdiff.size(); ++i )
+		for( unsigned int j = 0; j < hcaen_qdiff[i].size(); ++j )
+			hcaen_qdiff[i][j]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < hcaen_cal.size(); ++i )
 		for( unsigned int j = 0; j < hcaen_cal[i].size(); ++j )
@@ -830,18 +889,8 @@ void ISSConverter::ProcessCAENData(){
 	if( my_data_id == 0 ) {
 		
 		// Fill histograms
-		my_energy = cal->CaenEnergy( my_mod_id, my_ch_id, my_adc_data );
-		hcaen[my_mod_id][my_ch_id]->Fill( my_adc_data );
-		hcaen_cal[my_mod_id][my_ch_id]->Fill( my_energy );
-		
+		hcaen_qlong[my_mod_id][my_ch_id]->Fill( my_adc_data );
 		caen_data->SetQlong( my_adc_data );
-		caen_data->SetEnergy( my_energy );
-
-		// Check if it's over threshold
-		if( my_adc_data > cal->CaenThreshold( my_mod_id, my_ch_id ) )
-			caen_data->SetThreshold( true );
-		else caen_data->SetThreshold( false );
-
 		flag_caen_data0 = true;
 
 	}
@@ -850,6 +899,7 @@ void ISSConverter::ProcessCAENData(){
 	if( my_data_id == 1 ) {
 		
 		my_adc_data = my_adc_data & 0x7FFF; // 15 bits from 0
+		hcaen_qshort[my_mod_id][my_ch_id]->Fill( my_adc_data );
 		caen_data->SetQshort( my_adc_data );
 		flag_caen_data1 = true;
 
@@ -932,13 +982,36 @@ void ISSConverter::FinishCAENData(){
 		// Otherwise it is real data, so fill a caen event
 		else {
 			
+			// Difference between Qlong and Qshort
+			int qdiff = (int)caen_data->GetQlong() - (int)caen_data->GetQshort();
+			hcaen_qdiff[caen_data->GetModule()][caen_data->GetChannel()]->Fill( qdiff );
+
+			// Choose the energy we want to use
+			std::string entype = cal->CaenType( caen_data->GetModule(), caen_data->GetChannel() );
+			if( entype == "Qlong" ) my_adc_data = caen_data->GetQlong();
+			else if( entype == "Qshort" ) my_adc_data = caen_data->GetQshort();
+			else if( entype == "Qdiff" ) my_adc_data = caen_data->GetQdiff();
+			else {
+				std::cerr << "Incorrect CAEN energy type must be Qlong, Qshort or Qdiff" << std::endl;
+				my_adc_data = caen_data->GetQlong();
+			}
+			my_energy = cal->CaenEnergy( caen_data->GetModule(), caen_data->GetChannel(), my_adc_data );
+			caen_data->SetEnergy( my_energy );
+			hcaen_cal[caen_data->GetModule()][caen_data->GetChannel()]->Fill( my_energy );
+
+			// Check if it's over threshold
+			if( my_adc_data > cal->CaenThreshold( my_mod_id, my_ch_id ) )
+				caen_data->SetThreshold( true );
+			else caen_data->SetThreshold( false );
+
+
 			// Set this data and fill event to tree
 			// Also add the time offset when we do this
 			caen_data->SetTime( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
 			data_packet->SetData( caen_data );
 			if( !flag_source ) output_tree->Fill();
 			data_packet->ClearData();
-			
+
 			//std::cout << "Complete CAEN event" << std::endl;
 			//std::cout << "Trace length = " << caen_data->GetTraceLength() << std::endl;
 

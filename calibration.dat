@@ -20,6 +20,7 @@
 # caen_<mod>_<ch>.GainQuadr:	// energy calibration quadratic term (default = 0.0)
 # caen_<mod>_<ch>.Time:			// time offset in ns (default = 0). Note that signals are all aligned to dE, so keep that offset as 0 unless you want a hard time
 # caen_<mod>_<ch>.Threshold:	// software threshold in adc units (default = 0)
+# caen_<mod>_<ch>.Type:			// data type to use for the energy evaluation: Qlong, Qshort or Qdiff (default = Qlong). Qdiff = Qlong - Qshort
 
 
 

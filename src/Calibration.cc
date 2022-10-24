@@ -101,6 +101,7 @@ void ISSCalibration::ReadCalibration() {
 	fCaenGainQuadr.resize( set->GetNumberOfCAENModules() );
 	fCaenThreshold.resize( set->GetNumberOfCAENModules() );
 	fCaenTime.resize( set->GetNumberOfCAENModules() );
+	fCaenType.resize( set->GetNumberOfCAENModules() );
 
 	fCaenOffsetDefault = 0.0;
 	fCaenGainDefault = 1.0;
@@ -114,6 +115,7 @@ void ISSCalibration::ReadCalibration() {
 		fCaenGainQuadr[mod].resize( set->GetNumberOfCAENChannels() );
 		fCaenThreshold[mod].resize( set->GetNumberOfCAENChannels() );
 		fCaenTime[mod].resize( set->GetNumberOfCAENChannels() );
+		fCaenType[mod].resize( set->GetNumberOfCAENChannels() );
 
 		for( unsigned int chan = 0; chan < set->GetNumberOfCAENChannels(); chan++ ){
 
@@ -122,6 +124,7 @@ void ISSCalibration::ReadCalibration() {
 			fCaenGainQuadr[mod][chan] = config->GetValue( Form( "caen_%d_%d.GainQuadr", mod, chan ), fCaenGainQuadrDefault );
 			fCaenThreshold[mod][chan] = config->GetValue( Form( "caen_%d_%d.Threshold", mod, chan ), 0. );
 			fCaenTime[mod][chan] = config->GetValue( Form( "caen_%d_%d.Time", mod,  chan ), 0 );
+			fCaenType[mod][chan] = config->GetValue( Form( "caen_%d_%d.Type", mod,  chan ), "Qlong" );
 
 		}
 		
@@ -298,10 +301,22 @@ unsigned int ISSCalibration::CaenThreshold( unsigned int mod, unsigned int chan 
 long ISSCalibration::CaenTime( unsigned int mod, unsigned int chan ){
 	
 	if( mod < set->GetNumberOfCAENModules() &&
-	   chan < set->GetNumberOfCAENChannels() &&
-	   mod >= 0 && chan >= 0 ) {
+	   chan < set->GetNumberOfCAENChannels() ) {
 
 		return fCaenTime[mod][chan];
+		
+	}
+	
+	return 0;
+	
+}
+
+std::string ISSCalibration::CaenType( unsigned int mod, unsigned int chan ){
+	
+	if( mod < set->GetNumberOfCAENModules() &&
+	   chan < set->GetNumberOfCAENChannels() ) {
+
+		return fCaenType[mod][chan];
 		
 	}
 	
@@ -385,6 +400,9 @@ void ISSCalibration::PrintCalibration( std::ostream &stream, std::string opt ){
 
 				if( !energy_only && fCaenTime[mod][chan] != 0 )
 					stream << Form( "caen_%d_%d.Time: %ld", mod, chan, fCaenTime[mod][chan] ) << std::endl;
+
+				if( !energy_only && fCaenType[mod][chan] != 0 )
+					stream << Form( "caen_%d_%d.Type: %s", mod, chan, fCaenType[mod][chan].data() ) << std::endl;
 
 			} // chan
 			

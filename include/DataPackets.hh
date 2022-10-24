@@ -75,11 +75,11 @@ public:
 		if( i >= trace.size() ) return 0;
 		return trace.at(i);
 	};
-	inline unsigned short	GetQlong() { return Qlong; };
-	inline unsigned short	GetQshort() { return Qshort; };
 	inline unsigned char	GetModule() { return mod; };
 	inline unsigned char	GetChannel() { return ch; };
-	inline unsigned short	GetTAC() { return (int)Qlong-(int)Qshort; };
+	inline unsigned short	GetQlong() { return Qlong; };
+	inline unsigned short	GetQshort() { return Qshort; };
+	inline unsigned short	GetQdiff() { return (int)Qlong-(int)Qshort; };
 	inline float			GetEnergy() { return energy; };
 	inline bool				IsOverThreshold() { return thres; };
 
@@ -110,7 +110,7 @@ protected:
 	float						energy;
 
 	
-	ClassDef( ISSCaenData, 2 )
+	ClassDef( ISSCaenData, 3 )
 	
 };
 

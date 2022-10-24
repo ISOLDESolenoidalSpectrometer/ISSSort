@@ -51,6 +51,7 @@ public:
 	float CaenEnergy( unsigned int mod, unsigned int chan, unsigned short raw );
 	unsigned int CaenThreshold( unsigned int mod, unsigned int chan );
 	long CaenTime( unsigned int mod, unsigned int chan );
+	std::string CaenType( unsigned int mod, unsigned int chan );
 	
 	inline void SetAsicEnergyCalibration( unsigned int mod, unsigned int asic, unsigned int chan,
 										 float offset, float gain, float gainquadr ){
@@ -102,6 +103,12 @@ public:
 		   chan < set->GetNumberOfCAENChannels() )
 			fCaenTime[mod][chan] = time;
 	};
+	inline void SetCaenType( unsigned int mod, unsigned int chan,
+							std::string type ){
+		if( mod < set->GetNumberOfCAENModules() &&
+		   chan < set->GetNumberOfCAENChannels() )
+			fCaenType[mod][chan] = type;
+	};
 
 
 
@@ -126,7 +133,8 @@ private:
 	std::vector< std::vector<float> > fCaenGainQuadr;
 	std::vector< std::vector<unsigned int> > fCaenThreshold;
 	std::vector< std::vector<long> > fCaenTime;
-	
+	std::vector< std::vector<std::string> > fCaenType;
+
 	float fAsicOffsetDefault;
 	float fAsicGainDefault;
 	float fAsicGainQuadrDefault;

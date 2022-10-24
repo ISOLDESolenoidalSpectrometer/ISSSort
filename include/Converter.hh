@@ -245,7 +245,9 @@ private:
 
 	std::vector<std::vector<TH2F*>> hasic;
 	std::vector<std::vector<TH2F*>> hasic_cal;
-	std::vector<std::vector<TH1F*>> hcaen;
+	std::vector<std::vector<TH1F*>> hcaen_qlong;
+	std::vector<std::vector<TH1F*>> hcaen_qshort;
+	std::vector<std::vector<TH1F*>> hcaen_qdiff;
 	std::vector<std::vector<TH1F*>> hcaen_cal;
 
 	std::vector<TH1F*> hpside;

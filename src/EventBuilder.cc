@@ -512,15 +512,20 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			caen_data = in_data->GetCaenData();
 			mymod = caen_data->GetModule();
 			mych = caen_data->GetChannel();
+			std::string entype = cal->CaenType( mymod, mych );
+			int adc_value;
 			if( overwrite_cal ) {
 				
-				myenergy = cal->CaenEnergy( mymod, mych,
-									caen_data->GetQlong() );
+				if( entype == "Qlong" ) adc_value = caen_data->GetQlong();
+				else if( entype == "Qshort" ) adc_value = caen_data->GetQshort();
+				else if( entype == "Qdiff" ) adc_value = caen_data->GetQdiff();
+				else {
+					std::cerr << "Incorrect CAEN energy type must be Qlong, Qshort or Qdiff" << std::endl;
+					adc_value = caen_data->GetQlong();
+				}
+				myenergy = cal->CaenEnergy( mymod, mych, adc_value );
 				
-				/*if( caen_data->GetQlong() > cal->CaenThreshold( mymod, mych ) )
-					mythres = true;
-				else mythres = false;*/
-				if( caen_data->GetQlong() < cal->CaenThreshold( mymod, mych ) )
+				if( adc_value < cal->CaenThreshold( mymod, mych ) )
 					mythres = false;
 
 			}
@@ -533,7 +538,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			}
 			
 			// If it's below threshold do not use as window opener
-			if ( mythres ) event_open = true;
+			if( mythres ) event_open = true;
 
 
 			// DETERMINE WHICH TYPE OF CAEN EVENT THIS IS
@@ -555,15 +560,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// Is it an MWPC?
 			else if( set->IsMWPC( mymod, mych ) && mythres ) {
 				
-				// Check for properly integrated TAC signals
-				if( caen_data->GetQlong() > caen_data->GetQshort() ) {
-				
-					mwpctac_list.push_back( caen_data->GetTAC() );
-					mwpctd_list.push_back( mytime );
-					mwpcaxis_list.push_back( set->GetMWPCAxis( mymod, mych ) );
-					mwpcid_list.push_back( set->GetMWPCID( mymod, mych ) );
-					
-				}
+				mwpctac_list.push_back( myenergy );
+				mwpctd_list.push_back( mytime );
+				mwpcaxis_list.push_back( set->GetMWPCAxis( mymod, mych ) );
+				mwpcid_list.push_back( set->GetMWPCID( mymod, mych ) );
 
 				hit_ctr++; // increase counter for bits of data included in this event
 
