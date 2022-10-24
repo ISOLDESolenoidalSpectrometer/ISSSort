@@ -513,7 +513,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			mymod = caen_data->GetModule();
 			mych = caen_data->GetChannel();
 			std::string entype = cal->CaenType( mymod, mych );
-			int adc_value;
+			unsigned short adc_value = 0;
 			if( overwrite_cal ) {
 				
 				if( entype == "Qlong" ) adc_value = caen_data->GetQlong();

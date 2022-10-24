@@ -983,19 +983,20 @@ void ISSConverter::FinishCAENData(){
 		else {
 			
 			// Difference between Qlong and Qshort
-			int qdiff = (int)caen_data->GetQlong() - (int)caen_data->GetQshort();
+			short qdiff = (int)caen_data->GetQlong() - (int)caen_data->GetQshort();
 			hcaen_qdiff[caen_data->GetModule()][caen_data->GetChannel()]->Fill( qdiff );
 
 			// Choose the energy we want to use
+			unsigned short adc_value = 0;
 			std::string entype = cal->CaenType( caen_data->GetModule(), caen_data->GetChannel() );
-			if( entype == "Qlong" ) my_adc_data = caen_data->GetQlong();
-			else if( entype == "Qshort" ) my_adc_data = caen_data->GetQshort();
-			else if( entype == "Qdiff" ) my_adc_data = caen_data->GetQdiff();
+			if( entype == "Qlong" ) adc_value = caen_data->GetQlong();
+			else if( entype == "Qshort" ) adc_value = caen_data->GetQshort();
+			else if( entype == "Qdiff" ) adc_value = caen_data->GetQdiff();
 			else {
 				std::cerr << "Incorrect CAEN energy type must be Qlong, Qshort or Qdiff" << std::endl;
-				my_adc_data = caen_data->GetQlong();
+				adc_value = caen_data->GetQlong();
 			}
-			my_energy = cal->CaenEnergy( caen_data->GetModule(), caen_data->GetChannel(), my_adc_data );
+			my_energy = cal->CaenEnergy( caen_data->GetModule(), caen_data->GetChannel(), adc_value );
 			caen_data->SetEnergy( my_energy );
 			hcaen_cal[caen_data->GetModule()][caen_data->GetChannel()]->Fill( my_energy );
 
