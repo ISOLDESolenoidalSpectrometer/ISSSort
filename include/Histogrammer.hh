@@ -135,9 +135,9 @@ public:
 
 	// Recoil energy gate
 	inline bool RecoilCut( std::shared_ptr<ISSRecoilEvt> r ){
-		if( react->GetRecoilCut( r->GetSector() )->IsInside( r->GetEnergyRest(), r->GetEnergyLoss() ) )
-			return true;
-		else return false;
+		return react->GetRecoilCut( r->GetSector() )
+					->IsInside( r->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
+								r->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 	}
 
 private:

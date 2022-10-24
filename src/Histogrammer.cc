@@ -1097,7 +1097,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				if( PromptCoincidence( recoil_evt, array_evt ) ){
 					
 					// Recoils in coincidence with an array event
-					recoil_EdE_array[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest(), recoil_evt->GetEnergyLoss() );
+					recoil_EdE_array[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ), recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 					
 					// Array histograms
 					E_vs_z_recoilT->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
