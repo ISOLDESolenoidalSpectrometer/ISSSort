@@ -1894,7 +1894,7 @@ void ISSEventBuilder::RecoilFinder() {
 				flag_skip = false;
 				for( unsigned int k = 0; k < index.size(); ++k ) {
 					if( index[k] == j ) flag_skip = true;
-					if( layers[k] == (int)rid_list[j] ) flag_skip = true;
+					if( (int)layers[k] == rid_list[j] ) flag_skip = true;
 				}
 				
 				// Found a match
