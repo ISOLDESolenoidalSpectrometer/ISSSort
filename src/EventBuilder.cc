@@ -2406,7 +2406,7 @@ void ISSEventBuilder::MakeHists(){
 
 		hname = "recoil_tdiff" + std::to_string(i);
 		htitle = "Recoil-Recoil time difference in sector " + std::to_string(i);
-		htitle = " with respect to layer " + std::to_string( set->GetRecoilEnergyLossStart() );
+		htitle += " with respect to layer " + std::to_string( set->GetRecoilEnergyLossStart() );
 		htitle += ";Recoil layer ID;#Delta t [ns];Counts";
 		recoil_tdiff[i] = new TH2F( hname.data(), htitle.data(), set->GetNumberOfRecoilLayers(), -0.5, set->GetNumberOfRecoilLayers()-0.5, 2000, -6e3, 6e3 );
 		
