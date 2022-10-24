@@ -1870,13 +1870,14 @@ void ISSEventBuilder::RecoilFinder() {
 	
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
+	std::vector<unsigned int> layers;
 	bool flag_skip;
 	
 	// Loop over recoil events
 	for( unsigned int i = 0; i < ren_list.size(); ++i ) {
 		
 		// Find the dE event, usually the trigger
-		if( rid_list[i] == 0 || set->GetNumberOfRecoilLayers() == 13 ){
+		if( rid_list[i] == (int)set->GetRecoilEnergyLossStart() ){
 			
 			recoil_evt->ClearEvent();
 			recoil_evt->SetdETime( rtd_list[i] );
@@ -1884,31 +1885,40 @@ void ISSEventBuilder::RecoilFinder() {
 			recoil_evt->AddRecoil( ren_list[i], rid_list[i] );
 			
 			index.push_back(i);
+			layers.push_back(rid_list[i]);
 
 			// Look for matching E events
 			for( unsigned int j = 0; j < ren_list.size(); ++j ) {
 
 				// Check if we already used this hit
 				flag_skip = false;
-				for( unsigned int k = 0; k < index.size(); ++k )
+				for( unsigned int k = 0; k < index.size(); ++k ) {
 					if( index[k] == j ) flag_skip = true;
+					if( layers[k] == (int)rid_list[j] ) flag_skip = true;
+				}
 				
 				// Found a match
 				// ^^^ Not sure if this will work with the ionisation chamber!
 				if( i != j && 		// Not looking at the same hit
-					!flag_skip &&	// Not looking at a previously-used hit
-				    rsec_list[i] == rsec_list[j] &&		// They are in the same sector
-				    rid_list[i] != rid_list[j] &&		// They are not in the same layer
-				    TMath::Abs( rtd_list[i] - rtd_list[j] ) < set->GetRecoilHitWindow() // The hits lie within the recoil hit window
+				   !flag_skip &&	// Not looking at a previously-used hit
+				   rsec_list[i] == rsec_list[j] &&		// They are in the same sector
+				   rid_list[i] != rid_list[j]			// They are not in the same layer
 				   ){
-				
-					index.push_back(j);
-					recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
-					recoil_EdE[rsec_list[i]]->Fill( ren_list[j], ren_list[i] );
 					
-					if( rid_list[j] == (int)set->GetRecoilEnergyLossDepth() ){
+					if( rid_list[j] == (int)set->GetRecoilEnergyRestStart() )
+						recoil_E_dE_tdiff[rsec_list[i]]->Fill( rtd_list[j] - rtd_list[i] );
+					recoil_tdiff[rsec_list[i]]->Fill( rid_list[j], rtd_list[j] - rtd_list[i] );
 					
-						recoil_evt->SetETime( rtd_list[j] );
+					// The hits lie within the recoil hit window
+					if( TMath::Abs( rtd_list[i] - rtd_list[j] ) < set->GetRecoilHitWindow() ) {
+						
+						index.push_back(j);
+						layers.push_back(rid_list[j]);
+						recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
+						recoil_EdE[rsec_list[i]]->Fill( ren_list[j], ren_list[i] );
+						
+						if( rid_list[j] == (int)set->GetRecoilEnergyRestStart() )
+							recoil_evt->SetETime( rtd_list[j] );
 						
 					}
 					
@@ -1917,12 +1927,12 @@ void ISSEventBuilder::RecoilFinder() {
 			}
 			
 			// Histogram the recoils
-			recoil_EdE[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyLossDepth() ),
-								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
-			recoil_dEsum[rsec_list[i]]->Fill( recoil_evt->GetEnergyTotal(),
-								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
-			recoil_E_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyLossDepth() ) );
-			recoil_dE_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
+			recoil_EdE[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
+								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+			recoil_dEsum[rsec_list[i]]->Fill( recoil_evt->GetEnergyTotal( set->GetRecoilEnergyTotalStart(), set->GetRecoilEnergyTotalStop() ),
+								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+			recoil_E_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
+			recoil_dE_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 			
 			// Fill the tree and get ready for next recoil event
 			write_evts->AddEvt( recoil_evt );
@@ -2359,7 +2369,8 @@ void ISSEventBuilder::MakeHists(){
 	recoil_E_singles.resize( set->GetNumberOfRecoilSectors() );
 	recoil_dE_singles.resize( set->GetNumberOfRecoilSectors() );
 	recoil_E_dE_tdiff.resize( set->GetNumberOfRecoilSectors() );
-	
+	recoil_tdiff.resize( set->GetNumberOfRecoilSectors() );
+
 	// Loop over number of recoil sectors
 	for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
 	
@@ -2389,10 +2400,16 @@ void ISSEventBuilder::MakeHists(){
 		recoil_dE_singles[i] = new TH1F( hname.data(), htitle.data(), 2000, 0, 200000 );
 		
 		hname = "recoil_E_dE_tdiff" + std::to_string(i);		
-		htitle = "Recoil E-dE time difference " + std::to_string(i);
+		htitle = "Recoil E-dE time difference in sector" + std::to_string(i);
 		htitle += "; #Delta t [ns]; Counts";
 		recoil_E_dE_tdiff[i] = new TH1F( hname.data(), htitle.data(), 2000, -6e3, 6e3 );
 
+		hname = "recoil_tdiff" + std::to_string(i);
+		htitle = "Recoil-Recoil time difference in sector " + std::to_string(i);
+		htitle = " with respect to layer " + std::to_string( set->GetRecoilEnergyLossStart() );
+		htitle += ";Recoil layer ID;#Delta t [ns];Counts";
+		recoil_tdiff[i] = new TH2F( hname.data(), htitle.data(), set->GetNumberOfRecoilLayers(), -0.5, set->GetNumberOfRecoilLayers()-0.5, 2000, -6e3, 6e3 );
+		
 	}
 	
 	
@@ -2584,7 +2601,11 @@ void ISSEventBuilder::CleanHists() {
 		delete (recoil_E_dE_tdiff[i]);
 	recoil_E_dE_tdiff.clear();
 
-	
+	for( unsigned int i = 0; i < recoil_tdiff.size(); i++ )
+		delete (recoil_tdiff[i]);
+	recoil_tdiff.clear();
+
+
 	for( unsigned int i = 0; i < mwpc_tac_axis.size(); i++ ) {
 		for( unsigned int j = 0; j < mwpc_tac_axis.at(i).size(); j++ )
 			delete (mwpc_tac_axis[i][j]);
@@ -2723,6 +2744,9 @@ void ISSEventBuilder::ResetHists() {
 		
 	for( unsigned int i = 0; i < recoil_E_dE_tdiff.size(); i++ )
 		recoil_E_dE_tdiff[i]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < recoil_tdiff.size(); i++ )
+		recoil_tdiff[i]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < mwpc_tac_axis.size(); i++ )
 		for( unsigned int j = 0; j < mwpc_tac_axis.at(i).size(); j++ )

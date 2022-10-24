@@ -337,8 +337,18 @@ void ISSReaction::ReadReaction() {
 	}
 	
 	// EBIS time window
-	EBIS_On = config->GetValue( "EBIS_On", 1.2e6 );		// normally 1.2 ms in slow extraction
-	EBIS_Off = config->GetValue( "EBIS_Off", 2.52e7 );	// this allows a off window 20 times bigger than on
+	EBIS_On = config->GetValue( "EBIS.On", 1.2e6 );		// normally 1.2 ms in slow extraction
+	EBIS_Off = config->GetValue( "EBIS.Off", 2.52e7 );	// this allows a off window 20 times bigger than on
+	EBIS_ratio = config->GetValue( "EBIS.FillRatio", GetEBISTimeRatio() );	// this is the measured ratio of EBIS On/off. Default is just the time window ratio
+
+	// Array-Recoil time windows
+	array_recoil_prompt[0] = config->GetValue( "ArrayRecoil_PromptTime.Min", -300 );	// lower limit for array-recoil prompt time difference
+	array_recoil_prompt[1] = config->GetValue( "ArrayRecoil_PromptTime.Max", 300 );		// upper limit for array-recoil prompt time difference
+	array_recoil_random[0] = config->GetValue( "ArrayRecoil_RandomTime.Min", 600 );		// lower limit for array-recoil random time difference
+	array_recoil_random[1] = config->GetValue( "ArrayRecoil_RandomTime.Max", 1200 );	// upper limit for array-recoil random time difference
+
+	// Array-Recoil fill ratios
+	array_recoil_ratio = config->GetValue( "ArrayRecoil_FillRatio", GetArrayRecoilTimeRatio() );
 
 	// Target thickness and offsets
 	target_thickness = config->GetValue( "TargetThickness", 0.200 ); // units of mg/cm^2

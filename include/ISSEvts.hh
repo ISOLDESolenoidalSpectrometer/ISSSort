@@ -119,24 +119,27 @@ public:
 		else return 0;
 	};
 	
-	inline float GetEnergyLoss( unsigned char i = 0 ){
+	inline float GetEnergyLoss( unsigned char start = 0, unsigned char stop = 0 ){
 		float total = 0;
 		for( unsigned int j = 0; j < energy.size(); ++j )
-			if( GetID(j) <= i ) total += energy.at(j);
+			if( GetID(j) >= start && GetID(j) <= stop )
+				total += energy.at(j);
 		return total;
 	};
 
-	inline float GetEnergyRest( unsigned char i = 1 ){
+	inline float GetEnergyRest( unsigned char start = 1, unsigned char stop = 1 ){
 		float total = 0;
-		for( unsigned int j = i; j < energy.size(); ++j )
-			if( GetID(j) >= i ) total += energy.at(j);
+		for( unsigned int j = 0; j < energy.size(); ++j )
+			if( GetID(j) >= start && GetID(j) <= stop )
+				total += energy.at(j);
 		return total;
 	};
-	
-	inline float GetEnergyTotal(){
+
+	inline float GetEnergyTotal( unsigned char start = 1, unsigned char stop = 1 ){
 		float total = 0;
-		for( unsigned int i = 0; i < energy.size(); ++i )
-			total += energy.at(i);
+		for( unsigned int j = 0; j < energy.size(); ++j )
+			if( GetID(j) >= start && GetID(j) <= stop )
+				total += energy.at(j);
 		return total;
 	};
 	
@@ -156,7 +159,7 @@ private:
 	unsigned long				detime;	///< time stamp of dE event
 	unsigned long				etime;	///< time stamp of E event
 
-	ClassDef( ISSRecoilEvt, 2 )
+	ClassDef( ISSRecoilEvt, 3 )
 
 };
 
@@ -263,24 +266,27 @@ public:
 		else return 0;
 	};
 	
-	inline float GetEnergyLoss( unsigned char i = 0 ){
+	inline float GetEnergyLoss( unsigned char start = 0, unsigned char stop = 0 ){
 		float total = 0;
 		for( unsigned int j = 0; j < energy.size(); ++j )
-			if( GetID(j) <= i ) total += energy.at(j);
+			if( GetID(j) >= start && GetID(j) <= stop )
+				total += energy.at(j);
 		return total;
 	};
 
-	inline float GetEnergyRest( unsigned char i = 1 ){
+	inline float GetEnergyRest( unsigned char start = 1, unsigned char stop = 1 ){
 		float total = 0;
-		for( unsigned int j = i; j < energy.size(); ++j )
-			if( GetID(j) >= i ) total += energy.at(j);
+		for( unsigned int j = 0; j < energy.size(); ++j )
+			if( GetID(j) >= start && GetID(j) <= stop )
+				total += energy.at(j);
 		return total;
 	};
 	
-	inline float GetEnergyTotal(){
+	inline float GetEnergyTotal( unsigned char start = 1, unsigned char stop = 1 ){
 		float total = 0;
-		for( unsigned int i = 0; i < energy.size(); ++i )
-			total += energy.at(i);
+		for( unsigned int j = 0; j < energy.size(); ++j )
+			if( GetID(j) >= start && GetID(j) <= stop )
+				total += energy.at(j);
 		return total;
 	};
 
@@ -297,7 +303,7 @@ private:
 	unsigned long				detime;	///< time stamp of ZeroDegree event
 	unsigned long				etime;	///< time stamp of ZeroDegree event
 
-	ClassDef( ISSZeroDegreeEvt, 2 )
+	ClassDef( ISSZeroDegreeEvt, 3 )
 
 };
 

@@ -69,8 +69,8 @@ public:
 	
 	// Recoil - array coincidence (numbers to go to reaction file?)
 	inline bool	PromptCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSArrayEvt> a ){
-		if( (double)r->GetTime() - (double)a->GetTime() > -200 &&
-			(double)r->GetTime() - (double)a->GetTime() < 300 ) return true;
+		if( (double)r->GetTime() - (double)a->GetTime() > react->GetArrayRecoilPromptTime(0) &&
+			(double)r->GetTime() - (double)a->GetTime() < react->GetArrayRecoilPromptTime(1) ) return true;
 		else return false;
 	};
 	
@@ -82,8 +82,8 @@ public:
 	};
 	
 	inline bool	RandomCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSArrayEvt> a ){
-		if( (double)r->GetTime() - (double)a->GetTime() > 1000 &&
-			(double)r->GetTime() - (double)a->GetTime() < 1500 ) return true;
+		if( (double)r->GetTime() - (double)a->GetTime() > react->GetArrayRecoilRandomTime(0) &&
+			(double)r->GetTime() - (double)a->GetTime() < react->GetArrayRecoilRandomTime(1) ) return true;
 		else return false;
 	};
 	
@@ -178,12 +178,12 @@ private:
     std::vector<std::vector<TH2F*>> recoil_array_tw_row;
 	TProfile *recoil_array_tw_prof;
 	TH1F *ebis_td_recoil, *ebis_td_array, *ebis_td_elum;
-	std::vector<TH1F*> recoilEdE_td;
 	
 	// Recoils
 	std::vector<TH2F*> recoil_EdE;
 	std::vector<TH2F*> recoil_EdE_cut;
 	std::vector<TH2F*> recoil_EdE_array;
+	std::vector<TH2F*> recoil_bragg;
 
 	// Array - E vs. z
 	std::vector<TH2F*> E_vs_z_mod;

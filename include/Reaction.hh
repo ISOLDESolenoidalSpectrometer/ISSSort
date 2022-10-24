@@ -39,7 +39,7 @@
 const double p_mass  = 938272.08816;	///< mass of the proton in keV/c^2
 const double n_mass  = 939565.42052;	///< mass of the neutron in keV/c^2
 const double u_mass  = 931494.10242;	///< atomic mass unit in keV/c^2
-const double kg_mm_s =   299.792458;	/// 1 keV/c in kg•mm/s
+const double T_to_mm =   299.792458;	///< in units of 1/mm
 
 // Element names
 const std::vector<std::string> gElName = {
@@ -159,7 +159,7 @@ public:
 
 	// Get values
 	inline double GetField(){ return Mfield; };
-	inline double GetField_corr(){ return Mfield*kg_mm_s; };
+	inline double GetField_corr(){ return Mfield*T_to_mm; };
 	inline double GetArrayDistance(){ return z0; };
 	inline double GetThetaCM(){ return Recoil.GetThetaCM(); };
 	inline double GetDistance(){ return z; };
@@ -187,10 +187,30 @@ public:
 
 	inline double GetZmeasured(){ return z_meas; };
 	inline double GetZprojected(){ return z; };
+
+	// Get EBIS times
 	inline double GetEBISOnTime(){ return EBIS_On; };
 	inline double GetEBISOffTime(){ return EBIS_Off; };
-	inline double GetEBISRatio(){ return EBIS_On / ( EBIS_Off - EBIS_On ); };
-
+	inline double GetEBISTimeRatio(){ return EBIS_On / ( EBIS_Off - EBIS_On ); };
+	inline double GetEBISFillRatio(){ return EBIS_ratio; };
+	
+	// Array-recoil time difference
+	inline double GetArrayRecoilPromptTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return array_recoil_prompt[i];
+		else return 0;
+	};
+	inline double GetArrayRecoilRandomTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return array_recoil_random[i];
+		else return 0;
+	};
+	inline double GetArrayRecoilTimeRatio(){
+		return ( array_recoil_prompt[1] - array_recoil_prompt[0] ) / ( array_recoil_random[1] - array_recoil_random[0] );
+	};
+	inline double GetArrayRecoilFillRatio(){
+		return array_recoil_ratio;
+	};
 	// Set values
 	inline void	SetField( double m ){ Mfield = m; };
 	inline void	SetArrayDistance( double d ){ z0 = d; };
@@ -254,9 +274,14 @@ private:
 	// EBIS time windows
 	double EBIS_On;		///< beam on max time in ns
 	double EBIS_Off;	///< beam off max time in ns
-	
+	double EBIS_ratio;	///< ratio of ebis on/off as measured
+
+	// Coincidence windows
+	double array_recoil_prompt[2]; ///< prompt time windows between recoil and array event
+	double array_recoil_random[2]; ///< prompt time window between recoil and array event
+	float array_recoil_ratio; // fill ratios
+
 	// Experimental info on the ejectile
-	double rho;			///< Distance from the beam axis to the interaction point in the detector
 	double z_meas;		///< measured z distance from target that ejectile interesect the silicon detector
 	double z;			///< projected z distance from target that ejectile interesect the beam axis
 

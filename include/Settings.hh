@@ -89,7 +89,12 @@ public:
 	inline unsigned int GetNumberOfRecoilSectors(){ return n_recoil_sector; };
 	inline unsigned int GetNumberOfRecoilLayers(){ return n_recoil_layer; };
 	inline unsigned int GetNumberOfRecoilElements(){ return n_recoil_sector * n_recoil_layer; };
-	inline unsigned int GetRecoilEnergyLossDepth(){ return recoil_eloss_depth; };
+	inline unsigned int GetRecoilEnergyLossStart(){ return recoil_eloss_start; };
+	inline unsigned int GetRecoilEnergyLossStop(){ return recoil_eloss_stop; };
+	inline unsigned int GetRecoilEnergyRestStart(){ return recoil_erest_start; };
+	inline unsigned int GetRecoilEnergyRestStop(){ return recoil_erest_stop; };
+	inline unsigned int GetRecoilEnergyTotalStart(){ return recoil_etot_start; };
+	inline unsigned int GetRecoilEnergyTotalStop(){ return recoil_etot_stop; };
 	int GetRecoilSector( unsigned int mod, unsigned int ch );
 	int GetRecoilLayer( unsigned int mod, unsigned int ch );
 	int GetRecoilModule( unsigned char sec, unsigned int layer );
@@ -172,7 +177,12 @@ private:
 	// Recoil detectors
 	unsigned int n_recoil_sector;						///< Number of recoil detector sectors or quadrants; 1 for gas and 4 for Si
 	unsigned int n_recoil_layer;						///< Number of recoil detector layers; 13 for gas and 2 for Si
-	unsigned int recoil_eloss_depth;					///< Number of layers summed for energy loss, 1 for Silicon, about 5 for gas.
+	unsigned int recoil_eloss_start;					///< Start layer for integrating energy loss, 0 for Silicon, about 1 for gas.
+	unsigned int recoil_eloss_stop;						///< Stop layer for integrating energy loss, 0 for Silicon, about 1 for gas.
+	unsigned int recoil_erest_start;					///< Start layer for integrating energy rest, 1 for Silicon, about 5 for gas.
+	unsigned int recoil_erest_stop;						///< Stop layer for integrating energy rest, 1 for Silicon, about 5 for gas.
+	unsigned int recoil_etot_start;						///< Start layer for integrating energy total, 0 for Silicon, 0 for gas.
+	unsigned int recoil_etot_stop;						///< Stop layer for integrating energy total, 1 for Silicon, about 8 for gas.
 	std::vector<std::vector<unsigned int>> recoil_mod;	///< A list of module numbers for each recoil detector sector and layer
 	std::vector<std::vector<unsigned int>> recoil_ch;	///< A list of channel numbers for each recoil detector sector and layer
 	std::vector<std::vector<int>> recoil_sector;		///< A channel map for the recoil sectors (-1 if not a recoil)

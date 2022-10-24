@@ -495,7 +495,7 @@ void ISSHistogrammer::MakeHists() {
 	recoil_EdE.resize( set->GetNumberOfRecoilSectors() );
 	recoil_EdE_cut.resize( set->GetNumberOfRecoilSectors() );
 	recoil_EdE_array.resize( set->GetNumberOfRecoilSectors() );
-	recoilEdE_td.resize( set->GetNumberOfRecoilSectors() );
+	recoil_bragg.resize( set->GetNumberOfRecoilSectors() );
 	
 	// Loop over each recoil sector
 	for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
@@ -523,23 +523,23 @@ void ISSHistogrammer::MakeHists() {
 		recoil_EdE_array[i] = new TH2F( hname.data(), htitle.data(),
 									   2000, 0, 200000, 2000, 0, 200000 );
 		
+		hname = "recoil_bragg_sec" + std::to_string(i);
+		htitle = "Recoil Bragg plot for sector " + std::to_string(i);
+		htitle += " - singles;Bragg ID;Energy loss, dE [keV];Counts";
+		recoil_bragg[i] = new TH2F( hname.data(), htitle.data(),
+								 set->GetNumberOfRecoilLayers(), -0.5, set->GetNumberOfRecoilLayers()-0.5, 2000, 0, 200000 );
+
 		// Timing plots
 		output_file->cd( "Timing" );
 		recoil_array_td[i].resize( set->GetNumberOfArrayModules() );
 		recoil_elum_td[i].resize( set->GetNumberOfELUMSectors() );
-		
-		// Time difference between E-dE per sector
-		hname = "recoilEdE_td_sec" + std::to_string(i);
-		htitle = "Time difference between E and dE in recoil detector " + std::to_string(i);
-		htitle += ";#Delta t [ns];Counts";
-		recoilEdE_td[i] = new TH1F( hname.data(), htitle.data(), (int)(0.25*20*set->GetRecoilHitWindow()),-10*set->GetRecoilHitWindow(), 10*set->GetRecoilHitWindow() );
-		
+
 		// For array modules
 		for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
 			
 			hname = "td_recoil_array_sec" + std::to_string(i) + "_mod" + std::to_string(j);
-			htitle = "Time difference between array module " + std::to_string(i);
-			htitle += " and recoil sector " + std::to_string(j);
+			htitle = "Time difference between recoil sector " + std::to_string(i);
+			htitle += " and array module " + std::to_string(j);
 			htitle += ";#Deltat;Counts";
 			recoil_array_td[i][j] = new TH1F( hname.data(), htitle.data(),
 											 1000, -1.0*set->GetEventWindow()-50, 1.0*set->GetEventWindow()+50 );
@@ -550,7 +550,7 @@ void ISSHistogrammer::MakeHists() {
 		for( unsigned int j = 0; j < set->GetNumberOfELUMSectors(); ++j ) {
 			
 			hname = "td_recoil_elum_sec" + std::to_string(i) + "_mod" + std::to_string(j);
-			htitle = "Time difference between array module " + std::to_string(i);
+			htitle = "Time difference between recoil sector " + std::to_string(i);
 			htitle += " and ELUM sector " + std::to_string(j);
 			htitle += ";#Deltat;Counts";
 			recoil_elum_td[i][j] = new TH1F( hname.data(), htitle.data(),
@@ -681,9 +681,6 @@ void ISSHistogrammer::ResetHists() {
 	ebis_td_elum->Reset("ICESM");
 	recoil_array_tw->Reset("ICESM");
 	
-	for( unsigned int i = 0; i < recoilEdE_td.size(); ++i )
-		recoilEdE_td[i]->Reset("ICESM");
-	
 	// Recoils
 	for( unsigned int i = 0; i < recoil_EdE.size(); ++i )
 		recoil_EdE[i]->Reset("ICESM");
@@ -691,9 +688,9 @@ void ISSHistogrammer::ResetHists() {
 	for( unsigned int i = 0; i < recoil_EdE_cut.size(); ++i )
 		recoil_EdE_cut[i]->Reset("ICESM");
 	
-	for( unsigned int i = 0; i < recoil_EdE_array.size(); ++i )
-		recoil_EdE_array[i]->Reset("ICESM");
-	
+	for( unsigned int i = 0; i < recoil_bragg.size(); ++i )
+		recoil_bragg[i]->Reset("ICESM");
+
 	
 	// Array - E vs. z
 	E_vs_z->Reset("ICESM");
@@ -1021,19 +1018,19 @@ unsigned long ISSHistogrammer::FillHists() {
 			
 			else if( OffBeam( array_evt ) ){
 				
-				E_vs_z_ebis->Fill( react->GetZmeasured(), array_evt->GetEnergy(), -1.0 * react->GetEBISRatio() );
+				E_vs_z_ebis->Fill( react->GetZmeasured(), array_evt->GetEnergy(), -1.0 * react->GetEBISFillRatio() );
 				E_vs_z_ebis_off->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-				E_vs_z_ebis_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy(), -1.0 * react->GetEBISRatio() );
+				E_vs_z_ebis_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy(), -1.0 * react->GetEBISFillRatio() );
 				E_vs_z_ebis_off_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-				Ex_ebis->Fill( react->GetEx(), -1.0 * react->GetEBISRatio() );
+				Ex_ebis->Fill( react->GetEx(), -1.0 * react->GetEBISFillRatio() );
 				Ex_ebis_off->Fill( react->GetEx() );
-				Ex_ebis_mod[array_evt->GetModule()]->Fill( react->GetEx(), -1.0 * react->GetEBISRatio() );
+				Ex_ebis_mod[array_evt->GetModule()]->Fill( react->GetEx(), -1.0 * react->GetEBISFillRatio() );
 				Ex_ebis_off_mod[array_evt->GetModule()]->Fill( react->GetEx() );
-				Ex_vs_theta_ebis->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx(), -1.0 * react->GetEBISRatio() );
+				Ex_vs_theta_ebis->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
 				Ex_vs_theta_ebis_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
 				Ex_vs_theta_ebis_off->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
 				Ex_vs_theta_ebis_off_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-				Ex_vs_z_ebis->Fill( react->GetZmeasured(), react->GetEx(), -1.0 * react->GetEBISRatio() );
+				Ex_vs_z_ebis->Fill( react->GetZmeasured(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
 				Ex_vs_z_ebis_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 				Ex_vs_z_ebis_off->Fill( react->GetZmeasured(), react->GetEx() );
 				Ex_vs_z_ebis_off_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
@@ -1044,13 +1041,13 @@ unsigned long ISSHistogrammer::FillHists() {
 					// Is inside the cut
 					if( react->GetEvsZCut(k)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
 						
-						E_vs_z_ebis_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy(), -1.0 * react->GetEBISRatio() );
+						E_vs_z_ebis_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy(), -1.0 * react->GetEBISFillRatio() );
 						E_vs_z_ebis_off_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-						Ex_ebis_cut[k]->Fill( react->GetEx(), -1.0 * react->GetEBISRatio() );
+						Ex_ebis_cut[k]->Fill( react->GetEx(), -1.0 * react->GetEBISFillRatio() );
 						Ex_ebis_off_cut[k]->Fill( react->GetEx() );
-						Ex_vs_theta_ebis_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx(), -1.0 * react->GetEBISRatio() );
+						Ex_vs_theta_ebis_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
 						Ex_vs_theta_ebis_off_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-						Ex_vs_z_ebis_cut[k]->Fill( react->GetZmeasured(), react->GetEx(), -1.0 * react->GetEBISRatio() );
+						Ex_vs_z_ebis_cut[k]->Fill( react->GetZmeasured(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
 						Ex_vs_z_ebis_off_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
 						
 					} // inside cut
@@ -1188,8 +1185,8 @@ unsigned long ISSHistogrammer::FillHists() {
 			
 			else {
 				
-				elum_ebis->Fill( elum_evt->GetEnergy(), -1.0 * react->GetEBISRatio() );
-				elum_ebis_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy(), -1.0 * react->GetEBISRatio() );
+				elum_ebis->Fill( elum_evt->GetEnergy(), -1.0 * react->GetEBISFillRatio() );
+				elum_ebis_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy(), -1.0 * react->GetEBISFillRatio() );
 				elum_ebis_off->Fill( elum_evt->GetEnergy() );
 				elum_ebis_off_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
 				
@@ -1237,16 +1234,17 @@ unsigned long ISSHistogrammer::FillHists() {
 			ebis_td_recoil->Fill( (double)recoil_evt->GetTime() - (double)read_evts->GetEBIS() );
 			
 			// Energy EdE plot, unconditioned
-			recoil_EdE[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyLossDepth() ),
-													  recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
-			
-			recoilEdE_td[ recoil_evt->GetSector() ]->Fill( (double)( (long)recoil_evt->GetETime() - (long) recoil_evt->GetdETime() ) );
-			
+			recoil_EdE[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
+													  recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+
+			// Bragg curve
+			for( unsigned int k = 0; k < recoil_evt->GetEnergies().size(); ++k )
+				recoil_bragg[recoil_evt->GetSector()]->Fill( recoil_evt->GetID(k), recoil_evt->GetEnergy(k) );
 			
 			// Energy EdE plot, after cut
 			if( RecoilCut( recoil_evt ) )
-				recoil_EdE_cut[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyLossDepth() ),
-															  recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossDepth() - 1 ) );
+				recoil_EdE_cut[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
+															  recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 			
 		} // recoils
 		

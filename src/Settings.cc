@@ -63,7 +63,12 @@ void ISSSettings::ReadSettings() {
 	// Recoil detector
 	n_recoil_sector = config->GetValue( "NumberOfRecoilSectors", 4 );
 	n_recoil_layer  = config->GetValue( "NumberOfRecoilLayers", 2 );
-	recoil_eloss_depth = config->GetValue( "RecoilEnergyLossDepth", 1 );
+	recoil_eloss_start = config->GetValue( "RecoilEnergyLossStart", 0 );
+	recoil_eloss_stop  = config->GetValue( "RecoilEnergyLossStop", 0 );
+	recoil_erest_start = config->GetValue( "RecoilEnergyRestStart", 1 );
+	recoil_erest_stop  = config->GetValue( "RecoilEnergyRestStop", 1 );
+	recoil_etot_start  = config->GetValue( "RecoilEnergyTotalStart", 0 );
+	recoil_etot_stop   = config->GetValue( "RecoilEnergyTotalStop", 1 );
 
 	recoil_mod.resize( n_recoil_sector );
 	recoil_ch.resize( n_recoil_sector );

@@ -322,6 +322,7 @@ private:
 	std::vector<TH1F*> recoil_E_singles;		///< Histogram containing the single E signals
 	std::vector<TH1F*> recoil_dE_singles;		///<  Histogram containing the single dE signals
 	std::vector<TH1F*> recoil_E_dE_tdiff;		///<  Histogram calculating the time difference between E and dE signals
+	std::vector<TH2F*> recoil_tdiff;			///< Histogram for the recoil-recoil time differences as a function of layer number
 
 	// MWPC histograms
 	std::vector<std::vector<TH1F*>> mwpc_tac_axis; ///< The TAC singles spectra in the MWPC
