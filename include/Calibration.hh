@@ -48,7 +48,7 @@ public:
 	long AsicTime( unsigned int mod, unsigned int asic );
 	bool AsicEnabled( unsigned int mod, unsigned int asic );
 	float AsicWalk( unsigned int mod, unsigned int asic, float energy );
-	float CaenEnergy( unsigned int mod, unsigned int chan, unsigned short raw );
+	float CaenEnergy( unsigned int mod, unsigned int chan, int raw );
 	unsigned int CaenThreshold( unsigned int mod, unsigned int chan );
 	long CaenTime( unsigned int mod, unsigned int chan );
 	std::string CaenType( unsigned int mod, unsigned int chan );

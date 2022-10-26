@@ -254,7 +254,7 @@ float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energ
 	
 }
 
-float ISSCalibration::CaenEnergy( unsigned int mod, unsigned int chan, unsigned short raw ) {
+float ISSCalibration::CaenEnergy( unsigned int mod, unsigned int chan, int raw ) {
 	
 	float energy, raw_rand;
 	

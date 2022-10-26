@@ -890,7 +890,8 @@ void ISSConverter::ProcessCAENData(){
 		
 		// Fill histograms
 		hcaen_qlong[my_mod_id][my_ch_id]->Fill( my_adc_data );
-		caen_data->SetQlong( my_adc_data );
+		if( my_adc_data == 0xFFFF ) caen_data->SetQlong( 0 );
+		else caen_data->SetQlong( my_adc_data );
 		flag_caen_data0 = true;
 
 	}
@@ -900,7 +901,8 @@ void ISSConverter::ProcessCAENData(){
 		
 		my_adc_data = my_adc_data & 0x7FFF; // 15 bits from 0
 		hcaen_qshort[my_mod_id][my_ch_id]->Fill( my_adc_data );
-		caen_data->SetQshort( my_adc_data );
+		if( my_adc_data == 0x7FFF ) caen_data->SetQshort( 0 );
+		else caen_data->SetQshort( my_adc_data );
 		flag_caen_data1 = true;
 
 	}
@@ -983,7 +985,7 @@ void ISSConverter::FinishCAENData(){
 		else {
 			
 			// Difference between Qlong and Qshort
-			short qdiff = (int)caen_data->GetQlong() - (int)caen_data->GetQshort();
+			int qdiff = (int)caen_data->GetQlong() - (int)caen_data->GetQshort();
 			hcaen_qdiff[caen_data->GetModule()][caen_data->GetChannel()]->Fill( qdiff );
 
 			// Choose the energy we want to use
