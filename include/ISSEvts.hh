@@ -135,7 +135,7 @@ public:
 		return total;
 	};
 
-	inline float GetEnergyTotal( unsigned char start = 1, unsigned char stop = 1 ){
+	inline float GetEnergyTotal( unsigned char start = 0, unsigned char stop = 1 ){
 		float total = 0;
 		for( unsigned int j = 0; j < energy.size(); ++j )
 			if( GetID(j) >= start && GetID(j) <= stop )
@@ -282,7 +282,7 @@ public:
 		return total;
 	};
 	
-	inline float GetEnergyTotal( unsigned char start = 1, unsigned char stop = 1 ){
+	inline float GetEnergyTotal( unsigned char start = 0, unsigned char stop = 1 ){
 		float total = 0;
 		for( unsigned int j = 0; j < energy.size(); ++j )
 			if( GetID(j) >= start && GetID(j) <= stop )
