@@ -13,7 +13,7 @@ ISSAsicData::ISSAsicData( unsigned long t, unsigned short adc, unsigned char m,
 
 ISSCaenData::ISSCaenData(){}
 ISSCaenData::~ISSCaenData(){}
-ISSCaenData::ISSCaenData( unsigned long t, unsigned short f,
+ISSCaenData::ISSCaenData( unsigned long t, float f,
 				    std::vector<unsigned short> tr,
 					unsigned short ql, unsigned short qs,
 					unsigned char m, unsigned char c,
@@ -65,6 +65,7 @@ void ISSDataPackets::SetData( std::shared_ptr<ISSCaenData> data ){
 	fill_data.SetModule( data->GetModule() );
 	fill_data.SetChannel( data->GetChannel() );
 	fill_data.SetEnergy( data->GetEnergy() );
+	fill_data.SetThreshold( data->IsOverThreshold() );
 
 	caen_packets.push_back( fill_data );
 
@@ -126,13 +127,14 @@ UInt_t ISSDataPackets::GetTimeLSB(){
 void ISSCaenData::ClearData(){
 	
 	time = 0;
-	finetime = 0;
+	finetime = 0.0;
 	trace.clear();
 	Qlong = 0;
 	Qshort = 0;
 	mod = 255;
 	ch = 255;
 	energy = -999.;
+	thres = true;
 
 	return;
 	
@@ -148,6 +150,7 @@ void ISSAsicData::ClearData(){
 	asic = 255;
 	ch = 255;
 	energy = -999.;
+	thres = true;
 
 	return;
 	

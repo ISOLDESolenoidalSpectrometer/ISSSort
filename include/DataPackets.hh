@@ -60,7 +60,7 @@ class ISSCaenData : public TObject {
 public:
 
 	ISSCaenData();
-	ISSCaenData( unsigned long t, unsigned short f,
+	ISSCaenData( unsigned long t, float f,
 			  std::vector<unsigned short> tr,
 			  unsigned short ql, unsigned short qs,
 			  unsigned char m, unsigned char c,
@@ -68,7 +68,7 @@ public:
 	~ISSCaenData();
 
 	inline unsigned long	GetTime() { return time; };
-	inline unsigned short	GetFineTime() { return finetime; };
+	inline float			GetFineTime() { return finetime; };
 	inline unsigned short	GetTraceLength() { return trace.size(); };
 	inline std::vector<unsigned short> GetTrace() { return trace; };
 	inline unsigned short	GetSample( unsigned int i = 0 ) {
@@ -84,7 +84,7 @@ public:
 	inline bool				IsOverThreshold() { return thres; };
 
 	inline void	SetTime( unsigned long t ) { time = t; };
-	inline void	SetFineTime( unsigned short t ) { finetime = t; };
+	inline void	SetFineTime( float t ) { finetime = t; };
 	inline void	SetTrace( std::vector<unsigned short> t ) { trace = t; };
 	inline void AddSample( unsigned short s ) { trace.push_back(s); };
 	inline void	SetQlong( unsigned short q ) { Qlong = q; };
@@ -100,7 +100,7 @@ public:
 protected:
 	
 	unsigned long				time;
-	unsigned short				finetime;
+	float						finetime;
 	std::vector<unsigned short>	trace;
 	unsigned short				Qlong;
 	unsigned short				Qshort;
@@ -110,7 +110,7 @@ protected:
 	float						energy;
 
 	
-	ClassDef( ISSCaenData, 3 )
+	ClassDef( ISSCaenData, 4 )
 	
 };
 
