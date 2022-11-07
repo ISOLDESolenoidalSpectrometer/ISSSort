@@ -14,6 +14,7 @@
 #pragma link C++ class ISSMwpcEvt+;
 #pragma link C++ class ISSElumEvt+;
 #pragma link C++ class ISSZeroDegreeEvt+;
+#pragma link C++ class ISSGammaRayEvt+;
 #pragma link C++ class ISSDataPackets+;
 #pragma link C++ class ISSAsicData+;
 #pragma link C++ class ISSCaenData+;

@@ -52,6 +52,7 @@ void ISSSettings::ReadSettings() {
 	recoil_hit_window = config->GetValue( "RecoilHitWindow", 500 );
 	array_hit_window = config->GetValue( "ArrayHitWindow", 500 );
 	zd_hit_window = config->GetValue( "ZeroDegreeHitWindow", 500 );
+	gamma_hit_window = config->GetValue( "GammaRayHitWindow", 500 );
 
 	
 	// Data things
@@ -217,26 +218,75 @@ void ISSSettings::ReadSettings() {
 		
 	}
 	
+	// ScintArray
+	n_scint_detector = config->GetValue( "NumberOfScintArrayDetectors", 0 );
 	
+	// Print warning if there aren't enough channels to handle it
+	if( ( n_caen_mod <= 2 && n_scint_detector > 0 ) ||
+	    ( (n_caen_mod-2)*16+3 < n_scint_detector ) ) {
+		
+		std::cout << "WARNING: You have added " << (int)n_scint_detector;
+		std::cout << " ScintArray detectors, but there are only ";
+		std::cout << (int)n_caen_mod << " CAEN modules installed" << std::endl;
+		
+	}
+	
+	scint_mod.resize( n_scint_detector );
+	scint_ch.resize( n_scint_detector );
+	scint_detector.resize( n_caen_mod );
+	
+	for( unsigned int i = 0; i < n_caen_mod; ++i )
+		for( unsigned int j = 0; j < n_caen_ch; ++j )
+			scint_detector[i].push_back( -1 );
+
+	
+	for( unsigned int i = 0; i < n_scint_detector; ++i ){
+
+		unsigned char m = 2;
+		unsigned char c = i;
+		if( i > 15 ){	// next board, channels start again at zero
+			m++;
+			c -= 16;
+		}
+		if( i > 31 ){	// next board, doesn't exist, last channels in board 0
+			m = 0;
+			c = 13 + (i-32); // last few channels of board 0
+		}
+		scint_mod[i] = config->GetValue( Form( "ScintArray_%d.Module", i ), (int)m );
+		scint_ch[i] = config->GetValue( Form( "ScintArray_%d.Channel", i ), (int)c );
+		
+		if( scint_mod[i] < n_caen_mod && scint_ch[i] < n_caen_ch )
+			scint_detector[scint_mod[i]][scint_ch[i]] = i;
+
+		else {
+			
+			std::cerr << "Dodgy ScintArray settings: module = " << scint_mod[i];
+			std::cerr << " channel = " << scint_ch[i] << std::endl;
+			
+		}
+		
+	}
+	
+
 	// Finished
 	delete config;
 	
 }
 
 
-bool ISSSettings::IsRecoil( unsigned int mod, unsigned int ch ) {
+bool ISSSettings::IsRecoil( unsigned char mod, unsigned char ch ) {
 	
 	/// Return true if this is a recoil event
-	if( recoil_sector[mod][ch] >= 0 ) return true;
+	if( recoil_sector[(int)mod][(int)ch] >= 0 ) return true;
 	else return false;
 	
 }
 
-int ISSSettings::GetRecoilSector( unsigned int mod, unsigned int ch ) {
+int ISSSettings::GetRecoilSector( unsigned char mod, unsigned char ch ) {
 	
 	/// Return the sector or quadrant of a recoil event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
-		return recoil_sector[mod][ch];
+		return recoil_sector[(int)mod][(int)ch];
 	
 	else {
 		
@@ -248,32 +298,32 @@ int ISSSettings::GetRecoilSector( unsigned int mod, unsigned int ch ) {
 	
 }
 
-int ISSSettings::GetRecoilLayer( unsigned int mod, unsigned int ch ) {
+int ISSSettings::GetRecoilLayer( unsigned char mod, unsigned char ch ) {
 	
 	/// Return the sector or quadrant of a recoil event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
-		return recoil_layer[mod][ch];
+		return recoil_layer[(int)mod][(int)ch];
 	
 	else {
 		
-		std::cerr << "Bad recoil event: module = " << mod;
-		std::cerr << " channel = " << ch << std::endl;
+		std::cerr << "Bad recoil event: module = " << (int)mod;
+		std::cerr << " channel = " << (int)ch << std::endl;
 		return -1;
 		
 	}
 	
 }
 
-int ISSSettings::GetRecoilModule( unsigned char sec, unsigned int layer ){
+int ISSSettings::GetRecoilModule( unsigned char sec, unsigned char layer ){
 	
 	// Returns the module of the recoil detector
 	if( sec < n_recoil_sector && layer < n_recoil_layer )
-		return recoil_mod[(int)sec][layer];
+		return recoil_mod[(int)sec][(int)layer];
 	
 	else {
 		
 		std::cerr << "Bad recoil event: sector = " << (int)sec;
-		std::cerr << " layer = " << layer << std::endl;
+		std::cerr << " layer = " << (int)layer << std::endl;
 		return -1;
 		
 	}
@@ -281,16 +331,16 @@ int ISSSettings::GetRecoilModule( unsigned char sec, unsigned int layer ){
 	
 }
 
-int ISSSettings::GetRecoilChannel( unsigned char sec, unsigned int layer ){
+int ISSSettings::GetRecoilChannel( unsigned char sec, unsigned char layer ){
 	
 	// Returns the channel of the recoil detector
 	if( sec < n_recoil_sector && layer < n_recoil_layer )
-		return recoil_ch[(int)sec][layer];
+		return recoil_ch[(int)sec][(int)layer];
 	
 	else {
 		
 		std::cerr << "Bad recoil event: sector = " << (int)sec;
-		std::cerr << " layer = " << layer << std::endl;
+		std::cerr << " layer = " << (int)layer << std::endl;
 		return -1;
 		
 	}
@@ -298,85 +348,85 @@ int ISSSettings::GetRecoilChannel( unsigned char sec, unsigned int layer ){
 	
 }
 
-bool ISSSettings::IsMWPC( unsigned int mod, unsigned int ch ) {
+bool ISSSettings::IsMWPC( unsigned char mod, unsigned char ch ) {
 	
 	/// Return true if this is a MWPC event
-	if( mwpc_axis[mod][ch] >= 0 && mwpc_axis[mod][ch] < (int)n_mwpc_axes ) return true;
+	if( mwpc_axis[(int)mod][(int)ch] >= 0 && mwpc_axis[(int)mod][(int)ch] < (int)n_mwpc_axes ) return true;
 	else return false;
 	
 }
 
-int ISSSettings::GetMWPCAxis( unsigned int mod, unsigned int ch ) {
+int ISSSettings::GetMWPCAxis( unsigned char mod, unsigned char ch ) {
 	
 	/// Return the axis number of an MWPC event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
-		return mwpc_axis[mod][ch];
+		return mwpc_axis[(int)mod][(int)ch];
 	
 	else {
 		
-		std::cerr << "Bad MWPC event: module = " << mod;
-		std::cerr << " channel = " << ch << std::endl;
+		std::cerr << "Bad MWPC event: module = " << (int)mod;
+		std::cerr << " channel = " << (int)ch << std::endl;
 		return -1;
 		
 	}
 	
 }
 
-int ISSSettings::GetMWPCID( unsigned int mod, unsigned int ch ) {
+int ISSSettings::GetMWPCID( unsigned char mod, unsigned char ch ) {
 	
 	/// Return the TAC number of an MWPC event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
-		return mwpc_tac[mod][ch];
+		return mwpc_tac[(int)mod][(int)ch];
 	
 	else {
 		
-		std::cerr << "Bad MWPC event: module = " << mod;
-		std::cerr << " channel = " << ch << std::endl;
+		std::cerr << "Bad MWPC event: module = " << (int)mod;
+		std::cerr << " channel = " << (int)ch << std::endl;
 		return -1;
 		
 	}
 	
 }
 
-bool ISSSettings::IsELUM( unsigned int mod, unsigned int ch ) {
+bool ISSSettings::IsELUM( unsigned char mod, unsigned char ch ) {
 	
 	/// Return true if this is an ELUM event
-	if( elum_sector[mod][ch] >= 0 ) return true;
+	if( elum_sector[(int)mod][(int)ch] >= 0 ) return true;
 	else return false;
 	
 }
 
 
-int ISSSettings::GetELUMSector( unsigned int mod, unsigned int ch ) {
+int ISSSettings::GetELUMSector( unsigned char mod, unsigned char ch ) {
 	
 	/// Return the sector or quadrant of a ELUM event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
-		return elum_sector[mod][ch];
+		return elum_sector[(int)mod][(int)ch];
 	
 	else {
 		
-		std::cerr << "Bad ELUM event: module = " << mod;
-		std::cerr << " channel = " << ch << std::endl;
+		std::cerr << "Bad ELUM event: module = " << (int)mod;
+		std::cerr << " channel = " << (int)ch << std::endl;
 		return -1;
 		
 	}
 	
 }
 
-bool ISSSettings::IsZD( unsigned int mod, unsigned int ch ) {
+bool ISSSettings::IsZD( unsigned char mod, unsigned char ch ) {
 	
 	/// Return true if this is an ZeroDegree event
-	if( zd_layer[mod][ch] >= 0 ) return true;
+	if( zd_layer[(int)mod][(int)ch] >= 0 ) return true;
 	else return false;
 	
 }
 
 
-int ISSSettings::GetZDLayer( unsigned int mod, unsigned int ch ) {
+int ISSSettings::GetZDLayer( unsigned char mod, unsigned char ch ) {
 	
 	/// Return the layer of a ZeroDegree event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
-		return zd_layer[mod][ch];
+		return zd_layer[(int)mod][(int)ch];
 	
 	else {
 		
@@ -387,3 +437,30 @@ int ISSSettings::GetZDLayer( unsigned int mod, unsigned int ch ) {
 	}
 	
 }
+
+
+bool ISSSettings::IsScintArray( unsigned char mod, unsigned char ch ) {
+	
+	/// Return true if this is an ScintArray event
+	if( scint_detector[(int)mod][(int)ch] >= 0 ) return true;
+	else return false;
+	
+}
+
+
+int ISSSettings::GetScintArrayDetector( unsigned char mod, unsigned char ch ) {
+	
+	/// Return the detector ID of a ScintArray event by module and channel number
+	if( mod < n_caen_mod && ch < n_caen_ch )
+		return scint_detector[(int)mod][(int)ch];
+	
+	else {
+		
+		std::cerr << "Bad ScintArray event: module = " << (int)mod;
+		std::cerr << " channel = " << (int)ch << std::endl;
+		return -1;
+		
+	}
+	
+}
+

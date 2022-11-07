@@ -94,7 +94,7 @@ public:
 	void MwpcFinder(); ///< Processes all hits on the MWPC that fall within the build window
 	void ElumFinder(); ///< Processes all hits on the ELUM that fall within the build window
 	void ZeroDegreeFinder(); ///< Processes all hits on the zero-degree detector that fall within the build window
-	//void GammaFinder(); // in the future :-)
+	void GammaRayFinder(); ///< Processes hits in the ScintArray and maybe HPGe in the future
 		
 	inline TFile* GetFile(){ return output_file; }; ///< Getter for the output_file pointer
 	inline TTree* GetTree(){ return output_tree; }; ///< Getter for the output tree pointer
@@ -133,6 +133,7 @@ private:
 	std::shared_ptr<ISSMwpcEvt> mwpc_evt;
 	std::shared_ptr<ISSElumEvt> elum_evt;
 	std::shared_ptr<ISSZeroDegreeEvt> zd_evt;
+	std::shared_ptr<ISSGammaRayEvt> gamma_evt;
 
 	/// Outputs
 	TFile *output_file; ///< Pointer to the output ROOT file containing events
@@ -219,6 +220,7 @@ private:
 	int					mystrip;	///< strip number for DSSSD
 	
 	// Data variables - Recoil / ELUM / ZeroDegree / MWPC
+	unsigned char		myid;		///< generic detector id
 	unsigned char		mysector;	///< 4 quadrants of the recoil, for example
 	unsigned char		mylayer;	///< 2 layers for the dE-E, for example
 
@@ -228,34 +230,39 @@ private:
 	std::vector<float>		nen_list;	///< list of n-side energies for ParticleFinder
 	std::vector<long>		ptd_list;	///< list of p-side time differences for ParticleFinder
 	std::vector<long>		ntd_list;	///< list of n-side time differences for ParticleFinder
-	std::vector<int>		pid_list;	///< list of p-side strip ids
-	std::vector<int>		nid_list;	///< list of n-side strip ids
-	std::vector<int>		pmod_list;	///< list of p-side modules numbers
-	std::vector<int>		nmod_list;	///< list of n-side modules numbers
-	std::vector<int>		prow_list;	///< list of p-side row numbers
-	std::vector<int>		nrow_list;	///< list of n-side row numbers
+	std::vector<char>		pid_list;	///< list of p-side strip ids
+	std::vector<char>		nid_list;	///< list of n-side strip ids
+	std::vector<char>		pmod_list;	///< list of p-side modules numbers
+	std::vector<char>		nmod_list;	///< list of n-side modules numbers
+	std::vector<char>		prow_list;	///< list of p-side row numbers
+	std::vector<char>		nrow_list;	///< list of n-side row numbers
 
 	// Recoil variables
 	std::vector<float>	ren_list;	///< list of recoil energies for RecoilFinder
 	std::vector<long>	rtd_list;	///< list of recoil time differences for RecoilFinder
-	std::vector<int>	rid_list;	///< list of recoil IDs/layers for RecoilFinder
-	std::vector<int>	rsec_list;	///< list of recoil sectors for RecoilFinder
+	std::vector<char>	rid_list;	///< list of recoil IDs/layers for RecoilFinder
+	std::vector<char>	rsec_list;	///< list of recoil sectors for RecoilFinder
 	
 	// MWPC variables
 	std::vector<unsigned short>	mwpctac_list;	///< TAC time from the MWPC
 	std::vector<long>			mwpctd_list;	///< list of ELUM time differences for ELUMFinder
-	std::vector<int>			mwpcaxis_list;	///< list of axis IDs for the MWPC
-	std::vector<int>			mwpcid_list;	///< list of TAC IDs for the MWPC
+	std::vector<char>			mwpcaxis_list;	///< list of axis IDs for the MWPC
+	std::vector<char>			mwpcid_list;	///< list of TAC IDs for the MWPC
 
 	// ELUM variables
 	std::vector<float>	een_list;	///< list of ELUM energies for ELUMFinder
 	std::vector<long>	etd_list;	///< list of ELUM time differences for ELUMFinder
-	std::vector<int>	esec_list;	///< list of ELUM sectors for ELUMFinder
+	std::vector<char>	esec_list;	///< list of ELUM sectors for ELUMFinder
 
 	// ZeroDegree variables
 	std::vector<float>	zen_list;	///< list of ZeroDegree energies for ELUMFinder
 	std::vector<long>	ztd_list;	///< list of ZeroDegree time differences for ELUMFinder
-	std::vector<int>	zid_list;	///< list of ZeroDegree IDs/layers for ELUMFinder
+	std::vector<char>	zid_list;	///< list of ZeroDegree IDs/layers for ELUMFinder
+
+	// ScintArray variables
+	std::vector<float>	saen_list;	///< list of ScintArray energies for GammaFinder
+	std::vector<long>	satd_list;	///< list of ScintArray time differences for GammaFinder
+	std::vector<char>	said_list;	///< list of ScintArray detectors ids for GammaFinder
 
 	// Counters
 	unsigned int		hit_ctr;		///< Counts the number of hits that make up an event within a given file
@@ -265,6 +272,7 @@ private:
 	unsigned int		mwpc_ctr;		///< Counts the number of MWPC events within a given file
 	unsigned int		elum_ctr;		///< Counts the number of ELUM events within a given file
 	unsigned int		zd_ctr;			///< Counts the number of zero-degree detector events within a given file
+	unsigned int		gamma_ctr;		///< Counts the number of Gamma-Ray events within a given file
 	unsigned long		n_asic_data;	///< Counter for the number of asic data packets in a file
 	unsigned long		n_caen_data;	///< Counter for number of caen data packets in a file
 	unsigned long		n_info_data; 	///< Counter for number of info data packets in a file
@@ -330,10 +338,17 @@ private:
 	TH2F *mwpc_pos; ///< The TAC differences for multiplicity-2 events
 
 	// ELUM histograms
-	TH2F *elum; ///< The elum spectrum histogram
-	
+	TH1F *elum_E; ///< The elum spectrum histogram
+	TH2F *elum_E_vs_sec; ///< The elum spectrum histogram
+
 	// ZeroDegree histograms
-	TH2F *zd; ///< The zero-degree detector histogram
+	TH2F *zd_EdE; ///< The zero-degree detector histogram
+
+	// GammaRay histograms
+	TH1F *gamma_E;			///< Sum gamma-ray energy histogram
+	TH2F *gamma_E_vs_det;	///< Gamma-ray energy verus detector ID
+	TH2F *gamma_gamma_E;	///< Gamma-gamma matrix, no prompt time condition
+	TH1F *gamma_gamma_td;	///< Gamma-gamma time difference
 
 };
 

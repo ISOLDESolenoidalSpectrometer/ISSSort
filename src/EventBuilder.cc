@@ -163,7 +163,8 @@ void ISSEventBuilder::StartFile(){
 	mwpc_ctr	= 0;
 	elum_ctr	= 0;
 	zd_ctr		= 0;
-	
+	gamma_ctr	= 0;
+
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 	
 		n_fpga_pulser[i] = 0;
@@ -251,6 +252,7 @@ void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 	mwpc_evt	= std::make_shared<ISSMwpcEvt>();
 	elum_evt	= std::make_shared<ISSElumEvt>();
 	zd_evt		= std::make_shared<ISSZeroDegreeEvt>();
+	gamma_evt	= std::make_shared<ISSGammaRayEvt>();
 
 	// ------------------------------------------------------------------------ //
 	// Create output file and create events tree
@@ -311,35 +313,43 @@ void ISSEventBuilder::Initialise(){
 	ztd_list.clear();
 	zid_list.clear();
 	
+	saen_list.clear();
+	satd_list.clear();
+	said_list.clear();
+	
 	// Now swap all these vectors with empty vectors to ensure they are fully cleared
 	std::vector<float>().swap(pen_list);
 	std::vector<float>().swap(nen_list);
 	std::vector<long>().swap(ptd_list);
 	std::vector<long>().swap(ntd_list);
-	std::vector<int>().swap(pid_list);
-	std::vector<int>().swap(nid_list);
-	std::vector<int>().swap(pmod_list);
-	std::vector<int>().swap(nmod_list);
-	std::vector<int>().swap(prow_list);
-	std::vector<int>().swap(nrow_list);
+	std::vector<char>().swap(pid_list);
+	std::vector<char>().swap(nid_list);
+	std::vector<char>().swap(pmod_list);
+	std::vector<char>().swap(nmod_list);
+	std::vector<char>().swap(prow_list);
+	std::vector<char>().swap(nrow_list);
 	
 	std::vector<float>().swap(ren_list);
 	std::vector<long>().swap(rtd_list);
-	std::vector<int>().swap(rid_list);
-	std::vector<int>().swap(rsec_list);
+	std::vector<char>().swap(rid_list);
+	std::vector<char>().swap(rsec_list);
 	
 	std::vector<unsigned short>().swap(mwpctac_list);
 	std::vector<long>().swap(mwpctd_list);
-	std::vector<int>().swap(mwpcaxis_list);
-	std::vector<int>().swap(mwpcid_list);
+	std::vector<char>().swap(mwpcaxis_list);
+	std::vector<char>().swap(mwpcid_list);
 
 	std::vector<float>().swap(een_list);
 	std::vector<long>().swap(etd_list);
-	std::vector<int>().swap(esec_list);
+	std::vector<char>().swap(esec_list);
 	
 	std::vector<float>().swap(zen_list);
 	std::vector<long>().swap(ztd_list);
-	std::vector<int>().swap(zid_list);
+	std::vector<char>().swap(zid_list);
+
+	std::vector<float>().swap(saen_list);
+	std::vector<long>().swap(satd_list);
+	std::vector<char>().swap(said_list);
 
 	write_evts->ClearEvt();
 	
@@ -512,10 +522,11 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			caen_data = in_data->GetCaenData();
 			mymod = caen_data->GetModule();
 			mych = caen_data->GetChannel();
-			std::string entype = cal->CaenType( mymod, mych );
-			unsigned short adc_value = 0;
+
 			if( overwrite_cal ) {
 				
+				std::string entype = cal->CaenType( mymod, mych );
+				unsigned short adc_value = 0;
 				if( entype == "Qlong" ) adc_value = caen_data->GetQlong();
 				else if( entype == "Qshort" ) adc_value = caen_data->GetQshort();
 				else if( entype == "Qdiff" ) adc_value = caen_data->GetQdiff();
@@ -539,7 +550,6 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			
 			// If it's below threshold do not use as window opener
 			if( mythres ) event_open = true;
-
 
 			// DETERMINE WHICH TYPE OF CAEN EVENT THIS IS
 			// Is it a recoil?
@@ -595,7 +605,20 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 			}
 			
+			// Is it a ScintArray?
+			else if( set->IsScintArray( mymod, mych ) && mythres ) {
 			
+				myid = set->GetScintArrayDetector( mymod, mych );
+				
+				saen_list.push_back( myenergy );
+				satd_list.push_back( mytime );
+				said_list.push_back( myid );
+				
+				hit_ctr++; // increase counter for bits of data included in this event
+
+			}
+			
+
 			// Is it the start event?
 			if( caen_time_start.at( mymod ) == 0 )
 				caen_time_start.at( mymod ) = mytime;
@@ -874,6 +897,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				MwpcFinder();		// add an MwpcEvt for pair of TAC events
 				ElumFinder();		// add an ElumEvt for each S1 event
 				ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
+				GammaRayFinder();	// add a GammaRay event for ScintArray/HPGe events
 
 				// ------------------------------------
 				// Add timing and fill the ISSEvts tree
@@ -885,7 +909,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 					write_evts->GetRecoilMultiplicity() ||
 					write_evts->GetMwpcMultiplicity() ||
 					write_evts->GetElumMultiplicity() ||
-					write_evts->GetZeroDegreeMultiplicity() )
+					write_evts->GetZeroDegreeMultiplicity() ||
+					write_evts->GetGammaRayMultiplicity() )
 					output_tree->Fill();
 
 				// Clean up if the next event is going to make the tree full
@@ -958,6 +983,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	ss_log << "   MWPC events = " << mwpc_ctr << std::endl;
 	ss_log << "   ELUM events = " << elum_ctr << std::endl;
 	ss_log << "   ZeroDegree events = " << zd_ctr << std::endl;
+	ss_log << "   Gamma-ray events = " << gamma_ctr << std::endl;
 	ss_log << "   CAEN pulser = " << n_caen_pulser << std::endl;
 	ss_log << "   FPGA pulser" << std::endl;
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i )
@@ -2036,14 +2062,9 @@ void ISSEventBuilder::ElumFinder() {
 		elum_ctr++;
 		
 		// Histogram the data
-		elum->Fill( esec_list[i], een_list[i] );
-		
-		/*if ( een_list[i] > 8000 ){
-			std::cout << std::setw(2) << esec_list[i] <<
-			std::setw(8) << een_list[i] <<
-			std::setw(16) << etd_list[i] << std::endl;
-		}*/
-		
+		elum_E->Fill( een_list[i] );
+		elum_E_vs_sec->Fill( esec_list[i], een_list[i] );
+
 	}
 	
 	// Clean up
@@ -2094,7 +2115,7 @@ void ISSEventBuilder::ZeroDegreeFinder() {
 					if( zid_list[j] == 1 ) zd_evt->SetETime( ztd_list[i] );
 					
 					// Histogram the ZeroDegree
-					zd->Fill( zen_list[j], zen_list[i] );
+					zd_EdE->Fill( zen_list[j], zen_list[i] );
 
 				}
 				
@@ -2114,6 +2135,53 @@ void ISSEventBuilder::ZeroDegreeFinder() {
 	return;
 	
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Builds gamma-ray events from the ScintArray and maybe also HPGe detectors in the future
+void ISSEventBuilder::GammaRayFinder() {
+	
+	//std::cout << __PRETTY_FUNCTION__ << std::endl;
+	
+	// Loop over ScintArray events
+	for( unsigned int i = 0; i < saen_list.size(); ++i ) {
+		
+		// Histogram the data
+		gamma_E->Fill( saen_list[i] );
+		gamma_E_vs_det->Fill( said_list[i], saen_list[i] );
+		
+		// Coincidences
+		for( unsigned int j = i+1; j < saen_list.size(); ++j ) {
+			
+			double tdiff = (double)satd_list[j] - (double)satd_list[i];
+			gamma_gamma_td->Fill( tdiff );
+			gamma_gamma_td->Fill( -tdiff );
+			
+			// Just prompt hits for now in a gg matrix
+			// This should really be used for add-back?
+			if( TMath::Abs(tdiff) < set->GetGammaRayHitWindow() ){
+				
+				gamma_gamma_E->Fill( saen_list[i], saen_list[j] );
+				gamma_gamma_E->Fill( saen_list[j], saen_list[i] );
+
+			} // prompt
+				
+		} // j
+		
+		// Set the GammaRay event (nice and easy, ScintArray type = 0)
+		gamma_evt->SetEvent( saen_list[i], said_list[i],
+							 0, satd_list[i] );
+
+		// Write event to tree
+		write_evts->AddEvt( gamma_evt );
+		gamma_ctr++;
+		
+	} // i
+	
+	return;
+	
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// *This function doesn't fill any histograms*, but just creates them. Called by the ISSEventBuilder::SetOutput function
@@ -2450,21 +2518,61 @@ void ISSEventBuilder::MakeHists(){
 	// ---------------- //
 	// ELUM histograms //
 	// ---------------- //
-	output_file->cd();
-	hname = "elum";
-	htitle = "ELUM energy vs sector;Sector;Energy [keV];Counts";
-	elum = new TH2F( hname.data(), htitle.data(),
-			set->GetNumberOfELUMSectors(), -0.5, set->GetNumberOfELUMSectors()-0.5, 2000, 0, 20000 );
-
+	dirname = "elum";
+	if( !output_file->GetDirectory( dirname.data() ) )
+		output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
 	
+	hname = "elum_E_vs_sec";
+	htitle = "ELUM energy vs sector;Sector;Energy [keV];Counts";
+	elum_E_vs_sec = new TH2F( hname.data(), htitle.data(),
+			set->GetNumberOfELUMSectors()+1, -0.5, set->GetNumberOfELUMSectors()+0.5, 2000, 0, 20000 );
+
+	hname = "elum_E";
+	htitle = "ELUM energy;Energy [keV];Counts";
+	elum_E = new TH1F( hname.data(), htitle.data(), 2000, 0, 20000 );
+
+
 	// --------------------- //
 	// ZeroDegree histograms //
 	// --------------------- //
-	output_file->cd();
-	hname = "zd";
+	dirname = "zd";
+	if( !output_file->GetDirectory( dirname.data() ) )
+		output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+	
+	hname = "zd_EdE";
 	htitle = "ZeroDegree dE vs E;Rest Energy [keV];Energy Loss [keV];Counts";
-	zd = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 200000 );
+	zd_EdE = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 200000 );
 
+	
+	// -------------------- //
+	// Gamma-ray histograms //
+	// -------------------- //
+	dirname = "gammas";
+	if( !output_file->GetDirectory( dirname.data() ) )
+		output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+	
+
+	hname = "gamma_E_vs_det";
+	htitle = "Gamma-ray energy vs detector ID;Detector ID;Energy [keV];Counts per 2 keV";
+	gamma_E_vs_det = new TH2F( hname.data(), htitle.data(),
+			set->GetNumberOfScintArrayDetectors()+1, -0.5, set->GetNumberOfScintArrayDetectors()+0.5, 4000, 0, 8000 );
+
+	hname = "gamma_E";
+	htitle = "Gamma-ray energy;Energy [keV];Counts per 2 keV";
+	gamma_E = new TH1F( hname.data(), htitle.data(), 4000, 0, 8000 );
+
+	hname = "gamma_gamma_E";
+	htitle = "Gamma-ray energy coincidence matrix;Energy [keV];Energy [keV];Counts";
+	gamma_gamma_E = new TH2F( hname.data(), htitle.data(), 4000, 0, 8000, 4000, 0, 8000 );
+
+	hname = "gamma_gamma_td";
+	htitle = "Gamma-gamma time difference;#Deltat [ns];Counts";
+	gamma_gamma_td = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
+
+	
 	return;
 	
 }
@@ -2617,8 +2725,13 @@ void ISSEventBuilder::CleanHists() {
 	mwpc_hit_axis.clear();
 	
 	delete mwpc_pos;
-	delete elum;
-	delete zd;
+	delete elum_E;
+	delete elum_E_vs_sec;
+	delete zd_EdE;
+	delete gamma_E;
+	delete gamma_E_vs_det;
+	delete gamma_gamma_E;
+	delete gamma_gamma_td;
 
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
 		delete (fpga_td[i]);
@@ -2756,8 +2869,13 @@ void ISSEventBuilder::ResetHists() {
 		mwpc_hit_axis[i]->Reset("ICESM");
 	
 	mwpc_pos->Reset("ICESM");
-	elum->Reset("ICESM");
-	zd->Reset("ICESM");
+	elum_E->Reset("ICESM");
+	elum_E_vs_sec->Reset("ICESM");
+	zd_EdE->Reset("ICESM");
+	gamma_E->Reset("ICESM");
+	gamma_E_vs_det->Reset("ICESM");
+	gamma_gamma_E->Reset("ICESM");
+	gamma_gamma_td->Reset("ICESM");
 
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
 		fpga_td[i]->Reset("ICESM");

@@ -832,7 +832,6 @@ void ISSConverter::ProcessCAENData(){
 	// ADCchannelIdent are bits 28:16
 	// mod_id= bit 12:8, data_id= bit 7:6, ch_id= bit 5:0
 	// data_id: Qlong = 0; Qshort = 1; baseline = 2; fine timing = 3
-	// in this implementation, we only use Qlong, i.e. data_id = 0
 	unsigned int ADCchanIdent = (word_0 >> 16) & 0x1FFF; // 13 bits from 16
 	my_mod_id = (ADCchanIdent >> 8) & 0x001F; // 5 bits from 8
 	my_data_id = (ADCchanIdent >> 6 ) & 0x0003; // 2 bits from 6
@@ -911,7 +910,7 @@ void ISSConverter::ProcessCAENData(){
 	if( my_data_id == 3 ) {
 		
 		my_adc_data = my_adc_data & 0x03FF; // 10 bits from 0
-		caen_data->SetFineTime( my_adc_data );
+		caen_data->SetFineTime( (float)my_adc_data * 4. / 1000. );
 		flag_caen_data3 = true;
 
 	}

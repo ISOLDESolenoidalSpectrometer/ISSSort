@@ -77,6 +77,7 @@ public:
 	inline double GetRecoilHitWindow(){ return recoil_hit_window; }
 	inline double GetArrayHitWindow(){ return array_hit_window; }
 	inline double GetZeroDegreeHitWindow(){ return zd_hit_window; }
+	inline double GetGammaRayHitWindow(){ return gamma_hit_window; }
 
 	
 	// Data settings
@@ -95,27 +96,32 @@ public:
 	inline unsigned int GetRecoilEnergyRestStop(){ return recoil_erest_stop; };
 	inline unsigned int GetRecoilEnergyTotalStart(){ return recoil_etot_start; };
 	inline unsigned int GetRecoilEnergyTotalStop(){ return recoil_etot_stop; };
-	int GetRecoilSector( unsigned int mod, unsigned int ch );
-	int GetRecoilLayer( unsigned int mod, unsigned int ch );
-	int GetRecoilModule( unsigned char sec, unsigned int layer );
-	int GetRecoilChannel( unsigned char sec, unsigned int layer );
-	bool IsRecoil( unsigned int mod, unsigned int ch );
+	int GetRecoilSector( unsigned char mod, unsigned char ch );
+	int GetRecoilLayer( unsigned char mod, unsigned char ch );
+	int GetRecoilModule( unsigned char sec, unsigned char layer );
+	int GetRecoilChannel( unsigned char sec, unsigned char layer );
+	bool IsRecoil( unsigned char mod, unsigned char ch );
 	
 	// MWPC
 	inline unsigned int GetNumberOfMWPCAxes(){ return n_mwpc_axes; };
-	int GetMWPCAxis( unsigned int mod, unsigned int ch );
-	int GetMWPCID( unsigned int mod, unsigned int ch );
-	bool IsMWPC( unsigned int mod, unsigned int ch );
+	int GetMWPCAxis( unsigned char mod, unsigned char ch );
+	int GetMWPCID( unsigned char mod, unsigned char ch );
+	bool IsMWPC( unsigned char mod, unsigned char ch );
 
 	// ELUM detector
 	inline unsigned int GetNumberOfELUMSectors(){ return n_elum_sector; };
-	int GetELUMSector( unsigned int mod, unsigned int ch );
-	bool IsELUM( unsigned int mod, unsigned int ch );
+	int GetELUMSector( unsigned char mod, unsigned char ch );
+	bool IsELUM( unsigned char mod, unsigned char ch );
 
 	// ZeroDegree detector
 	inline unsigned int GetNumberOfZDLayers(){ return n_zd_layer; };
-	int GetZDLayer( unsigned int mod, unsigned int ch );
-	bool IsZD( unsigned int mod, unsigned int ch );
+	int GetZDLayer( unsigned char mod, unsigned char ch );
+	bool IsZD( unsigned char mod, unsigned char ch );
+
+	// Scintillation detectors
+	inline unsigned int GetNumberOfScintArrayDetectors(){ return n_scint_detector; };
+	int GetScintArrayDetector( unsigned char mod, unsigned char ch );
+	bool IsScintArray( unsigned char mod, unsigned char ch );
 
 
 private:
@@ -123,42 +129,42 @@ private:
 	std::string fInputFile;
 
 	// Array settings
-	unsigned int n_array_mod;	///< 3 modules make a full array
-	unsigned int n_array_asic;	///< 4 p-side + 2 n-side per module
-	unsigned int n_array_ch;	///< 128 channels per ASIC
+	unsigned char n_array_mod;	///< 3 modules make a full array
+	unsigned char n_array_asic;	///< 4 p-side + 2 n-side per module
+	unsigned char n_array_ch;	///< 128 channels per ASIC
 	
 	// Array geometry
-	unsigned int n_array_row;		///< 4x2 DSSSDs per module, but paired; dE-E for recoil, gas cathodes (13?)
-	unsigned int n_array_pstrip;	///< number of p-side strips in each DSSSD
-	unsigned int n_array_nstrip;	///< strip number of DSSSD
-	unsigned int n_array_side;		///< p-side and n-side
+	unsigned char n_array_row;		///< 4x2 DSSSDs per module, but paired; dE-E for recoil, gas cathodes (13?)
+	unsigned char n_array_pstrip;	///< number of p-side strips in each DSSSD
+	unsigned char n_array_nstrip;	///< strip number of DSSSD
+	unsigned char n_array_side;		///< p-side and n-side
 
 
 	// CAEN settings
-	unsigned int n_caen_mod;
-	unsigned int n_caen_ch;
+	unsigned char n_caen_mod;
+	unsigned char n_caen_ch;
 	
 	
 	// Info code settings
-	unsigned int extt_code;			///< This is the info code for the external timestamp, 5 before 2019 and 14 after 2019 (This is ISS == 14)
-	unsigned int sync_code;			///< Medium significant bits of the timestamp are here
-	unsigned int ext_item_code;		///< Medium significant bits of the timestamp are here from the ASIC ADC
-	unsigned int thsb_code;			///< Highest significant bits of the timestamp are here
-	unsigned int pause_code;        ///< Info code when ISS acquisition has paused due to a full buffer
-	unsigned int resume_code;       ///< Info code when ISS acquisition has resumed after a pause.
-	unsigned int asic_pulser_asic;	///< Location of the pulser in the ASIC frontends (asic)
-	unsigned int asic_pulser_ch;	///< Location of the pulser in the ASIC frontends (channel)
-	unsigned int asic_pulser_code;	///< Info code when we have a pulser event in InfoData packets from ASICs
-	unsigned int asic_pulser_thres;	///< Threshold on energy for the pulser event in InfoData packets from ASICs
-	unsigned int caen_pulser_mod;	///< Location of the pulser in the CAEN system (module)
-	unsigned int caen_pulser_ch;	///< Location of the pulser in the CAEN system (channel) - Daresbury test
-	unsigned int caen_pulser_code;	///< Info code when we have a pulser event in InfoData packets from CAEN
-	unsigned int caen_ebis_mod;		///< Location of the EBIS signal in the CAEN system (module)
-	unsigned int caen_ebis_ch;		///< Location of the EBIS signal in the CAEN system (channel)
-	unsigned int ebis_code;			///< Info code when we have an EBIS event in InfoData packets
-	unsigned int caen_t1_mod;		///< Location of the T1 signal in the CAEN system (module)
-	unsigned int caen_t1_ch;		///< Location of the T1 signal in the CAEN system (channel)
-	unsigned int t1_code;			///< Info code when we have a T1 event in InfoData packets
+	unsigned char extt_code;			///< This is the info code for the external timestamp, 5 before 2019 and 14 after 2019 (This is ISS == 14)
+	unsigned char sync_code;			///< Medium significant bits of the timestamp are here
+	unsigned char ext_item_code;		///< Medium significant bits of the timestamp are here from the ASIC ADC
+	unsigned char thsb_code;			///< Highest significant bits of the timestamp are here
+	unsigned char pause_code;      		///< Info code when ISS acquisition has paused due to a full buffer
+	unsigned char resume_code;			///< Info code when ISS acquisition has resumed after a pause.
+	unsigned char asic_pulser_asic;		///< Location of the pulser in the ASIC frontends (asic)
+	unsigned char asic_pulser_ch;		///< Location of the pulser in the ASIC frontends (channel)
+	unsigned char asic_pulser_code;		///< Info code when we have a pulser event in InfoData packets from ASICs
+	unsigned char asic_pulser_thres;	///< Threshold on energy for the pulser event in InfoData packets from ASICs
+	unsigned char caen_pulser_mod;		///< Location of the pulser in the CAEN system (module)
+	unsigned char caen_pulser_ch;		///< Location of the pulser in the CAEN system (channel) - Daresbury test
+	unsigned char caen_pulser_code;		///< Info code when we have a pulser event in InfoData packets from CAEN
+	unsigned char caen_ebis_mod;		///< Location of the EBIS signal in the CAEN system (module)
+	unsigned char caen_ebis_ch;			///< Location of the EBIS signal in the CAEN system (channel)
+	unsigned char ebis_code;			///< Info code when we have an EBIS event in InfoData packets
+	unsigned char caen_t1_mod;			///< Location of the T1 signal in the CAEN system (module)
+	unsigned char caen_t1_ch;			///< Location of the T1 signal in the CAEN system (channel)
+	unsigned char t1_code;				///< Info code when we have a T1 event in InfoData packets
 	
 	
 	// Event builder
@@ -166,6 +172,7 @@ private:
 	double recoil_hit_window;		///< Time window in ns for correlating recoil E-dE hits
 	double array_hit_window;		///< Time window in ns for correlating hits on the array
 	double zd_hit_window;			///< Time window in ns for correlating ZeroDegree E-dE hits
+	double gamma_hit_window;		///< Time window in ns for correlating Gamma-Gamma hits (addback?)
 
 	
 	// Data format
@@ -175,40 +182,47 @@ private:
 
 	
 	// Recoil detectors
-	unsigned int n_recoil_sector;						///< Number of recoil detector sectors or quadrants; 1 for gas and 4 for Si
-	unsigned int n_recoil_layer;						///< Number of recoil detector layers; 13 for gas and 2 for Si
-	unsigned int recoil_eloss_start;					///< Start layer for integrating energy loss, 0 for Silicon, about 1 for gas.
-	unsigned int recoil_eloss_stop;						///< Stop layer for integrating energy loss, 0 for Silicon, about 1 for gas.
-	unsigned int recoil_erest_start;					///< Start layer for integrating energy rest, 1 for Silicon, about 5 for gas.
-	unsigned int recoil_erest_stop;						///< Stop layer for integrating energy rest, 1 for Silicon, about 5 for gas.
-	unsigned int recoil_etot_start;						///< Start layer for integrating energy total, 0 for Silicon, 0 for gas.
-	unsigned int recoil_etot_stop;						///< Stop layer for integrating energy total, 1 for Silicon, about 8 for gas.
+	unsigned char n_recoil_sector;						///< Number of recoil detector sectors or quadrants; 1 for gas and 4 for Si
+	unsigned char n_recoil_layer;						///< Number of recoil detector layers; 13 for gas and 2 for Si
+	unsigned char recoil_eloss_start;					///< Start layer for integrating energy loss, 0 for Silicon, about 1 for gas.
+	unsigned char recoil_eloss_stop;					///< Stop layer for integrating energy loss, 0 for Silicon, about 1 for gas.
+	unsigned char recoil_erest_start;					///< Start layer for integrating energy rest, 1 for Silicon, about 5 for gas.
+	unsigned char recoil_erest_stop;					///< Stop layer for integrating energy rest, 1 for Silicon, about 5 for gas.
+	unsigned char recoil_etot_start;					///< Start layer for integrating energy total, 0 for Silicon, 0 for gas.
+	unsigned char recoil_etot_stop;						///< Stop layer for integrating energy total, 1 for Silicon, about 8 for gas.
 	std::vector<std::vector<unsigned int>> recoil_mod;	///< A list of module numbers for each recoil detector sector and layer
 	std::vector<std::vector<unsigned int>> recoil_ch;	///< A list of channel numbers for each recoil detector sector and layer
-	std::vector<std::vector<int>> recoil_sector;		///< A channel map for the recoil sectors (-1 if not a recoil)
-	std::vector<std::vector<int>> recoil_layer;			///< A channel map for the recoil layers (-1 if not a recoil)
+	std::vector<std::vector<char>> recoil_sector;		///< A channel map for the recoil sectors (-1 if not a recoil)
+	std::vector<std::vector<char>> recoil_layer;			///< A channel map for the recoil layers (-1 if not a recoil)
 
 	
 	// MWPC
-	unsigned int n_mwpc_axes;							///< Number of MWPC axes (usually 2: x and y). Two TACs per axis
-	std::vector<std::vector<unsigned int>> mwpc_mod;	///< Module number of each TAC input of each axis of the MWPC
-	std::vector<std::vector<unsigned int>> mwpc_ch;		///< Channel number of each TAC input of each axis of the MWPC
-	std::vector<std::vector<int>> mwpc_axis;			///< A channel map for the MWPC axes (-1 if not an MWPC)
-	std::vector<std::vector<int>> mwpc_tac;				///< A channel map for the MWPC TACs (-1 if not an MWPC)
+	unsigned char n_mwpc_axes;							///< Number of MWPC axes (usually 2: x and y). Two TACs per axis
+	std::vector<std::vector<unsigned char>> mwpc_mod;	///< Module number of each TAC input of each axis of the MWPC
+	std::vector<std::vector<unsigned char>> mwpc_ch;	///< Channel number of each TAC input of each axis of the MWPC
+	std::vector<std::vector<char>> mwpc_axis;			///< A channel map for the MWPC axes (-1 if not an MWPC)
+	std::vector<std::vector<char>> mwpc_tac;			///< A channel map for the MWPC TACs (-1 if not an MWPC)
 
 	
 	// ELUM detector
-	unsigned int n_elum_sector;					///< Number of ELUM detector sectors or quadrants; usually 4, maybe 6 in the future?
+	unsigned char n_elum_sector;				///< Number of ELUM detector sectors or quadrants; usually 4, maybe 6 in the future?
 	std::vector<unsigned int> elum_mod;			///< A list of module numbers for each ELUM detector sector
 	std::vector<unsigned int> elum_ch;			///< A list of channel numbers for each ELUM detector sector
 	std::vector<std::vector<int>> elum_sector;	///< A channel map for the ELUM sectors (-1 if not an ELUM)
 
 	
 	// ZeroDegree detector
-	unsigned int n_zd_layer;				///< Number of ZeroDegree detector layers; always 2, because it's silicon dE-E
-	std::vector<unsigned int> zd_mod;		///< A list of module numbers for each ZeroDegree detector layer
-	std::vector<unsigned int> zd_ch;		///< A list of channel numbers for each ZeroDegree detector layor
-	std::vector<std::vector<int>> zd_layer;	///< A channel map for the ZeroDegree layers (-1 if not a ZeroDegree)
+	unsigned char n_zd_layer;					///< Number of ZeroDegree detector layers; always 2, because it's silicon dE-E
+	std::vector<unsigned char> zd_mod;			///< A list of module numbers for each ZeroDegree detector layer
+	std::vector<unsigned char> zd_ch;			///< A list of channel numbers for each ZeroDegree detector layor
+	std::vector<std::vector<char>> zd_layer;	///< A channel map for the ZeroDegree layers (-1 if not a ZeroDegree)
+
+	
+	// ELUM detector
+	unsigned char n_scint_detector;					///< Number of ScintArray detectors
+	std::vector<unsigned char> scint_mod;			///< A list of module numbers for each ScintArray detectors
+	std::vector<unsigned char> scint_ch;			///< A list of channel numbers for each ScintArray detectors
+	std::vector<std::vector<char>> scint_detector;	///< A channel map for the ScintArray detectors (-1 if not an ScintArray detector)
 
 	
 };

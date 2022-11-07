@@ -307,6 +307,40 @@ private:
 
 };
 
+class ISSGammaRayEvt : public TObject {
+
+public:
+		
+	// setup functions
+	ISSGammaRayEvt();
+	~ISSGammaRayEvt();
+	
+	void SetEvent( float myenergy, unsigned char myid,
+				  unsigned char mytype, unsigned long mytime );
+
+	inline void SetEnergy( float e ){ energy = e; };
+	inline void SetID( unsigned char i ){ id = i; };
+	inline void SetType( unsigned char t ){ type = t; };
+	inline void SetTime( unsigned long t ){ time = t; };
+
+	inline float			GetEnergy(){ return energy; };
+	inline unsigned char	GetID(){ return id; };
+	inline unsigned char	GetType(){ return type; };
+	inline unsigned long	GetTime(){ return time; };
+	inline double			GetTimeDouble(){ return (double)time; };
+
+	
+private:
+
+	float			energy;	///< Energy in the detector
+	unsigned char	id;		///< Detector ID
+	unsigned char	type;	///< Detector type: 0 - ScintArray, 1 - ... HPGe?
+	unsigned long	time;	///< time stamp of the event
+	
+	ClassDef( ISSGammaRayEvt, 1 );
+
+};
+
 
 
 class ISSEvts : public TObject {
@@ -324,14 +358,16 @@ public:
 	void AddEvt( std::shared_ptr<ISSMwpcEvt> event );
 	void AddEvt( std::shared_ptr<ISSElumEvt> event );
 	void AddEvt( std::shared_ptr<ISSZeroDegreeEvt> event );
-	
+	void AddEvt( std::shared_ptr<ISSGammaRayEvt> event );
+
 	inline unsigned int GetArrayMultiplicity(){ return array_event.size(); };
 	inline unsigned int GetArrayPMultiplicity(){ return arrayp_event.size(); };
 	inline unsigned int GetRecoilMultiplicity(){ return recoil_event.size(); };
 	inline unsigned int GetMwpcMultiplicity(){ return mwpc_event.size(); };
 	inline unsigned int GetElumMultiplicity(){ return elum_event.size(); };
 	inline unsigned int GetZeroDegreeMultiplicity(){ return zd_event.size(); };
-	
+	inline unsigned int GetGammaRayMultiplicity(){ return gamma_event.size(); };
+
 	inline std::shared_ptr<ISSArrayEvt> GetArrayEvt( unsigned int i ){
 		if( i < array_event.size() ) return std::make_shared<ISSArrayEvt>( array_event.at(i) );
 		else return nullptr;
@@ -354,6 +390,10 @@ public:
 	};
 	inline std::shared_ptr<ISSZeroDegreeEvt> GetZeroDegreeEvt( unsigned int i ){
 		if( i < zd_event.size() ) return std::make_shared<ISSZeroDegreeEvt>( zd_event.at(i) );
+		else return nullptr;
+	};
+	inline std::shared_ptr<ISSGammaRayEvt> GetGammaRayEvt( unsigned int i ){
+		if( i < gamma_event.size() ) return std::make_shared<ISSGammaRayEvt>( gamma_event.at(i) );
 		else return nullptr;
 	};
 
@@ -379,8 +419,9 @@ private:
 	std::vector<ISSMwpcEvt> mwpc_event;
 	std::vector<ISSElumEvt> elum_event;
 	std::vector<ISSZeroDegreeEvt> zd_event;
+	std::vector<ISSGammaRayEvt> gamma_event;
 
-	ClassDef( ISSEvts, 3 )
+	ClassDef( ISSEvts, 4 )
 	
 };
 
