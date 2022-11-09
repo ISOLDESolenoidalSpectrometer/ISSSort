@@ -23,6 +23,8 @@
 #-------------#
 #NumberOfCAENModules: 2
 #NumberOfCAENChannels: 16
+#CAEN_0.Model: 1725	# can be 1725 or 1730, maybe even 1720?
+#CAEN_1.Model: 1725	# I suppose we can also support others in future
 
 
 #------------------------#

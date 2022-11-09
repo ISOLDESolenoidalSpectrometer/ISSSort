@@ -852,8 +852,10 @@ void ISSConverter::ProcessCAENData(){
 	my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  // 28 bits from 0
 	my_tm_stp = ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
 	
-	// CAEN timestamps are 4 ns precision
-	my_tm_stp = my_tm_stp*4;
+	// CAEN timestamps are 4 ns precision for V1725 and 2 ns for V1730
+	if( set->GetCAENModel( my_mod_id ) == 1730 ) my_tm_stp = my_tm_stp*2;
+	else if( set->GetCAENModel( my_mod_id ) == 1725 ) my_tm_stp = my_tm_stp*4;
+	else my_tm_stp = my_tm_stp*4;
 	
 	// First of the data items
 	if( !flag_caen_data0 && !flag_caen_data1 && !flag_caen_data3 ){

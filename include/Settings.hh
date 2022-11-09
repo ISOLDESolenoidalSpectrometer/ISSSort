@@ -42,34 +42,38 @@ public:
 
 	
 	// CAEN settings
-	inline unsigned int GetNumberOfCAENModules(){ return n_caen_mod; };
-	inline unsigned int GetNumberOfCAENChannels(){ return n_caen_ch; };
+	inline unsigned char GetNumberOfCAENModules(){ return n_caen_mod; };
+	inline unsigned char GetNumberOfCAENChannels(){ return n_caen_ch; };
+	inline unsigned int GetCAENModel( unsigned char i ){
+		if( i < n_caen_mod ) return caen_model[i];
+		else return 1725;
+	};
 	
 	// Info settings
-	inline unsigned int GetExternalTriggerCode(){ return extt_code; };
-	inline unsigned int GetSyncCode(){ return sync_code; };
-	inline unsigned int GetExtItemCode(){ return ext_item_code; };
-	inline unsigned int GetTimestampCode(){ return thsb_code; };
+	inline unsigned char GetExternalTriggerCode(){ return extt_code; };
+	inline unsigned char GetSyncCode(){ return sync_code; };
+	inline unsigned char GetExtItemCode(){ return ext_item_code; };
+	inline unsigned char GetTimestampCode(){ return thsb_code; };
 
-	inline unsigned int GetPauseCode(){ return pause_code;};
-	inline unsigned int GetResumeCode(){ return resume_code;};
+	inline unsigned char GetPauseCode(){ return pause_code;};
+	inline unsigned char GetResumeCode(){ return resume_code;};
 
-	inline unsigned int GetArrayPulserAsic(){ return asic_pulser_asic; };
-	inline unsigned int GetArrayPulserChannel(){ return asic_pulser_ch; };
-	inline unsigned int GetArrayPulserCode(){ return asic_pulser_code; };
-	inline unsigned int GetArrayPulserThreshold(){ return asic_pulser_thres; };
+	inline unsigned char GetArrayPulserAsic(){ return asic_pulser_asic; };
+	inline unsigned char GetArrayPulserChannel(){ return asic_pulser_ch; };
+	inline unsigned char GetArrayPulserCode(){ return asic_pulser_code; };
+	inline unsigned char GetArrayPulserThreshold(){ return asic_pulser_thres; };
 
-	inline unsigned int GetCAENPulserModule(){ return caen_pulser_mod; };
-	inline unsigned int GetCAENPulserChannel(){ return caen_pulser_ch; };
-	inline unsigned int GetCAENPulserCode(){ return caen_pulser_code; };
+	inline unsigned char GetCAENPulserModule(){ return caen_pulser_mod; };
+	inline unsigned char GetCAENPulserChannel(){ return caen_pulser_ch; };
+	inline unsigned char GetCAENPulserCode(){ return caen_pulser_code; };
 	
-	inline unsigned int GetEBISModule(){ return caen_ebis_mod; };
-	inline unsigned int GetEBISChannel(){ return caen_ebis_ch; };
-	inline unsigned int GetEBISCode(){ return ebis_code; };
+	inline unsigned char GetEBISModule(){ return caen_ebis_mod; };
+	inline unsigned char GetEBISChannel(){ return caen_ebis_ch; };
+	inline unsigned char GetEBISCode(){ return ebis_code; };
 
-	inline unsigned int GetT1Module(){ return caen_t1_mod; };
-	inline unsigned int GetT1Channel(){ return caen_t1_ch; };
-	inline unsigned int GetT1Code(){ return t1_code; };
+	inline unsigned char GetT1Module(){ return caen_t1_mod; };
+	inline unsigned char GetT1Channel(){ return caen_t1_ch; };
+	inline unsigned char GetT1Code(){ return t1_code; };
 
 
 	// Event builder
@@ -82,45 +86,45 @@ public:
 	
 	// Data settings
 	inline unsigned int GetBlockSize(){ return block_size; };
-	inline unsigned int IsCAENOnly(){ return flag_caen_only; };
-	inline unsigned int IsASICOnly(){ return flag_asic_only; };
+	inline bool IsCAENOnly(){ return flag_caen_only; };
+	inline bool IsASICOnly(){ return flag_asic_only; };
 
 	
 	// Recoil detector
-	inline unsigned int GetNumberOfRecoilSectors(){ return n_recoil_sector; };
-	inline unsigned int GetNumberOfRecoilLayers(){ return n_recoil_layer; };
-	inline unsigned int GetNumberOfRecoilElements(){ return n_recoil_sector * n_recoil_layer; };
-	inline unsigned int GetRecoilEnergyLossStart(){ return recoil_eloss_start; };
-	inline unsigned int GetRecoilEnergyLossStop(){ return recoil_eloss_stop; };
-	inline unsigned int GetRecoilEnergyRestStart(){ return recoil_erest_start; };
-	inline unsigned int GetRecoilEnergyRestStop(){ return recoil_erest_stop; };
-	inline unsigned int GetRecoilEnergyTotalStart(){ return recoil_etot_start; };
-	inline unsigned int GetRecoilEnergyTotalStop(){ return recoil_etot_stop; };
-	int GetRecoilSector( unsigned char mod, unsigned char ch );
-	int GetRecoilLayer( unsigned char mod, unsigned char ch );
-	int GetRecoilModule( unsigned char sec, unsigned char layer );
-	int GetRecoilChannel( unsigned char sec, unsigned char layer );
+	inline unsigned char GetNumberOfRecoilSectors(){ return n_recoil_sector; };
+	inline unsigned char GetNumberOfRecoilLayers(){ return n_recoil_layer; };
+	inline unsigned char GetNumberOfRecoilElements(){ return n_recoil_sector * n_recoil_layer; };
+	inline unsigned char GetRecoilEnergyLossStart(){ return recoil_eloss_start; };
+	inline unsigned char GetRecoilEnergyLossStop(){ return recoil_eloss_stop; };
+	inline unsigned char GetRecoilEnergyRestStart(){ return recoil_erest_start; };
+	inline unsigned char GetRecoilEnergyRestStop(){ return recoil_erest_stop; };
+	inline unsigned char GetRecoilEnergyTotalStart(){ return recoil_etot_start; };
+	inline unsigned char GetRecoilEnergyTotalStop(){ return recoil_etot_stop; };
+	char GetRecoilSector( unsigned char mod, unsigned char ch );
+	char GetRecoilLayer( unsigned char mod, unsigned char ch );
+	char GetRecoilModule( unsigned char sec, unsigned char layer );
+	char GetRecoilChannel( unsigned char sec, unsigned char layer );
 	bool IsRecoil( unsigned char mod, unsigned char ch );
 	
 	// MWPC
-	inline unsigned int GetNumberOfMWPCAxes(){ return n_mwpc_axes; };
-	int GetMWPCAxis( unsigned char mod, unsigned char ch );
-	int GetMWPCID( unsigned char mod, unsigned char ch );
+	inline unsigned char GetNumberOfMWPCAxes(){ return n_mwpc_axes; };
+	char GetMWPCAxis( unsigned char mod, unsigned char ch );
+	char GetMWPCID( unsigned char mod, unsigned char ch );
 	bool IsMWPC( unsigned char mod, unsigned char ch );
 
 	// ELUM detector
-	inline unsigned int GetNumberOfELUMSectors(){ return n_elum_sector; };
-	int GetELUMSector( unsigned char mod, unsigned char ch );
+	inline unsigned char GetNumberOfELUMSectors(){ return n_elum_sector; };
+	char GetELUMSector( unsigned char mod, unsigned char ch );
 	bool IsELUM( unsigned char mod, unsigned char ch );
 
 	// ZeroDegree detector
-	inline unsigned int GetNumberOfZDLayers(){ return n_zd_layer; };
-	int GetZDLayer( unsigned char mod, unsigned char ch );
+	inline unsigned char GetNumberOfZDLayers(){ return n_zd_layer; };
+	char GetZDLayer( unsigned char mod, unsigned char ch );
 	bool IsZD( unsigned char mod, unsigned char ch );
 
 	// Scintillation detectors
-	inline unsigned int GetNumberOfScintArrayDetectors(){ return n_scint_detector; };
-	int GetScintArrayDetector( unsigned char mod, unsigned char ch );
+	inline unsigned char GetNumberOfScintArrayDetectors(){ return n_scint_detector; };
+	char GetScintArrayDetector( unsigned char mod, unsigned char ch );
 	bool IsScintArray( unsigned char mod, unsigned char ch );
 
 
@@ -143,6 +147,7 @@ private:
 	// CAEN settings
 	unsigned char n_caen_mod;
 	unsigned char n_caen_ch;
+	std::vector<unsigned int> caen_model;
 	
 	
 	// Info code settings
@@ -190,8 +195,8 @@ private:
 	unsigned char recoil_erest_stop;					///< Stop layer for integrating energy rest, 1 for Silicon, about 5 for gas.
 	unsigned char recoil_etot_start;					///< Start layer for integrating energy total, 0 for Silicon, 0 for gas.
 	unsigned char recoil_etot_stop;						///< Stop layer for integrating energy total, 1 for Silicon, about 8 for gas.
-	std::vector<std::vector<unsigned int>> recoil_mod;	///< A list of module numbers for each recoil detector sector and layer
-	std::vector<std::vector<unsigned int>> recoil_ch;	///< A list of channel numbers for each recoil detector sector and layer
+	std::vector<std::vector<unsigned char>> recoil_mod;	///< A list of module numbers for each recoil detector sector and layer
+	std::vector<std::vector<unsigned char>> recoil_ch;	///< A list of channel numbers for each recoil detector sector and layer
 	std::vector<std::vector<char>> recoil_sector;		///< A channel map for the recoil sectors (-1 if not a recoil)
 	std::vector<std::vector<char>> recoil_layer;			///< A channel map for the recoil layers (-1 if not a recoil)
 
@@ -206,9 +211,9 @@ private:
 	
 	// ELUM detector
 	unsigned char n_elum_sector;				///< Number of ELUM detector sectors or quadrants; usually 4, maybe 6 in the future?
-	std::vector<unsigned int> elum_mod;			///< A list of module numbers for each ELUM detector sector
-	std::vector<unsigned int> elum_ch;			///< A list of channel numbers for each ELUM detector sector
-	std::vector<std::vector<int>> elum_sector;	///< A channel map for the ELUM sectors (-1 if not an ELUM)
+	std::vector<unsigned char> elum_mod;			///< A list of module numbers for each ELUM detector sector
+	std::vector<unsigned char> elum_ch;			///< A list of channel numbers for each ELUM detector sector
+	std::vector<std::vector<char>> elum_sector;	///< A channel map for the ELUM sectors (-1 if not an ELUM)
 
 	
 	// ZeroDegree detector

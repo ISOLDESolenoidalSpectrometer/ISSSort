@@ -24,6 +24,8 @@ void ISSSettings::ReadSettings() {
 	// CAEN initialisation
 	n_caen_mod = config->GetValue( "NumberOfCAENModules", 2 );
 	n_caen_ch = config->GetValue( "NumberOfCAENChannels", 16 );
+	for( unsigned int i = 0; i < n_caen_mod; ++i )
+		caen_model.push_back( config->GetValue( Form( "CAEN_%d.Model", i ), 1725 ) );
 	
 	// Info code initialisation
 	extt_code = config->GetValue( "ExternalTriggerCode", 14 );
@@ -282,7 +284,7 @@ bool ISSSettings::IsRecoil( unsigned char mod, unsigned char ch ) {
 	
 }
 
-int ISSSettings::GetRecoilSector( unsigned char mod, unsigned char ch ) {
+char ISSSettings::GetRecoilSector( unsigned char mod, unsigned char ch ) {
 	
 	/// Return the sector or quadrant of a recoil event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
@@ -298,7 +300,7 @@ int ISSSettings::GetRecoilSector( unsigned char mod, unsigned char ch ) {
 	
 }
 
-int ISSSettings::GetRecoilLayer( unsigned char mod, unsigned char ch ) {
+char ISSSettings::GetRecoilLayer( unsigned char mod, unsigned char ch ) {
 	
 	/// Return the sector or quadrant of a recoil event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
@@ -314,7 +316,7 @@ int ISSSettings::GetRecoilLayer( unsigned char mod, unsigned char ch ) {
 	
 }
 
-int ISSSettings::GetRecoilModule( unsigned char sec, unsigned char layer ){
+char ISSSettings::GetRecoilModule( unsigned char sec, unsigned char layer ){
 	
 	// Returns the module of the recoil detector
 	if( sec < n_recoil_sector && layer < n_recoil_layer )
@@ -331,7 +333,7 @@ int ISSSettings::GetRecoilModule( unsigned char sec, unsigned char layer ){
 	
 }
 
-int ISSSettings::GetRecoilChannel( unsigned char sec, unsigned char layer ){
+char ISSSettings::GetRecoilChannel( unsigned char sec, unsigned char layer ){
 	
 	// Returns the channel of the recoil detector
 	if( sec < n_recoil_sector && layer < n_recoil_layer )
@@ -356,7 +358,7 @@ bool ISSSettings::IsMWPC( unsigned char mod, unsigned char ch ) {
 	
 }
 
-int ISSSettings::GetMWPCAxis( unsigned char mod, unsigned char ch ) {
+char ISSSettings::GetMWPCAxis( unsigned char mod, unsigned char ch ) {
 	
 	/// Return the axis number of an MWPC event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
@@ -372,7 +374,7 @@ int ISSSettings::GetMWPCAxis( unsigned char mod, unsigned char ch ) {
 	
 }
 
-int ISSSettings::GetMWPCID( unsigned char mod, unsigned char ch ) {
+char ISSSettings::GetMWPCID( unsigned char mod, unsigned char ch ) {
 	
 	/// Return the TAC number of an MWPC event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
@@ -397,7 +399,7 @@ bool ISSSettings::IsELUM( unsigned char mod, unsigned char ch ) {
 }
 
 
-int ISSSettings::GetELUMSector( unsigned char mod, unsigned char ch ) {
+char ISSSettings::GetELUMSector( unsigned char mod, unsigned char ch ) {
 	
 	/// Return the sector or quadrant of a ELUM event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
@@ -422,7 +424,7 @@ bool ISSSettings::IsZD( unsigned char mod, unsigned char ch ) {
 }
 
 
-int ISSSettings::GetZDLayer( unsigned char mod, unsigned char ch ) {
+char ISSSettings::GetZDLayer( unsigned char mod, unsigned char ch ) {
 	
 	/// Return the layer of a ZeroDegree event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
@@ -448,7 +450,7 @@ bool ISSSettings::IsScintArray( unsigned char mod, unsigned char ch ) {
 }
 
 
-int ISSSettings::GetScintArrayDetector( unsigned char mod, unsigned char ch ) {
+char ISSSettings::GetScintArrayDetector( unsigned char mod, unsigned char ch ) {
 	
 	/// Return the detector ID of a ScintArray event by module and channel number
 	if( mod < n_caen_mod && ch < n_caen_ch )
