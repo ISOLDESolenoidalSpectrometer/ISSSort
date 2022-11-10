@@ -7,7 +7,7 @@ double walk_function( double *x, double *params ){
 	double B = params[1];
 	double C = params[2];
 	double D = params[3];
-	double E = params[5];
+	double E = params[4];
 
 	// Root to solve
 	double root = A;
@@ -26,7 +26,7 @@ double walk_derivative( double *x, double *params ){
 	double B = params[1];
 	double C = params[2];
 	double D = params[3];
-	//double E = params[5] // unused in derivative
+	//double E = params[4] // unused in derivative
 
 	// Derivative of root to solve
 	double root = B;
