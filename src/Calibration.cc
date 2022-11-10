@@ -2,11 +2,18 @@
 
 double walk_function( double *x, double *params ){
 	
+	double deltaT = x[0];
+	double A = params[0];
+	double B = params[1];
+	double C = params[2];
+	double D = params[3];
+	double E = params[5];
+
 	// Root to solve
-	double root = params[0];
-	root += params[1] * x[0];
-	root += TMath::Exp( params[2] + params[3] * x[0] );
-	root -= params[4];
+	double root = A;
+	root += B * deltaT;
+	root += TMath::Exp( C + D * deltaT );
+	root -= E;
 	
 	return root;
 	
@@ -14,12 +21,17 @@ double walk_function( double *x, double *params ){
 
 double walk_derivative( double *x, double *params ){
 
+	double deltaT = x[0];
+	//double A = parama[0] // unused in derivative
+	double B = params[1];
+	double C = params[2];
+	double D = params[3];
+	//double E = params[5] // unused in derivative
+
 	// Derivative of root to solve
-	double root = TMath::Exp( params[2] + params[3] * x[0] );
-	root *= params[3];
-	root += params[1];
-	root -= params[4];
-	
+	double root = B;
+	root += C * TMath::Exp( C + D * deltaT );
+
 	return root;
 }
 
