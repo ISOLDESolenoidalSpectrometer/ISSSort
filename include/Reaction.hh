@@ -282,6 +282,7 @@ private:
 	float array_recoil_ratio; // fill ratios
 
 	// Experimental info on the ejectile
+	double r_meas;		///< measured radius of the ejectile when it interects the array
 	double z_meas;		///< measured z distance from target that ejectile interesect the silicon detector
 	double z;			///< projected z distance from target that ejectile interesect the beam axis
 
