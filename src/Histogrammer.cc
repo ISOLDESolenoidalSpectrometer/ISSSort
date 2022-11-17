@@ -489,7 +489,7 @@ void ISSHistogrammer::MakeHists() {
 	
 	hname = "E_vs_z_T1";
 	htitle = "Energy vs. z distance with a time gate on T1 proton pulse;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+	E_vs_z_T1 = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
 	
 	hname = "Ex_T1";
 	htitle = "Excitation energy with a time gate on T1 proton pulse;Excitation energy [keV];Counts per 20 keV";
