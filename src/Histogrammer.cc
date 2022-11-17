@@ -481,6 +481,71 @@ void ISSHistogrammer::MakeHists() {
 		
 	} // Array
 	
+	
+	// T1 mode
+	dirname = "T1Mode";
+	output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+	
+	hname = "E_vs_z_T1";
+	htitle = "Energy vs. z distance with a time gate on T1 proton pulse;z [mm];Energy [keV];Counts per mm per 20 keV";
+	E_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+	
+	hname = "Ex_T1";
+	htitle = "Excitation energy with a time gate on T1 proton pulse;Excitation energy [keV];Counts per 20 keV";
+	Ex_T1 = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
+	
+	hname = "Ex_vs_T1";
+	htitle = "Excitation energy as a function of time since T1 proton pulse;Event time - T1 [ns];Excitation energy [keV];Counts per 20 keV";
+	Ex_vs_T1 = new TH2F( hname.data(), htitle.data(), 1000, 0, 100e9, 800, -1000, 15000 );
+	
+	hname = "Ex_vs_theta_T1";
+	htitle = "Excitation energy vs. centre of mass angle with a time gate on T1 proton pulse;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+	Ex_vs_theta_T1 = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, -1000, 15000 );
+	
+	hname = "Ex_vs_z_T1";
+	htitle = "Excitation energy vs. measured z with a time gate on T1 proton pulse;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+	Ex_vs_z_T1 = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
+	
+	// For each user cut
+	E_vs_z_T1_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_T1_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_vs_T1_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_vs_theta_T1_cut.resize( react->GetNumberOfEvsZCuts() );
+	Ex_vs_z_T1_cut.resize( react->GetNumberOfEvsZCuts() );
+	for( unsigned int j = 0; j < react->GetNumberOfEvsZCuts(); ++j ) {
+		
+		dirname = "T1Mode/cut_" + std::to_string(j);
+		output_file->mkdir( dirname.data() );
+		output_file->cd( dirname.data() );
+		
+		hname = "E_vs_z_T1_cut" + std::to_string(j);
+		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
+		htitle += " with a time gate on T1 proton pulse;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		
+		hname = "Ex_T1_cut" + std::to_string(j);
+		htitle = "Excitation energy for user cut " + std::to_string(j);
+		htitle += " with a time gate on T1 proton pulse;Excitation energy [keV];Counts per 20 keV";
+		Ex_T1_cut[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		
+		hname = "Ex_vs_T1_cut" + std::to_string(j);
+		htitle = "Excitation energy as a function of time since T1 proton pulse;Event time - T1 [ns];Excitation energy [keV];Counts per 20 keV";
+		Ex_vs_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 1000, 0, 100e9, 800, -1000, 15000 );
+
+		hname = "Ex_vs_theta_T1_cut" + std::to_string(j);
+		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+		htitle += " with a time gate on T1 proton pulse;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		Ex_vs_theta_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+		
+		hname = "Ex_vs_z_T1_cut" + std::to_string(j);
+		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
+		htitle += " with a time gate on T1 proton pulse;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_z_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		
+	} // Array
+
+	
 	// For timing
 	dirname = "Timing";
 	output_file->mkdir( dirname.data() );
@@ -496,7 +561,8 @@ void ISSHistogrammer::MakeHists() {
 	recoil_EdE_cut.resize( set->GetNumberOfRecoilSectors() );
 	recoil_EdE_array.resize( set->GetNumberOfRecoilSectors() );
 	recoil_bragg.resize( set->GetNumberOfRecoilSectors() );
-	
+	recoil_dE_vs_T1.resize( set->GetNumberOfRecoilSectors() );
+
 	// Loop over each recoil sector
 	for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
 		
@@ -525,9 +591,15 @@ void ISSHistogrammer::MakeHists() {
 		
 		hname = "recoil_bragg_sec" + std::to_string(i);
 		htitle = "Recoil Bragg plot for sector " + std::to_string(i);
-		htitle += " - singles;Bragg ID;Energy loss, dE [keV];Counts";
+		htitle += ";Bragg ID;Energy loss, dE [keV];Counts";
 		recoil_bragg[i] = new TH2F( hname.data(), htitle.data(),
 								 set->GetNumberOfRecoilLayers(), -0.5, set->GetNumberOfRecoilLayers()-0.5, 2000, 0, 200000 );
+
+		hname = "recoil_dE_vs_T1_sec" + std::to_string(i);
+		htitle = "Recoil dE plot versus T1 time for sector " + std::to_string(i);
+		htitle += ";Time since T1 proton pulse [ns];Energy loss, dE [keV];Counts";
+		recoil_dE_vs_T1[i] = new TH2F( hname.data(), htitle.data(),
+								 5000, 0, 50e9, 2000, 0, 200000 );
 
 		// Timing plots
 		output_file->cd( "Timing" );
@@ -579,7 +651,7 @@ void ISSHistogrammer::MakeHists() {
 		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
 			
 			hname = "tw_recoil_array_mod_" + std::to_string(i) + "_row" + std::to_string(j);
-			htitle = "Time-walk histogram for array-reocil coincidences (module ";
+			htitle = "Time-walk histogram for array-recoil coincidences (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");Deltat [ns];Array energy [keV];Counts";
 			recoil_array_tw_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
 												 800, 0, 16000 );
@@ -595,6 +667,10 @@ void ISSHistogrammer::MakeHists() {
 	ebis_td_array = new TH1F( "ebis_td_array", "Array time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	ebis_td_elum = new TH1F( "ebis_td_elum", "ELUM time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	
+	// Supercycle and proton pulses
+	t1_td_recoil = new TH1F( "t1_td_recoil", "Recoil time difference with respect to the T1;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
+	sc_td_recoil = new TH1F( "sc_td_recoil", "Recoil time difference with respect to the SuperCycle;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
+
 	
 	// For ELUM sectors
 	dirname = "ElumDetector";
@@ -607,14 +683,15 @@ void ISSHistogrammer::MakeHists() {
 	elum_ebis_off = new TH1F( "elum_ebis_off", "ELUM gated off EBIS;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
 	elum_recoil = new TH1F( "elum_recoil", "ELUM gate on recoils;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
 	elum_recoilT = new TH1F( "elum_recoilT", "ELUM with time gate on all recoils;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
-	
+	elum_vs_T1 = new TH2F( "elum_vs_T1", "ELUM energy versus T1 time (gated on EBIS);Energy (keV);Counts per 5 keV", 5000, 0, 50e9, 10000, 0, 50000 );
+
 	elum_sec.resize( set->GetNumberOfELUMSectors() );
 	elum_ebis_sec.resize( set->GetNumberOfELUMSectors() );
 	elum_ebis_on_sec.resize( set->GetNumberOfELUMSectors() );
 	elum_ebis_off_sec.resize( set->GetNumberOfELUMSectors() );
 	elum_recoil_sec.resize( set->GetNumberOfELUMSectors() );
 	elum_recoilT_sec.resize( set->GetNumberOfELUMSectors() );
-	
+
 	for( unsigned int j = 0; j < set->GetNumberOfELUMSectors(); ++j ) {
 		
 		dirname = "ElumDetector/sector_" + std::to_string(j);
@@ -679,6 +756,8 @@ void ISSHistogrammer::ResetHists() {
 	ebis_td_recoil->Reset("ICESM");
 	ebis_td_array->Reset("ICESM");
 	ebis_td_elum->Reset("ICESM");
+	t1_td_recoil->Reset("ICESM");
+	sc_td_recoil->Reset("ICESM");
 	recoil_array_tw->Reset("ICESM");
 	
 	// Recoils
@@ -691,7 +770,10 @@ void ISSHistogrammer::ResetHists() {
 	for( unsigned int i = 0; i < recoil_bragg.size(); ++i )
 		recoil_bragg[i]->Reset("ICESM");
 
-	
+	for( unsigned int i = 0; i < recoil_dE_vs_T1.size(); ++i )
+		recoil_dE_vs_T1[i]->Reset("ICESM");
+
+
 	// Array - E vs. z
 	E_vs_z->Reset("ICESM");
 	E_vs_z_ebis->Reset("ICESM");
@@ -699,12 +781,16 @@ void ISSHistogrammer::ResetHists() {
 	E_vs_z_ebis_off->Reset("ICESM");
 	E_vs_z_recoil->Reset("ICESM");
 	E_vs_z_recoilT->Reset("ICESM");
-	
+	E_vs_z_T1->Reset("ICESM");
+
 	for( unsigned int i = 0; i < E_vs_z_recoil_cut.size(); ++i )
 		E_vs_z_recoil_cut[i]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < E_vs_z_recoilT_cut.size(); ++i )
 		E_vs_z_recoilT_cut[i]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < E_vs_z_T1_cut.size(); ++i )
+		E_vs_z_T1_cut[i]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < E_vs_z_ebis_off_cut.size(); ++i )
 		E_vs_z_ebis_off_cut[i]->Reset("ICESM");
@@ -743,7 +829,8 @@ void ISSHistogrammer::ResetHists() {
 	Ex_vs_theta_ebis_off->Reset("ICESM");
 	Ex_vs_theta_recoil->Reset("ICESM");
 	Ex_vs_theta_recoilT->Reset("ICESM");
-	
+	Ex_vs_theta_T1->Reset("ICESM");
+
 	for( unsigned int i = 0; i < Ex_vs_theta_mod.size(); ++i )
 		Ex_vs_theta_mod[i]->Reset("ICESM");
 	
@@ -774,6 +861,9 @@ void ISSHistogrammer::ResetHists() {
 	for( unsigned int i = 0; i < Ex_vs_theta_recoilT_cut.size(); ++i )
 		Ex_vs_theta_recoilT_cut[i]->Reset("ICESM");
 	
+	for( unsigned int i = 0; i < Ex_vs_theta_T1_cut.size(); ++i )
+		Ex_vs_theta_T1_cut[i]->Reset("ICESM");
+	
 	for( unsigned int i = 0; i < Ex_vs_theta_recoil_cut.size(); ++i )
 		Ex_vs_theta_recoil_cut[i]->Reset("ICESM");
 	
@@ -787,13 +877,17 @@ void ISSHistogrammer::ResetHists() {
 	Ex_vs_z_ebis_off->Reset("ICESM");
 	Ex_vs_z_recoil->Reset("ICESM");
 	Ex_vs_z_recoilT->Reset("ICESM");
-	
+	Ex_vs_z_T1->Reset("ICESM");
+
 	for( unsigned int i = 0; i < Ex_vs_z_recoil_cut.size(); ++i )
 		Ex_vs_z_recoil_cut[i]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < Ex_vs_z_recoilT_cut.size(); ++i )
 		Ex_vs_z_recoilT_cut[i]->Reset("ICESM");
-	
+
+	for( unsigned int i = 0; i < Ex_vs_z_T1_cut.size(); ++i )
+		Ex_vs_z_T1_cut[i]->Reset("ICESM");
+
 	for( unsigned int i = 0; i < Ex_vs_z_mod.size(); ++i )
 		Ex_vs_z_mod[i]->Reset("ICESM");
 	
@@ -831,12 +925,20 @@ void ISSHistogrammer::ResetHists() {
 	Ex_ebis_off->Reset("ICESM");
 	Ex_recoil->Reset("ICESM");
 	Ex_recoilT->Reset("ICESM");
-	
+	Ex_T1->Reset("ICESM");
+	Ex_vs_T1->Reset("ICESM");
+
 	for( unsigned int i = 0; i < Ex_recoil_cut.size(); ++i )
 		Ex_recoil_cut[i]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < Ex_recoilT_cut.size(); ++i )
 		Ex_recoilT_cut[i]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < Ex_T1_cut.size(); ++i )
+		Ex_T1_cut[i]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < Ex_vs_T1_cut.size(); ++i )
+		Ex_vs_T1_cut[i]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < Ex_mod.size(); ++i )
 		Ex_mod[i]->Reset("ICESM");
@@ -895,7 +997,8 @@ void ISSHistogrammer::ResetHists() {
 	elum_ebis_off->Reset("ICESM");
 	elum_recoil->Reset("ICESM");
 	elum_recoilT->Reset("ICESM");
-	
+	elum_vs_T1->Reset("ICESM");
+
 	return;
 	
 }
@@ -995,6 +1098,17 @@ unsigned long ISSHistogrammer::FillHists() {
 				Ex_vs_z_ebis_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 				Ex_vs_z_ebis_on_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 				
+				// Check for events in the user-defined T1 window
+				Ex_vs_T1->Fill( (double)array_evt->GetTime() - read_evts->GetT1(), react->GetEx() );
+				if( T1Cut( array_evt ) ) {
+					
+					E_vs_z_T1->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+					Ex_T1->Fill( react->GetEx() );
+					Ex_vs_theta_T1->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+					Ex_vs_z_T1->Fill( react->GetZmeasured(), react->GetEx() );
+				
+				} // T1
+
 				// Check the E vs z cuts from the user
 				for( unsigned int k = 0; k < react->GetNumberOfEvsZCuts(); ++k ){
 					
@@ -1010,6 +1124,17 @@ unsigned long ISSHistogrammer::FillHists() {
 						Ex_vs_z_ebis_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
 						Ex_vs_z_ebis_on_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
 						
+						// Check for events in the user-defined T1 window
+						Ex_vs_T1_cut[k]->Fill( (double)array_evt->GetTime() - read_evts->GetT1(), react->GetEx() );
+						if( T1Cut( array_evt ) ) {
+							
+							E_vs_z_T1_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+							Ex_T1_cut[k]->Fill( react->GetEx() );
+							Ex_vs_theta_T1_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+							Ex_vs_z_T1_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
+						
+						} // T1
+
 					} // inside cut
 					
 				} // loop over cuts
@@ -1180,7 +1305,8 @@ unsigned long ISSHistogrammer::FillHists() {
 				elum_ebis_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
 				elum_ebis_on->Fill( elum_evt->GetEnergy() );
 				elum_ebis_on_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
-				
+				elum_vs_T1->Fill( (double)elum_evt->GetTime() - (double)read_evts->GetT1(), elum_evt->GetEnergy() );
+
 			} // ebis
 			
 			else {
@@ -1230,12 +1356,18 @@ unsigned long ISSHistogrammer::FillHists() {
 			// Get recoil event
 			recoil_evt = read_evts->GetRecoilEvt(j);
 			
-			// EBIS time
+			// EBIS, T1, SC time
 			ebis_td_recoil->Fill( (double)recoil_evt->GetTime() - (double)read_evts->GetEBIS() );
-			
+			t1_td_recoil->Fill( (double)recoil_evt->GetTime() - (double)read_evts->GetT1() );
+			sc_td_recoil->Fill( (double)recoil_evt->GetTime() - (double)read_evts->GetSC() );
+
 			// Energy EdE plot, unconditioned
 			recoil_EdE[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
 													  recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+
+			// Energy dE versus T1 time
+			recoil_dE_vs_T1[recoil_evt->GetSector()]->Fill( (double)recoil_evt->GetTime() - (double)read_evts->GetT1(),
+														   recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 
 			// Bragg curve
 			for( unsigned int k = 0; k < recoil_evt->GetEnergies().size(); ++k )

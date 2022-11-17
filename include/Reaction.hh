@@ -194,6 +194,10 @@ public:
 	inline double GetEBISTimeRatio(){ return EBIS_On / ( EBIS_Off - EBIS_On ); };
 	inline double GetEBISFillRatio(){ return EBIS_ratio; };
 	
+	// Get T1 time cuts
+	inline double GetT1MinTime(){ return t1_min_time; };
+	inline double GetT1MaxTime(){ return t1_max_time; };
+
 	// Array-recoil time difference
 	inline double GetArrayRecoilPromptTime( unsigned char i ){
 		// i = 0 for lower limit and i = 1 for upper limit
@@ -275,6 +279,9 @@ private:
 	double EBIS_On;		///< beam on max time in ns
 	double EBIS_Off;	///< beam off max time in ns
 	double EBIS_ratio;	///< ratio of ebis on/off as measured
+	
+	// T1 time window
+	double t1_max_time, t1_min_time;
 
 	// Coincidence windows
 	double array_recoil_prompt[2]; ///< prompt time windows between recoil and array event

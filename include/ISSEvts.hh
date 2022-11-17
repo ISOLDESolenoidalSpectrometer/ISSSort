@@ -402,9 +402,13 @@ public:
 	// ISOLDE timestamping
 	inline void SetEBIS( unsigned long t ){ ebis = t; return; };
 	inline void SetT1( unsigned long t ){ t1 = t; return; };
-	
+	inline void SetSC( unsigned long t ){ sc = t; return; };
+	inline void SetLaserStatus( bool l ){ laser = l; return; };
+
 	inline unsigned long GetEBIS(){ return ebis; };
 	inline unsigned long GetT1(){ return t1; };
+	inline unsigned long GetSC(){ return sc; };
+	inline bool GetLaserStatus(){ return laser; };
 
 	
 private:
@@ -412,6 +416,8 @@ private:
 	// variables for timestamping
 	unsigned long ebis;		///< absolute EBIS pulse time
 	unsigned long t1;		///< absolute proton pulse time
+	unsigned long sc;		///< absolute SuperCycle pulse time
+	bool laser;				///< laser status, true = ON, false = OFF
 
 	std::vector<ISSArrayEvt> array_event;
 	std::vector<ISSArrayPEvt> arrayp_event;
@@ -421,7 +427,7 @@ private:
 	std::vector<ISSZeroDegreeEvt> zd_event;
 	std::vector<ISSGammaRayEvt> gamma_event;
 
-	ClassDef( ISSEvts, 4 )
+	ClassDef( ISSEvts, 5 )
 	
 };
 

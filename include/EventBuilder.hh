@@ -180,19 +180,12 @@ private:
 	unsigned long long	time_min;	///< The minimum time in an event containing hits
 	unsigned long long	time_max;	///< The maximum time in an event containing hits
 	unsigned long long	time_first;	///< Time of the first caen/asic/info event in a file
-	unsigned long long  ebis_time;	///< Time of the ebis pulse
-	unsigned long long  t1_time;	///< Time of the T1 pulse
 	unsigned long long  ebis_prev;	///< Holds time of previous ebis pulse
 	unsigned long long  t1_prev;	///< Holds time of previous T1 pulse
+	unsigned long long  sc_prev;	///< Holds time of previous SuperCycle pulse
+	unsigned long long  laser_prev;	///< Holds time of previous Laser status pulse
 	unsigned long long	caen_time;	///< Time from the caen DAQ
 	unsigned long long	caen_prev;	///< Holds previous time from the CAEN DAQ
-	double asic_hz;		///< The frequency of asic hits in Hz (i.e. inverse of time difference between current and last event)
-	double fpga_hz;		///< The frequency of ISS time pulses in FPGAs in Hz (i.e. inverse of time difference between current and last event)
-	double caen_hz;		///< The frequency of caen hits in Hz (i.e. inverse of time difference between current and last caen pulse)
-	double ebis_hz;		///< The frequency of ebis pulses in Hz (i.e. inverse of time difference between current and last ebis pulse)
-	double t1_hz;		///< The frequency of the T1 pulses in Hz (i.e. inverse of time difference between current and last T1 pulse)
-	double fpga_tdiff;	///< The time difference between fpga signals
-	double asic_tdiff;	///< The time difference between asic signals
 	std::vector<unsigned long long> fpga_time; 			///< FPGA time on a given module of the array
 	std::vector<unsigned long long> fpga_prev;			///< Previous FPGA time on a given module of the array
 	std::vector<unsigned long long> asic_time;			///< ASIC time on a given module of the array
@@ -279,7 +272,9 @@ private:
 	unsigned long long	n_entries; 		///< Number of entries in the time-sorted data input tree
 	unsigned long		n_caen_pulser;	///< Number of caen pulser hits in the time-sorted data input tree
 	unsigned long		n_ebis;			///< Number of ebis pulses in the time-sorted data input tree
-	unsigned long		n_t1; 			///< Number of t1 pulses in the time-sorted data input tree
+	unsigned long		n_t1; 			///< Number of T1 pulses in the time-sorted data input tree
+	unsigned long		n_sc; 			///< Number of SuperCycle pulses in the time-sorted data input tree
+	unsigned long		n_laser; 		///< Number of laser status pulses in the time-sorted data input tree
 	std::vector<unsigned long>	n_fpga_pulser;	///< Number of fpga pulses in the time-sorted data input tree (indexed by module in the array)
 	std::vector<unsigned long>	n_asic_pause;	///< Number of asic pause signals in the time-sorted data input tree (indexed by module in the array)
 	std::vector<unsigned long>	n_asic_resume;	///< Number of asic resume signals in the time-sorted data input tree (indexed by module in the array)
@@ -308,19 +303,19 @@ private:
 	// Timing histograms
 	TH1F *tdiff;					///< Histogram containing the time difference between each real (not infodata) signal in the file
 	TH1F *tdiff_clean;				///< Histogram containing the time difference between the real signals *above threshold* (mythres)
-	TProfile *caen_freq;			///< TProfile of the CAEN frequency over time as recorded in the CAEN DAQ
-	TProfile *ebis_freq;			///< TProfile containg the frequency of ebis pulses relative to the ebis time
-	TProfile *t1_freq;				///< TProfile containg the frequency of T1 pulses relative to the T1 time
-	std::vector<TH1F*> fpga_td; 	///< 
+	TH1F *caen_period;				///< Histogram of the CAEN pulser period
+	TH1F *ebis_period;				///< Histogram containg the period of ebis pulses
+	TH1F *t1_period;				///< Histogram containg the period of T1 pulses
+	TH1F *sc_period;				///< Histogram containg the period of SuperCycle pulses
+	TH1F *laser_period;				///< Histogram containg the period of Laser status signals
+	std::vector<TH1F*> fpga_td; 	///<
 	
-	std::vector<TH1F*> asic_td; 	///< Histogram containing the time difference between ASIC signals for a given module of the array
+	std::vector<TH1F*> asic_td; 				///< Histogram containing the time difference between ASIC signals for a given module of the array
 	std::vector<TProfile*> fpga_pulser_loss;	///< TProfile counting the difference between the number of FPGA pulses and CAEN pulses as a function of FPGA time for a given module of the array
-	std::vector<TProfile*> fpga_freq_diff; 		///< TProfile detailing the differece between the FPGA frequency and the CAEN frequency as a function of FPGA time for a given module of the array
-	std::vector<TProfile*> fpga_freq; 			///< TProfile containing the FPGA frequency as a function of FPGA time for a given module of the array
+	std::vector<TH1F*> fpga_period; 			///<  Histogram containing the FPGA period as a function of FPGA time for a given module of the array
 	std::vector<TProfile*> fpga_sync;			///< TProfile containing the time difference between FPGA pulses as a function of FPGA time for a given module of the array
 	std::vector<TProfile*> asic_pulser_loss;	///< TProfile counting the difference between the number of ASIC pulses and CAEN pulses as a function of ASIC time for a given module of the array
-	std::vector<TProfile*> asic_freq_diff; 		///< TProfile detailing the differece between the ASIC frequency and the CAEN frequency as a function of ASIC time for a given module of the array	
-	std::vector<TProfile*> asic_freq;			///< TProfile containing the ASIC frequency as a function of ASIC time for a given module of the array
+	std::vector<TH1F*> asic_period;				///<  Histogram containing the ASIC period as a function of ASIC time for a given module of the array
 	std::vector<TProfile*> asic_sync;			///< TProfile containing the time difference between ASIC pulses as a function of ASIC time for a given module of the array
 
 	// Recoil histograms

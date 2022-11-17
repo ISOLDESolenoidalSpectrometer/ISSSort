@@ -60,7 +60,7 @@ class ISSCaenData : public TObject {
 public:
 
 	ISSCaenData();
-	ISSCaenData( unsigned long t, float f,
+	ISSCaenData( unsigned long t, float f, float b,
 			  std::vector<unsigned short> tr,
 			  unsigned short ql, unsigned short qs,
 			  unsigned char m, unsigned char c,
@@ -69,6 +69,7 @@ public:
 
 	inline unsigned long	GetTime() { return time; };
 	inline float			GetFineTime() { return finetime; };
+	inline float			GetBaseline() { return baseline; };
 	inline unsigned short	GetTraceLength() { return trace.size(); };
 	inline std::vector<unsigned short> GetTrace() { return trace; };
 	inline unsigned short	GetSample( unsigned int i = 0 ) {
@@ -85,6 +86,7 @@ public:
 
 	inline void	SetTime( unsigned long t ) { time = t; };
 	inline void	SetFineTime( float t ) { finetime = t; };
+	inline void	SetBaseline( float b ) { baseline = b; };
 	inline void	SetTrace( std::vector<unsigned short> t ) { trace = t; };
 	inline void AddSample( unsigned short s ) { trace.push_back(s); };
 	inline void	SetQlong( unsigned short q ) { Qlong = q; };
@@ -101,6 +103,7 @@ protected:
 	
 	unsigned long				time;
 	float						finetime;
+	float						baseline;
 	std::vector<unsigned short>	trace;
 	unsigned short				Qlong;
 	unsigned short				Qshort;
@@ -110,7 +113,7 @@ protected:
 	float						energy;
 
 	
-	ClassDef( ISSCaenData, 4 )
+	ClassDef( ISSCaenData, 5 )
 	
 };
 

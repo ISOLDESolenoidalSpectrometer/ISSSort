@@ -45,8 +45,14 @@ public:
 	inline unsigned char GetNumberOfCAENModules(){ return n_caen_mod; };
 	inline unsigned char GetNumberOfCAENChannels(){ return n_caen_ch; };
 	inline unsigned int GetCAENModel( unsigned char i ){
-		if( i < n_caen_mod ) return caen_model[i];
+		if( i < n_caen_mod )
+			return caen_model[i];
 		else return 1725;
+	};
+	inline unsigned char GetCAENExtras( unsigned char i, unsigned char j ){
+		if( i < n_caen_mod && j < n_caen_ch )
+			return caen_extras[i][j];
+		else return 0;
 	};
 	
 	// Info settings
@@ -74,6 +80,14 @@ public:
 	inline unsigned char GetT1Module(){ return caen_t1_mod; };
 	inline unsigned char GetT1Channel(){ return caen_t1_ch; };
 	inline unsigned char GetT1Code(){ return t1_code; };
+
+	inline unsigned char GetSCModule(){ return caen_sc_mod; };
+	inline unsigned char GetSCChannel(){ return caen_sc_ch; };
+	inline unsigned char GetSCCode(){ return sc_code; };
+
+	inline unsigned char GetLaserModule(){ return caen_laser_mod; };
+	inline unsigned char GetLaserChannel(){ return caen_laser_ch; };
+	inline unsigned char GetLaserCode(){ return laser_code; };
 
 
 	// Event builder
@@ -148,6 +162,7 @@ private:
 	unsigned char n_caen_mod;
 	unsigned char n_caen_ch;
 	std::vector<unsigned int> caen_model;
+	std::vector<std::vector<unsigned char>> caen_extras;
 	
 	
 	// Info code settings
@@ -170,7 +185,13 @@ private:
 	unsigned char caen_t1_mod;			///< Location of the T1 signal in the CAEN system (module)
 	unsigned char caen_t1_ch;			///< Location of the T1 signal in the CAEN system (channel)
 	unsigned char t1_code;				///< Info code when we have a T1 event in InfoData packets
-	
+	unsigned char caen_sc_mod;			///< Location of the SuperCycle signal in the CAEN system (module)
+	unsigned char caen_sc_ch;			///< Location of the SuperCycle signal in the CAEN system (channel)
+	unsigned char sc_code;				///< Info code when we have aSuperCycle event in InfoData packets
+	unsigned char caen_laser_mod;		///< Location of the Laser signal in the CAEN system (module)
+	unsigned char caen_laser_ch;		///< Location of the Laser signal in the CAEN system (channel)
+	unsigned char laser_code;			///< Info code when we have a Laser event in InfoData packets
+
 	
 	// Event builder
 	double event_window;			///< Event builder time window in ns

@@ -13,12 +13,12 @@ ISSAsicData::ISSAsicData( unsigned long t, unsigned short adc, unsigned char m,
 
 ISSCaenData::ISSCaenData(){}
 ISSCaenData::~ISSCaenData(){}
-ISSCaenData::ISSCaenData( unsigned long t, float f,
+ISSCaenData::ISSCaenData( unsigned long t, float f, float b,
 				    std::vector<unsigned short> tr,
 					unsigned short ql, unsigned short qs,
 					unsigned char m, unsigned char c,
 				    bool th ) :
-					time(t), finetime(f), trace(tr), Qlong(ql), Qshort(qs), mod(m), ch(c), thres(th) {}
+					time(t), finetime(f), baseline(b), trace(tr), Qlong(ql), Qshort(qs), mod(m), ch(c), thres(th) {}
 
 ISSInfoData::ISSInfoData(){}
 ISSInfoData::~ISSInfoData(){}
@@ -128,6 +128,7 @@ void ISSCaenData::ClearData(){
 	
 	time = 0;
 	finetime = 0.0;
+	baseline = 0.0;
 	trace.clear();
 	Qlong = 0;
 	Qshort = 0;

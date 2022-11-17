@@ -143,10 +143,10 @@ void ISSEventBuilder::StartFile(){
 	time_first = 0;
 	caen_time = 0;
 	caen_prev = 0;
-	ebis_time = 0;
 	ebis_prev = 0;
-	t1_time = 0;
 	t1_prev = 0;
+	sc_prev = 0;
+	laser_prev = 0;
 
 	n_asic_data	= 0;
 	n_caen_data	= 0;
@@ -156,6 +156,8 @@ void ISSEventBuilder::StartFile(){
 
 	n_ebis	= 0;
 	n_t1	= 0;
+	n_sc	= 0;
+	n_laser	= 0;
 
 	array_ctr	= 0;
 	arrayp_ctr	= 0;
@@ -646,16 +648,17 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// CHECK ALL OF THE INFO DATA CODE VALUES
 			// Update EBIS time
 			// N.B. if you are exceeding the limits of long long, then your DAQ has been running too long
+			long long info_tdiff;
 			if( info_data->GetCode() == set->GetEBISCode() ){
 			
 				// Each ASIC module sends ebis_time signal, so make sure difference between last ebis pulse and now is longer than the time it takes for them all to enter the DAQ
-				if ( TMath::Abs( (long long)ebis_time - (long long)info_data->GetTime() ) > 1e3 ){
+				info_tdiff = (long long)ebis_prev - (long long)info_data->GetTime();
+				if ( TMath::Abs( info_tdiff ) > 1e3 ){
 					
-					ebis_time = info_data->GetTime();
-					ebis_hz = 1e9 / ( (long long)ebis_time - (long long)ebis_prev );
-					if( ebis_prev != 0 ) ebis_freq->Fill( ebis_time, ebis_hz );
-					ebis_prev = ebis_time;
+					if( ebis_prev != 0 ) ebis_period->Fill( info_tdiff );
+					ebis_prev = info_data->GetTime();
 					n_ebis++;
+					
 				}
 				
 			}
@@ -663,13 +666,41 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// Update T1 time
 			else if( info_data->GetCode() == set->GetT1Code() ){
 				
-				if ( TMath::Abs( (long long)t1_time - (long long)info_data->GetTime() ) > 1e3 ){
+				info_tdiff = (long long)t1_prev - (long long)info_data->GetTime();
+				if ( TMath::Abs( info_tdiff ) > 1e3 ){
 				
-					t1_time = info_data->GetTime();
-					t1_hz = 1e9 / ( (long long)t1_time - (long long)t1_prev );
-					if( t1_prev != 0 ) t1_freq->Fill( t1_time, t1_hz );
-					t1_prev = t1_time;
+					if( t1_prev != 0 ) t1_period->Fill( info_tdiff );
+					t1_prev = info_data->GetTime();
 					n_t1++;
+					
+				}
+
+			}
+			
+			// Update SuperCycle time
+			else if( info_data->GetCode() == set->GetSCCode() ){
+				
+				info_tdiff = (long long)sc_prev - (long long)info_data->GetTime();
+				if ( TMath::Abs( info_tdiff ) > 1e3 ){
+				
+					if( sc_prev != 0 ) sc_period->Fill( info_tdiff );
+					sc_prev = info_data->GetTime();
+					n_sc++;
+					
+				}
+
+			}
+			
+			// Update Laser status time
+			else if( info_data->GetCode() == set->GetSCCode() ){
+				
+				info_tdiff = (long long)laser_prev - (long long)info_data->GetTime();
+				if ( TMath::Abs( info_tdiff ) > 1e3 ){
+				
+					if( laser_prev != 0 ) laser_period->Fill( info_tdiff );
+					laser_prev = info_data->GetTime();
+					n_laser++;
+					
 				}
 
 			}
@@ -678,8 +709,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			else if( info_data->GetCode() == set->GetCAENPulserCode() ) {
 				
 				caen_time = info_data->GetTime();
-				caen_hz = 1e9 / ( (long long)caen_time - (long long)caen_prev );
-				if( caen_prev != 0 ) caen_freq->Fill( caen_time, caen_hz );
+				if( caen_prev != 0 ) caen_period->Fill( caen_time - caen_prev );
 
 				flag_caen_pulser = true;
 				n_caen_pulser++;
@@ -690,10 +720,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			else if( info_data->GetCode() == set->GetExternalTriggerCode() ) {
 			   
 				fpga_time[info_data->GetModule()] = info_data->GetTime();
-				fpga_hz = 1e9 / ( (long long)fpga_time[info_data->GetModule()] - (long long)fpga_prev[info_data->GetModule()] );
+				info_tdiff = (long long)fpga_time[info_data->GetModule()] - (long long)fpga_prev[info_data->GetModule()];
 
 				if( fpga_prev[info_data->GetModule()] != 0 )
-					fpga_freq[info_data->GetModule()]->Fill( fpga_time[info_data->GetModule()], fpga_hz );
+					fpga_period[info_data->GetModule()]->Fill( info_tdiff );
 
 				n_fpga_pulser[info_data->GetModule()]++;
 
@@ -703,10 +733,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			else if( info_data->GetCode() == set->GetArrayPulserCode() ) {
 			   
 				asic_time[info_data->GetModule()] = info_data->GetTime();
-				asic_hz = 1e9 / ( (long long)asic_time[info_data->GetModule()] - (long long)asic_prev[info_data->GetModule()] );
+				info_tdiff = (long long)asic_time[info_data->GetModule()] - (long long)asic_prev[info_data->GetModule()];
 
 				if( asic_prev[info_data->GetModule()] != 0 )
-					asic_freq[info_data->GetModule()]->Fill( asic_time[info_data->GetModule()], asic_hz );
+					asic_period[info_data->GetModule()]->Fill( info_tdiff );
 
 				n_asic_pulser[info_data->GetModule()]++;
 
@@ -773,8 +803,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			
 				for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
 				
-					fpga_tdiff = (double)caen_time - (double)fpga_time[j];
-					asic_tdiff = (double)caen_time - (double)asic_time[j];
+					double fpga_tdiff = (double)caen_time - (double)fpga_time[j];
+					double asic_tdiff = (double)caen_time - (double)asic_time[j];
 
 					// If diff is greater than 5 ms, we have the wrong pair
 					if( fpga_tdiff > 5e6 ) fpga_tdiff = (double)caen_prev - (double)fpga_time[j];
@@ -786,12 +816,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 					fpga_td[j]->Fill( fpga_tdiff );
 					fpga_sync[j]->Fill( fpga_time[j], fpga_tdiff );
-					fpga_freq_diff[j]->Fill( fpga_time[j], fpga_hz - caen_hz );
 					fpga_pulser_loss[j]->Fill( fpga_time[j], (int)n_fpga_pulser[j] - (int)n_caen_pulser );
 					
 					asic_td[j]->Fill( asic_tdiff );
 					asic_sync[j]->Fill( asic_time[j], asic_tdiff );
-					asic_freq_diff[j]->Fill( asic_time[j], asic_hz - caen_hz );
 					asic_pulser_loss[j]->Fill( asic_time[j], (int)n_asic_pulser[j] - (int)n_caen_pulser );
 
 				}
@@ -902,8 +930,15 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				// ------------------------------------
 				// Add timing and fill the ISSEvts tree
 				// ------------------------------------
-				write_evts->SetEBIS( ebis_time );
-				write_evts->SetT1( t1_time );
+				write_evts->SetEBIS( ebis_prev );
+				write_evts->SetT1( t1_prev );
+				write_evts->SetSC( sc_prev );
+				if( TMath::Abs( (double)ebis_prev - (double)laser_prev ) < 1e3
+					&& laser_prev > 0 ) write_evts->SetLaserStatus( true );
+				else
+					write_evts->SetLaserStatus( false );
+				
+				// Fill only if we have some physics events
 				if( write_evts->GetArrayMultiplicity() ||
 					write_evts->GetArrayPMultiplicity() ||
 					write_evts->GetRecoilMultiplicity() ||
@@ -993,6 +1028,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		ss_log << "    Module " << i << " = " << n_asic_pulser[i] << std::endl;
 	ss_log << "   EBIS events = " << n_ebis << std::endl;
 	ss_log << "   T1 events = " << n_t1 << std::endl;
+	ss_log << "   SC events = " << n_sc << std::endl;
+	ss_log << "   Laser events = " << n_laser << std::endl;
 	ss_log << "  Tree entries = " << output_tree->GetEntries() << std::endl;
 
 	std::cout << ss_log.str();
@@ -2201,18 +2238,16 @@ void ISSEventBuilder::MakeHists(){
 	tdiff = new TH1F( "tdiff", "Time difference to first trigger;#Delta t [ns]", 1.5e3, -0.5e5, 1.0e5 );
 	tdiff_clean = new TH1F( "tdiff_clean", "Time difference to first trigger without noise;#Delta t [ns]", 1.5e3, -0.5e5, 1.0e5 );
 
-	caen_freq = new TProfile( "caen_freq", "Frequency of pulser in CAEN DAQ as a function of time;time [ns];f [Hz]", 10.8e4, 0, 10.8e12 );
+	caen_period = new TH1F( "caen_period", "Period of pulser in CAEN DAQ as a function of time;time [ns];f [Hz]", 1000, 0, 1e9 );
 
 	asic_td.resize( set->GetNumberOfArrayModules() );
-	asic_freq.resize( set->GetNumberOfArrayModules() );
+	asic_period.resize( set->GetNumberOfArrayModules() );
 	asic_sync.resize( set->GetNumberOfArrayModules() );
 	asic_pulser_loss.resize( set->GetNumberOfArrayModules() );
-	asic_freq_diff.resize( set->GetNumberOfArrayModules() );
 	fpga_td.resize( set->GetNumberOfArrayModules() );
-	fpga_freq.resize( set->GetNumberOfArrayModules() );
+	fpga_period.resize( set->GetNumberOfArrayModules() );
 	fpga_sync.resize( set->GetNumberOfArrayModules() );
 	fpga_pulser_loss.resize( set->GetNumberOfArrayModules() );
-	fpga_freq_diff.resize( set->GetNumberOfArrayModules() );
 	
 	// Loop over ISS modules
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
@@ -2222,10 +2257,10 @@ void ISSEventBuilder::MakeHists(){
 		htitle += std::to_string(i) + ";#Delta t [ns]";
 		asic_td[i] = new TH1F( hname.data(), htitle.data(), 1.6e3 , -4e3, 4e3 );
 		
-		hname = "asic_freq_" + std::to_string(i);
-		htitle = "Frequency of pulser in ISS DAQ (ASICs) as a function of time in module ";
+		hname = "asic_period_" + std::to_string(i);
+		htitle = "Period of pulser in ISS DAQ (ASICs) as a function of time in module ";
 		htitle += std::to_string(i) + ";time [ns];f [Hz]";
-		asic_freq[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
+		asic_period[i] = new TH1F( hname.data(), htitle.data(), 1000, 0, 1e9 );
 		
 		hname = "asic_sync_" + std::to_string(i);
 		htitle = "Time difference between ASIC and CAEN events as a function of time in module ";
@@ -2237,20 +2272,15 @@ void ISSEventBuilder::MakeHists(){
 		htitle += std::to_string(i) + ";time [ns];(-ive CAEN missing, +ive ISS missing)";
 		asic_pulser_loss[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
 		
-		hname = "asic_freq_diff_" + std::to_string(i);
-		htitle = "Frequency difference of pulser events in ISS/CAEN DAQs from ASICs as a function of time in module ";
-		htitle += std::to_string(i) + ";#time [ns];#Delta f [Hz]";
-		asic_freq_diff[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
-
 		hname = "fpga_td_" + std::to_string(i);
 		htitle = "Time difference between FPGA and CAEN pulser events in module ";
 		htitle += std::to_string(i) + ";#Delta t [ns]";
 		fpga_td[i] = new TH1F( hname.data(), htitle.data(), 1.6e3 , -4e3, 4e3 );
 
-		hname = "fpga_freq_" + std::to_string(i);
-		htitle = "Frequency of pulser in ISS DAQ (FPGA) as a function of time in module ";
+		hname = "fpga_period_" + std::to_string(i);
+		htitle = "Period of pulser in ISS DAQ (FPGA) as a function of time in module ";
 		htitle += std::to_string(i) + ";time [ns];f [Hz]";
-		fpga_freq[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
+		fpga_period[i] = new TH1F( hname.data(), htitle.data(), 1000, 0, 1e9 );
 
 		hname = "fpga_sync_" + std::to_string(i);
 		htitle = "Number of missing/extra pulser events in FPGA as a function of time in module ";
@@ -2258,19 +2288,16 @@ void ISSEventBuilder::MakeHists(){
 		fpga_sync[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
 
 		hname = "fpga_pulser_loss_" + std::to_string(i);
-		htitle = "Frequency difference of pulser events in ISS/CAEN DAQs from FPGA as a function of time in module ";
+		htitle = "Period difference of pulser events in ISS/CAEN DAQs from FPGA as a function of time in module ";
 		htitle += std::to_string(i) + ";#time [ns];#Delta f [Hz]";
 		fpga_pulser_loss[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
 
-		hname = "fpga_freq_diff_" + std::to_string(i);
-		htitle = "Time difference between FPGA and CAEN pulser events in module ";
-		htitle += std::to_string(i) + ";#Delta t [ns]";
-		fpga_freq_diff[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
-
 	}
 
-	ebis_freq = new TProfile( "ebis_freq", "Frequency of EBIS events as a function of time;time [ns];f [Hz]", 10.8e4, 0, 10.8e12 );
-	t1_freq = new TProfile( "t1_freq", "Frequency of T1 events (p+ on ISOLDE target) as a function of time;time [ns];f [Hz]", 10.8e4, 0, 10.8e12 );
+	ebis_period = new TH1F( "ebis_period", "Period of EBIS events;T [ns]", 1000, 0, 10e9 );
+	t1_period = new TH1F( "t1_period", "Period of T1 events (p+ on ISOLDE target);T [ns]", 1000, 0, 100e9 );
+	sc_period = new TH1F( "sc_period", "Period of SuperCycle events (PSB cycle start);T [ns]", 1000, 0, 1000e9 );
+	laser_period = new TH1F( "laser_period", "Period of Laser Status events (triggered by EBIS);T [ns]", 1000, 0, 10e9 );
 
 	
 	// Make directories
@@ -2737,31 +2764,29 @@ void ISSEventBuilder::CleanHists() {
 		delete (fpga_td[i]);
 		delete (asic_td[i]);
 		delete (fpga_pulser_loss[i]);
-		delete (fpga_freq_diff[i]);
-		delete (fpga_freq[i]);
+		delete (fpga_period[i]);
 		delete (fpga_sync[i]);
 		delete (asic_pulser_loss[i]);
-		delete (asic_freq_diff[i]);
-		delete (asic_freq[i]);
+		delete (asic_period[i]);
 		delete (asic_sync[i]);
 	}
 		
 	fpga_td.clear();
 	fpga_sync.clear();
-	fpga_freq.clear();
-	fpga_freq_diff.clear();
+	fpga_period.clear();
 	fpga_pulser_loss.clear();
 	asic_td.clear();
 	asic_sync.clear();
-	asic_freq.clear();
-	asic_freq_diff.clear();
+	asic_period.clear();
 	asic_pulser_loss.clear();
 	
 	delete tdiff;
 	delete tdiff_clean;
-	delete caen_freq;
-	delete ebis_freq;
-	delete t1_freq;
+	delete caen_period;
+	delete ebis_period;
+	delete t1_period;
+	delete sc_period;
+	delete laser_period;
 
 	return;
 
@@ -2881,20 +2906,20 @@ void ISSEventBuilder::ResetHists() {
 		fpga_td[i]->Reset("ICESM");
 		asic_td[i]->Reset("ICESM");
 		fpga_pulser_loss[i]->Reset("ICESM");
-		fpga_freq_diff[i]->Reset("ICESM");
-		fpga_freq[i]->Reset("ICESM");
+		fpga_period[i]->Reset("ICESM");
 		fpga_sync[i]->Reset("ICESM");
 		asic_pulser_loss[i]->Reset("ICESM");
-		asic_freq_diff[i]->Reset("ICESM");
-		asic_freq[i]->Reset("ICESM");
+		asic_period[i]->Reset("ICESM");
 		asic_sync[i]->Reset("ICESM");
 	}
 
 	tdiff->Reset("ICESM");
 	tdiff_clean->Reset("ICESM");
-	caen_freq->Reset("ICESM");
-	ebis_freq->Reset("ICESM");
-	t1_freq->Reset("ICESM");
+	caen_period->Reset("ICESM");
+	ebis_period->Reset("ICESM");
+	t1_period->Reset("ICESM");
+	sc_period->Reset("ICESM");
+	laser_period->Reset("ICESM");
 
 	return;
 

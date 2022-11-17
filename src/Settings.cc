@@ -24,8 +24,18 @@ void ISSSettings::ReadSettings() {
 	// CAEN initialisation
 	n_caen_mod = config->GetValue( "NumberOfCAENModules", 2 );
 	n_caen_ch = config->GetValue( "NumberOfCAENChannels", 16 );
-	for( unsigned int i = 0; i < n_caen_mod; ++i )
+	caen_extras.resize( n_caen_mod );
+	for( unsigned int i = 0; i < n_caen_mod; ++i ) {
+		
 		caen_model.push_back( config->GetValue( Form( "CAEN_%d.Model", i ), 1725 ) );
+		
+		for( unsigned int j = 0; j < n_caen_ch; ++j ) {
+		
+			caen_extras[i].push_back( config->GetValue( Form( "CAEN_%d_%d.Extras", i, j ), 0 ) );
+		
+		}
+	
+	}
 	
 	// Info code initialisation
 	extt_code = config->GetValue( "ExternalTriggerCode", 14 );
@@ -47,6 +57,12 @@ void ISSSettings::ReadSettings() {
 	caen_t1_mod = config->GetValue( "T1Module", 1 );
 	caen_t1_ch = config->GetValue( "T1Channel", 15 );
 	t1_code = config->GetValue( "T1Code", 22 );
+	caen_sc_mod = config->GetValue( "SCModule", 1 );
+	caen_sc_ch = config->GetValue( "SCChannel", 12 );
+	sc_code = config->GetValue( "SCCode", 23 );
+	caen_laser_mod = config->GetValue( "LaserModule", 1 );
+	caen_laser_ch = config->GetValue( "LaserChannel", 11 );
+	laser_code = config->GetValue( "LaserCode", 24 );
 
 	
 	// Event builder

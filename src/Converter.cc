@@ -860,7 +860,7 @@ void ISSConverter::ProcessCAENData(){
 	// First of the data items
 	if( !flag_caen_data0 && !flag_caen_data1 && !flag_caen_data3 ){
 		
-		// Make a CaenData item, need to add Qshort and traces
+		// Make a CaenData item, need to add Qlong, Qshort and traces
 		caen_data->SetTime( my_tm_stp );
 		caen_data->SetModule( my_mod_id );
 		caen_data->SetChannel( my_ch_id );
@@ -908,12 +908,30 @@ void ISSConverter::ProcessCAENData(){
 
 	}
 
-	// Fine timing
+	// Extra word items
+	// Has to be defined what this is in the settings file
+	// 0: Fine timing
+	// 1: Baseline
 	if( my_data_id == 3 ) {
 		
 		my_adc_data = my_adc_data & 0x03FF; // 10 bits from 0
-		caen_data->SetFineTime( (float)my_adc_data * 4. / 1000. );
 		flag_caen_data3 = true;
+
+		// Fine timing
+		if( set->GetCAENExtras( my_mod_id, my_ch_id ) == 0 ){
+		
+			caen_data->SetFineTime( (float)my_adc_data * 4. / 1000. );
+			caen_data->SetBaseline( 0.0 );
+
+		}
+		
+		// Baseline
+		else if( set->GetCAENExtras( my_mod_id, my_ch_id ) == 1 ){
+		
+			caen_data->SetFineTime( 0.0 );
+			caen_data->SetBaseline( (float)my_adc_data / 4. );
+
+		}
 
 	}
 
@@ -959,6 +977,22 @@ void ISSConverter::FinishCAENData(){
 			
 		}
 
+		else if( caen_data->GetModule() == set->GetSCModule() &&
+		    caen_data->GetChannel() == set->GetSCChannel() ){
+			
+			flag_caen_info = true;
+			my_info_code = 23; // CAEN SC is always 23 (defined here)
+			
+		}
+
+		else if( caen_data->GetModule() == set->GetLaserModule() &&
+		    caen_data->GetChannel() == set->GetLaserChannel() ){
+			
+			flag_caen_info = true;
+			my_info_code = 24; // CAEN Laser status is always 24 (defined here)
+			
+		}
+
 		// If this is a timestamp, fill an info event
 		if( flag_caen_info ) {
 				
@@ -971,7 +1005,7 @@ void ISSConverter::FinishCAENData(){
 			data_packet->ClearData();
 
 			// Fill histograms for external trigger
-			if( my_info_code == set->GetCAENPulserCode() ) {
+			if( my_info_code == 20 ) {
 				
 				hcaen_ext[caen_data->GetModule()]->Fill( ctr_caen_ext[caen_data->GetModule()], caen_data->GetTime(), 1 );
 

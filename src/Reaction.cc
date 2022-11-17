@@ -341,6 +341,11 @@ void ISSReaction::ReadReaction() {
 	EBIS_Off = config->GetValue( "EBIS.Off", 2.52e7 );	// this allows a off window 20 times bigger than on
 	EBIS_ratio = config->GetValue( "EBIS.FillRatio", GetEBISTimeRatio() );	// this is the measured ratio of EBIS On/off. Default is just the time window ratio
 
+	// T1 time window
+	t1_min_time = config->GetValue( "T1.Min", 0 );		// default = 0
+	t1_max_time = config->GetValue( "T1.Miax", 1.2e9 );	// default = 1.2 seconds
+
+	
 	// Array-Recoil time windows
 	array_recoil_prompt[0] = config->GetValue( "ArrayRecoil_PromptTime.Min", -300 );	// lower limit for array-recoil prompt time difference
 	array_recoil_prompt[1] = config->GetValue( "ArrayRecoil_PromptTime.Max", 300 );		// upper limit for array-recoil prompt time difference

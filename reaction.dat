@@ -43,6 +43,10 @@
 #EBIS.Off: 2.52e7		# Off window is 20 times the On window
 #EBIS.FillRatio: 20		# Fill ratio for EBIS, default is ratio of time windows
 
+# T1 cut
+T1.Min: 0			# for cutting on the proton impact time
+T1.Max: 1.2e9		# 
+
 # Array-Recoil windows
 #ArrayRecoil_PromptTime.Min: -300
 #ArrayRecoil_PromptTime.Max: 300
