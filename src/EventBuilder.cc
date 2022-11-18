@@ -653,10 +653,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			
 				// Each ASIC module sends ebis_time signal, so make sure difference between last ebis pulse and now is longer than the time it takes for them all to enter the DAQ
 				info_tdiff = (long long)ebis_prev - (long long)info_data->GetTime();
-				if ( TMath::Abs( info_tdiff ) > 1e3 ){
+				if( TMath::Abs( info_tdiff ) > 1e3 ){
 					
-					if( ebis_prev != 0 ) ebis_period->Fill( info_tdiff );
 					ebis_prev = info_data->GetTime();
+					if( ebis_prev != 0 ) ebis_period->Fill( info_tdiff );
 					n_ebis++;
 					
 				}
@@ -667,12 +667,15 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			else if( info_data->GetCode() == set->GetT1Code() ){
 				
 				info_tdiff = (long long)t1_prev - (long long)info_data->GetTime();
-				if ( TMath::Abs( info_tdiff ) > 1e3 ){
+				if( TMath::Abs( info_tdiff ) > 1e3 ){
 				
-					if( t1_prev != 0 ) t1_period->Fill( info_tdiff );
 					t1_prev = info_data->GetTime();
+					if( t1_prev != 0 ){
+						t1_period->Fill( info_tdiff );
+						supercycle->Fill( t1_prev - sc_prev );
+					}
 					n_t1++;
-					
+
 				}
 
 			}
@@ -681,26 +684,26 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			else if( info_data->GetCode() == set->GetSCCode() ){
 				
 				info_tdiff = (long long)sc_prev - (long long)info_data->GetTime();
-				if ( TMath::Abs( info_tdiff ) > 1e3 ){
+				if( TMath::Abs( info_tdiff ) > 1e3 ){
 				
-					if( sc_prev != 0 ) sc_period->Fill( info_tdiff );
 					sc_prev = info_data->GetTime();
+					if( sc_prev != 0 ) sc_period->Fill( info_tdiff );
 					n_sc++;
-					
+
 				}
 
 			}
 			
 			// Update Laser status time
-			else if( info_data->GetCode() == set->GetSCCode() ){
+			else if( info_data->GetCode() == set->GetLaserCode() ){
 				
 				info_tdiff = (long long)laser_prev - (long long)info_data->GetTime();
-				if ( TMath::Abs( info_tdiff ) > 1e3 ){
+				if( TMath::Abs( info_tdiff ) > 1e3 ){
 				
-					if( laser_prev != 0 ) laser_period->Fill( info_tdiff );
 					laser_prev = info_data->GetTime();
+					if( laser_prev != 0 ) laser_period->Fill( info_tdiff );
 					n_laser++;
-					
+
 				}
 
 			}
@@ -710,9 +713,9 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				
 				caen_time = info_data->GetTime();
 				if( caen_prev != 0 ) caen_period->Fill( caen_time - caen_prev );
-
 				flag_caen_pulser = true;
 				n_caen_pulser++;
+				
 
 			}
 
@@ -2298,6 +2301,7 @@ void ISSEventBuilder::MakeHists(){
 	t1_period = new TH1F( "t1_period", "Period of T1 events (p+ on ISOLDE target);T [ns]", 1000, 0, 100e9 );
 	sc_period = new TH1F( "sc_period", "Period of SuperCycle events (PSB cycle start);T [ns]", 1000, 0, 1000e9 );
 	laser_period = new TH1F( "laser_period", "Period of Laser Status events (triggered by EBIS);T [ns]", 1000, 0, 10e9 );
+	supercycle = new TH1F( "supercycle", "SuperCycle structure;T1-SC [ns]", 1000, 0, 100e9 );
 
 	
 	// Make directories
@@ -2787,6 +2791,7 @@ void ISSEventBuilder::CleanHists() {
 	delete t1_period;
 	delete sc_period;
 	delete laser_period;
+	delete supercycle;
 
 	return;
 
@@ -2920,6 +2925,7 @@ void ISSEventBuilder::ResetHists() {
 	t1_period->Reset("ICESM");
 	sc_period->Reset("ICESM");
 	laser_period->Reset("ICESM");
+	supercycle->Reset("ICESM");
 
 	return;
 

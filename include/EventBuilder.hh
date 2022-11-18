@@ -308,6 +308,7 @@ private:
 	TH1F *t1_period;				///< Histogram containg the period of T1 pulses
 	TH1F *sc_period;				///< Histogram containg the period of SuperCycle pulses
 	TH1F *laser_period;				///< Histogram containg the period of Laser status signals
+	TH1F *supercycle;				///< Histogram of T1 - SuperCycle time to get the super cycle structure
 	std::vector<TH1F*> fpga_td; 	///<
 	
 	std::vector<TH1F*> asic_td; 				///< Histogram containing the time difference between ASIC signals for a given module of the array
