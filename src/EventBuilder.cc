@@ -652,7 +652,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			if( info_data->GetCode() == set->GetEBISCode() ){
 			
 				// Each ASIC module sends ebis_time signal, so make sure difference between last ebis pulse and now is longer than the time it takes for them all to enter the DAQ
-				info_tdiff = (long long)ebis_prev - (long long)info_data->GetTime();
+				info_tdiff = (long long)info_data->GetTime() - (long long)ebis_prev;
 				if( TMath::Abs( info_tdiff ) > 1e3 ){
 					
 					ebis_prev = info_data->GetTime();
@@ -666,7 +666,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// Update T1 time
 			else if( info_data->GetCode() == set->GetT1Code() ){
 				
-				info_tdiff = (long long)t1_prev - (long long)info_data->GetTime();
+				info_tdiff = (long long)info_data->GetTime() - (long long)t1_prev;
 				if( TMath::Abs( info_tdiff ) > 1e3 ){
 				
 					t1_prev = info_data->GetTime();
@@ -683,7 +683,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// Update SuperCycle time
 			else if( info_data->GetCode() == set->GetSCCode() ){
 				
-				info_tdiff = (long long)sc_prev - (long long)info_data->GetTime();
+				info_tdiff = (long long)info_data->GetTime() - (long long)sc_prev;
 				if( TMath::Abs( info_tdiff ) > 1e3 ){
 				
 					sc_prev = info_data->GetTime();
@@ -697,7 +697,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// Update Laser status time
 			else if( info_data->GetCode() == set->GetLaserCode() ){
 				
-				info_tdiff = (long long)laser_prev - (long long)info_data->GetTime();
+				info_tdiff = (long long)info_data->GetTime() - (long long)laser_prev;
 				if( TMath::Abs( info_tdiff ) > 1e3 ){
 				
 					laser_prev = info_data->GetTime();
