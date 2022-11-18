@@ -51,6 +51,7 @@ public:
 	void MakeHists();
 	void ResetHists();
 	void MakeTree();
+	void StartFile();
 	unsigned long long SortTree();
 
 	bool ProcessCurrentBlock( int nblock );

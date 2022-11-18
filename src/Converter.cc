@@ -8,29 +8,46 @@ ISSConverter::ISSConverter( ISSSettings *myset ) {
 	my_tm_stp_msb = 0;
 	my_tm_stp_hsb = 0;
 	
+	// Resize counters
+	ctr_asic_hit.resize( set->GetNumberOfArrayModules() );
+	ctr_asic_ext.resize( set->GetNumberOfArrayModules() );
+	ctr_asic_pause.resize( set->GetNumberOfArrayModules() );
+	ctr_asic_resume.resize( set->GetNumberOfArrayModules() );
+	ctr_caen_hit.resize( set->GetNumberOfCAENModules() );
+	ctr_caen_ext.resize( set->GetNumberOfCAENModules() );
+
 	// Start counters at zero
-	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
-				
-		ctr_asic_hit.push_back(0);	// hits on each module
-		ctr_asic_ext.push_back(0);	// external timestamps
-		ctr_asic_pause.push_back(0);
-		ctr_asic_resume.push_back(0);
-
-	}
-	
-	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
-				
-		ctr_caen_hit.push_back(0);	// hits on each module
-		ctr_caen_ext.push_back(0);	// external timestamps
-
-	}
+	StartFile();
 	
 	// Default that we do not have a source only run
 	flag_source = false;
 	
 	// No progress bar by default
 	_prog_ = false;
+	
+}
 
+void ISSConverter::StartFile(){
+	
+	// Start counters at zero
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
+				
+		ctr_asic_hit[i] = 0;	// hits on each module
+		ctr_asic_ext[i] = 0;	// external timestamps
+		ctr_asic_pause[i] = 0;
+		ctr_asic_resume[i] = 0;
+
+	}
+	
+	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
+				
+		ctr_caen_hit[i] = 0;	// hits on each module
+		ctr_caen_ext[i] = 0;	// external timestamps
+
+	}
+	
+	return;
+	
 }
 
 void ISSConverter::SetOutput( std::string output_file_name ){
@@ -1235,6 +1252,9 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 		return -1;
 		
 	}
+	
+	// Reset counters
+	StartFile();
 
 	// Conversion starting
 	std::cout << "Converting file: " << input_file_name;
