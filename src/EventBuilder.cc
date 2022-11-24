@@ -2297,7 +2297,7 @@ void ISSEventBuilder::MakeHists(){
 
 	}
 
-	ebis_period = new TH1F( "ebis_period", "Period of EBIS events;T [ns]", 1000, 0, 10e9 );
+	ebis_period = new TH1F( "ebis_period", "Period of EBIS events;T [ns]", 3000, 0, 3e9 );
 	t1_period = new TH1F( "t1_period", "Period of T1 events (p+ on ISOLDE target);T [ns]", 1000, 0, 100e9 );
 	sc_period = new TH1F( "sc_period", "Period of SuperCycle events (PSB cycle start);T [ns]", 1000, 0, 1000e9 );
 	laser_period = new TH1F( "laser_period", "Period of Laser Status events (triggered by EBIS);T [ns]", 1000, 0, 10e9 );
