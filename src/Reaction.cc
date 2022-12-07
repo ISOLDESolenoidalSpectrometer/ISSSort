@@ -704,6 +704,8 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 		//alpha *= z / Ejectile.GetMomentumLab();				// * z/p
 		//alpha  = TMath::ASin( alpha );
 		
+		// Pulse height conversion to proton energy using RDP
+		
 		// Distance is negative because energy needs to be recovered
 		// First we recover the energy lost in the Si dead layer
 		double dist = -1.0 * deadlayer / TMath::Abs( TMath::Cos( alpha ) );
