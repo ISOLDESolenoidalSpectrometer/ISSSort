@@ -1981,7 +1981,6 @@ void ISSEventBuilder::RecoilFinder() {
 						index.push_back(j);
 						layers.push_back(rid_list[j]);
 						recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
-						recoil_EdE[rsec_list[i]]->Fill( ren_list[j], ren_list[i] );
 						
 						if( rid_list[j] == (int)set->GetRecoilEnergyRestStart() )
 							recoil_evt->SetETime( rtd_list[j] );
