@@ -383,6 +383,10 @@ void ISSReaction::ReadReaction() {
 	}
 	stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[2] );
 
+	// Get the PHD data in a TGraph
+	gPHD = std::make_unique<TGraph>();
+	phdcurves = ReadPulseHeightDeficit( Ejectile.GetIsotope(), gPHD );
+	
 	// Some diagnostics and info
 	if( !flag_source ) {
 		
@@ -580,6 +584,124 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 	return true;
 	 
 }
+
+double ISSReaction::GetPulseHeightDeficit( double Ei, bool detected ) {
+
+	/// Calculates energy correction required for the pulse height deficit, either to get true energy or detected energy
+	/// \param[in] Ei the initial energy that should be corrected
+	/// \param[in] detected should be true if this is the detected energy and false if it is the actual ion energy
+	/// \return energy correction to obtain the true ion energy (if detected) or the charge collected (if !detected)
+
+	// If we failed to read the data, return a zero correction value
+	if( !phdcurves ) return 0;
+	
+	// First calculate the nuclear stopping and subtract
+	double gam = 11.151;	// for alphas, needs to be read in from somewhere depending on ion
+	double alp = 0.10; 		// for alphas, needs to be read in from somewhere depending on ion
+	double nucl = TMath::Exp( Ei/2470. ) - 1.0;
+	nucl = gam * TMath::Power( nucl, alp );
+	double Elimit = Ei - nucl;
+
+	unsigned int Nmeshpoints = 500; // number of steps to take in integration
+	double dE = Elimit/(double)Nmeshpoints;
+	double Edet = 0.0;
+	double E, PHD;
+	
+	// If we have detected energy, we may need to keep going with integral
+	if( detected ) Nmeshpoints *= 2;
+	
+	for( unsigned int i = 0; i < Nmeshpoints; i++ ){
+
+		E = (double)i + 0.5;
+		E *= dE;
+		PHD = gPHD->Eval(E);
+		Edet += dE * PHD;
+		
+		// Checking if we have given the detected energy
+		// then we need to quit when we reach this value
+		if( detected && Edet >= Elimit ) break;
+		
+	}
+	
+	if( detected ) return E - Ei;
+	else return Edet - Ei;
+
+}
+
+
+bool ISSReaction::ReadPulseHeightDeficit( std::string isotope, std::unique_ptr<TGraph> &g ) {
+	 
+	/// Open stopping power files and make TGraphs of data
+	
+	// Make title
+	std::string title = "Pulse height deficit corrections for ";
+	title += isotope;
+	title += ";" + isotope + " energy [keV];";
+	title += "Energy loss in silicon [keV/#mum]";
+	
+	// Initialise an empty TGraph
+	g->SetTitle( title.c_str() );
+
+	// Keep things quiet from ROOT
+	gErrorIgnoreLevel = kWarning;
+
+	// Open the data file
+	// PHD_DIR is defined at compilation and is in source code
+	std::string phdfilename = std::string( PHD_DIR ) + "/";
+	phdfilename += isotope + ".phd";
+	
+	std::ifstream input_file;
+	input_file.open( phdfilename, std::ios::in );
+
+	// If it fails to open print an error
+	if( !input_file.is_open() ) {
+		
+		std::cerr << "Cannot open " << phdfilename << std::endl;
+		return false;
+		  
+	}
+
+	std::string line, tmp_str;
+	std::stringstream line_ss;
+	double E, dEdx, PHD;
+	 
+	// Read in the data
+	while( std::getline( input_file, line ) && !input_file.eof() ) {
+		
+		// Skip over comment lines
+		if( line.substr( 0, 1 ) == "#" ) continue;
+
+		// Read in data
+		line_ss.str("");
+		line_ss << line;
+		line_ss >> E >> dEdx;
+		
+		// From W. N. Lennard et al. NIM A248 (1986) 454
+		PHD = e0_Si + k_Si * dEdx;
+		PHD = e0_Si / PHD;
+
+		g->SetPoint( g->GetN(), E, PHD );
+		
+	}
+
+	// Draw the plot and save it somewhere
+	TCanvas *c = new TCanvas();
+	//c->SetLogx();
+	//c->SetLogy();
+	g->Draw("A*");
+	std::string pdfname = phdfilename.substr( 0, phdfilename.find_last_of(".") ) + ".pdf";
+	c->SaveAs( pdfname.c_str() );
+	
+	delete c;
+	input_file.close();
+	
+	// ROOT can be noisey again
+	gErrorIgnoreLevel = kInfo;
+
+	return true;
+	 
+}
+
 
 float ISSReaction::SimulateDecay( TVector3 vec, double en ){
 

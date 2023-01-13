@@ -40,6 +40,8 @@ const double p_mass  = 938272.08816;	///< mass of the proton in keV/c^2
 const double n_mass  = 939565.42052;	///< mass of the neutron in keV/c^2
 const double u_mass  = 931494.10242;	///< atomic mass unit in keV/c^2
 const double T_to_mm =   299.792458;	///< in units of 1/mm
+const double k_Si 	 =     2.80e-07;	///< k value - µm/e-h pair for PHD in silicon
+const double e0_Si 	 =     3.67e-03;	///< epsilon_0 for silicon for PHD in keV
 
 // Element names
 const std::vector<std::string> gElName = {
@@ -227,6 +229,10 @@ public:
 	double GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> &g );
 	bool ReadStoppingPowers( std::string isotope1, std::string isotope2, std::unique_ptr<TGraph> &g );
 
+	// Pulse height deficit correction
+	double GetPulseHeightDeficit( double Ei, bool detected );
+	bool ReadPulseHeightDeficit( std::string isotope, std::unique_ptr<TGraph> &g );
+
 	// Get cuts
 	inline TCutG* GetRecoilCut( unsigned int i ){
 		if( i < nrecoilcuts ) return recoil_cut.at(i);
@@ -310,7 +316,8 @@ private:
 
 	// Stopping powers
 	std::vector<std::unique_ptr<TGraph>> gStopping;
-	bool stopping;
+	std::unique_ptr<TGraph> gPHD;
+	bool stopping, phdcurves;
 	
 	// Flag in case it's an alpha source
 	bool flag_source;

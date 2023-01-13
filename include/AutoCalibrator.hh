@@ -44,6 +44,12 @@
 #include "FitFunctions.hh"
 #endif
 
+// Make sure that the PHD directory is defined
+#ifndef PHD_DIR
+# define PHD_DIR "./data/"
+#endif
+
+
 /*!
 * \brief Calibrates alpha spectra in the ISS Liverpool array
 *

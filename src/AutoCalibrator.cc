@@ -1129,9 +1129,15 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 
 	// Calculate the detected alpha energies
 	float DetectedEnergy[NumberOfFoundAlphaPeaks];
-	for( int i = 0; i < NumberOfFoundAlphaPeaks; ++i )
+	for( int i = 0; i < NumberOfFoundAlphaPeaks; ++i ){
+	
+		// First calculate the energy loss through the dead layer
 		DetectedEnergy[i] = react->SimulateDecay( vec3, FF_alpha_peak_energy[i] );
 
+		// Now correct for the pulse-height defecit (PHD)
+		DetectedEnergy[i] += react->GetPulseHeightDeficit( DetectedEnergy[i], false );
+		
+	}
 	
 	// Now do a graph of the centroids against detected energy
 	
