@@ -385,7 +385,15 @@ void ISSReaction::ReadReaction() {
 
 	// Get the PHD data in a TGraph
 	gPHD = std::make_unique<TGraph>();
-	phdcurves = ReadPulseHeightDeficit( Ejectile.GetIsotope(), gPHD );
+	gPHD_inv = std::make_unique<TGraph>();
+	phdcurves = ReadPulseHeightDeficit( Ejectile.GetIsotope() ); // from Robert Page numbers
+	//phdcurves = ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gPHD, true ); // from SRIM files
+	
+	// Get the PHD data parameters from a file
+	std::string phd_file = std::string(PHD_DIR) + "phd_params.dat";
+	TEnv *phd_params = new TEnv( phd_file.data() );
+	phd_alpha = phd_params->GetValue( Form( "%s.alpha", Ejectile.GetIsotope().data() ), 0.0 );
+	phd_gamma = phd_params->GetValue( Form( "%s.gamma", Ejectile.GetIsotope().data() ), 0.0 );
 	
 	// Some diagnostics and info
 	if( !flag_source ) {
@@ -421,6 +429,7 @@ void ISSReaction::ReadReaction() {
 
 	// Finished
 	delete config;
+	delete phd_params;
 
 }
 
@@ -444,7 +453,7 @@ double ISSReaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGrap
 
 }
 
-bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2, std::unique_ptr<TGraph> &g ) {
+bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2, std::unique_ptr<TGraph> &g, bool electriconly ) {
 	 
 	/// Open stopping power files and make TGraphs of data
 	
@@ -527,7 +536,8 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 		else if( units == "MeV" ) En *= 1E3;
 		else if( units == "GeV" ) En *= 1E6;
 		
-		total = nucl + elec ; // in some units, conversion done later
+		if( electriconly ) total = elec; // ignore nuclear of PHD calculation
+		else total = nucl + elec ; // in some units, conversion done later
 		
 		g->SetPoint( g->GetN(), En, total );
 		
@@ -594,53 +604,30 @@ double ISSReaction::GetPulseHeightDeficit( double Ei, bool detected ) {
 
 	// If we failed to read the data, return a zero correction value
 	if( !phdcurves ) return 0;
-	
-	// First calculate the nuclear stopping and subtract
-	double gam = 11.151;	// for alphas, needs to be read in from somewhere depending on ion
-	double alp = 0.10; 		// for alphas, needs to be read in from somewhere depending on ion
-	double nucl = TMath::Exp( Ei/2470. ) - 1.0;
-	nucl = gam * TMath::Power( nucl, alp );
-	double Elimit = Ei - nucl;
 
-	unsigned int Nmeshpoints = 500; // number of steps to take in integration
-	double dE = Elimit/(double)Nmeshpoints;
-	double Edet = 0.0;
-	double E, PHD;
-	
-	// If we have detected energy, we may need to keep going with integral
-	if( detected ) Nmeshpoints *= 2;
-	
-	for( unsigned int i = 0; i < Nmeshpoints; i++ ){
-
-		E = (double)i + 0.5;
-		E *= dE;
-		PHD = gPHD->Eval(E);
-		Edet += dE * PHD;
-		
-		// Checking if we have given the detected energy
-		// then we need to quit when we reach this value
-		if( detected && Edet >= Elimit ) break;
-		
-	}
-	
-	if( detected ) return E - Ei;
-	else return Edet - Ei;
+	if( detected ) return gPHD->Eval(Ei) - Ei;
+	else return gPHD_inv->Eval(Ei) - Ei;
 
 }
 
 
-bool ISSReaction::ReadPulseHeightDeficit( std::string isotope, std::unique_ptr<TGraph> &g ) {
+bool ISSReaction::ReadPulseHeightDeficit( std::string isotope ) {
 	 
 	/// Open stopping power files and make TGraphs of data
 	
-	// Make title
+	// Make titles
 	std::string title = "Pulse height deficit corrections for ";
 	title += isotope;
-	title += ";" + isotope + " energy [keV];";
-	title += "Energy loss in silicon [keV/#mum]";
-	
+	title += ";" + isotope + " energy after dead layer [keV];";
+	title += "Deposited energy [keV/#mum]";
+	std::string title_inv = "Pulse height deficit corrections for ";
+	title_inv += isotope;
+	title_inv += ";Deposited energy [keV/#mum];";
+	title_inv += isotope + " energy after dead layer [keV]";
+
 	// Initialise an empty TGraph
-	g->SetTitle( title.c_str() );
+	gPHD->SetTitle( title.c_str() );
+	gPHD_inv->SetTitle( title_inv.c_str() );
 
 	// Keep things quiet from ROOT
 	gErrorIgnoreLevel = kWarning;
@@ -663,9 +650,12 @@ bool ISSReaction::ReadPulseHeightDeficit( std::string isotope, std::unique_ptr<T
 
 	std::string line, tmp_str;
 	std::stringstream line_ss;
-	double E, dEdx, PHD;
+	double E, Emax = 0, dEdx, PHD;
 	 
-	// Read in the data
+	// Read in the data to a temporary graph
+	TGraph *gEloss = new TGraph();
+	TGraph *gDiff = new TGraph();
+	TGraph *gRes = new TGraph();
 	while( std::getline( input_file, line ) && !input_file.eof() ) {
 		
 		// Skip over comment lines
@@ -680,19 +670,60 @@ bool ISSReaction::ReadPulseHeightDeficit( std::string isotope, std::unique_ptr<T
 		PHD = e0_Si + k_Si * dEdx;
 		PHD = e0_Si / PHD;
 
-		g->SetPoint( g->GetN(), E, PHD );
+		gEloss->SetPoint( gEloss->GetN(), E, dEdx );
+		gDiff->SetPoint( gDiff->GetN(), E, PHD );
 		
-	}
+		// Update max energy
+		if( E > Emax ) Emax = E;
 
+	}
+	
+	// Calculate the nuclear stopping
+	double nucl;
+
+	// number of steps to take in integration
+	unsigned int Nmeshpoints = 1e5;
+	double dE = Emax/(double)Nmeshpoints;
+	double Edet = 0.0;
+
+	// Do the numerical integration
+	for( unsigned int i = 0; i < Nmeshpoints; i++ ){
+
+		E = (double)i + 0.5;
+		E *= dE;
+		PHD = gDiff->Eval(E);
+		Edet += dE * PHD;
+		
+		nucl = TMath::Exp( E/2470. ) - 1.0;
+		nucl = phd_gamma * TMath::Power( nucl, phd_alpha );
+
+		gPHD->SetPoint( gPHD->GetN(), E + nucl, Edet );
+		gPHD_inv->SetPoint( gPHD_inv->GetN(), Edet, E + nucl );
+		gRes->SetPoint( gRes->GetN(), E + nucl, Edet - E - nucl );
+
+	}
+	
 	// Draw the plot and save it somewhere
 	TCanvas *c = new TCanvas();
 	//c->SetLogx();
 	//c->SetLogy();
-	g->Draw("A*");
-	std::string pdfname = phdfilename.substr( 0, phdfilename.find_last_of(".") ) + ".pdf";
+	gEloss->Draw("A*");
+	std::string pdfname = phdfilename.substr( 0, phdfilename.find_last_of(".") ) + "_eloss.pdf";
 	c->SaveAs( pdfname.c_str() );
-	
+	gDiff->Draw("A*");
+	pdfname = phdfilename.substr( 0, phdfilename.find_last_of(".") ) + "_diff.pdf";
+	c->SaveAs( pdfname.c_str() );
+	gRes->Draw("A*");
+	pdfname = phdfilename.substr( 0, phdfilename.find_last_of(".") ) + "_res.pdf";
+	c->SaveAs( pdfname.c_str() );
+	gPHD->Draw("A*");
+	pdfname = phdfilename.substr( 0, phdfilename.find_last_of(".") ) + "_phd.pdf";
+	c->SaveAs( pdfname.c_str() );
+
 	delete c;
+	delete gDiff;
+	delete gEloss;
+	delete gRes;
 	input_file.close();
 	
 	// ROOT can be noisey again
@@ -790,12 +821,16 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	vec.SetY( vec.Y() - y_offset );
 	
 	// Set the input parameters, might use them in another function
-	Ejectile.SetEnergyLab(en);			// ejectile energy in keV
+	//Ejectile.SetEnergyLab(en);		// ejectile energy in keV
 	z_meas = vec.Z();					// measured z in mm
 	r_meas = vec.Perp();				// measured radius
 	if( z0 < 0 ) z_meas = z0 - z_meas;	// upstream
 	else z_meas += z0;					// downstream
-    
+	
+	// Pulse height conversion to proton energy using RDP
+	en += GetPulseHeightDeficit( en, true );
+	Ejectile.SetEnergyLab(en);
+
 	//------------------------//
     // Kinematics calculation //
     //------------------------//
@@ -825,16 +860,14 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 		//alpha /= TMath::TwoPi(); 							// qb/2pi
 		//alpha *= z / Ejectile.GetMomentumLab();				// * z/p
 		//alpha  = TMath::ASin( alpha );
-		
-		// Pulse height conversion to proton energy using RDP
-		
+				
 		// Distance is negative because energy needs to be recovered
 		// First we recover the energy lost in the Si dead layer
 		double dist = -1.0 * deadlayer / TMath::Abs( TMath::Cos( alpha ) );
 		double eloss = GetEnergyLoss( en, dist, gStopping[2] );
 		Ejectile.SetEnergyLab( en - eloss );
 		
-		// First we recover the energy lost in the target
+		// Then we recover the energy lost in the target
 		dist = -0.5 * target_thickness / TMath::Abs( TMath::Sin( alpha ) );
 		eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
 		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );

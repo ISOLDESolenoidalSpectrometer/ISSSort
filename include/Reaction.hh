@@ -227,11 +227,11 @@ public:
 
 	// Energy loss and stopping powers
 	double GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> &g );
-	bool ReadStoppingPowers( std::string isotope1, std::string isotope2, std::unique_ptr<TGraph> &g );
+	bool ReadStoppingPowers( std::string isotope1, std::string isotope2, std::unique_ptr<TGraph> &g, bool electriconly = true );
 
 	// Pulse height deficit correction
 	double GetPulseHeightDeficit( double Ei, bool detected );
-	bool ReadPulseHeightDeficit( std::string isotope, std::unique_ptr<TGraph> &g );
+	bool ReadPulseHeightDeficit( std::string isotope );
 
 	// Get cuts
 	inline TCutG* GetRecoilCut( unsigned int i ){
@@ -316,7 +316,8 @@ private:
 
 	// Stopping powers
 	std::vector<std::unique_ptr<TGraph>> gStopping;
-	std::unique_ptr<TGraph> gPHD;
+	std::unique_ptr<TGraph> gPHD, gPHD_inv;
+	double phd_alpha, phd_gamma;
 	bool stopping, phdcurves;
 	
 	// Flag in case it's an alpha source
