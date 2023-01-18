@@ -2,8 +2,8 @@
 /*! \mainpage The ISOLDE Solenoidal Spectrometer (ISS) sort code
 * **Author**: Liam Gaffney [(liam.gaffney@liverpool.ac.uk)](mailto:liam.gaffney@liverpool.ac.uk), University of Liverpool
 *
-* **Documentation and bug fixes**: Patrick MacGregor [(patrick.macgregor@manchester.ac.uk)](mailto:patrick.macgregor@manchester.ac.uk),
-* The University of Manchester
+* **Documentation and bug fixes**: Patrick MacGregor [(patrick.macgregor@cern.ch)](mailto:patrick.macgregor@mcern.ch),
+* CERN
 *
 * See the [GitHub page](https://github.com/ISOLDESolenoidalSpectrometer/ISSSort) for installation 
 * instructions, to submit bug reports, and to understand the sorting philosophy. The documentation 
