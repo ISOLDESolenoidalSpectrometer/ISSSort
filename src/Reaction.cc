@@ -3,6 +3,11 @@
 ClassImp( ISSParticle )
 ClassImp( ISSReaction )
 
+///////////////////////////////////////////////////////////////////////////////
+/// Minimisation function used for solving for angle alpha
+/// \param[in] x Initial guess for angle alpha
+/// \param[in] params Various parameters required for this minimisation
+/// \returns root This number should be zero when minimised
 double alpha_function( double *x, double *params ){
 
 	// Equation to solve for alpha, LHS = 0
@@ -20,6 +25,11 @@ double alpha_function( double *x, double *params ){
 
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// Derivative of alpha_function
+/// \param[in] x Initial guess for angle alpha
+/// \param[in] params Various parameters required for this minimisation
+/// \returns root The derivative of the minimisation function
 double alpha_derivative( double *x, double *params ){
 
 	// Derivative of the alpha equation
@@ -36,7 +46,11 @@ double alpha_derivative( double *x, double *params ){
 
 }
 
+///////////////////////////////////////////////////////////////////////////////
 /// This solves for z using Peter Butler's method
+/// \param[in] x The initial guess for z
+/// \param[in] params Various parameters required for this minimisation
+/// \returns root This number should be zero when minimised
 double butler_function( double *x, double *params ){
 
 	// Equation to solve for z, LHS = 0
@@ -56,7 +70,11 @@ double butler_function( double *x, double *params ){
 
 }
 
+///////////////////////////////////////////////////////////////////////////////
 /// This is the derivative of Peter Butler's method
+/// \param[in] x The initial guess for z
+/// \param[in] params Various parameters required for this minimisation
+/// \returns root The derivative of the minimisation function
 double butler_derivative( double *x, double *params ){
 
 	// Equation to solve for z, LHS = 0
@@ -76,7 +94,13 @@ double butler_derivative( double *x, double *params ){
 
 }
 
-// Reaction things
+///////////////////////////////////////////////////////////////////////////////
+/// Parameterised constructor for the ISSReaction object. It reads in the mass 
+/// tables, assigns values to various pointers, reads the reaction file, and 
+/// sets up the root-finding algorithm for finding the angle alpha.
+/// \param[in] filename A string holding the name of the reaction file
+/// \param[in] myset A pointer to the ISSSettings object
+/// \param[in] source A boolean to check if this run is a source run
 ISSReaction::ISSReaction( std::string filename, ISSSettings *myset, bool source ){
 		
 	// Read in mass tables
@@ -106,6 +130,9 @@ ISSReaction::ISSReaction( std::string filename, ISSSettings *myset, bool source 
 	
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// Deletes the pointers to the TCutG recoil cuts and clears the vector holding
+/// them.
 ISSReaction::~ISSReaction(){
 
 	for( unsigned int i = 0; i < recoil_cut.size(); ++i )
@@ -115,6 +142,12 @@ ISSReaction::~ISSReaction(){
 
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// Adds a binding energy from a string from the mass table to the ame_be
+/// private variable. Called in the ISSReaction::ReadMassTables() function
+/// \param[in] Ai The mass number
+/// \param[in] Zi The proton number
+/// \param[in] ame_be_str The relevant line from the AME 2020 evaluation file
 void ISSReaction::AddBindingEnergy( short Ai, short Zi, TString ame_be_str ) {
 	
 	// A key for the isotope
@@ -137,6 +170,9 @@ void ISSReaction::AddBindingEnergy( short Ai, short Zi, TString ame_be_str ) {
 	
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// Stores the binding energies per nucleon for each nucleus from the AME 
+/// 2020 file
 void ISSReaction::ReadMassTables() {
 
 	// Input data file is in the source code
@@ -203,6 +239,10 @@ void ISSReaction::ReadMassTables() {
 
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// Reads the contents of the reaction file given via user input. Also calls 
+/// ReadStoppingPowers function for each of the nuclides going through the 
+/// different materials for later corrections.
 void ISSReaction::ReadReaction() {
 
 	TEnv *config = new TEnv( fInputFile.data() );
@@ -343,7 +383,7 @@ void ISSReaction::ReadReaction() {
 
 	// T1 time window
 	t1_min_time = config->GetValue( "T1.Min", 0 );		// default = 0
-	t1_max_time = config->GetValue( "T1.Miax", 1.2e9 );	// default = 1.2 seconds
+	t1_max_time = config->GetValue( "T1.Max", 1.2e9 );	// default = 1.2 seconds
 
 	
 	// Array-Recoil time windows
@@ -433,11 +473,17 @@ void ISSReaction::ReadReaction() {
 
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// Returns the energy loss at a given initial energy and distance travelled.
+/// A negative distance will add the energy back on, i.e. travelling backwards.
+/// This means that you will get a negative energy loss as a return value
+/// This interpolates the TGraph using a spline
+/// \param[in] Ei The initial energy of the nuclide
+/// \param[in] dist The distance the nuclide travels in the target material
+/// \param[in] g The TGraph of the energy loss generated in the ISSReaction::ReadReaction() function
+/// \returns Ei-E The energy loss of a particular nuclide in a particular material
 double ISSReaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> &g ) {
 
-	/// Returns the energy loss at a given initial energy and distance travelled
-	/// A negative distance will add the energy back on, i.e. travelling backwards
-	/// This means that you will get a negative energy loss as a return value
 	unsigned int Nmeshpoints = 50; // number of steps to take in integration
 	double dx = dist/(double)Nmeshpoints;
 	double E = Ei;
@@ -453,8 +499,17 @@ double ISSReaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGrap
 
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// Reads the stopping powers from SRIM files located in the directories, and 
+/// makes a TGraph from the data within. Generates a pdf file of the reaction 
+/// whenever it's called
+/// \param[in] isotope1 The beam species
+/// \param[in] isotope2 The target species
+/// \param[in] g Pointer to TGraph object where stopping powers will be plotted
+/// \param[in] electriconly Boolean to decide whether to include dE/dx from nuclear, or whether to get it from PHD calculation
+/// \returns true/false depending on whether the function succeeds operating
 bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2, std::unique_ptr<TGraph> &g, bool electriconly ) {
-	 
+
 	/// Open stopping power files and make TGraphs of data
 	
 	// Change target material depending on species
@@ -529,7 +584,7 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 		// Read in data
 		line_ss.str("");
 		line_ss << line;
-		line_ss >> En >> units >> nucl >> elec >> tmp_dbl >> tmp_str >> tmp_dbl >> tmp_str;
+		line_ss >> En >> units >> elec >> nucl >> tmp_dbl >> tmp_str >> tmp_dbl >> tmp_str;
 		
 		if( units == "eV" ) En *= 1E-3;
 		else if( units == "keV" ) En *= 1E0;
@@ -588,19 +643,19 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 	delete c;
 	input_file.close();
 	
-	// ROOT can be noisey again
+	// ROOT can be noisy again
 	gErrorIgnoreLevel = kInfo;
 
 	return true;
 	 
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// Calculates energy correction required for the pulse height deficit, either to get true energy or detected energy
+/// \param[in] Ei The initial energy that should be corrected
+/// \param[in] detected Should be true if this is the detected energy and false if it is the actual ion energy
+/// \return energy correction to obtain the true ion energy (if detected) or the charge collected (if !detected)
 double ISSReaction::GetPulseHeightDeficit( double Ei, bool detected ) {
-
-	/// Calculates energy correction required for the pulse height deficit, either to get true energy or detected energy
-	/// \param[in] Ei the initial energy that should be corrected
-	/// \param[in] detected should be true if this is the detected energy and false if it is the actual ion energy
-	/// \return energy correction to obtain the true ion energy (if detected) or the charge collected (if !detected)
 
 	// If we failed to read the data, return a zero correction value
 	if( !phdcurves ) return 0;
@@ -610,7 +665,10 @@ double ISSReaction::GetPulseHeightDeficit( double Ei, bool detected ) {
 
 }
 
-
+///////////////////////////////////////////////////////////////////////////////
+/// Reads the pulse height deficit information from 
+/// \param[in] isotope The name of the isotope in the form AX e.g. 112Sn
+/// \returns 
 bool ISSReaction::ReadPulseHeightDeficit( std::string isotope ) {
 	 
 	/// Open stopping power files and make TGraphs of data
@@ -733,12 +791,14 @@ bool ISSReaction::ReadPulseHeightDeficit( std::string isotope ) {
 	 
 }
 
-
+///////////////////////////////////////////////////////////////////////////////
+/// This function will use the interaction position and decay energy of an ejectile
+/// event, to solve the kinematics and define parameters such as:
+/// theta_lab, etc. It returns the detected energy of the ejectile
+/// \param[in] vec The position of the interaction with the detector
+/// \param[in] en The energy of the decay
+/// \returns en-eloss
 float ISSReaction::SimulateDecay( TVector3 vec, double en ){
-
-	/// This function will use the interaction position and decay energy of an ejectile
-	/// event, to solve the kinematics and define parameters such as:
-	/// theta_lab, etc. It returns the detected energy of the ejectile
 
 	// Apply the X and Y offsets directly to the TVector3 input
 	// We move the array opposite to the target, which replicates the same
@@ -798,21 +858,24 @@ float ISSReaction::SimulateDecay( TVector3 vec, double en ){
 
 }
 
-
+///////////////////////////////////////////////////////////////////////////////
+/// Currently empty function...
+/// This function will use the interaction position and excitation energy of an ejectile
+/// event, to solve the reaction kinematics and define parameters such as:
+/// theta_cm, theta_lab,, E_lab, E_det, etc.
+/// \param[in] vec TBD
+/// \param[in] ex TBD
 void ISSReaction::SimulateReaction( TVector3 vec, double ex ){
 
-	/// This function will use the interaction position and excitaion energy of an ejectile
-	/// event, to solve the reaction kinematics and define parameters such as:
-	/// theta_cm, theta_lab,, E_lab, E_det, etc.
-
-	
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// This function will use the interaction position and detected energy of an ejectile
+/// event, to solve the reaction kinematics and define parameters such as:
+/// theta_cm, theta_lab, Ex, E_lab, etc.
+/// \param[in] vec The interaction point
+/// \param[in] en The initial energy of the ejectile
 void ISSReaction::MakeReaction( TVector3 vec, double en ){
-	
-	/// This function will use the interaction position and detected energy of an ejectile
-	/// event, to solve the reaction kinematics and define parameters such as:
-	/// theta_cm, theta_lab, Ex, E_lab, etc.
 	
 	// Apply the X and Y offsets directly to the TVector3 input
 	// We move the array opposite to the target, which replicates the same

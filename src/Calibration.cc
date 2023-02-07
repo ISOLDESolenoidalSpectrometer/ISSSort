@@ -1,5 +1,13 @@
 #include "Calibration.hh"
 
+////////////////////////////////////////////////////////////////////////////////
+/// Defines the time walk function, which has the form:
+/// \f$A + B\cdot \mathrm{d}t + \exp( C + D\cdot \mathrm{d}t ) - E\f$
+///  where \f$A,B,C,D\f$ are specified in the input calibration file and \f$E\f$ 
+/// is the energy of the particle on the array
+/// \param[in] x The dt parameter in the correction
+/// \param[in] params The fitted parameters (A--E) in the function
+/// \returns The value of the function at \f$\mathrm{d}t\f$
 double walk_function( double *x, double *params ){
 	
 	double deltaT = x[0];
@@ -19,6 +27,13 @@ double walk_function( double *x, double *params ){
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Defines the time walk function derivative, which has the form:
+/// \f$B\cdot + D\cdot\exp( C + D\cdot \mathrm{d}t )\f$
+///  with definitions identical to those in walk_function( double *x, double *params )
+/// \param[in] x The dt parameter in the correction
+/// \param[in] params The fitted parameters (A--E) in the function
+/// \returns The value of the function at \f$\mathrm{d}t\f$
 double walk_derivative( double *x, double *params ){
 
 	double deltaT = x[0];
@@ -30,12 +45,18 @@ double walk_derivative( double *x, double *params ){
 
 	// Derivative of root to solve
 	double root = B;
-	root += C * TMath::Exp( C + D * deltaT );
+	root += D * TMath::Exp( C + D * deltaT );
 
 	return root;
 }
 
-
+////////////////////////////////////////////////////////////////////////////////
+/// Constructs the ISSCalibration object. Initialises private variables, reads
+/// the calibration input file, and sets up the root-finding algorithm for the
+/// time walk correction.
+/// \param[in] filename String containing the directory location of the input 
+/// calibration file
+/// \param[in] myset Pointer to the ISSSettings object
 ISSCalibration::ISSCalibration( std::string filename, ISSSettings *myset ) {
 
 	SetFile( filename );
@@ -51,6 +72,10 @@ ISSCalibration::ISSCalibration( std::string filename, ISSSettings *myset ) {
 		
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Reads the calibration input file and sets the values of all of the variables
+/// required for calibrating data in ISS. Uses a TEnv environment to read the 
+/// contents of the file. Called in ISSCalibration::ISSCalibration( std::string filename, ISSSettings *myset )
 void ISSCalibration::ReadCalibration() {
 
 	TEnv *config = new TEnv( fInputFile.data() );
@@ -146,6 +171,15 @@ void ISSCalibration::ReadCalibration() {
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Calculates the energy on a particular ASIC. Also adds a small random number
+/// to remove binning issues
+/// \param[in] mod The module on the array
+/// \param[in] asic The ASIC number on the module
+/// \param[in] chan The channel number on the ASIC
+/// \param[in] raw The raw energy recorded on this ASIC
+/// \returns Calibrated energy (if parameters are set), the raw energy (if 
+/// parameters are not set), or -1 (if the mod, asic, or channel are out of range)
 float ISSCalibration::AsicEnergy( unsigned int mod, unsigned int asic, unsigned int chan, unsigned short raw ) {
 	
 	float energy, raw_rand;
@@ -175,6 +209,11 @@ float ISSCalibration::AsicEnergy( unsigned int mod, unsigned int asic, unsigned 
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Getter for the ASIC threshold
+/// \param[in] mod The module on the array
+/// \param[in] asic The ASIC number on the module
+/// \param[in] chan The channel number on the ASIC
 unsigned int ISSCalibration::AsicThreshold( unsigned int mod, unsigned int asic, unsigned int chan ) {
 	
 	if( mod < set->GetNumberOfArrayModules() &&
@@ -189,6 +228,10 @@ unsigned int ISSCalibration::AsicThreshold( unsigned int mod, unsigned int asic,
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Getter for the ASIC time
+/// \param[in] mod The module on the array
+/// \param[in] asic The ASIC number on the module
 long ISSCalibration::AsicTime( unsigned int mod, unsigned int asic ){
 	
 	if( mod < set->GetNumberOfArrayModules() &&
@@ -202,6 +245,10 @@ long ISSCalibration::AsicTime( unsigned int mod, unsigned int asic ){
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Getter for whether the ASIC is enabled or not
+/// \param[in] mod The module on the array
+/// \param[in] asic The ASIC number on the module
 bool ISSCalibration::AsicEnabled( unsigned int mod, unsigned int asic ){
 	
 	if( mod < set->GetNumberOfArrayModules() &&
@@ -215,6 +262,12 @@ bool ISSCalibration::AsicEnabled( unsigned int mod, unsigned int asic ){
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Calculates the ASIC time walk
+/// \param[in] mod The module on the array
+/// \param[in] asic The ASIC number on the module
+/// \param[in] energy The energy of the signal
+/// \returns The time-walk-corrected energy of the signal
 float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energy ){
 	
 	float walk = 0;
@@ -266,6 +319,14 @@ float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energ
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Calculates the energy on a particular CAEN detector. Also adds a small random 
+/// number to remove binning issues
+/// \param[in] mod The number of the CAEN module
+/// \param[in] chan The channel number on the CAEN module
+/// \param[in] raw The raw energy recorded on this detector
+/// \returns Calibrated energy (if parameters are set), the raw energy (if 
+/// parameters are not set), or -1 (if the mod, asic, or channel are out of range)
 float ISSCalibration::CaenEnergy( unsigned int mod, unsigned int chan, int raw ) {
 	
 	float energy, raw_rand;
@@ -297,6 +358,10 @@ float ISSCalibration::CaenEnergy( unsigned int mod, unsigned int chan, int raw )
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Getter for the CAEN threshold
+/// \param[in] mod The number of the CAEN module
+/// \param[in] chan The channel number of the detector
 unsigned int ISSCalibration::CaenThreshold( unsigned int mod, unsigned int chan ) {
 	
 	if( mod < set->GetNumberOfCAENModules() &&
@@ -310,6 +375,10 @@ unsigned int ISSCalibration::CaenThreshold( unsigned int mod, unsigned int chan 
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Getter for the CAEN time
+/// \param[in] mod The number of the CAEN module
+/// \param[in] chan The channel number of the detector
 long ISSCalibration::CaenTime( unsigned int mod, unsigned int chan ){
 	
 	if( mod < set->GetNumberOfCAENModules() &&
@@ -323,6 +392,10 @@ long ISSCalibration::CaenTime( unsigned int mod, unsigned int chan ){
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Getter for the CAEN type = the type of 
+/// \param[in] mod The number of the CAEN module
+/// \param[in] chan The channel number of the detector
 std::string ISSCalibration::CaenType( unsigned int mod, unsigned int chan ){
 	
 	if( mod < set->GetNumberOfCAENModules() &&
@@ -336,6 +409,13 @@ std::string ISSCalibration::CaenType( unsigned int mod, unsigned int chan ){
 	
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Prints the calibration to a specified output
+/// \param[in] stream Determines where the calibration will be printed
+/// \param[in] opt Determines which parameters in the calibration are going to be printed:
+/// c = caen only
+/// a = asic only
+/// e = print only energy terms (i.e. not time, whether device is enabled, or type)
 void ISSCalibration::PrintCalibration( std::ostream &stream, std::string opt ){
 	
 	// Check options for energy only
