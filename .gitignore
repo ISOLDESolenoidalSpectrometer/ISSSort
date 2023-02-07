@@ -12,3 +12,4 @@ src/.*o
 srim/*.pdf
 doc/*
 *.html
+data/*.pdf
