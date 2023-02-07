@@ -12,18 +12,36 @@ ISSHistogrammer::ISSHistogrammer( ISSReaction *myreact, ISSSettings *myset ){
 
 void ISSHistogrammer::MakeHists() {
 	
-	std::string hname, htitle;
-	std::string dirname;
-	
-	float zmax, zmin = react->GetArrayDistance();
-	if( zmin < 0 ) { // upstream
-		zmax = zmin + 10;
-		zmin -= 520;
-	}
-	else { //downstream
-		zmax = zmin + 520;
-		zmin -= 10;
-	}
+    std::string hname, htitle;
+    std::string dirname;
+   
+    std::vector<double> zbins;
+   
+    for ( int row = 0; row < 4; row++ ){
+ 
+        for ( int ch = 0; ch <= 128; ch++ ){
+
+            double d = 128 - ch;        // take the far end (low-edge) of the end strip
+            d *= 0.953;                 // p-side strip pitch = 0.953 mm
+            d += 1.508;                 // distance from wafer edge to active region
+            d += 125.5 * (3.0 - row);   // move to correct row (125.0 mm wafer length + 0.5 mm inter-wafer gap)
+            d *= -1.0;
+            d += react->GetArrayDistance();
+
+	    // Add a bin to the start and the end for space.
+            if ( ch == 0 && row == 0 ){ 
+                zbins.push_back( d - 10 );
+            }
+            
+            zbins.push_back(d);
+            
+            if ( ch == 128 && row == 3 ){
+                zbins.push_back( d + 10 );
+            }
+ 
+        } // ch
+ 
+    } // row
 	
 	// Array physics histograms
 	// Singles mode
@@ -33,7 +51,7 @@ void ISSHistogrammer::MakeHists() {
 	
 	hname = "E_vs_z";
 	htitle = "Energy vs. z distance;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+	E_vs_z = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 	
 	hname = "Ex";
 	htitle = "Excitation energy;Excitation energy [keV];Counts per 20 keV";
@@ -45,7 +63,7 @@ void ISSHistogrammer::MakeHists() {
 	
 	hname = "Ex_vs_z";
 	htitle = "Excitation energy vs. measured z;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
+	Ex_vs_z = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 850, -2000, 15000 );
 	
 	// For each user cut
 	E_vs_z_cut.resize( react->GetNumberOfEvsZCuts() );
@@ -61,7 +79,7 @@ void ISSHistogrammer::MakeHists() {
 		hname = "E_vs_z_cut" + std::to_string(j);
 		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 		htitle += ";z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		E_vs_z_cut[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 		
 		hname = "Ex_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
@@ -76,7 +94,7 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_vs_z_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += ";z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		Ex_vs_z_cut[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 850, -2000, 15000 );
 		
 		
 	}
@@ -96,7 +114,7 @@ void ISSHistogrammer::MakeHists() {
 		hname = "E_vs_z_mod" + std::to_string(j);
 		htitle = "Energy vs. z distance for module " + std::to_string(j);
 		htitle += ";z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_mod[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		E_vs_z_mod[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 		
 		hname = "Ex_mod" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
@@ -111,7 +129,7 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_vs_z_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += ";z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_mod[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		Ex_vs_z_mod[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(),  850, -2000, 15000 );
 		
 	}
 	
@@ -122,15 +140,15 @@ void ISSHistogrammer::MakeHists() {
 	
 	hname = "E_vs_z_ebis";
 	htitle = "Energy vs. z distance gated on EBIS and off beam subtracted;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_ebis = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+	E_vs_z_ebis = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 	
 	hname = "E_vs_z_ebis_on";
 	htitle = "Energy vs. z distance gated on EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_ebis_on = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+	E_vs_z_ebis_on = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 	
 	hname = "E_vs_z_ebis_off";
 	htitle = "Energy vs. z distance gated off EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_ebis_off = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+	E_vs_z_ebis_off = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 	
 	hname = "Ex_ebis";
 	htitle = "Excitation energy gated by EBIS and off beam subtracted;Excitation energy [keV];Counts per 20 keV";
@@ -158,15 +176,15 @@ void ISSHistogrammer::MakeHists() {
 	
 	hname = "Ex_vs_z_ebis";
 	htitle = "Excitation energy vs. measured z gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_ebis = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
+	Ex_vs_z_ebis = new TH2F( hname.data(), htitle.data(), 517, zbins.data(),  850, -2000, 15000 );
 	
 	hname = "Ex_vs_z_ebis_on";
 	htitle = "Excitation energy vs. measured z gated on EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_ebis_on = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
+	Ex_vs_z_ebis_on = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 850, -2000, 15000 );
 	
 	hname = "Ex_vs_z_ebis_off";
 	htitle = "Excitation energy vs. measured z gated off EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_ebis_off = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
+	Ex_vs_z_ebis_off = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 850, -2000, 15000 );
 	
 	// For each user cut
 	E_vs_z_ebis_cut.resize( react->GetNumberOfEvsZCuts() );
@@ -190,17 +208,17 @@ void ISSHistogrammer::MakeHists() {
 		hname = "E_vs_z_ebis_cut" + std::to_string(j);
 		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		E_vs_z_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 		
 		hname = "E_vs_z_ebis_on_cut" + std::to_string(j);
 		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 		htitle += " gated on EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		E_vs_z_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 		
 		hname = "E_vs_z_ebis_off_cut" + std::to_string(j);
 		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 		htitle += " gated off EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		E_vs_z_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 		
 		hname = "Ex_ebis_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
@@ -235,17 +253,17 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_vs_z_ebis_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		Ex_vs_z_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 850, -2000, 15000 );
 		
 		hname = "Ex_vs_z_ebis_on_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		Ex_vs_z_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 850, -2000, 15000 );
 		
 		hname = "Ex_vs_z_ebis_off_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		Ex_vs_z_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 850, -2000, 15000 );
 		
 	}
 	
@@ -271,17 +289,17 @@ void ISSHistogrammer::MakeHists() {
 		hname = "E_vs_z_ebis_mod" + std::to_string(j);
 		htitle = "Energy vs. z distance for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		E_vs_z_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 		
 		hname = "E_vs_z_ebis_on_mod" + std::to_string(j);
 		htitle = "Energy vs. z distance for module " + std::to_string(j);
 		htitle += " gated on EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		E_vs_z_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 		
 		hname = "E_vs_z_ebis_off_mod" + std::to_string(j);
 		htitle = "Energy vs. z distance for module " + std::to_string(j);
 		htitle += " gated off EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		E_vs_z_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 		
 		hname = "Ex_ebis_mod" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
@@ -316,17 +334,17 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_vs_z_ebis_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		Ex_vs_z_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 850, -2000, 15000 );
 		
 		hname = "Ex_vs_z_ebis_on_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		Ex_vs_z_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 850, -2000, 15000 );
 		
 		hname = "Ex_vs_z_ebis_off_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		Ex_vs_z_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 850, -2000, 15000 );
 		
 	}
 	
@@ -337,11 +355,11 @@ void ISSHistogrammer::MakeHists() {
 	
 	hname = "E_vs_z_recoil";
 	htitle = "Energy vs. z distance gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_recoil = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+	E_vs_z_recoil = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 	
 	hname = "E_vs_z_recoilT";
 	htitle = "Energy vs. z distance with a time gate on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+	E_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 	
 	hname = "Ex_recoil";
 	htitle = "Excitation energy gated by recoils;Excitation energy [keV];Counts per 20 keV";
@@ -361,11 +379,11 @@ void ISSHistogrammer::MakeHists() {
 	
 	hname = "Ex_vs_z_recoil";
 	htitle = "Excitation energy vs. measured z gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_recoil = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
+	Ex_vs_z_recoil = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, -1000, 15000 );
 	
 	hname = "Ex_vs_z_recoilT";
 	htitle = "Excitation energy vs. measured z with a time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
+	Ex_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, -1000, 15000 );
 	
 	// For each user cut
 	E_vs_z_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
@@ -385,12 +403,12 @@ void ISSHistogrammer::MakeHists() {
 		hname = "E_vs_z_recoil_cut" + std::to_string(j);
 		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 		htitle += " gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		E_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 		
 		hname = "E_vs_z_recoilT_cut" + std::to_string(j);
 		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 		htitle += " with a time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		E_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 		
 		hname = "Ex_recoil_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
@@ -415,12 +433,12 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_vs_z_recoil_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 		htitle += " gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		Ex_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 850, -2000, 15000 );
 		
 		hname = "Ex_vs_z_recoilT_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 		htitle += " with a time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		Ex_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 850, -2000, 15000 );
 		
 	} // Array
 	
@@ -442,12 +460,12 @@ void ISSHistogrammer::MakeHists() {
 		hname = "E_vs_z_recoil_mod" + std::to_string(j);
 		htitle = "Energy vs. z distance for module " + std::to_string(j);
 		htitle += " gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		E_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 		
 		hname = "E_vs_z_recoilT_mod" + std::to_string(j);
 		htitle = "Energy vs. z distance for module " + std::to_string(j);
 		htitle += " with a time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		E_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 		
 		hname = "Ex_recoil_mod" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
@@ -472,12 +490,12 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_vs_z_recoil_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
 		htitle += " gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		Ex_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 850, -2000, 15000 );
 		
 		hname = "Ex_vs_z_recoilT_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
 		htitle += " with a time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		Ex_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 850, -2000, 15000 );
 		
 	} // Array
 	
@@ -489,7 +507,7 @@ void ISSHistogrammer::MakeHists() {
 	
 	hname = "E_vs_z_T1";
 	htitle = "Energy vs. z distance with a time gate on T1 proton pulse;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_T1 = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+	E_vs_z_T1 = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 	
 	hname = "Ex_T1";
 	htitle = "Excitation energy with a time gate on T1 proton pulse;Excitation energy [keV];Counts per 20 keV";
@@ -505,7 +523,7 @@ void ISSHistogrammer::MakeHists() {
 	
 	hname = "Ex_vs_z_T1";
 	htitle = "Excitation energy vs. measured z with a time gate on T1 proton pulse;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_T1 = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, -1000, 15000 );
+	Ex_vs_z_T1 = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, -1000, 15000 );
 	
 	// For each user cut
 	E_vs_z_T1_cut.resize( react->GetNumberOfEvsZCuts() );
@@ -522,7 +540,7 @@ void ISSHistogrammer::MakeHists() {
 		hname = "E_vs_z_T1_cut" + std::to_string(j);
 		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 		htitle += " with a time gate on T1 proton pulse;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 800, 0, 16000 );
+		E_vs_z_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 800, 0, 16000 );
 		
 		hname = "Ex_T1_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
@@ -541,7 +559,7 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_vs_z_T1_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 		htitle += " with a time gate on T1 proton pulse;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 530, zmin, zmax, 850, -2000, 15000 );
+		Ex_vs_z_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 517, zbins.data(), 850, -2000, 15000 );
 		
 	} // Array
 
