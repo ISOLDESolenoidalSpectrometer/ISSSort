@@ -965,6 +965,30 @@ void ISSConverter::FinishCAENData(){
 		// Fill histograms
 		hcaen_hit[caen_data->GetModule()]->Fill( ctr_caen_hit[caen_data->GetModule()], caen_data->GetTime(), 1 );
 
+		// Difference between Qlong and Qshort
+		int qdiff = (int)caen_data->GetQlong() - (int)caen_data->GetQshort();
+		hcaen_qdiff[caen_data->GetModule()][caen_data->GetChannel()]->Fill( qdiff );
+
+		// Choose the energy we want to use
+		unsigned short adc_value = 0;
+		std::string entype = cal->CaenType( caen_data->GetModule(), caen_data->GetChannel() );
+		if( entype == "Qlong" ) adc_value = caen_data->GetQlong();
+		else if( entype == "Qshort" ) adc_value = caen_data->GetQshort();
+		else if( entype == "Qdiff" ) adc_value = caen_data->GetQdiff();
+		else {
+			std::cerr << "Incorrect CAEN energy type must be Qlong, Qshort or Qdiff" << std::endl;
+			adc_value = caen_data->GetQlong();
+		}
+		my_energy = cal->CaenEnergy( caen_data->GetModule(), caen_data->GetChannel(), adc_value );
+		caen_data->SetEnergy( my_energy );
+		hcaen_cal[caen_data->GetModule()][caen_data->GetChannel()]->Fill( my_energy );
+
+		// Check if it's over threshold
+		if( adc_value > cal->CaenThreshold( caen_data->GetModule(), caen_data->GetChannel() ) )
+			caen_data->SetThreshold( true );
+		else caen_data->SetThreshold( false );
+
+
 		// Check if this is actually just a timestamp
 		flag_caen_info = false;
 		if( caen_data->GetModule() == set->GetCAENPulserModule() &&
@@ -1013,13 +1037,18 @@ void ISSConverter::FinishCAENData(){
 		// If this is a timestamp, fill an info event
 		if( flag_caen_info ) {
 				
-			// Add the time offset to this channel
-			info_data->SetTime( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
-			info_data->SetModule( caen_data->GetModule() + set->GetNumberOfArrayModules() );
-			info_data->SetCode( my_info_code );
-			data_packet->SetData( info_data );
-			if( !flag_source ) output_tree->Fill();
-			data_packet->ClearData();
+			// Check it's over threshold and not just noise
+			if( caen_data->IsOverThreshold() ) {
+			
+				// Add the time offset to this channel
+				info_data->SetTime( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
+				info_data->SetModule( caen_data->GetModule() + set->GetNumberOfArrayModules() );
+				info_data->SetCode( my_info_code );
+				data_packet->SetData( info_data );
+				if( !flag_source ) output_tree->Fill();
+				data_packet->ClearData();
+				
+			}
 
 			// Fill histograms for external trigger
 			if( my_info_code == 20 ) {
@@ -1035,31 +1064,7 @@ void ISSConverter::FinishCAENData(){
 
 		// Otherwise it is real data, so fill a caen event
 		else {
-			
-			// Difference between Qlong and Qshort
-			int qdiff = (int)caen_data->GetQlong() - (int)caen_data->GetQshort();
-			hcaen_qdiff[caen_data->GetModule()][caen_data->GetChannel()]->Fill( qdiff );
-
-			// Choose the energy we want to use
-			unsigned short adc_value = 0;
-			std::string entype = cal->CaenType( caen_data->GetModule(), caen_data->GetChannel() );
-			if( entype == "Qlong" ) adc_value = caen_data->GetQlong();
-			else if( entype == "Qshort" ) adc_value = caen_data->GetQshort();
-			else if( entype == "Qdiff" ) adc_value = caen_data->GetQdiff();
-			else {
-				std::cerr << "Incorrect CAEN energy type must be Qlong, Qshort or Qdiff" << std::endl;
-				adc_value = caen_data->GetQlong();
-			}
-			my_energy = cal->CaenEnergy( caen_data->GetModule(), caen_data->GetChannel(), adc_value );
-			caen_data->SetEnergy( my_energy );
-			hcaen_cal[caen_data->GetModule()][caen_data->GetChannel()]->Fill( my_energy );
-
-			// Check if it's over threshold
-			if( my_adc_data > cal->CaenThreshold( caen_data->GetModule(), caen_data->GetChannel() ) )
-				caen_data->SetThreshold( true );
-			else caen_data->SetThreshold( false );
-
-
+	
 			// Set this data and fill event to tree
 			// Also add the time offset when we do this
 			caen_data->SetTime( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
