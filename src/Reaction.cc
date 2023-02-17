@@ -60,11 +60,11 @@ double butler_function( double *x, double *params ){
 	double p = params[2];
 	double qb = params[3]; //  over 2*pi
 
-	// From Sam Bennett's first derivation
-	double alpha = TMath::ASin( qb * z / p );
-	double r_max = TMath::Abs( 2.0 * p * TMath::Cos( alpha ) / qb );
-	double phi = TMath::ASin( r_meas / r_max );
-	double root = z_meas - z * ( 1.0 - phi / TMath::Pi() );
+	// From Sam Bennett's first derivation, modified by A. Ceulemans
+	double alpha = TMath::ACos( qb * z / p );
+	double r_max = TMath::Abs( 2.0 * p * TMath::Sin( alpha ) / (qb * 2.0 * TMath::Pi()) );
+	double psi = 2 * TMath::ASin( r_meas / r_max );
+	double root = z_meas - z * ( 1.0 - psi / (2.0 * TMath::Pi()) );
 
 	return root;
 
@@ -84,11 +84,11 @@ double butler_derivative( double *x, double *params ){
 	double p = params[2];
 	double qb = params[3]; //  over 2*pi
 
-	// From Sam Bennett's first derivation
-	double alpha = TMath::ASin( qb * z / p );
-	double r_max = TMath::Abs( 2.0 * p * TMath::Cos( alpha ) / qb );
-	double phi = TMath::ASin( r_meas / r_max );
-	double root = phi / TMath::Pi() - 1.0;
+	// From Sam Bennett's first derivation, modified by A. Ceulemans
+	double alpha = TMath::ACos( qb * z / p );
+	double r_max = TMath::Abs( 2.0 * p * TMath::Sin( alpha ) / (qb * 2.0 * TMath::Pi()) );
+	double psi = 2 * TMath::ASin( r_meas / r_max );
+	double root = psi / (2.0 * TMath::Pi()) - 1.0;
 
 	return root;
 
