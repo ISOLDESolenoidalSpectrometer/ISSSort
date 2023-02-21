@@ -65,9 +65,9 @@ double butler_function( double *x, double *params ){
 
 	// From Sam Bennett's first derivation, modified by A. Ceulemans
 	double alpha = TMath::ACos( qb * z / p );
-	double r_max = TMath::Abs( 2.0 * p * TMath::Sin( alpha ) / (qb * 2.0 * TMath::Pi()) );
+	double r_max = TMath::Abs( 2.0 * p * TMath::Sin( alpha ) / (qb * TMath::TwoPi()) );
 	double psi = 2 * TMath::ASin( r_meas / r_max );
-	double root = z_meas - z * ( 1.0 - psi / (2.0 * TMath::Pi()) );
+	double root = z_meas - z * ( 1.0 - psi / TMath::TwoPi() );
 
 	return root;
 
@@ -89,9 +89,9 @@ double butler_derivative( double *x, double *params ){
 
 	// From Sam Bennett's first derivation, modified by A. Ceulemans
 	double alpha = TMath::ACos( qb * z / p );
-	double r_max = TMath::Abs( 2.0 * p * TMath::Sin( alpha ) / (qb * 2.0 * TMath::Pi()) );
+	double r_max = TMath::Abs( 2.0 * p * TMath::Sin( alpha ) / (qb * TMath::TwoPi()) );
 	double psi = 2 * TMath::ASin( r_meas / r_max );
-	double root = psi / (2.0 * TMath::Pi()) - 1.0;
+	double root = psi / TMath::TwoPi() - 1.0;
 
 	return root;
 
@@ -128,8 +128,8 @@ ISSReaction::ISSReaction( std::string filename, ISSSettings *myset, bool source 
 	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
 #else
 	// Root finder algorithm - for alpha like Ryan does
-	fa = std::make_unique<TF1>( "alpha_function", alpha_function, 0.0, TMath::Pi()/2.0, 4 );
-	fb = std::make_unique<TF1>( "alpha_derivative", alpha_derivative, 0.0, TMath::Pi()/2.0, 4 );
+	fa = std::make_unique<TF1>( "alpha_function", alpha_function, 0.0, TMath::PiOver2(), 4 );
+	fb = std::make_unique<TF1>( "alpha_derivative", alpha_derivative, 0.0, TMath::PiOver2(), 4 );
 	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
 #endif
 
