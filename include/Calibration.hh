@@ -21,6 +21,9 @@
 # include "Settings.hh"
 #endif
 
+// Number of time walk parameters
+const unsigned char nwalkpars = 4;
+
 /*!
 * \brief A class to read in the calibration file in ROOT's TConfig format.
 *
@@ -200,7 +203,7 @@ private:
 	std::unique_ptr<ROOT::Math::RootFinder> rf;///< Root finding object for the time-walk function: walk_function( double *x, double *params )
 	std::unique_ptr<TF1> fa;///< TF1 for the time walk function: walk_function( double *x, double *params )
 	std::unique_ptr<TF1> fb;///< TF1 for the time walk function derivative: walk_derivative( double *x, double *params )
-	double walk_params[5];///< Parameters used to store time-walk parameters
+	double walk_params[nwalkpars+1];///< Parameters used to store time-walk parameters
 
 
 	//ClassDef(ISSCalibration, 1)

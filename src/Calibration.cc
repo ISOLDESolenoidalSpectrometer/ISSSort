@@ -114,8 +114,8 @@ void ISSCalibration::ReadCalibration() {
 			fAsicTime[mod][asic] = config->GetValue( Form( "asic_%d_%d.Time", mod, asic ), 0 );
 			fAsicEnabled[mod][asic] = config->GetValue( Form( "asic_%d_%d.Enabled", mod, asic ), true );
 
-			fAsicWalk[mod][asic].resize( 4 );
-			for( unsigned int i = 0; i < 4; i++ )
+			fAsicWalk[mod][asic].resize( nwalkpars );
+			for( unsigned int i = 0; i < nwalkpars; i++ )
 				fAsicWalk[mod][asic][i] = config->GetValue( Form( "asic_%d_%d.Walk%d", mod, asic, i ), 0.0 );
 
 			for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
@@ -275,24 +275,24 @@ float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energ
 	if( mod < set->GetNumberOfArrayModules() &&
 	   asic < set->GetNumberOfArrayASICs() ) {
 		
-		if( TMath::Abs( fAsicWalk[mod][asic][0] ) < 1.0e-6 &&
-		    TMath::Abs( fAsicWalk[mod][asic][1] ) < 1.0e-6 &&
-		    TMath::Abs( fAsicWalk[mod][asic][2] ) < 1.0e-6 &&
-		    TMath::Abs( fAsicWalk[mod][asic][3] ) < 1.0e-6
-		   ) {
-			
-			walk = 0;
-			
-		}
+		// Check if all values are defaulted to zero - no walk correction
+		bool nowalk = true;
+		for( unsigned int i = 0; i < nwalkpars; i++ )
+			if( TMath::Abs( fAsicWalk[mod][asic][i] ) > 1.0e-6 )
+				nowalk = false;
+		
+		// If no walk correction, just return 0
+		if( nowalk ) return 0.0;
 
+		// else calculate the walk using the defined function
 		else {
 			
 			// Params for time walk function ROOT finder
-			walk_params[0] = fAsicWalk[mod][asic][0];
-			walk_params[1] = fAsicWalk[mod][asic][1];
-			walk_params[2] = fAsicWalk[mod][asic][2];
-			walk_params[3] = fAsicWalk[mod][asic][3];
-			walk_params[4] = energy;
+			for( unsigned int i = 0; i < nwalkpars; i++ )
+				walk_params[i] = fAsicWalk[mod][asic][i];
+			
+			// Last one is always the energy
+			walk_params[nwalkpars] = energy;
 
 			// Set parameters
 			fa->SetParameters( walk_params );
@@ -440,7 +440,7 @@ void ISSCalibration::PrintCalibration( std::ostream &stream, std::string opt ){
 					if( fAsicTime[mod][asic] != 0 ) stream << Form( "asic_%d_%d.Time: %ld", mod, asic, fAsicTime[mod][asic] ) << std::endl;
 					if( !fAsicEnabled[mod][asic] ) stream << Form( "asic_%d_%d.Enabled: %d", mod, asic, 0 ) << std::endl;
 		
-					for( unsigned int i = 0; i < 3; i++ )
+					for( unsigned int i = 0; i < nwalkpars; i++ )
 						if( fAsicWalk[mod][asic][i] > 1e-9 || fAsicWalk[mod][asic][i] < 1e-9 )
 							stream << Form( "asic_%d_%d.Walk%d: %f", mod, asic, i, fAsicWalk[mod][asic][i] ) << std::endl;
 
