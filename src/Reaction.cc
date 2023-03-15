@@ -954,7 +954,6 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 		// Check result
 		if( rf->Status() ){
 			z = TMath::QuietNaN();
-
 			break;
 		}
 		else z = rf->Root();
@@ -989,11 +988,9 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 
 		// Check result
 		if( rf->Status() ){
-			//z = TMath::QuietNaN();
 			alpha = TMath::QuietNaN();
 			break;
 		}
-		//else z = rf->Root();
 		else alpha = rf->Root();
 
 #endif
