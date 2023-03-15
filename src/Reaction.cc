@@ -116,7 +116,7 @@ ISSReaction::ISSReaction( std::string filename, ISSSettings *myset, bool source 
 	set = myset;
 	SetFile( filename );
 	ReadReaction();
-
+	
 #ifdef butler_algorithm
 	// Root finder algorithm - The Peter Butler method
 	double low_limit = z0;
@@ -132,7 +132,7 @@ ISSReaction::ISSReaction( std::string filename, ISSSettings *myset, bool source 
 	fb = std::make_unique<TF1>( "alpha_derivative", alpha_derivative, 0.0, TMath::PiOver2(), 4 );
 	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
 #endif
-
+	
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -913,29 +913,23 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	
 	// Apply the energy loss correction and solve again
 	// Keep going for 50 iterations or until we are better than 0.01% change
+	alpha = TMath::PiOver4();
 	unsigned int iter = 0;
+
 	gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
 
 #ifdef butler_algorithm
 	z = z_meas;
 	double z_prev = 0.0;
-
-	while( TMath::Abs( ( z - z_prev ) / z ) > 0.00001 && iter < 50 ) {
+    while( TMath::Abs( ( z - z_prev ) / z ) > 0.00001 && iter < 50 ) {
 
 		// Calculate the lab angle from z position (Butler method)
 		alpha  = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
-		alpha /= TMath::TwoPi(); 							// qb/2pi
+	    alpha /= TMath::TwoPi(); 							// qb/2pi
 		alpha *= z / Ejectile.GetMomentumLab();				// * z/p
 		alpha  = TMath::ASin( alpha );
 		
-#else
-	alpha = TMath::PiOver4();
-	double alpha_prev = 9999.;
-	
-	while( TMath::Abs( ( alpha - alpha_prev ) / alpha ) > 0.0001 && iter < 50 ) {
-#endif
-
-		// Distance is negative because energy needs to be recovered
+        // Distance is negative because energy needs to be recovered
 		// First we recover the energy lost in the Si dead layer
 		double dist = -1.0 * deadlayer / TMath::Abs( TMath::Cos( alpha ) );
 		double eloss = GetEnergyLoss( en, dist, gStopping[2] );
@@ -946,37 +940,62 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 		eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
 		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
 
-		// Set parameters
+        // Set parameters
+		z_prev = z;
 		params[2] = Ejectile.GetMomentumLab(); // p
 		fa->SetParameters( params );
 		fb->SetParameters( params );
 
-#ifdef butler_algorithm
-		// Use Butler's method and solve the root
-		z_prev = z;
+		// Or use Butler's method
 		ROOT::Math::GradFunctor1D wf( *fa, *fb ); // Butler method
 		rf->SetFunction( wf, z_meas );
 		rf->Solve( 500, 1e-5, 1e-6 );
-		
+
 		// Check result
 		if( rf->Status() ){
 			z = TMath::QuietNaN();
+
 			break;
 		}
 		else z = rf->Root();
-#else
-		// Build the alpha function and derivative, then solve
+		
+
+#else 
+    double alpha_prev = 9999.;
+	while( TMath::Abs( ( alpha - alpha_prev ) / alpha ) > 0.0001 && iter < 50 ) {
+        
+        // Distance is negative because energy needs to be recovered
+		// First we recover the energy lost in the Si dead layer
+		double dist = -1.0 * deadlayer / TMath::Abs( TMath::Cos( alpha ) );
+		double eloss = GetEnergyLoss( en, dist, gStopping[2] );
+		Ejectile.SetEnergyLab( en - eloss );
+		
+		// Then we recover the energy lost in the target
+		dist = -0.5 * target_thickness / TMath::Abs( TMath::Sin( alpha ) );
+		eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
+		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
+
+        // Set parameters
 		alpha_prev = alpha;
+		params[2] = Ejectile.GetMomentumLab(); // p
+		fa->SetParameters( params );
+		fb->SetParameters( params );
+
+
+		// Build the alpha function and derivative, then solve
 		ROOT::Math::GradFunctor1D wf( *fa, *fb ); // alpha method
 		rf->SetFunction( wf, 0.2 * TMath::Pi() ); // with derivatives
 		rf->Solve( 500, 1e-5, 1e-6 );
-		
+
 		// Check result
 		if( rf->Status() ){
+			//z = TMath::QuietNaN();
 			alpha = TMath::QuietNaN();
 			break;
 		}
+		//else z = rf->Root();
 		else alpha = rf->Root();
+
 #endif
 		
 		iter++;
