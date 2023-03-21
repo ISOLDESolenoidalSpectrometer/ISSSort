@@ -395,7 +395,6 @@ bool do_build(){
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 			
 		name_input_file = input_names.at(i) + ".root";
-		//name_input_file = input_names.at(i) + "_sort.root";
 		name_output_file = input_names.at(i) + "_events.root";
 		
 		// Check if the input file exists

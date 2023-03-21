@@ -10,6 +10,7 @@
 
 #include <TFile.h>
 #include <TTree.h>
+#include <TTreeIndex.h>
 #include <TMath.h>
 #include <TChain.h>
 #include <TH1.h>

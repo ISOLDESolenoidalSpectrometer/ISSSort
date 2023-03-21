@@ -384,21 +384,30 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 	std::cout << " Event Building: number of entries in input tree = ";
 	std::cout << n_entries << std::endl;
-
 	
+	// Apply time-walk correction, i.e. get new time ordering
+	std::cout << " Event Building: applying time walk-correction to event ordering" << std::endl;
+	input_tree->BuildIndex( "GetTimeWithWalk()" );
+	TTreeIndex *att_index = (TTreeIndex*)input_tree->GetTreeIndex();
+
 	// ------------------------------------------------------------------------ //
 	// Main loop over TTree to find events
 	// ------------------------------------------------------------------------ //
 	for( unsigned long i = 0; i < n_entries; ++i ) {
 		
+		// Get time-ordered event index (with or without walk correction)
+		//unsigned long long idx = i; // no correction
+		unsigned long long idx = att_index->GetIndex()[i]; // with correction
+
 		// Current event data
 		if( input_tree->MemoryFull(30e6) )
 			input_tree->DropBaskets();
-		if( i == 0 ) input_tree->GetEntry(i);
+		if( i == 0 ) input_tree->GetEntry(idx);
 		
-		// Get the time of the event
-		mytime = in_data->GetTime();
-		
+		// Get the time of the event (with or without walk correction)
+		//mytime = in_data->GetTime(); // no correction
+		mytime = in_data->GetTimeWithWalk(); // with correction
+
 		//std::cout << i << "\t" << mytime << std::endl;
 				
 		// check time stamp monotonically increases!
@@ -436,9 +445,6 @@ unsigned long ISSEventBuilder::BuildEvents() {
 									 mych, asic_data->GetAdcValue() );
 				mywalk = cal->AsicWalk( mymod, myasic, myenergy );
 			
-				/*if( asic_data->GetAdcValue() > cal->AsicThreshold( mymod, myasic, mych ) )
-					mythres = true;
-				else mythres = false;*/
 				if( asic_data->GetAdcValue() < cal->AsicThreshold( mymod, myasic, mych ) )
 					mythres = false;
 				
@@ -456,13 +462,13 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			if( myenergy < 0 ) mythres = false;
 			
 			// If it's below threshold do not use as window opener
-			if ( mythres ) event_open = true;
+			if( mythres ) event_open = true;
 			
 			// p-side event
 			if( myside == 0 && mythres ) {
 			
 			// test here about hit bit value
-			//if( myside == 0 && !asic_data->GetHitBit() ) {
+			//if( myside == 0 && mythres && !asic_data->GetHitBit() ) {
 
 				mystrip = array_pid.at( myasic ).at( mych );
 				
@@ -485,7 +491,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			else if( myside == 1 && mythres ) {
 
 			// test here about hit bit value
-			//else if( myside == 1 && asic_data->GetHitBit() ) {
+			//else if( myside == 1 && mythres && asic_data->GetHitBit() ) {
 
 				mystrip = array_nid.at( asic_data->GetAsic() ).at( asic_data->GetChannel() );
 
@@ -878,10 +884,17 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		//------------------------------
 		//  check if last datum from this event and do some cleanup
 		//------------------------------
+		unsigned long long idx_next = i+1; // no correction
 		
-		if( input_tree->GetEntry(i+1) ) {
+		// Comment out the two lines below to ignore time-walk correction
+		if( i+1 == n_entries ) idx_next = n_entries; // with correction
+		else idx_next = att_index->GetIndex()[i+1]; // with correction
+
+		if( input_tree->GetEntry(idx_next) ) {
 					
-			time_diff = in_data->GetTime() - time_first;
+			// Time difference to next event (with or without time walk correction)
+			//time_diff = in_data->GetTime() - time_first; // no correction
+			time_diff = in_data->GetTimeWithWalk() - time_first; // with correction
 
 			// window = time_stamp_first + time_window
 			if( time_diff > build_window )

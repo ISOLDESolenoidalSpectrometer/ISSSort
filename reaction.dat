@@ -38,14 +38,20 @@
 #TargetOffset.Y: 0.0	# Beam spot offset with respect to the horizontal in mm (positive is right wrt beam direction)
 
 
+# ELUM geometry
+#ELUM.Distance: -1.0		# Negative number means it doesn't exist by default (in mm)
+#ELUM.OuterRadius: 48.0		# outer radius of the ELUM detector (default for S1, in mm)
+#ELUM.InnerRadius: 24.0		# inner radius of the ELUM detector (default for S1, in mm)
+
+
 # EBIS windows
 #EBIS.On: 1.20e6		# slow extraction is about 1.2 ms
 #EBIS.Off: 2.52e7		# Off window is 20 times the On window
 #EBIS.FillRatio: 20		# Fill ratio for EBIS, default is ratio of time windows
 
 # T1 cut
-T1.Min: 0			# for cutting on the proton impact time
-T1.Max: 1.2e9		# 
+#T1.Min: 0			# for cutting on the proton impact time
+#T1.Max: 1.2e9		# (units of ns)
 
 # Array-Recoil windows
 #ArrayRecoil_PromptTime.Min: -300

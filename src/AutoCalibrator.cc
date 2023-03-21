@@ -1134,8 +1134,8 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 		// First calculate the energy loss through the dead layer
 		DetectedEnergy[i] = react->SimulateDecay( vec3, FF_alpha_peak_energy[i] );
 
-		// Now correct for the pulse-height defecit (PHD)
-		DetectedEnergy[i] += react->GetPulseHeightDeficit( DetectedEnergy[i], false );
+		// Now correct for the pulse-height correction
+		DetectedEnergy[i] = react->GetPulseHeightCorrection( DetectedEnergy[i], false );
 		
 	}
 	

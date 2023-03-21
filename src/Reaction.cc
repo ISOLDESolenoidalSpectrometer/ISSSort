@@ -82,7 +82,7 @@ double butler_derivative( double *x, double *params ){
 
 	// Equation to solve for z, LHS = 0
 	double z = x[0];
-	double z_meas = params[0];
+	//double z_meas = params[0];
 	double r_meas = params[1];
 	double p = params[2];
 	double qb = params[3]; //  over 2*pi
@@ -90,8 +90,63 @@ double butler_derivative( double *x, double *params ){
 	// From Sam Bennett's first derivation, modified by A. Ceulemans
 	double alpha = TMath::ACos( qb * z / p );
 	double r_max = TMath::Abs( 2.0 * p * TMath::Sin( alpha ) / (qb * TMath::TwoPi()) );
-	double psi = 2 * TMath::ASin( r_meas / r_max );
+	double psi = 2.0 * TMath::ASin( r_meas / r_max );
 	double root = psi / TMath::TwoPi() - 1.0;
+
+	return root;
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// This solves for the theta_cm kinematics
+/// \param[in] x The initial guess for theta_cm
+/// \param[in] params Various parameters required for this minimisation
+/// \returns root This number should be zero when minimised
+double theta_cm_function( double *x, double *params ){
+
+	// This function is currently simplified only for scattering
+	// i.e. I am not sure it works for transfer, but does for
+	// the elastic or inelastic scattering reactions, i.e. ELUM
+	// In that case, we need to sort of the Q value situation
+	
+	// Input to the function
+	double theta_cm = x[0];
+	double z_meas = params[0];
+	double r_meas = params[1];
+	double Qx = params[2];
+	double qb = params[3]; //  over 2*pi
+	double Eb = params[4];
+	double mb = params[5];
+	double mt = params[6];
+	
+	// Calculate useful parameters
+    double tau = mb / mt;
+    double Eprime = Eb + ( Qx * ( 1.0 + tau ) );
+    double epsilon = TMath::Sqrt( Eb / Eprime );
+	
+	// Calculate laboratory angle
+	double theta_lab = TMath::Sin( TMath::Pi() - theta_cm );
+	theta_lab /= TMath::Cos( TMath::Pi() - theta_cm ) + epsilon;
+	theta_lab = TMath::ATan( theta_lab );
+	
+	// Calculate the ejectile energy
+	double E_ejectile = TMath::Cos( TMath::Pi() - theta_cm );
+	E_ejectile *= 2.0 * epsilon;
+	E_ejectile += 1.0 + epsilon * epsilon;
+	E_ejectile *= mb * mt / TMath::Power( mb + mt, 2.0 );
+	E_ejectile *= Eprime;
+
+	// Calculate the relativistic momentum
+	double E_total = E_ejectile + mt;
+	double p = TMath::Sqrt( E_total * E_total - mt * mt );
+	
+	// Maximum radius of particle, z position and missing orbit fraction (psi)
+	double r_max = TMath::Abs( 2.0 * p * TMath::Sin( theta_lab ) / (qb * TMath::TwoPi()) );
+	double z = p * TMath::Cos( theta_lab ) / qb;
+	double psi = 2.0 * TMath::ASin( r_meas / r_max );
+	
+	// This is the equation to find the root of
+	double root = z_meas - z * ( 1.0 - psi / TMath::TwoPi() );
 
 	return root;
 
@@ -106,6 +161,27 @@ double butler_derivative( double *x, double *params ){
 /// \param[in] source A boolean to check if this run is a source run
 ISSReaction::ISSReaction( std::string filename, ISSSettings *myset, bool source ){
 		
+	// Setup the ROOT finder algorithms
+#ifdef butler_algorithm
+	// Root finder algorithm - The Peter Butler method
+	double low_limit = z0;
+	double upp_limit = z0;
+	if( z0 < 0.0 ) low_limit -= 600.0;
+	else upp_limit += 600.0;
+	fa = std::make_unique<TF1>( "butler_function",   butler_function,   low_limit, upp_limit, 4 );
+	fb = std::make_unique<TF1>( "butler_derivative", butler_derivative, low_limit, upp_limit, 4 );
+#else
+	// Root finder algorithm - for alpha like Ryan does
+	fa = std::make_unique<TF1>( "alpha_function",   alpha_function,   0.0, TMath::PiOver2(), 4 );
+	fb = std::make_unique<TF1>( "alpha_derivative", alpha_derivative, 0.0, TMath::PiOver2(), 4 );
+#endif
+	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
+
+	// Root finder for the simulation function
+	fsim = std::make_unique<TF1>( "theta_cm_function", theta_cm_function, 0.0, TMath::Pi(), 7 );
+	rfsim = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kBRENT );
+
+
 	// Read in mass tables
 	ReadMassTables();
 	
@@ -116,23 +192,7 @@ ISSReaction::ISSReaction( std::string filename, ISSSettings *myset, bool source 
 	set = myset;
 	SetFile( filename );
 	ReadReaction();
-
-#ifdef butler_algorithm
-	// Root finder algorithm - The Peter Butler method
-	double low_limit = z0;
-	double upp_limit = z0;
-	if( z0 < 0.0 ) low_limit -= 600.0;
-	else upp_limit += 600.0;
-	fa = std::make_unique<TF1>( "butler_function", butler_function, low_limit, upp_limit, 4 );
-	fb = std::make_unique<TF1>( "butler_derivative", butler_derivative, low_limit, upp_limit, 4 );
-	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
-#else
-	// Root finder algorithm - for alpha like Ryan does
-	fa = std::make_unique<TF1>( "alpha_function", alpha_function, 0.0, TMath::PiOver2(), 4 );
-	fb = std::make_unique<TF1>( "alpha_derivative", alpha_derivative, 0.0, TMath::PiOver2(), 4 );
-	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
-#endif
-
+	
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -258,7 +318,7 @@ void ISSReaction::ReadReaction() {
 	Mfield = config->GetValue( "Mfield", 2.0 );
 	
 	// Detector to target distances and dead layer of Si
-	z0 = config->GetValue( "ArrayDistance", 100.0 );
+	z0 = config->GetValue( "ArrayDistance", -100.0 );
 	deadlayer = config->GetValue( "ArrayDeadlayer", 0.0005 ); // units of mm of Si
 
 	// Get particle properties
@@ -405,6 +465,11 @@ void ISSReaction::ReadReaction() {
 	x_offset = config->GetValue( "TargetOffset.X", 0.0 );	// of course this should be 0.0 if you centre the beam! Units of mm, vertical
 	y_offset = config->GetValue( "TargetOffset.Y", 0.0 );	// of course this should be 0.0 if you centre the beam! Units of mm, horizontal
 
+	// ELUM geometry
+	elum_z    = config->GetValue( "ELUM.Distance", -1.0 ); // units of mm
+	elum_rin  = config->GetValue( "ELUM.InnerRadius", 10.0 ); // units of mm
+	elum_rout = config->GetValue( "ELUM.OuterRadius", 20.0 ); // units of mm
+
 	// If it's a source run, we can ignore most of that
 	// or better still, initialise everything and overwrite what we need
 	if( flag_source ){
@@ -431,8 +496,8 @@ void ISSReaction::ReadReaction() {
 	// Get the PHD data in a TGraph
 	gPHD = std::make_unique<TGraph>();
 	gPHD_inv = std::make_unique<TGraph>();
-	phdcurves = ReadPulseHeightDeficit( Ejectile.GetIsotope() ); // from Robert Page numbers
-	//phdcurves = ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gPHD, true ); // from SRIM files
+	phdcurves = ReadPulseHeightCorrection( Ejectile.GetIsotope() ); // from Robert Page numbers
+	//phdcurves = ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gPHD, true ); // TODO: from SRIM files 
 	
 	// Get the PHD data parameters from a file
 	std::string phd_file = std::string(PHD_DIR) + "phd_params.dat";
@@ -472,6 +537,70 @@ void ISSReaction::ReadReaction() {
 	}
 	else std::cout << "Stopping powers not calculated" << std::endl;
 
+	
+	// Do some ELUM calculations
+	double theta_cm_inner, theta_cm_outer, theta_cm_centre;
+	double energy_inner,   energy_outer,   energy_centre;
+	if( elum_z > 0 ) {
+		
+		// Remember the real ejectile information
+		int tmpA = Ejectile.GetA();
+		int tmpZ = Ejectile.GetZ();
+		double tmpBE = Ejectile.GetBindingEnergy();
+		int tmpA2 = Recoil.GetA();
+		int tmpZ2 = Recoil.GetZ();
+		double tmpBE2 = Recoil.GetBindingEnergy();
+
+		// Then pretend we have elastic scattering
+		Ejectile.SetA( Target.GetA() );
+		Ejectile.SetZ( Target.GetZ() );
+		Ejectile.SetBindingEnergy( Target.GetBindingEnergy() );
+
+		std::cout << std::endl << " +++  ";
+		std::cout << Beam.GetIsotope() << "(" << Target.GetIsotope() << ",";
+		std::cout << Ejectile.GetIsotope() << ")" << Recoil.GetIsotope();
+		std::cout << "  +++" << std::endl;
+		std::cout << "Q-value = " << GetQvalue()*0.001 << " MeV" << std::endl;
+
+		// Define interaction position of the inner/outer edges and centre
+		TVector3 elum_inner_hit( elum_rin,  0.0, elum_z );
+		TVector3 elum_outer_hit( elum_rout, 0.0, elum_z );
+		TVector3 elum_centre_hit( 0.5*(elum_rout+elum_rin), 0.0, elum_z );
+
+		// Simulate the elastic scattering reaction - inner
+		SimulateReaction( elum_inner_hit );
+		theta_cm_inner = Recoil.GetThetaCM();
+		energy_inner = Ejectile.GetEnergyLab();
+
+		// Simulate the elastic scattering reaction - outer
+		SimulateReaction( elum_outer_hit );
+		theta_cm_outer = Recoil.GetThetaCM();
+		energy_outer = Ejectile.GetEnergyLab();
+
+		// Simulate the elastic scattering reaction - centre
+		SimulateReaction( elum_centre_hit );
+		theta_cm_centre = Recoil.GetThetaCM();
+		energy_centre = Ejectile.GetEnergyLab();
+
+		// Change ejectile and recoils back again
+		Ejectile.SetA( tmpA );
+		Ejectile.SetZ( tmpZ );
+		Ejectile.SetBindingEnergy( tmpBE );
+		Recoil.SetA( tmpA2 );
+		Recoil.SetZ( tmpZ2 );
+		Recoil.SetBindingEnergy( tmpBE2 );
+
+		std::cout << std::setprecision(5);
+		std::cout << "ELUM found at " << elum_z << " mm" << std::endl;
+		std::cout << "\t θ_cm = " << theta_cm_centre * TMath::RadToDeg();
+		std::cout << " degrees; E_lab = " << energy_centre << std::endl;
+		std::cout << "\t" << theta_cm_inner * TMath::RadToDeg();
+		std::cout << " < θ_cm  < " << theta_cm_outer * TMath::RadToDeg();
+		std::cout << " degrees" << std::endl << "\t" << energy_inner;
+		std::cout << " < E_lab < " << energy_outer << " keV" << std::endl;
+
+	}
+	
 	// Finished
 	delete config;
 	delete phd_params;
@@ -587,6 +716,7 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 		if( line.length() < 10 ) continue;
 
 		// Read in data
+		line_ss.clear();
 		line_ss.str("");
 		line_ss << line;
 		line_ss >> En >> units >> elec >> nucl >> tmp_dbl >> tmp_str >> tmp_dbl >> tmp_str;
@@ -656,34 +786,34 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Calculates energy correction required for the pulse height deficit, either to get true energy or detected energy
+/// Calculates energy correction required for the pulse height non-linearity, either to get true energy or detected energy
 /// \param[in] Ei The initial energy that should be corrected
 /// \param[in] detected Should be true if this is the detected energy and false if it is the actual ion energy
 /// \return energy correction to obtain the true ion energy (if detected) or the charge collected (if !detected)
-double ISSReaction::GetPulseHeightDeficit( double Ei, bool detected ) {
+double ISSReaction::GetPulseHeightCorrection( double Ei, bool detected ) {
 
 	// If we failed to read the data, return a zero correction value
 	if( !phdcurves ) return 0;
 
-	if( detected ) return gPHD->Eval(Ei) - Ei;
-	else return gPHD_inv->Eval(Ei) - Ei;
+	if( detected ) return gPHD_inv->Eval(Ei); // get actual ion energy from PH (detected energy)
+	else return gPHD->Eval(Ei); // get PH for actual ion energy
 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Reads the pulse height deficit information from 
+/// Reads the pulse height correction information from
 /// \param[in] isotope The name of the isotope in the form AX e.g. 112Sn
 /// \returns 
-bool ISSReaction::ReadPulseHeightDeficit( std::string isotope ) {
+bool ISSReaction::ReadPulseHeightCorrection( std::string isotope ) {
 	 
 	/// Open stopping power files and make TGraphs of data
 	
 	// Make titles
-	std::string title = "Pulse height deficit corrections for ";
+	std::string title = "Pulse height corrections for ";
 	title += isotope;
 	title += ";" + isotope + " energy after dead layer [keV];";
 	title += "Deposited energy [keV/#mum]";
-	std::string title_inv = "Pulse height deficit corrections for ";
+	std::string title_inv = "Pulse height corrections for ";
 	title_inv += isotope;
 	title_inv += ";Deposited energy [keV/#mum];";
 	title_inv += isotope + " energy after dead layer [keV]";
@@ -725,6 +855,7 @@ bool ISSReaction::ReadPulseHeightDeficit( std::string isotope ) {
 		if( line.substr( 0, 1 ) == "#" ) continue;
 
 		// Read in data
+		line_ss.clear();
 		line_ss.str("");
 		line_ss << line;
 		line_ss >> E >> dEdx;
@@ -770,13 +901,17 @@ bool ISSReaction::ReadPulseHeightDeficit( std::string isotope ) {
 	TCanvas *c = new TCanvas();
 	//c->SetLogx();
 	//c->SetLogy();
-	gEloss->Draw("A*");
+	gEloss->Draw("AL");
+	gEloss->GetYaxis()->SetTitle("dE/dx (keV/#mum)");
+	gEloss->GetXaxis()->SetTitle("E (keV)");
 	std::string pdfname = phdfilename.substr( 0, phdfilename.find_last_of(".") ) + "_eloss.pdf";
 	c->SaveAs( pdfname.c_str() );
 	gDiff->Draw("A*");
 	pdfname = phdfilename.substr( 0, phdfilename.find_last_of(".") ) + "_diff.pdf";
 	c->SaveAs( pdfname.c_str() );
-	gRes->Draw("A*");
+	gRes->Draw("AP");
+	gRes->GetYaxis()->SetTitle("E_{0} - E_{detected} (keV)");
+	gRes->GetXaxis()->SetTitle("E_{0} (keV)");
 	pdfname = phdfilename.substr( 0, phdfilename.find_last_of(".") ) + "_res.pdf";
 	c->SaveAs( pdfname.c_str() );
 	gPHD->Draw("A*");
@@ -868,9 +1003,76 @@ float ISSReaction::SimulateDecay( TVector3 vec, double en ){
 /// This function will use the interaction position and excitation energy of an ejectile
 /// event, to solve the reaction kinematics and define parameters such as:
 /// theta_cm, theta_lab,, E_lab, E_det, etc.
-/// \param[in] vec TBD
-/// \param[in] ex TBD
-void ISSReaction::SimulateReaction( TVector3 vec, double ex ){
+/// \param[in] vec detection position vector
+void ISSReaction::SimulateReaction( TVector3 vec ){
+
+	// Apply the X and Y offsets directly to the TVector3 input
+	// We move the array opposite to the target, which replicates the same
+	// geometrical shift that is observed with respect to the beam
+	vec.SetX( vec.X() - x_offset );
+	vec.SetY( vec.Y() - y_offset );
+
+	// Set the input parameters, might use them in another function
+	//Ejectile.SetEnergyLab(en);		// ejectile energy in keV
+	z_meas = vec.Z();					// measured z in mm
+	r_meas = vec.Perp();				// measured radius
+
+	//------------------------//
+    // Kinematics calculation //
+    //------------------------//
+	params[0] = z_meas;										// z in mm
+	params[1] = r_meas;										// r_meas in mm
+	params[2] = GetQvalue();								// usually p...
+	params[2] -= Ejectile.GetEx() + Recoil.GetEx();			// but here we simulate it from Q-Ex
+	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
+	params[3] /= TMath::TwoPi(); 							// qb/2pi
+	params[4] = Beam.GetEnergyLab();						// beam energy
+	params[5] = Recoil.GetMass();
+	params[6] = Ejectile.GetMass();
+	
+	//for( int i = 0; i < 7; ++i )
+	//	std::cout << "params[" << i << "] = " << params[i] << ";" << std::endl;
+
+	// Set parameters
+	fsim->SetParameters( params );
+
+	// Build the theta_cm function, then solve
+	gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
+	ROOT::Math::Functor1D wf( *fsim );
+	if( rfsim->SetFunction( wf, 0.0, TMath::Pi() ) ) {
+		rfsim->Solve( 500, 1e-5, 1e-6 );
+		theta_cm = rfsim->Root();
+	}
+	else theta_cm = TMath::QuietNaN();
+	gErrorIgnoreLevel = kInfo; // print info and above again
+
+	// Set the theta_cm of the ejectile
+	Ejectile.SetThetaCM( TMath::Pi() - theta_cm );
+	Recoil.SetThetaCM( theta_cm );
+
+	// The following needs to be fixed up for proper
+	// kinematics, by including the Q value, etc
+	
+	// Calculate useful parameters
+    double tau = Ejectile.GetMass() / Recoil.GetMass();
+	double Eprime = Beam.GetEnergyLab();
+	Eprime -= ( Ejectile.GetEx() + Recoil.GetEx() ) * ( 1.0 + tau );
+    double epsilon = TMath::Sqrt( Beam.GetEnergyLab() / Eprime );
+
+	// Calculate the ejectile energy
+	double E_ejectile = TMath::Cos( Ejectile.GetThetaCM() );
+	E_ejectile *= 2.0 * epsilon;
+	E_ejectile += 1.0 + epsilon * epsilon;
+	E_ejectile *= Ejectile.GetMass() * Recoil.GetMass();
+	E_ejectile /= TMath::Power( Ejectile.GetMass() + Recoil.GetMass(), 2.0 );
+	E_ejectile *= Eprime;
+	Ejectile.SetEnergyLab( E_ejectile );
+	
+	// Calculate laboratory angle
+	theta_lab = TMath::Sin( Ejectile.GetThetaCM() );
+	theta_lab /= TMath::Cos( Ejectile.GetThetaCM() ) + epsilon;
+	theta_lab = TMath::ATan( theta_lab );
+	Ejectile.SetThetaLab( theta_lab );
 
 }
 
@@ -896,7 +1098,7 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	else z_meas += z0;					// downstream
 	
 	// Pulse height conversion to proton energy using RDP
-	en += GetPulseHeightDeficit( en, true );
+	en = GetPulseHeightCorrection( en, true );
 	Ejectile.SetEnergyLab(en);
 
 	//------------------------//

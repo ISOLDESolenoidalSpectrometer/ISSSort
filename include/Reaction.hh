@@ -15,6 +15,7 @@
 #include "TFile.h"
 #include "TCutG.h"
 #include "TVector3.h"
+#include "TAxis.h"
 #include "TF1.h"
 #include "TError.h"
 #include "TCanvas.h"
@@ -143,7 +144,7 @@ private:
 	double	Elab;		///< Energy in the laboratory system
 	double	ThetaCM;	///< Theta in the centre of mass frame in radians
 	double	ThetaLab;	///< Theta in the laboratory system in radians
-	double	Ex;			///< Excitation energy in keV
+	double	Ex=0;		///< Excitation energy in keV
 
 	ClassDef( ISSParticle, 1 )
 	
@@ -181,7 +182,7 @@ public:
 	
 	// This is the function called event-by-event
 	void	MakeReaction( TVector3 vec, double en );///< Called event-by-event for transfer reactions
-	void	SimulateReaction( TVector3 vec, double ex );///< Currently an empty function
+	void	SimulateReaction( TVector3 vec );///< Setup your particles, then call this with the ejectile detection position
 	float	SimulateDecay( TVector3 vec, double en );///< Called during the autocalibration process with alphas
 
 	// Getters
@@ -261,9 +262,9 @@ public:
 	double GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> &g );///< Calculate the energy loss of a given energy of particle through a given material
 	bool ReadStoppingPowers( std::string isotope1, std::string isotope2, std::unique_ptr<TGraph> &g, bool electriconly = true );///< Reads relevant SRIM files
 
-	// Pulse height deficit correction
-	double GetPulseHeightDeficit( double Ei, bool detected ); ///< Returns the pulse height deficit from the relevant TGraph
-	bool ReadPulseHeightDeficit( std::string isotope ); ///< Reads the pulse height deficit information from the relevant input file
+	// Pulse height correction
+	double GetPulseHeightCorrection( double Ei, bool detected ); ///< Returns the pulse height correction from the relevant TGraph
+	bool ReadPulseHeightCorrection( std::string isotope ); ///< Reads the pulse height correction information from the relevant input file
 
 	// Get cuts
 	inline TCutG* GetRecoilCut( unsigned int i ){
@@ -307,10 +308,12 @@ private:
 	double Eb;		///< Laboratory beam energy in keV/u
 	
 	// Stuff for the Ex calculation
-	std::unique_ptr<ROOT::Math::RootFinder> rf;	///< Pointer to a root finder object
-	std::unique_ptr<TF1> fa;					///< Pointer to the minimisation function
-	std::unique_ptr<TF1> fb;					///< Pointer to the derivative of the minimisation function
-	double params[4];			///< Array for holding parameters for the functions
+	std::unique_ptr<ROOT::Math::RootFinder> rf;		///< Pointer to a root finder object
+	std::unique_ptr<ROOT::Math::RootFinder> rfsim;	///< Pointer to a root finder object for the simulation of the reaction
+	std::unique_ptr<TF1> fa;	///< Pointer to the minimisation function
+	std::unique_ptr<TF1> fb;	///< Pointer to the derivative of the minimisation function
+	std::unique_ptr<TF1> fsim;	///< Pointer to the minimisation function for the simulation of the reaction
+	double params[7];			///< Array for holding parameters for the functions
 	double e3_cm;				///< Total energy of ejectile in centre of mass
 	double Ex;					///< Excitation energy of recoil
 	double theta_cm;			///< CM angle for ejectile/recoil
@@ -341,6 +344,11 @@ private:
 	double x_offset;			///< Horizontal offset of the target/beam position, with respect to the array in mm
 	double y_offset;			///< Vertical offset of the target/beam position, with respect to the array in mm
 	
+	// ELUM geometry
+	double elum_z;		///< z position of the ELUM (usually positive, but if negative assumed not to exist in setup)
+	double elum_rin;	///< inner radius of the ELUM detector
+	double elum_rout;	///< outer radius of the ELUM detector
+
 	// Cuts
 	unsigned int nrecoilcuts;					///< The number of recoil cuts
 	unsigned int nevszcuts;						///< The number of E vs z cuts

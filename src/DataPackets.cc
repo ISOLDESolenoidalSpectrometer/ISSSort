@@ -112,6 +112,16 @@ unsigned long ISSDataPackets::GetTime(){
 	
 }
 
+unsigned long ISSDataPackets::GetTimeWithWalk(){
+		
+	if( IsAsic() ) return GetAsicData()->GetTime() + GetAsicData()->GetWalk();
+	if( IsCaen() ) return GetCaenData()->GetTime();
+	if( IsInfo() ) return GetInfoData()->GetTime();
+
+	return 0;
+	
+}
+
 UInt_t ISSDataPackets::GetTimeMSB(){
 	
 	return ( (this->GetTime() >> 32) & 0x0000FFFF );

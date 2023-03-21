@@ -170,6 +170,7 @@ public:
 	
 	// Complicated way to get the time...
 	unsigned long GetTime();
+	unsigned long GetTimeWithWalk();
 	UInt_t GetTimeMSB();
 	UInt_t GetTimeLSB();
 
