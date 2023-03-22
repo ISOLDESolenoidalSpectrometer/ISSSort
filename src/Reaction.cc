@@ -113,36 +113,59 @@ double theta_cm_function( double *x, double *params ){
 	double theta_cm = x[0];
 	double z_meas = params[0];
 	double r_meas = params[1];
-	double Qx = params[2];
+	double Ex = params[2];
 	double qb = params[3]; //  over 2*pi
-	double Eb = params[4];
-	double mb = params[5];
-	double mt = params[6];
+	double T1 = params[4];
+	double m1 = params[5];
+	double m2 = params[6];
+	double m3 = params[7];
+	double m4 = params[8];
 	
-	// Calculate useful parameters
-    double tau = mb / mt;
-    double Eprime = Eb + ( Qx * ( 1.0 + tau ) );
-    double epsilon = TMath::Sqrt( Eb / Eprime );
+	// Invariant mass = total energy in centre of mass frame
+	double E1 = m1 + T1;
+	double p1 = TMath::Power( E1, 2.0 ) - TMath::Power( m1, 2.0 );
+	p1 = TMath::Sqrt( p1 );
+	double Etot_cm = TMath::Power( T1 + m1 + m2, 2.0 );
+	Etot_cm -= TMath::Power( p1, 2.0 );
+	Etot_cm = TMath::Sqrt( Etot_cm );
 	
-	// Calculate laboratory angle
-	double theta_lab = TMath::Sin( TMath::Pi() - theta_cm );
-	theta_lab /= TMath::Cos( TMath::Pi() - theta_cm ) + epsilon;
-	theta_lab = TMath::ATan( theta_lab );
-	
-	// Calculate the ejectile energy
-	double E_ejectile = TMath::Cos( TMath::Pi() - theta_cm );
-	E_ejectile *= 2.0 * epsilon;
-	E_ejectile += 1.0 + epsilon * epsilon;
-	E_ejectile *= mb * mt / TMath::Power( mb + mt, 2.0 );
-	E_ejectile *= Eprime;
+	// Work out what gamma and beta are
+	double E_lab = E1 + m2;
+	double gamma = E_lab / Etot_cm;
+	double beta = TMath::Sqrt( 1.0 - 1.0 / TMath::Power( gamma, 2.0 ) );
 
-	// Calculate the relativistic momentum
-	double E_total = E_ejectile + mt;
-	double p = TMath::Sqrt( E_total * E_total - mt * mt );
+	// What about the energy of the ejectile after the collision?
+	double E3_cm = TMath::Power( Etot_cm, 2.0 );
+	E3_cm -= TMath::Power( m4 + Ex, 2.0 );
+	E3_cm += TMath::Power( m3, 2.0 );
+	E3_cm /= 2.0 * Etot_cm;
+	
+	// Now the momentum of the ejectile
+	double p3_cm = TMath::Power( E3_cm, 2.0 );
+	p3_cm -= TMath::Power( m3, 2.0 );
+	p3_cm = TMath::Sqrt( p3_cm );
+	
+	// Using the angle relationships:
+	// p3_cm * sin(theta_cm) = p3_lab * sin(theta_lab)
+	// p3_cm * cos(theta_cm) = ptot_lab - p3_lab * cos(theta_lab)
+	//double ptot_lab = gamma * beta * E_lab;
+	//double theta_lab = p3_cm * TMath::Sin( TMath::Pi() - theta_cm );
+	//theta_lab /= ptot_lab - p3_cm * TMath::Cos( TMath::Pi() - theta_cm );
+	//theta_lab = TMath::ATan( theta_lab );
+
+	// From Daniel Clarke:
+	double theta_lab = p3_cm * TMath::Sin( TMath::Pi() - theta_cm );
+	theta_lab /= p3_cm * TMath::Cos( TMath::Pi() - theta_cm ) + beta * Etot_cm;
+	theta_lab /= gamma;
+	theta_lab = TMath::ATan( theta_lab );
+
+	// Momentum in the lab
+	double p3 = p3_cm * TMath::Sin( TMath::Pi() - theta_cm );
+	p3 /= TMath::Sin( theta_lab );
 	
 	// Maximum radius of particle, z position and missing orbit fraction (psi)
-	double r_max = TMath::Abs( 2.0 * p * TMath::Sin( theta_lab ) / (qb * TMath::TwoPi()) );
-	double z = p * TMath::Cos( theta_lab ) / qb;
+	double r_max = TMath::Abs( 2.0 * p3 * TMath::Sin( theta_lab ) / (qb * TMath::TwoPi()) );
+	double z = p3 * TMath::Cos( theta_lab ) / qb;
 	double psi = 2.0 * TMath::ASin( r_meas / r_max );
 	
 	// This is the equation to find the root of
@@ -497,7 +520,7 @@ void ISSReaction::ReadReaction() {
 	gPHD = std::make_unique<TGraph>();
 	gPHD_inv = std::make_unique<TGraph>();
 	phdcurves = ReadPulseHeightCorrection( Ejectile.GetIsotope() ); // from Robert Page numbers
-	//phdcurves = ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gPHD, true ); // TODO: from SRIM files 
+	//phdcurves = ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gPHD, true ); // TODO: from SRIM files
 	
 	// Get the PHD data parameters from a file
 	std::string phd_file = std::string(PHD_DIR) + "phd_params.dat";
@@ -555,6 +578,9 @@ void ISSReaction::ReadReaction() {
 		Ejectile.SetA( Target.GetA() );
 		Ejectile.SetZ( Target.GetZ() );
 		Ejectile.SetBindingEnergy( Target.GetBindingEnergy() );
+		Recoil.SetA( Beam.GetA() );
+		Recoil.SetZ( Beam.GetZ() );
+		Recoil.SetBindingEnergy( Beam.GetBindingEnergy() );
 
 		std::cout << std::endl << " +++  ";
 		std::cout << Beam.GetIsotope() << "(" << Target.GetIsotope() << ",";
@@ -1022,14 +1048,15 @@ void ISSReaction::SimulateReaction( TVector3 vec ){
     //------------------------//
 	params[0] = z_meas;										// z in mm
 	params[1] = r_meas;										// r_meas in mm
-	params[2] = GetQvalue();								// usually p...
-	params[2] -= Ejectile.GetEx() + Recoil.GetEx();			// but here we simulate it from Q-Ex
+	params[2] = Recoil.GetEx();								// Ex
 	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 	params[3] /= TMath::TwoPi(); 							// qb/2pi
 	params[4] = Beam.GetEnergyLab();						// beam energy
-	params[5] = Recoil.GetMass();
-	params[6] = Ejectile.GetMass();
-	
+	params[5] = Beam.GetMass();
+	params[6] = Target.GetMass();
+	params[7] = Ejectile.GetMass();
+	params[8] = Recoil.GetMass();
+
 	//for( int i = 0; i < 7; ++i )
 	//	std::cout << "params[" << i << "] = " << params[i] << ";" << std::endl;
 
@@ -1050,29 +1077,27 @@ void ISSReaction::SimulateReaction( TVector3 vec ){
 	Ejectile.SetThetaCM( TMath::Pi() - theta_cm );
 	Recoil.SetThetaCM( theta_cm );
 
-	// The following needs to be fixed up for proper
-	// kinematics, by including the Q value, etc
+	// What about the energy of the ejectile after the collision?
+	e3_cm = TMath::Power( GetEnergyTotCM(), 2.0 );
+	e3_cm -= TMath::Power( Recoil.GetMass() + Recoil.GetEx(), 2.0 );
+	e3_cm += TMath::Power( Ejectile.GetMass(), 2.0 );
+	e3_cm /= 2.0 * GetEnergyTotCM();
+	Ejectile.SetEnergyTotCM( e3_cm );
 	
-	// Calculate useful parameters
-    double tau = Ejectile.GetMass() / Recoil.GetMass();
-	double Eprime = Beam.GetEnergyLab();
-	Eprime -= ( Ejectile.GetEx() + Recoil.GetEx() ) * ( 1.0 + tau );
-    double epsilon = TMath::Sqrt( Beam.GetEnergyLab() / Eprime );
-
-	// Calculate the ejectile energy
-	double E_ejectile = TMath::Cos( Ejectile.GetThetaCM() );
-	E_ejectile *= 2.0 * epsilon;
-	E_ejectile += 1.0 + epsilon * epsilon;
-	E_ejectile *= Ejectile.GetMass() * Recoil.GetMass();
-	E_ejectile /= TMath::Power( Ejectile.GetMass() + Recoil.GetMass(), 2.0 );
-	E_ejectile *= Eprime;
-	Ejectile.SetEnergyLab( E_ejectile );
-	
-	// Calculate laboratory angle
-	theta_lab = TMath::Sin( Ejectile.GetThetaCM() );
-	theta_lab /= TMath::Cos( Ejectile.GetThetaCM() ) + epsilon;
+	// From Daniel Clarke:
+	theta_lab = Ejectile.GetMomentumCM() * TMath::Sin( Ejectile.GetThetaCM() );
+	theta_lab /= Ejectile.GetMomentumCM() * TMath::Cos( Ejectile.GetThetaCM() ) + GetBeta() * GetEnergyTotCM();
+	theta_lab /= GetGamma();
 	theta_lab = TMath::ATan( theta_lab );
 	Ejectile.SetThetaLab( theta_lab );
+
+	// Momentum and momentum in the lab
+	double p3 = Ejectile.GetMomentumCM() * TMath::Sin( Ejectile.GetThetaCM() );
+	p3 /= TMath::Sin( theta_lab );
+	double E3_lab = TMath::Power( p3, 2.0 );
+	E3_lab += TMath::Power( Ejectile.GetMass(), 2.0 );
+	E3_lab = TMath::Sqrt( E3_lab );
+	Ejectile.SetEnergyLab( E3_lab );
 
 }
 
