@@ -40,7 +40,7 @@ const double p_mass  = 938272.08816;	///< mass of the proton in keV/c^2
 const double n_mass  = 939565.42052;	///< mass of the neutron in keV/c^2
 const double u_mass  = 931494.10242;	///< atomic mass unit in keV/c^2
 const double T_to_mm =   299.792458;	///< in units of 1/mm
-const double k_Si 	 =     2.80e-07;	///< k value - µm/e-h pair for PHD in silicon
+const double k_Si 	 =     2.80e-10;	///< k value - mm/e-h pair for PHD in silicon
 const double e0_Si 	 =     3.67e-03;	///< epsilon_0 for silicon for PHD in keV
 
 // Element names
@@ -260,11 +260,13 @@ public:
 
 	// Energy loss and stopping powers
 	double GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> &g );///< Calculate the energy loss of a given energy of particle through a given material
-	bool ReadStoppingPowers( std::string isotope1, std::string isotope2, std::unique_ptr<TGraph> &g, bool electriconly = true );///< Reads relevant SRIM files
+	bool ReadStoppingPowers( std::string isotope1, std::string isotope2,
+				std::unique_ptr<TGraph> &g, std::unique_ptr<TGraph> &r,
+				bool electriconly = false, bool nuclearonly = false );///< Reads relevant SRIM files
 
 	// Pulse height correction
 	double GetPulseHeightCorrection( double Ei, bool detected ); ///< Returns the pulse height correction from the relevant TGraph
-	bool ReadPulseHeightCorrection( std::string isotope ); ///< Reads the pulse height correction information from the relevant input file
+	void CalculatePulseHeightCorrection( std::string isotope ); ///< This function generates all neccessary pulse-height correction plots
 
 	// Get cuts
 	inline TCutG* GetRecoilCut( unsigned int i ){
@@ -364,12 +366,11 @@ private:
 
 	// Stopping powers
 	std::vector<std::unique_ptr<TGraph>> gStopping;	///< Vector of pointer to relevant stopping-power TGraphs relevant to the reaction of study
-	std::unique_ptr<TGraph> gPHD;					///< TGraph containing pulse height deficit correction information
-	std::unique_ptr<TGraph> gPHD_inv;				///< Flipped axes of gPHD
-	double phd_alpha;								///< Pulse height deficit correction parameter specified in reaction file
-	double phd_gamma;								///< Pulse height deficit correction parameter specified in reaction file
+	std::vector<std::unique_ptr<TGraph>> gRange;	///< Vector of pointer to relevant range TGraphs relevant to the reaction of study
+	std::unique_ptr<TGraph> gPHC;					///< TGraph containing pulse-height correction information
+	std::unique_ptr<TGraph> gPHC_inv;				///< Flipped axes of gPHC
 	bool stopping;									///< Flag to indicate whether calculation of stopping powers has worked or not
-	bool phdcurves;									///< Flag to indicate whether pulse height deficit correction was calculated successfully
+	bool phcurves;									///< Flag to indicate whether pulse height correction data was read successfully
 
 	
 	// Flag in case it's an alpha source
