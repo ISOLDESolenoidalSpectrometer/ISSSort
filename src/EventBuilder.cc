@@ -386,9 +386,9 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	std::cout << n_entries << std::endl;
 	
 	// Apply time-walk correction, i.e. get new time ordering
-	std::cout << " Event Building: applying time walk-correction to event ordering" << std::endl;
-	input_tree->BuildIndex( "GetTimeWithWalk()" );
-	//input_tree->BuildIndex( "GetTime()" );
+	//std::cout << " Event Building: applying time walk-correction to event ordering" << std::endl;
+	//input_tree->BuildIndex( "GetTimeWithWalk()" );
+	input_tree->BuildIndex( "GetTime()" );
 	TTreeIndex *att_index = (TTreeIndex*)input_tree->GetTreeIndex();
 
 	// ------------------------------------------------------------------------ //
@@ -397,8 +397,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	for( unsigned long i = 0; i < n_entries; ++i ) {
 		
 		// Get time-ordered event index (with or without walk correction)
-		//unsigned long long idx = i; // no correction
-		unsigned long long idx = att_index->GetIndex()[i]; // with correction
+		unsigned long long idx = i; // no correction
+		//unsigned long long idx = att_index->GetIndex()[i]; // with correction
 
 		// Current event data
 		if( input_tree->MemoryFull(30e6) )
@@ -406,8 +406,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		if( i == 0 ) input_tree->GetEntry(idx);
 		
 		// Get the time of the event (with or without walk correction)
-		//mytime = in_data->GetTime(); // no correction
-		mytime = in_data->GetTimeWithWalk(); // with correction
+		mytime = in_data->GetTime(); // no correction
+		//mytime = in_data->GetTimeWithWalk(); // with correction
 
 		//std::cout << i << "\t" << mytime << std::endl;
 				
