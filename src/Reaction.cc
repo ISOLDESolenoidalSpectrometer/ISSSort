@@ -893,14 +893,14 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 		PHC = e0_Si / PHC;
 		Edet += dE * PHC;
 		
-		if( i == 2000 ) {
-			std::cout << "Energy = " << E << " keV" << std::endl;
-			std::cout << "Range = " << range << " mm" << std::endl;
-			std::cout << "dEdx_e = " << dEdx_e << " keV/mm" << std::endl;
-			std::cout << "dEdx_n = " << dEdx_n << " keV" << std::endl;
-			std::cout << "PHC = " << PHC << " keV" << std::endl;
-			std::cout << "Edet = " << Edet << " keV" << std::endl;
-		}
+		//if( i == 2000 ) {
+		//	std::cout << "Energy = " << E << " keV" << std::endl;
+		//	std::cout << "Range = " << range << " mm" << std::endl;
+		//	std::cout << "dEdx_e = " << dEdx_e << " keV/mm" << std::endl;
+		//	std::cout << "dEdx_n = " << dEdx_n << " keV" << std::endl;
+		//	std::cout << "PHC = " << PHC << " keV" << std::endl;
+		//	std::cout << "Edet = " << Edet << " keV" << std::endl;
+		//}
 		
 		gPHC->SetPoint( gPHC->GetN(), E + dEdx_n, Edet );
 		gPHC_inv->SetPoint( gPHC_inv->GetN(), Edet, E + dEdx_n );
