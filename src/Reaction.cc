@@ -1,7 +1,7 @@
 #include "Reaction.hh"
 
 // Uncomment this below to switch to the Butler algorithm (currently in testing)
-//#define butler_algorithm
+#define butler_algorithm
 
 ClassImp( ISSParticle )
 ClassImp( ISSReaction )
@@ -17,9 +17,9 @@ double alpha_function( double *x, double *params ){
 	double alpha = x[0];
 	double z = params[0];
 	double r_meas = params[1];
-	double p = params[2];
-	double qb = params[3];
-	
+	double p = params[2];	//  p / gamma3
+	double qb = params[3];	//  qb / 2*pi
+
 	double root = p * TMath::Sin(alpha);
 	root -= qb * r_meas * TMath::Tan(alpha);
 	root -= qb * z;
@@ -39,9 +39,9 @@ double alpha_derivative( double *x, double *params ){
 	double alpha = x[0];
 	//double z = params[0]; // unused in derivative
 	double r_meas = params[1];
-	double p = params[2];
-	double qb = params[3];
-	
+	double p = params[2];	//  p / gamma3
+	double qb = params[3];	//  qb / 2*pi
+
 	double root = p * TMath::Cos(alpha);
 	root -= qb * r_meas / TMath::Cos(alpha) / TMath::Cos(alpha);
 
@@ -60,12 +60,12 @@ double butler_function( double *x, double *params ){
 	double z = x[0];
 	double z_meas = params[0];
 	double r_meas = params[1];
-	double p = params[2];
-	double qb = params[3]; //  over 2*pi
+	double p = params[2];	//  p / gamma3
+	double qb = params[3];	//  qb / 2*pi
 
 	// From Sam Bennett's first derivation, modified by A. Ceulemans
-	double alpha = TMath::ACos( qb * z / p );
-	double r_max = TMath::Abs( 2.0 * p * TMath::Sin( alpha ) / (qb * TMath::TwoPi()) );
+	double theta_lab = TMath::ACos( qb * z / p );
+	double r_max = TMath::Abs( 2.0 * p * TMath::Sin( theta_lab ) / (qb * TMath::TwoPi()) );
 	double psi = 2 * TMath::ASin( r_meas / r_max );
 	double root = z_meas - z * ( 1.0 - psi / TMath::TwoPi() );
 
@@ -77,23 +77,12 @@ double butler_function( double *x, double *params ){
 /// This is the derivative of Peter Butler's method
 /// \param[in] x The initial guess for z
 /// \param[in] params Various parameters required for this minimisation
-/// \returns root The derivative of the minimisation function
+/// \returns The derivative of the minimisation function
 double butler_derivative( double *x, double *params ){
 
-	// Equation to solve for z, LHS = 0
-	double z = x[0];
-	//double z_meas = params[0];
-	double r_meas = params[1];
-	double p = params[2];
-	double qb = params[3]; //  over 2*pi
-
-	// From Sam Bennett's first derivation, modified by A. Ceulemans
-	double alpha = TMath::ACos( qb * z / p );
-	double r_max = TMath::Abs( 2.0 * p * TMath::Sin( alpha ) / (qb * TMath::TwoPi()) );
-	double psi = 2.0 * TMath::ASin( r_meas / r_max );
-	double root = psi / TMath::TwoPi() - 1.0;
-
-	return root;
+	// Create the original function and solve the derivative
+	std::unique_ptr<TF1> func = std::make_unique<TF1>( "butler_function", butler_function, 0.0, TMath::PiOver2(), 4 );
+	return func->Derivative( x[0], params );
 
 }
 
@@ -104,11 +93,6 @@ double butler_derivative( double *x, double *params ){
 /// \returns root This number should be zero when minimised
 double theta_cm_function( double *x, double *params ){
 
-	// This function is currently simplified only for scattering
-	// i.e. I am not sure it works for transfer, but does for
-	// the elastic or inelastic scattering reactions, i.e. ELUM
-	// In that case, we need to sort of the Q value situation
-	
 	// Input to the function
 	double theta_cm = x[0];
 	double z_meas = params[0];
@@ -122,50 +106,44 @@ double theta_cm_function( double *x, double *params ){
 	double m4 = params[8];
 	
 	// Invariant mass = total energy in centre of mass frame
-	double E1 = m1 + T1;
-	double p1 = TMath::Power( E1, 2.0 ) - TMath::Power( m1, 2.0 );
-	p1 = TMath::Sqrt( p1 );
-	double Etot_cm = TMath::Power( T1 + m1 + m2, 2.0 );
-	Etot_cm -= TMath::Power( p1, 2.0 );
+	double Etot_cm = m1*m1 + m2*m2;
+	Etot_cm += 2.0 * ( T1 + m1 ) * m2;
 	Etot_cm = TMath::Sqrt( Etot_cm );
 	
 	// Work out what gamma and beta are
-	double E_lab = E1 + m2;
+	double E_lab = T1 + m1 + m2;
 	double gamma = E_lab / Etot_cm;
 	double beta = TMath::Sqrt( 1.0 - 1.0 / TMath::Power( gamma, 2.0 ) );
 
 	// What about the energy of the ejectile after the collision?
-	double E3_cm = TMath::Power( Etot_cm, 2.0 );
-	E3_cm -= TMath::Power( m4 + Ex, 2.0 );
-	E3_cm += TMath::Power( m3, 2.0 );
-	E3_cm /= 2.0 * Etot_cm;
-	
-	// Now the momentum of the ejectile
-	double p3_cm = TMath::Power( E3_cm, 2.0 );
+	double e3_cm = TMath::Power( Etot_cm, 2.0 );
+	e3_cm -= TMath::Power( m4 + Ex, 2.0 );
+	e3_cm += TMath::Power( m3, 2.0 );
+	e3_cm /= 2.0 * Etot_cm;
+
+	// Now the momentum and velocity of the ejectile
+	double p3_cm = TMath::Power( e3_cm, 2.0 );
 	p3_cm -= TMath::Power( m3, 2.0 );
 	p3_cm = TMath::Sqrt( p3_cm );
 	
-	// Using the angle relationships:
-	// p3_cm * sin(theta_cm) = p3_lab * sin(theta_lab)
-	// p3_cm * cos(theta_cm) = ptot_lab - p3_lab * cos(theta_lab)
-	//double ptot_lab = gamma * beta * E_lab;
-	//double theta_lab = p3_cm * TMath::Sin( TMath::Pi() - theta_cm );
-	//theta_lab /= ptot_lab - p3_cm * TMath::Cos( TMath::Pi() - theta_cm );
-	//theta_lab = TMath::ATan( theta_lab );
-
 	// From Daniel Clarke:
+	double p_lab = beta * E_lab;
 	double theta_lab = p3_cm * TMath::Sin( TMath::Pi() - theta_cm );
-	theta_lab /= p3_cm * TMath::Cos( TMath::Pi() - theta_cm ) + beta * Etot_cm;
+	theta_lab /= p3_cm * TMath::Cos( TMath::Pi() - theta_cm ) + beta * e3_cm;
 	theta_lab /= gamma;
 	theta_lab = TMath::ATan( theta_lab );
+	if( theta_lab < 0 ) theta_lab = TMath::Pi() + theta_lab;
 
-	// Momentum in the lab
-	double p3 = p3_cm * TMath::Sin( TMath::Pi() - theta_cm );
-	p3 /= TMath::Sin( theta_lab );
-	
+	// Energy of ejectile in the lab
+	double e3_lab = gamma * beta * p3_cm * TMath::Cos( TMath::Pi() - theta_cm );
+	e3_lab += gamma * e3_cm;
+	double p3_lab = TMath::Sqrt( e3_lab*e3_lab - m3*m3 );
+	double gamma3 = e3_lab / m3;
+	double beta3 = p3_lab / e3_lab;
+
 	// Maximum radius of particle, z position and missing orbit fraction (psi)
-	double r_max = TMath::Abs( 2.0 * p3 * TMath::Sin( theta_lab ) / (qb * TMath::TwoPi()) );
-	double z = p3 * TMath::Cos( theta_lab ) / qb;
+	double r_max = TMath::Abs( 2.0 * p3_lab * TMath::Sin( theta_lab ) / ( gamma3 * qb * TMath::TwoPi()) );
+	double z = p3_lab * TMath::Cos( theta_lab ) / ( gamma3 * qb );
 	double psi = 2.0 * TMath::ASin( r_meas / r_max );
 	
 	// This is the equation to find the root of
@@ -173,6 +151,19 @@ double theta_cm_function( double *x, double *params ){
 
 	return root;
 
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// This solves for the derivative of theta_cm kinematics function
+/// \param[in] x The initial guess for theta_cm
+/// \param[in] params Various parameters required for this minimisation
+/// \returns derivative of theta_cm_function
+double theta_cm_derivative( double *x, double *params ){
+
+	// Create the original function and solve the derivative
+	std::unique_ptr<TF1> func = std::make_unique<TF1>( "theta_cm_function", theta_cm_function, 0.0, TMath::Pi(), 9 );
+	return func->Derivative( x[0], params );
+	
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -194,15 +185,16 @@ ISSReaction::ISSReaction( std::string filename, ISSSettings *myset, bool source 
 	fa = std::make_unique<TF1>( "butler_function",   butler_function,   low_limit, upp_limit, 4 );
 	fb = std::make_unique<TF1>( "butler_derivative", butler_derivative, low_limit, upp_limit, 4 );
 #else
-	// Root finder algorithm - for alpha like Ryan does
+	// Root finder algorithm - for alpha like Ryan Tang does
 	fa = std::make_unique<TF1>( "alpha_function",   alpha_function,   0.0, TMath::PiOver2(), 4 );
 	fb = std::make_unique<TF1>( "alpha_derivative", alpha_derivative, 0.0, TMath::PiOver2(), 4 );
 #endif
 	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
 
 	// Root finder for the simulation function
-	fsim = std::make_unique<TF1>( "theta_cm_function", theta_cm_function, 0.0, TMath::Pi(), 7 );
-	rfsim = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kBRENT );
+	fsim = std::make_unique<TF1>( "theta_cm_function",   theta_cm_function,   0.0, TMath::Pi(), 9 );
+	dsim = std::make_unique<TF1>( "theta_cm_derivative", theta_cm_derivative, 0.0, TMath::Pi(), 9 );
+	rfsim = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
 
 
 	// Read in mass tables
@@ -582,11 +574,11 @@ void ISSReaction::ReadReaction() {
 		Recoil.SetZ( Beam.GetZ() );
 		Recoil.SetBindingEnergy( Beam.GetBindingEnergy() );
 
-		std::cout << std::endl << " +++  ";
-		std::cout << Beam.GetIsotope() << "(" << Target.GetIsotope() << ",";
-		std::cout << Ejectile.GetIsotope() << ")" << Recoil.GetIsotope();
-		std::cout << "  +++" << std::endl;
-		std::cout << "Q-value = " << GetQvalue()*0.001 << " MeV" << std::endl;
+		//std::cout << std::endl << " +++  ";
+		//std::cout << Beam.GetIsotope() << "(" << Target.GetIsotope() << ",";
+		//std::cout << Ejectile.GetIsotope() << ")" << Recoil.GetIsotope();
+		//std::cout << "  +++" << std::endl;
+		//std::cout << "Q-value = " << GetQvalue()*0.001 << " MeV" << std::endl;
 
 		// Define interaction position of the inner/outer edges and centre
 		TVector3 elum_inner_hit( elum_rin,  0.0, elum_z );
@@ -618,8 +610,8 @@ void ISSReaction::ReadReaction() {
 
 		std::cout << std::setprecision(5);
 		std::cout << "ELUM found at " << elum_z << " mm" << std::endl;
-		std::cout << "\t θ_cm = " << theta_cm_centre * TMath::RadToDeg();
-		std::cout << " degrees; E_lab = " << energy_centre << std::endl;
+		std::cout << " θ_cm = " << theta_cm_centre * TMath::RadToDeg();
+		std::cout << " degrees; E_lab = " << energy_centre << " keV" << std::endl;
 		std::cout << "\t" << theta_cm_inner * TMath::RadToDeg();
 		std::cout << " < θ_cm  < " << theta_cm_outer * TMath::RadToDeg();
 		std::cout << " degrees" << std::endl << "\t" << energy_inner;
@@ -983,7 +975,8 @@ float ISSReaction::SimulateDecay( TVector3 vec, double en ){
     //------------------------//
 	params[0] = z_meas;										// z in mm
 	params[1] = vec.Perp();									// r_meas in mm
-	params[2] = Ejectile.GetMomentumLab();					// p
+	params[2] = Ejectile.GetMomentumLab();					// p3
+	params[2] /= Ejectile.GetGamma();						// p3 / gamma3
 	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 	params[3] /= TMath::TwoPi(); 							// qb/2pi
 		
@@ -1025,10 +1018,10 @@ float ISSReaction::SimulateDecay( TVector3 vec, double en ){
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Currently empty function...
-/// This function will use the interaction position and excitation energy of an ejectile
-/// event, to solve the reaction kinematics and define parameters such as:
+/// This function  uses the interaction position of an ejectile
+/// to solve the reaction kinematics and define parameters such as:
 /// theta_cm, theta_lab,, E_lab, E_det, etc.
+/// One must set things like beam energy, excitation energy, etc, in advance
 /// \param[in] vec detection position vector
 void ISSReaction::SimulateReaction( TVector3 vec ){
 
@@ -1057,16 +1050,17 @@ void ISSReaction::SimulateReaction( TVector3 vec ){
 	params[7] = Ejectile.GetMass();
 	params[8] = Recoil.GetMass();
 
-	//for( int i = 0; i < 7; ++i )
+	//for( int i = 0; i < 9; ++i )
 	//	std::cout << "params[" << i << "] = " << params[i] << ";" << std::endl;
 
 	// Set parameters
 	fsim->SetParameters( params );
+	dsim->SetParameters( params );
 
 	// Build the theta_cm function, then solve
 	gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
-	ROOT::Math::Functor1D wf( *fsim );
-	if( rfsim->SetFunction( wf, 0.0, TMath::Pi() ) ) {
+	ROOT::Math::GradFunctor1D wf( *fsim, *dsim );
+	if( rfsim->SetFunction( wf, TMath::PiOver4() ) ) {
 		rfsim->Solve( 500, 1e-5, 1e-6 );
 		theta_cm = rfsim->Root();
 	}
@@ -1086,18 +1080,17 @@ void ISSReaction::SimulateReaction( TVector3 vec ){
 	
 	// From Daniel Clarke:
 	theta_lab = Ejectile.GetMomentumCM() * TMath::Sin( Ejectile.GetThetaCM() );
-	theta_lab /= Ejectile.GetMomentumCM() * TMath::Cos( Ejectile.GetThetaCM() ) + GetBeta() * GetEnergyTotCM();
+	theta_lab /= Ejectile.GetMomentumCM() * TMath::Cos( Ejectile.GetThetaCM() ) + GetBeta() * Ejectile.GetEnergyTotCM();
 	theta_lab /= GetGamma();
 	theta_lab = TMath::ATan( theta_lab );
 	Ejectile.SetThetaLab( theta_lab );
 
-	// Momentum and momentum in the lab
-	double p3 = Ejectile.GetMomentumCM() * TMath::Sin( Ejectile.GetThetaCM() );
-	p3 /= TMath::Sin( theta_lab );
-	double E3_lab = TMath::Power( p3, 2.0 );
-	E3_lab += TMath::Power( Ejectile.GetMass(), 2.0 );
-	E3_lab = TMath::Sqrt( E3_lab );
-	Ejectile.SetEnergyLab( E3_lab );
+	// Energy of ejectile in the lab
+	double e3_lab = TMath::Cos( Ejectile.GetThetaCM() );
+	e3_lab *= GetBeta() * Ejectile.GetMomentumCM();
+	e3_lab += Ejectile.GetEnergyTotCM();
+	e3_lab *= GetGamma();
+	Ejectile.SetEnergyLab( e3_lab - Ejectile.GetMass() );
 
 }
 
@@ -1132,6 +1125,7 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	params[0] = z_meas;										// z in mm
 	params[1] = r_meas;										// r_meas in mm
 	params[2] = Ejectile.GetMomentumLab();					// p
+	params[2] /= Ejectile.GetGamma();						// p/gamma
 	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 	params[3] /= TMath::TwoPi(); 							// qb/2pi
 	
@@ -1152,7 +1146,8 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 		// Calculate the lab angle from z position (Butler method)
 		alpha  = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 		alpha /= TMath::TwoPi(); 							// qb/2pi
-		alpha *= z / Ejectile.GetMomentumLab();				// * z/p
+		alpha *= z * Ejectile.GetGamma()					// * z * gamma
+		alpha /= Ejectile.GetMomentumLab();					// over p
 		alpha  = TMath::ASin( alpha );
 		
 #else
@@ -1175,13 +1170,14 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 
 		// Set parameters
 		params[2] = Ejectile.GetMomentumLab(); // p
+		params[2] /= Ejectile.GetGamma(); // p/g
 		fa->SetParameters( params );
 		fb->SetParameters( params );
+		ROOT::Math::GradFunctor1D wf( *fa, *fb );
 
 #ifdef butler_algorithm
 		// Use Butler's method and solve the root
 		z_prev = z;
-		ROOT::Math::GradFunctor1D wf( *fa, *fb ); // Butler method
 		rf->SetFunction( wf, z_meas );
 		rf->Solve( 500, 1e-5, 1e-6 );
 		
@@ -1194,7 +1190,6 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 #else
 		// Build the alpha function and derivative, then solve
 		alpha_prev = alpha;
-		ROOT::Math::GradFunctor1D wf( *fa, *fb ); // alpha method
 		rf->SetFunction( wf, 0.2 * TMath::Pi() ); // with derivatives
 		rf->Solve( 500, 1e-5, 1e-6 );
 		
@@ -1216,9 +1211,11 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	// Calculate the lab angle from z position (Butler method)
 	alpha  = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 	alpha /= TMath::TwoPi(); 							// qb/2pi
-	alpha *= z / Ejectile.GetMomentumLab();				// * z/p
+	alpha *= z * Ejectile.GetGamma()					// * z * gamma
+	alpha /= Ejectile.GetMomentumLab();					// over p
 	alpha  = TMath::ASin( alpha );
-	theta_lab  = alpha + TMath::PiOver2();
+	theta_lab = alpha;
+	if( z_meas < 0 ) theta_lab += TMath::PiOver2();
 	Ejectile.SetThetaLab( theta_lab );
 #else
 	// Get the real z value at beam axis and lab angle (alpha method)

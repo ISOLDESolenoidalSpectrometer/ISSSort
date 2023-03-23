@@ -313,6 +313,7 @@ private:
 	std::unique_ptr<TF1> fa;	///< Pointer to the minimisation function
 	std::unique_ptr<TF1> fb;	///< Pointer to the derivative of the minimisation function
 	std::unique_ptr<TF1> fsim;	///< Pointer to the minimisation function for the simulation of the reaction
+	std::unique_ptr<TF1> dsim;	///< Pointer to the derivative of the minimisation function for the simulation of the reaction
 	double params[9];			///< Array for holding parameters for the functions
 	double e3_cm;				///< Total energy of ejectile in centre of mass
 	double Ex;					///< Excitation energy of recoil
