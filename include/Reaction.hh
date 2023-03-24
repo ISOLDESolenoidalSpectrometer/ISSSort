@@ -260,6 +260,7 @@ public:
 
 	// Energy loss and stopping powers
 	double GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> &g );///< Calculate the energy loss of a given energy of particle through a given material
+	double GetNuclearEnergyLoss( double Ei, double range, std::unique_ptr<TGraph> &gn, std::unique_ptr<TGraph> &gtot );///< Calculate the nuclear specific energy loss
 	bool ReadStoppingPowers( std::string isotope1, std::string isotope2,
 				std::unique_ptr<TGraph> &g, std::unique_ptr<TGraph> &r,
 				bool electriconly = false, bool nuclearonly = false );///< Reads relevant SRIM files

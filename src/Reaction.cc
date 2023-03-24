@@ -650,6 +650,36 @@ double ISSReaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGrap
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// Returns the nuclear specific energy loss at a given initial energy and over the range travelled.
+/// A negative distance will add the energy back on, i.e. travelling backwards.
+/// This means that you will get a negative energy loss as a return value
+/// This interpolates the TGraph using a spline
+/// \param[in] Ei The initial energy of the nuclide
+/// \param[in] range The range over which the nuclide travels in the target material
+/// \param[in] gn The TGraph of the nuclear energy loss
+/// \param[in] gtot The TGraph of the total energy loss
+/// \returns En: The nuclear specific energy loss of a particular nuclide over the range
+double ISSReaction::GetNuclearEnergyLoss( double Ei, double range, std::unique_ptr<TGraph> &gn, std::unique_ptr<TGraph> &gtot ) {
+
+	unsigned int Nmeshpoints = 500; // number of steps to take in integration
+	double dx = range/(double)Nmeshpoints;
+	double E = Ei;
+	double En = 0;
+	
+	for( unsigned int i = 0; i < Nmeshpoints; i++ ){
+
+		if( E < 1. ) break; // when we fall below 100 keV we assume maximum energy loss
+		E -= gtot->Eval(E) * dx;
+		En += gn->Eval(E) * dx;
+		
+	}
+	
+	return En;
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
 /// Reads the stopping powers from SRIM files located in the directories, and 
 /// makes a TGraph from the data within. Generates a pdf file of the reaction 
 /// whenever it's called
@@ -804,13 +834,13 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 	// Draw the plot and save it somewhere
 	TCanvas *c = new TCanvas();
 	c->SetLogx();
-	//c->SetLogy();
 	g->Draw("A*");
 	std::string pdfname = srimfilename.substr( 0, srimfilename.find_last_of(".") );
 	if( electriconly ) pdfname += "_dedx_e.pdf";
 	else if( nuclearonly ) pdfname += "_dedx_n.pdf";
 	else pdfname += "_dedx.pdf";
 	c->SaveAs( pdfname.c_str() );
+	//c->SetLogy();
 	r->Draw("A*");
 	pdfname = srimfilename.substr( 0, srimfilename.find_last_of(".") ) + "_range.pdf";
 	c->SaveAs( pdfname.c_str() );
@@ -871,7 +901,7 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	double range, dEdx_n, dEdx_e;
 
 	// number of steps to take in integration
-	unsigned int Nmeshpoints = 1e5;
+	unsigned int Nmeshpoints = 2e4;
 	double dE = Emax/(double)Nmeshpoints;
 	double Edet = 0.0;
 
@@ -886,21 +916,21 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 		dEdx_e = gStopping[3]->Eval(E);
 
 		// Calculate the nuclear stopping
-		dEdx_n = GetEnergyLoss( E, range, gStopping[4] );
+		dEdx_n = GetNuclearEnergyLoss( E, range, gStopping[4], gStopping[2] );
 		
 		// From W. N. Lennard et al. NIM A248 (1986) 454
 		double PHC = e0_Si + k_Si * dEdx_e;
 		PHC = e0_Si / PHC;
 		Edet += dE * PHC;
 		
-		//if( i == 2000 ) {
-		//	std::cout << "Energy = " << E << " keV" << std::endl;
-		//	std::cout << "Range = " << range << " mm" << std::endl;
-		//	std::cout << "dEdx_e = " << dEdx_e << " keV/mm" << std::endl;
-		//	std::cout << "dEdx_n = " << dEdx_n << " keV" << std::endl;
-		//	std::cout << "PHC = " << PHC << " keV" << std::endl;
-		//	std::cout << "Edet = " << Edet << " keV" << std::endl;
-		//}
+		if( E > 2000. && E < 2010. ) {
+			std::cout << "Energy = " << E << " keV" << std::endl;
+			std::cout << "Range = " << range << " mm" << std::endl;
+			std::cout << "dEdx_e = " << dEdx_e << " keV/mm" << std::endl;
+			std::cout << "dEdx_n = " << dEdx_n << " keV" << std::endl;
+			std::cout << "PHC = " << PHC << " keV" << std::endl;
+			std::cout << "Edet = " << Edet << " keV" << std::endl;
+		}
 		
 		gPHC->SetPoint( gPHC->GetN(), E + dEdx_n, Edet );
 		gPHC_inv->SetPoint( gPHC_inv->GetN(), Edet, E + dEdx_n );
