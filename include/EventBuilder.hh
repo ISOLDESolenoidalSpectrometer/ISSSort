@@ -222,8 +222,10 @@ private:
 	// Array variables
 	std::vector<float>		pen_list;	///< list of p-side energies for ParticleFinder
 	std::vector<float>		nen_list;	///< list of n-side energies for ParticleFinder
-	std::vector<long>		ptd_list;	///< list of p-side time differences for ParticleFinder
-	std::vector<long>		ntd_list;	///< list of n-side time differences for ParticleFinder
+	std::vector<long>		ptd_list;	///< list of p-side time differences for ParticleFinder without time walk correction
+	std::vector<long>		ntd_list;	///< list of n-side time differences for ParticleFinder without time walk correction
+	std::vector<long>		pwalk_list;	///< list of p-side time differences for ParticleFinder WITH time walk correction
+	std::vector<long>		nwalk_list;	///< list of n-side time differences for ParticleFinder WITH time walk correction
 	std::vector<char>		pid_list;	///< list of p-side strip ids
 	std::vector<char>		nid_list;	///< list of n-side strip ids
 	std::vector<char>		pmod_list;	///< list of p-side modules numbers
@@ -282,24 +284,23 @@ private:
 	std::vector<unsigned long>	n_asic_pulser;	///< Number of asic pulses in the time-sorted data input tree (indexed by module in the array)
 
 	// Array Histograms
-	std::vector<std::vector<TH2F*>> pn_11;		///< Vector of vector of 2D histograms holding events with 1p and 1n hit
-	std::vector<std::vector<TH2F*>> pn_12;		///< Vector of vector of 2D histograms holding events with 1p and 2n hits
-	std::vector<std::vector<TH2F*>> pn_21;		///< Vector of vector of 2D histograms holding events with 2p and 1n hits
-	std::vector<std::vector<TH2F*>> pn_22;		///< Vector of vector of 2D histograms holding events with 2p and 2n hits
-	std::vector<std::vector<TH2F*>> pn_ab;		///< Vector of vector of 2D histograms with addback on p and n side
-	std::vector<std::vector<TH2F*>> pn_nab;		///< Vector of vector of 2D histograms with p singles and n addback
-	std::vector<std::vector<TH2F*>> pn_pab;		///< Vector of vector of 2D histograms with p addback and n singles
-	std::vector<std::vector<TH2F*>> pn_max;		///< Vector of vector of 2D histograms with p and n-side max energy
-	std::vector<std::vector<TH1F*>> pn_td;		///< Vector of vector of 1D histograms with p vs n side time difference
-	std::vector<std::vector<TH1F*>> pp_td;		///< Vector of vector of 1D histograms with p-side time differences
-	std::vector<std::vector<TH1F*>> nn_td;		///< Vector of vector of 1D histograms with n-side time differences
-    std::vector<std::vector<TH2F*>> pn_td_Ep;	///< Vector of vector of 2D histograms pn-time difference vs p-side energy
-    std::vector<std::vector<TH2F*>> pn_td_En;	///< Vector of vector of 2D histograms pn-time difference vs n-side energy
-	std::vector<std::vector<TH2F*>> pn_mult;	///< Vector of vector of 2D histograms p-side vs n-side multiplicity
-	
-	std::vector<std::vector<TH1F*>> pn_td_prompt; ///< Vector of vector of 1D histograms with p vs n side time difference (prompt coincidence imposed)
-	std::vector<std::vector<TH1F*>> pp_td_prompt; ///< Vector of vector of 1D histograms with p-side time differences (prompt coincidence imposed)
-	std::vector<std::vector<TH1F*>> nn_td_prompt; ///< Vector of vector of 1D histograms with n-side time differences (prompt coincidence imposed)
+	std::vector<std::vector<TH2F*>> pn_11;					///< Vector of vector of 2D histograms holding events with 1p and 1n hit
+	std::vector<std::vector<TH2F*>> pn_12;					///< Vector of vector of 2D histograms holding events with 1p and 2n hits
+	std::vector<std::vector<TH2F*>> pn_21;					///< Vector of vector of 2D histograms holding events with 2p and 1n hits
+	std::vector<std::vector<TH2F*>> pn_22;					///< Vector of vector of 2D histograms holding events with 2p and 2n hits
+	std::vector<std::vector<TH2F*>> pn_ab;					///< Vector of vector of 2D histograms with addback on p and n side
+	std::vector<std::vector<TH2F*>> pn_nab;					///< Vector of vector of 2D histograms with p singles and n addback
+	std::vector<std::vector<TH2F*>> pn_pab;					///< Vector of vector of 2D histograms with p addback and n singles
+	std::vector<std::vector<TH2F*>> pn_max;					///< Vector of vector of 2D histograms with p and n-side max energy
+	std::vector<std::vector<TH1F*>> pn_td;					///< Vector of vector of 1D histograms with p vs n side time difference
+	std::vector<std::vector<TH1F*>> pn_td_uncorrected;		///< Vector of vector of 1D histograms with p-side time differences
+	std::vector<std::vector<TH1F*>> pp_td;					///< Vector of vector of 1D histograms with p-side time differences
+	std::vector<std::vector<TH1F*>> nn_td;					///< Vector of vector of 1D histograms with n-side time differences
+    std::vector<std::vector<TH2F*>> pn_td_Ep;				///< Vector of vector of 2D histograms pn-time difference vs p-side energy
+    std::vector<std::vector<TH2F*>> pn_td_En;				///< Vector of vector of 2D histograms pn-time difference vs n-side energy
+    std::vector<std::vector<TH2F*>> pn_td_Ep_uncorrected;	///< Vector of vector of 2D histograms pn-time difference vs p-side energy
+    std::vector<std::vector<TH2F*>> pn_td_En_uncorrected;	///< Vector of vector of 2D histograms pn-time difference vs n-side energy
+	std::vector<std::vector<TH2F*>> pn_mult;				///< Vector of vector of 2D histograms p-side vs n-side multiplicity
 	
 	// Timing histograms
 	TH1F *tdiff;					///< Histogram containing the time difference between each real (not infodata) signal in the file
