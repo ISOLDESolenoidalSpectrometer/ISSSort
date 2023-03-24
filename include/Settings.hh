@@ -93,7 +93,9 @@ public:
 	// Event builder
 	inline double GetEventWindow(){ return event_window; };
 	inline double GetRecoilHitWindow(){ return recoil_hit_window; }
-	inline double GetArrayHitWindow(){ return array_hit_window; }
+	inline double GetArrayPNHitWindow(){ return array_pn_hit_window; }
+	inline double GetArrayPPHitWindow(){ return array_pp_hit_window; }
+	inline double GetArrayNNHitWindow(){ return array_nn_hit_window; }
 	inline double GetZeroDegreeHitWindow(){ return zd_hit_window; }
 	inline double GetGammaRayHitWindow(){ return gamma_hit_window; }
 
@@ -196,7 +198,9 @@ private:
 	// Event builder
 	double event_window;			///< Event builder time window in ns
 	double recoil_hit_window;		///< Time window in ns for correlating recoil E-dE hits
-	double array_hit_window;		///< Time window in ns for correlating hits on the array
+	double array_pn_hit_window;		///< Time window in ns for correlating p-n hits on the array
+	double array_pp_hit_window;		///< Time window in ns for correlating p-p hits on the array
+	double array_nn_hit_window;		///< Time window in ns for correlating n-n hits on the array
 	double zd_hit_window;			///< Time window in ns for correlating ZeroDegree E-dE hits
 	double gamma_hit_window;		///< Time window in ns for correlating Gamma-Gamma hits (addback?)
 

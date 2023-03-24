@@ -68,7 +68,11 @@ void ISSSettings::ReadSettings() {
 	// Event builder
 	event_window = config->GetValue( "EventWindow", 3e3 );
 	recoil_hit_window = config->GetValue( "RecoilHitWindow", 500 );
-	array_hit_window = config->GetValue( "ArrayHitWindow", 500 );
+	array_pn_hit_window = config->GetValue( "ArrayHitWindow.PN", 500 );
+	array_pp_hit_window = config->GetValue( "ArrayHitWindow.PP", 500 );
+	array_nn_hit_window = config->GetValue( "ArrayHitWindow.NN", 500 );
+	if( array_pn_hit_window == 500 ) // backwards compatibility
+		array_pn_hit_window = config->GetValue( "ArrayHitWindow", 500 );
 	zd_hit_window = config->GetValue( "ZeroDegreeHitWindow", 500 );
 	gamma_hit_window = config->GetValue( "GammaRayHitWindow", 500 );
 

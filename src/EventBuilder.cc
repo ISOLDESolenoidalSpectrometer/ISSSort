@@ -1186,7 +1186,7 @@ void ISSEventBuilder::ArrayFinder() {
 				pn_11[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(0) ) );
 
 				// Prompt coincidence
-				if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayHitWindow() ){
+				if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
 				
 					// Fill single event as a nice p/n correlation
 					array_evt->SetEvent( pen_list.at( pindex.at(0) ),
@@ -1250,7 +1250,7 @@ void ISSEventBuilder::ArrayFinder() {
 				
 				// Neighbour strips and prompt coincidence (p-sides)
 				if( TMath::Abs( pid_list.at( pindex.at(0) ) - pid_list.at( pindex.at(1) ) ) == 1 &&
-				    ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - pwalk_list.at( pindex.at(1) ) ) < set->GetArrayHitWindow()
+				    ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - pwalk_list.at( pindex.at(1) ) ) < set->GetArrayPPHitWindow()
 					 || TMath::Abs( ptd_list.at( pindex.at(0) ) - ptd_list.at( pindex.at(1) ) ) == 0 ) ) {
 
 					// Simple sum of both energies, cross-talk not included yet
@@ -1258,8 +1258,8 @@ void ISSEventBuilder::ArrayFinder() {
 					psum_en += pen_list.at( pindex.at(1) );
 
 					// Check that p's and n are coincident
-					if ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayHitWindow() ||
-					     TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayHitWindow() ){
+					if ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ||
+					     TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
 					
 						// Fill addback histogram
 						pn_pab[i][j]->Fill( psum_en, nen_list.at( nindex.at(0) ) );
@@ -1305,7 +1305,7 @@ void ISSEventBuilder::ArrayFinder() {
 				else {
 					
 					// p1 and n coincident
-					if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayHitWindow() ){
+					if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
 						
 						// Fill single event as a nice p/n correlation
 						array_evt->SetEvent( pen_list.at( pindex.at(0) ),
@@ -1327,7 +1327,7 @@ void ISSEventBuilder::ArrayFinder() {
 					}
 					
 					// p2 and n coincident
-					else if( TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayHitWindow() ){
+					else if( TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
 					
 						// Fill single event as a nice p/n correlation
 						array_evt->SetEvent( pen_list.at( pindex.at(1) ),
@@ -1377,7 +1377,7 @@ void ISSEventBuilder::ArrayFinder() {
 				
 				// Neighbour strips and prompt coincidence
 				if( TMath::Abs( nid_list.at( nindex.at(0) ) - nid_list.at( nindex.at(1) ) ) == 1 &&
-				   ( TMath::Abs( nwalk_list.at( nindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayHitWindow()
+				   ( TMath::Abs( nwalk_list.at( nindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayNNHitWindow()
 					|| TMath::Abs( ntd_list.at( nindex.at(0) ) - ntd_list.at( nindex.at(1) ) ) == 0 ) ) {
 
 					// Simple sum of both energies, cross-talk not included yet
@@ -1385,8 +1385,8 @@ void ISSEventBuilder::ArrayFinder() {
 					nsum_en += nen_list.at( nindex.at(1) );
 
 					// Check that p and n are coincident
-					if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayHitWindow() ||
-					   TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayHitWindow() ){
+					if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ||
+					   TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
 					
 						// Fill addback histogram
 						pn_nab[i][j]->Fill( pen_list.at( pindex.at(0) ), nsum_en );
@@ -1432,7 +1432,7 @@ void ISSEventBuilder::ArrayFinder() {
 				else {
 				
 					// n1 and p coincident
-					if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayHitWindow() ){
+					if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
 						
 						// Fill single event as a nice p/n correlation
 						array_evt->SetEvent( pen_list.at( pindex.at(0) ),
@@ -1454,7 +1454,7 @@ void ISSEventBuilder::ArrayFinder() {
 					}
 					
 					// n2 and p coincident
-					else if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayHitWindow() ){
+					else if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
 					
 						// Fill single event as a nice p/n correlation
 						array_evt->SetEvent( pen_list.at( pindex.at(0) ),
@@ -1500,7 +1500,7 @@ void ISSEventBuilder::ArrayFinder() {
 				
 				// Neighbour strips and prompt coincidence
 				if( TMath::Abs( pid_list.at( pindex.at(0) ) - pid_list.at( pindex.at(1) ) ) == 1 &&
-				    ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - pwalk_list.at( pindex.at(1) ) ) < set->GetArrayHitWindow()
+				    ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - pwalk_list.at( pindex.at(1) ) ) < set->GetArrayPPHitWindow()
 					 || TMath::Abs( ptd_list.at( pindex.at(0) ) - ptd_list.at( pindex.at(1) ) ) == 0 ) ) {
 
 					// Simple sum of both energies, cross-talk not included yet
@@ -1554,9 +1554,9 @@ void ISSEventBuilder::ArrayFinder() {
 				// Neighbour strips for both p and n and prompt coincidences for p and n respectively
 				if( TMath::Abs( pid_list.at( pindex.at(0) ) - pid_list.at( pindex.at(1) ) ) == 1 &&
 				    TMath::Abs( nid_list.at( nindex.at(0) ) - nid_list.at( nindex.at(1) ) ) == 1 && 
-				    ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - pwalk_list.at( pindex.at(1) ) ) < set->GetArrayHitWindow()
+				    ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - pwalk_list.at( pindex.at(1) ) ) < set->GetArrayPPHitWindow()
 					 || TMath::Abs( ptd_list.at( pindex.at(0) ) - ptd_list.at( pindex.at(1) ) ) == 0 ) &&
-				    ( TMath::Abs( nwalk_list.at( nindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayHitWindow()
+				    ( TMath::Abs( nwalk_list.at( nindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayNNHitWindow()
 					|| TMath::Abs( ntd_list.at( nindex.at(0) ) - ntd_list.at( nindex.at(1) ) ) == 0 ) ) {
 				    
 					// Simple sum of both energies, cross-talk not included yet
@@ -1566,10 +1566,10 @@ void ISSEventBuilder::ArrayFinder() {
 					nsum_en += nen_list.at( nindex.at(1) );
 					
 					// Check p and n prompt with each other
-					if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayHitWindow() ||
-					    TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayHitWindow() ||
-					    TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayHitWindow() ||
-					    TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayHitWindow() ){
+					if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ||
+					    TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ||
+					    TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ||
+					    TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
 					
 						// Fill addback histogram
 						pn_ab[i][j]->Fill( psum_en, nsum_en );
@@ -1617,7 +1617,7 @@ void ISSEventBuilder::ArrayFinder() {
 				
 				// Neighbour strips - p-side only and only p-prompt coincidences
 				else if( TMath::Abs( pid_list.at( pindex.at(0) ) - pid_list.at( pindex.at(1) ) ) == 1 &&
-						( TMath::Abs( pwalk_list.at( pindex.at(0) ) - pwalk_list.at( pindex.at(1) ) ) < set->GetArrayHitWindow()
+						( TMath::Abs( pwalk_list.at( pindex.at(0) ) - pwalk_list.at( pindex.at(1) ) ) < set->GetArrayPPHitWindow()
 						 || TMath::Abs( ptd_list.at( pindex.at(0) ) - ptd_list.at( pindex.at(1) ) ) == 0 ) ) {
 					
 					// Simple sum of both energies, cross-talk not included yet
@@ -1626,8 +1626,8 @@ void ISSEventBuilder::ArrayFinder() {
 					
 					// Check if any of the n-sides coincident with p
 					// n0 coincident with pp
-					if ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayHitWindow() ||
-					     TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayHitWindow() ){
+					if ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ||
+					     TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
 						
 						// Fill addback histogram
 						pn_pab[i][j]->Fill( psum_en, nen_list.at(0) );
@@ -1652,8 +1652,8 @@ void ISSEventBuilder::ArrayFinder() {
 					}
 					
 					// n1 coincident with pp
-					else if ( TMath::Abs( ptd_list.at( pindex.at(0) ) - ntd_list.at( nindex.at(1) ) ) < set->GetArrayHitWindow() ||
-					          TMath::Abs( ptd_list.at( pindex.at(1) ) - ntd_list.at( nindex.at(1) ) ) < set->GetArrayHitWindow() ){
+					else if ( TMath::Abs( ptd_list.at( pindex.at(0) ) - ntd_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ||
+					          TMath::Abs( ptd_list.at( pindex.at(1) ) - ntd_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
 						
 						// Fill addback histogram
 						pn_pab[i][j]->Fill( psum_en, nen_list.at( 1 ) );
@@ -1701,7 +1701,7 @@ void ISSEventBuilder::ArrayFinder() {
 
 				// Neighbour strips - n-side only prompt and p not prompt
 				else if( TMath::Abs( nid_list.at( nindex.at(0) ) - nid_list.at( nindex.at(1) ) ) == 1 &&
-						( TMath::Abs( nwalk_list.at( nindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayHitWindow()
+						( TMath::Abs( nwalk_list.at( nindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayNNHitWindow()
 						 || TMath::Abs( ntd_list.at( nindex.at(0) ) - ntd_list.at( nindex.at(1) ) ) == 0 ) ) {
 					
 					// Simple sum of both energies, cross-talk not included yet
@@ -1709,8 +1709,8 @@ void ISSEventBuilder::ArrayFinder() {
 					nsum_en += nen_list.at( nindex.at(1) );
 
 					// Check p0 with n sides
-					if ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayHitWindow() ||
-					     TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayHitWindow() ){
+					if ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ||
+					     TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
 					
 						// Fill addback histogram
 						pn_nab[i][j]->Fill( pen_list.at( pindex.at(0) ), nsum_en );
@@ -1735,8 +1735,8 @@ void ISSEventBuilder::ArrayFinder() {
 					}
 					
 					// Check p1 with n sides
-					else if( TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayHitWindow() ||
-					         TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayHitWindow() ){
+					else if( TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ||
+					         TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
 
 						// Fill addback histogram
 						pn_nab[i][j]->Fill( pen_list.at( pindex.at(1) ), nsum_en );
@@ -1781,7 +1781,7 @@ void ISSEventBuilder::ArrayFinder() {
 							ntmp_idx = nindex.at(k);
 							
 							// Prompt coincidence condition
-							if( TMath::Abs( pwalk_list.at( ptmp_idx ) - nwalk_list.at( ntmp_idx ) ) < set->GetArrayHitWindow() ){
+							if( TMath::Abs( pwalk_list.at( ptmp_idx ) - nwalk_list.at( ntmp_idx ) ) < set->GetArrayPNHitWindow() ){
 							
 								// Fill addback histogram
 								pn_ab[i][j]->Fill( pen_list.at( ptmp_idx ), nen_list.at( ntmp_idx ) );
@@ -1833,7 +1833,7 @@ void ISSEventBuilder::ArrayFinder() {
 							ntmp_idx = nindex.at(1 - k);
 							
 							// Prompt coincidence condition
-							if( TMath::Abs( pwalk_list.at( ptmp_idx ) - nwalk_list.at( ntmp_idx ) ) < set->GetArrayHitWindow() ){
+							if( TMath::Abs( pwalk_list.at( ptmp_idx ) - nwalk_list.at( ntmp_idx ) ) < set->GetArrayPNHitWindow() ){
 								
 								// Fill addback histogram
 								pn_ab[i][j]->Fill( pen_list.at( ptmp_idx ), nen_list.at( ntmp_idx ) );
