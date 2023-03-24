@@ -1053,10 +1053,19 @@ unsigned long ISSHistogrammer::FillHists() {
 		double tdiff;
 		
 		// Loop over array events
+#ifdef pside_only
 		// if you want the p-side only events, use GetArrayPMultiplicity
+		for( unsigned int j = 0; j < read_evts->GetArrayPMultiplicity(); ++j ){
+			
+			// Get array event - GetArrayPEvt is p-side only events
+			array_evt = read_evts->GetArrayPEvt(j);
+#else
 		// if you want the "normal" mode using p/n-coincidences, use GetArrayMultiplicity
 		for( unsigned int j = 0; j < read_evts->GetArrayMultiplicity(); ++j ){
-			//for( unsigned int j = 0; j < read_evts->GetArrayPMultiplicity(); ++j ){
+
+			// Get array event - GetArrayEvt is "normal" mode
+			array_evt = read_evts->GetArrayEvt(j);
+#endif
 			
 			// Get array event (uncomment the option you want)
 			// GetArrayEvt is "normal" mode

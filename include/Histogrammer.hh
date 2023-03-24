@@ -36,6 +36,11 @@
 #endif
 
 
+// Compiler switch for the pside only histogramming
+// uncomment the line below to ignore the p/n coincidences
+//#define pside_only
+
+
 class ISSHistogrammer {
 	
 public:
