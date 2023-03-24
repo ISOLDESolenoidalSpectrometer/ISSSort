@@ -1066,13 +1066,7 @@ unsigned long ISSHistogrammer::FillHists() {
 			// Get array event - GetArrayEvt is "normal" mode
 			array_evt = read_evts->GetArrayEvt(j);
 #endif
-			
-			// Get array event (uncomment the option you want)
-			// GetArrayEvt is "normal" mode
-			// GetArrayPEvt is p-side only events
-			array_evt = read_evts->GetArrayEvt(j);
-			//array_evt = read_evts->GetArrayPEvt(j);
-			
+
 			// Do the reaction
 			react->MakeReaction( array_evt->GetPosition(), array_evt->GetEnergy() );
 			
