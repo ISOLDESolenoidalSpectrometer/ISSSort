@@ -8,7 +8,6 @@ LIB_DIR     := ./lib
 INC_DIR     := ./include
 DOC_DIR		:= ./doc
 CUR_DIR		:= \"$(PWD)/\"
-PHD_DIR		:= \"$(PWD)/data/\"
 AME_FILE	:= \"$(PWD)/data/mass_1.mas20\"
 SRIM_DIR	:= \"$(PWD)/srim/\"
 
@@ -53,7 +52,6 @@ INCLUDES	+= -I$(INC_DIR) -I.
 # Pass in the data file locations
 CPPFLAGS		+= -DAME_FILE=$(AME_FILE)
 CPPFLAGS		+= -DSRIM_DIR=$(SRIM_DIR)
-CPPFLAGS		+= -DPHD_DIR=$(PHD_DIR)
 CPPFLAGS		+= -DCUR_DIR=$(CUR_DIR)
 
 # Linker.
