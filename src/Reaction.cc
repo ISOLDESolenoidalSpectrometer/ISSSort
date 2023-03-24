@@ -916,6 +916,9 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 		dEdx_e = gStopping[3]->Eval(E);
 
 		// Calculate the nuclear stopping
+		// NB: this is inefficient, but still only takes a couple of seconds
+		// ideally the integrated nuclear energy loss versus energy would be
+		// calculated only once and stored as a TGraph or something. Who cares?
 		dEdx_n = GetNuclearEnergyLoss( E, range, gStopping[4], gStopping[2] );
 		
 		// From W. N. Lennard et al. NIM A248 (1986) 454
