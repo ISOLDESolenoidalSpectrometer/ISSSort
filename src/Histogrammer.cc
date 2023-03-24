@@ -1203,8 +1203,8 @@ unsigned long ISSHistogrammer::FillHists() {
 			} // off ebis
 			
 			// Loop over recoil events
-			double tdiff_min = 99999.;
-			int recoil_idx = -1;
+			bool promptcheck = false;
+			bool energycheck = false;
 			for( unsigned int k = 0; k < read_evts->GetRecoilMultiplicity(); ++k ){
 				
 				// Get recoil event
@@ -1222,38 +1222,58 @@ unsigned long ISSHistogrammer::FillHists() {
 							recoil_array_tw_row[i][j]->Fill( tdiff, array_evt->GetEnergy() );
 				
 				
-				// Check which is recoil closest in time
-				if( tdiff < tdiff_min ) {
-					
-					recoil_idx = k;
-					tdiff_min = tdiff;
-					
-				}
+				// Check for prompt events with recoils
+				if( PromptCoincidence( recoil_evt, array_evt ) )
+					promptcheck = true;
+				
+				// Check energy gate
+				if( RecoilCut( recoil_evt ) )
+					energycheck = true;
 				
 			} // k
 			
-			// Only use the recoil closest in time
-			// TODO: Improve this selection criteria
-			if( recoil_idx >= 0 ) {
+			// Fill prompt hists
+			if( promptcheck == true ){
+					
+				// Recoils in coincidence with an array event
+				recoil_EdE_array[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ), recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 				
-				// Get recoil event
-				recoil_evt = read_evts->GetRecoilEvt( recoil_idx );
-
-				// Check for prompt events with recoils
-				if( PromptCoincidence( recoil_evt, array_evt ) ){
+				// Array histograms
+				E_vs_z_recoilT->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+				E_vs_z_recoilT_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+				Ex_recoilT->Fill( react->GetEx() );
+				Ex_recoilT_mod[array_evt->GetModule()]->Fill( react->GetEx() );
+				Ex_vs_theta_recoilT->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+				Ex_vs_theta_recoilT_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+				Ex_vs_z_recoilT->Fill( react->GetZmeasured(), react->GetEx() );
+				Ex_vs_z_recoilT_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
+				
+				// Check the E vs z cuts from the user
+				for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
 					
-					// Recoils in coincidence with an array event
-					recoil_EdE_array[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ), recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+					// Is inside the cut
+					if( react->GetEvsZCut(l)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+						
+						E_vs_z_recoilT_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+						Ex_recoilT_cut[l]->Fill( react->GetEx() );
+						Ex_vs_theta_recoilT_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+						Ex_vs_z_recoilT_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
+						
+					} // inside cut
 					
-					// Array histograms
-					E_vs_z_recoilT->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-					E_vs_z_recoilT_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-					Ex_recoilT->Fill( react->GetEx() );
-					Ex_recoilT_mod[array_evt->GetModule()]->Fill( react->GetEx() );
-					Ex_vs_theta_recoilT->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-					Ex_vs_theta_recoilT_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-					Ex_vs_z_recoilT->Fill( react->GetZmeasured(), react->GetEx() );
-					Ex_vs_z_recoilT_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
+				} // loop over cuts
+				
+				// Fill energy gate hists
+				if( energycheck == true ) {
+					
+					E_vs_z_recoil->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+					E_vs_z_recoil_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+					Ex_recoil->Fill( react->GetEx() );
+					Ex_recoil_mod[array_evt->GetModule()]->Fill( react->GetEx() );
+					Ex_vs_theta_recoil->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+					Ex_vs_theta_recoil_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+					Ex_vs_z_recoil->Fill( react->GetZmeasured(), react->GetEx() );
+					Ex_vs_z_recoil_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 					
 					// Check the E vs z cuts from the user
 					for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
@@ -1261,50 +1281,20 @@ unsigned long ISSHistogrammer::FillHists() {
 						// Is inside the cut
 						if( react->GetEvsZCut(l)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
 							
-							E_vs_z_recoilT_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-							Ex_recoilT_cut[l]->Fill( react->GetEx() );
-							Ex_vs_theta_recoilT_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-							Ex_vs_z_recoilT_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
+							E_vs_z_recoil_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+							Ex_recoil_cut[l]->Fill( react->GetEx() );
+							Ex_vs_theta_recoil_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+							Ex_vs_z_recoil_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
 							
 						} // inside cut
 						
 					} // loop over cuts
 					
-					// Add an energy gate
-					if( RecoilCut( recoil_evt ) ) {
-						
-						E_vs_z_recoil->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-						E_vs_z_recoil_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-						Ex_recoil->Fill( react->GetEx() );
-						Ex_recoil_mod[array_evt->GetModule()]->Fill( react->GetEx() );
-						Ex_vs_theta_recoil->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-						Ex_vs_theta_recoil_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-						Ex_vs_z_recoil->Fill( react->GetZmeasured(), react->GetEx() );
-						Ex_vs_z_recoil_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
-						
-						// Check the E vs z cuts from the user
-						for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
-							
-							// Is inside the cut
-							if( react->GetEvsZCut(l)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
-								
-								E_vs_z_recoil_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-								Ex_recoil_cut[l]->Fill( react->GetEx() );
-								Ex_vs_theta_recoil_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-								Ex_vs_z_recoil_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
-								
-							} // inside cut
-							
-						} // loop over cuts
-						
-					} // energy cuts
-					
-				} // prompt
+				} // energy cuts
 				
-			} // just one recoil of interest
-			
+			} // prompt
+				
 		} // array
-		
 		
 		// Loop over ELUM events
 		for( unsigned int j = 0; j < read_evts->GetElumMultiplicity(); ++j ){
@@ -1427,7 +1417,6 @@ unsigned long ISSHistogrammer::FillHists() {
 			std::cout.flush();
 			
 		}
-		
 		
 	} // all events
 	
