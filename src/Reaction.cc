@@ -661,7 +661,7 @@ double ISSReaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGrap
 /// \returns En: The nuclear specific energy loss of a particular nuclide over the range
 double ISSReaction::GetNuclearEnergyLoss( double Ei, double range, std::unique_ptr<TGraph> &gn, std::unique_ptr<TGraph> &gtot ) {
 
-	unsigned int Nmeshpoints = 500; // number of steps to take in integration
+	unsigned int Nmeshpoints = 200; // number of steps to take in integration
 	double dx = range/(double)Nmeshpoints;
 	double E = Ei;
 	double En = 0;
