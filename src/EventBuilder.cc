@@ -894,14 +894,14 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		unsigned long long idx_next = i+1; // no correction
 		
 		// Comment out the two lines below to ignore time-walk correction
-		if( i+1 == n_entries ) idx_next = n_entries; // with correction
-		else idx_next = att_index->GetIndex()[i+1]; // with correction
+		//if( i+1 == n_entries ) idx_next = n_entries; // with correction
+		//else idx_next = att_index->GetIndex()[i+1]; // with correction
 
 		if( input_tree->GetEntry(idx_next) ) {
 					
 			// Time difference to next event (with or without time walk correction)
-			//time_diff = in_data->GetTime() - time_first; // no correction
-			time_diff = in_data->GetTimeWithWalk() - time_first; // with correction
+			time_diff = in_data->GetTime() - time_first; // no correction
+			//time_diff = in_data->GetTimeWithWalk() - time_first; // with correction
 
 			// window = time_stamp_first + time_window
 			if( time_diff > build_window )
@@ -1153,14 +1153,14 @@ void ISSEventBuilder::ArrayFinder() {
 			// p-p time
 			for( unsigned int k = 0; k < pindex.size(); ++k )
 				for( unsigned int l = k+1; l < pindex.size(); ++l )
-					if( ptd_list.at( pindex.at(k) ) != ptd_list.at( pindex.at(l) ) &&
+					if( ptd_list.at( pindex.at(k) ) != ptd_list.at( pindex.at(l) ) ||
 					   TMath::Abs( pid_list.at( pindex.at(k) ) - pid_list.at( pindex.at(l) ) ) > 1 )
 						pp_td[i][j]->Fill( pwalk_list.at( pindex.at(k) ) - pwalk_list.at( pindex.at(l) ) );
 			
 			// n-n time
 			for( unsigned int k = 0; k < nindex.size(); ++k )
 				for( unsigned int l = k+1; l < nindex.size(); ++l )
-					if( ntd_list.at( nindex.at(k) ) != ntd_list.at( nindex.at(l) ) &&
+					if( ntd_list.at( nindex.at(k) ) != ntd_list.at( nindex.at(l) ) ||
 					   TMath::Abs( nid_list.at( nindex.at(k) ) - nid_list.at( nindex.at(l) ) ) > 1 )
 						nn_td[i][j]->Fill( nwalk_list.at( nindex.at(k) ) - nwalk_list.at( nindex.at(l) ) );
 			
