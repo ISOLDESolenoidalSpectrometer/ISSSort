@@ -668,7 +668,7 @@ double ISSReaction::GetNuclearEnergyLoss( double Ei, double range, std::unique_p
 	
 	for( unsigned int i = 0; i < Nmeshpoints; i++ ){
 
-		if( E < 1. ) break; // when we fall below 100 keV we assume maximum energy loss
+		if( E < 0.5 ) break; // when we fall below 0.5 keV we assume we're stopped
 		E -= gtot->Eval(E) * dx;
 		En += gn->Eval(E) * dx;
 		
