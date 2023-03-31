@@ -86,7 +86,7 @@ There is a plan to have these setting written in to the ROOT file itself, so the
 Events are built according to the particles on the array, correlating n- and p-side data, and also for recoil events, elum events, and ZeroDegree events in separate classes.
 This format is all contained within the ISSEvts class, which you can browse to see which functions are available.
 If you open the output file and want to draw directly from the `evt_tree`, you can load the library with `gSystem->Load("/path/to/ISSSort/lib/libiss_sort.so")` or by adding it to your .rootlogon.C.
-Then you have access to all the member functions like `array_event->GetZ()`, `recoil_event-GetEnergyLoss()`, `elum_event->GetSector()`, etc.
+Then you have access to all the member functions like `array_event->GetZ()`, `recoil_event->GetEnergyLoss()`, `elum_event->GetSector()`, etc.
 
 ### Step 4: Histogramming
 Finally a bunch of standard physics histograms are built using input from the reaction file, given with the `-r` flag.
