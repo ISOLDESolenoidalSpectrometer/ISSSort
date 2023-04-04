@@ -287,6 +287,12 @@ public:
 	inline void SourceOnly(){ flag_source = true; };///< Flags the measurement as source only
 
 	
+	// Getters for the particles
+	inline ISSParticle* GetBeam(){ return &Beam; };
+	inline ISSParticle* GetTarget(){ return &Target; };
+	inline ISSParticle* GetEjectile(){ return &Ejectile; };
+	inline ISSParticle* GetRecoil(){ return &Recoil; };
+
 private:
 
 	std::string fInputFile;///< The directory location of the input reaction file

@@ -1157,6 +1157,7 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 		// Calculate the lab angle from z position (Butler method)
 		alpha  = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 		alpha /= TMath::TwoPi(); 							// qb/2pi
+		alpha *= z;											// * z
 		//alpha *= z * Ejectile.GetGamma();					// * z * gamma
 		alpha /= Ejectile.GetMomentumLab();					// over p
 		alpha  = TMath::ASin( alpha );
