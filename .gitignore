@@ -13,3 +13,6 @@ srim/*.pdf
 doc/*
 *.html
 data/*.pdf
+utils/*.d
+utils/*.so
+utils/*.pcm
