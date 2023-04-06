@@ -348,7 +348,7 @@ void ISSReaction::ReadReaction() {
 	Beam.SetBindingEnergy( ame_be.at( Beam.GetIsotope() ) );
 
 	Eb = config->GetValue( "BeamE", 8520.0 ); // in keV/A
-	Eb *= Beam.GetA(); // keV
+	Eb *= Beam.GetMass_u(); // keV
 	Beam.SetEnergyLab( Eb ); // keV
 	
 	Target.SetA( config->GetValue( "TargetA", 2 ) );
