@@ -456,8 +456,10 @@ void ISSReaction::ReadReaction() {
 	}
 	
 	// EBIS time window
-	EBIS_On = config->GetValue( "EBIS.On", 1.2e6 );		// normally 1.2 ms in slow extraction
-	EBIS_Off = config->GetValue( "EBIS.Off", 2.52e7 );	// this allows a off window 20 times bigger than on
+	double tmp_on = config->GetValue( "EBIS.On", 1.2e6 );		// normally 1.2 ms in slow extraction
+	double tmp_off = config->GetValue( "EBIS.Off", 2.52e7 );	// this allows an off window 20 times bigger than on
+	EBIS_On = config->GetValue( "EBIS_On", tmp_on );	// backwards compatibility
+	EBIS_Off = config->GetValue( "EBIS_Off", tmp_off );	// backwards compatibility window 20 times bigger than on
 	EBIS_ratio = config->GetValue( "EBIS.FillRatio", GetEBISTimeRatio() );	// this is the measured ratio of EBIS On/off. Default is just the time window ratio
 
 	// T1 time window
