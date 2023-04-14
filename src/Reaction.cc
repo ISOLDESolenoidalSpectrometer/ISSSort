@@ -333,7 +333,7 @@ void ISSReaction::ReadReaction() {
 	
 	// Detector to target distances and dead layer of Si
 	z0 = config->GetValue( "ArrayDistance", -100.0 );
-	deadlayer = config->GetValue( "ArrayDeadlayer", 0.0005 ); // units of mm of Si
+	deadlayer = config->GetValue( "ArrayDeadlayer", 0.0004 ); // units of mm of Al
 
 	// Get particle properties
 	Beam.SetA( config->GetValue( "BeamA", 30 ) );
@@ -509,7 +509,7 @@ void ISSReaction::ReadReaction() {
 		stopping &= ReadStoppingPowers( Beam.GetIsotope(), Target.GetIsotope(), gStopping[0], gRange[0] );
 		stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), Target.GetIsotope(), gStopping[1], gRange[1] );
 	}
-	stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[2], gRange[2] );
+	stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), "Al", gStopping[2], gRange[2] );
 
 	// Get the electric and nuclear stopping powers for the PHC in a TGraph
 	phcurves = true;
@@ -708,7 +708,7 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 	title += isotope1 + " in " + isotope2;
 	title += ";" + isotope1 + " energy [keV];";
 	title += "Energy loss in " + isotope2;
-	if( isotope2 == "Si" ) title += " [keV/mm]";
+	if( isotope2 == "Si" || isotope2 == "Al" ) title += " [keV/mm]";
 	else title += " [keV/(mg/cm^{2})]";
 	g->SetTitle( title.c_str() );
 
@@ -824,7 +824,7 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 	conv_MeVmgcm2 = std::stod( line.substr( 0, 15 ) );
 	
 	// Now convert all the points in the plot
-	if( isotope2 == "Si" ) conv = conv_keVum * 1E3; // silicon thickness in mm, energy in keV
+	if( isotope2 == "Si" || isotope2 == "Al" ) conv = conv_keVum * 1E3; // silicon/aluminium thickness in mm, energy in keV
 	else conv = conv_MeVmgcm2 * 1E3; // target thickness in mg/cm2, energy in keV
 	for( Int_t i = 0; i < g->GetN(); ++i ){
 		
