@@ -347,7 +347,7 @@ void ISSReaction::ReadReaction() {
 	}
 	Beam.SetBindingEnergy( ame_be.at( Beam.GetIsotope() ) );
 
-	Eb = config->GetValue( "BeamE", 8520.0 ); // in keV/A
+	Eb = config->GetValue( "BeamE", 8520.0 ); // in keV/u
 	Eb *= Beam.GetMass_u(); // keV
 	Beam.SetEnergyLab( Eb ); // keV
 	
@@ -989,7 +989,7 @@ float ISSReaction::SimulateDecay( TVector3 vec, double en ){
 	params[0] = z_meas;										// z in mm
 	params[1] = vec.Perp();									// r_meas in mm
 	params[2] = Ejectile.GetMomentumLab();					// p3
-	//params[2] /= Ejectile.GetGamma();						// p3 / gamma3
+	params[2] /= Ejectile.GetGamma();						// p3 / gamma3
 	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 	params[3] /= TMath::TwoPi(); 							// qb/2pi
 		
@@ -1138,7 +1138,7 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	params[0] = z_meas;										// z in mm
 	params[1] = r_meas;										// r_meas in mm
 	params[2] = Ejectile.GetMomentumLab();					// p
-	//params[2] /= Ejectile.GetGamma();						// p/gamma
+	params[2] /= Ejectile.GetGamma();						// p/gamma
 	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 	params[3] /= TMath::TwoPi(); 							// qb/2pi
 	
@@ -1160,7 +1160,7 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 		alpha  = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 		alpha /= TMath::TwoPi(); 							// qb/2pi
 		alpha *= z;											// * z
-		//alpha *= z * Ejectile.GetGamma();					// * z * gamma
+		alpha *= Ejectile.GetGamma();						// * gamma
 		alpha /= Ejectile.GetMomentumLab();					// over p
 		alpha  = TMath::ASin( alpha );
 		
@@ -1184,7 +1184,7 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 
 		// Set parameters
 		params[2] = Ejectile.GetMomentumLab(); // p
-		//params[2] /= Ejectile.GetGamma(); // p/g
+		params[2] /= Ejectile.GetGamma(); // p/g
 		fa->SetParameters( params );
 		fb->SetParameters( params );
 		ROOT::Math::GradFunctor1D wf( *fa, *fb );
@@ -1226,7 +1226,7 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	alpha  = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 	alpha /= TMath::TwoPi(); 							// qb/2pi
 	alpha *= z;											// * z
-	//alpha *= Ejectile.GetGamma();						// * gamma
+	alpha *= Ejectile.GetGamma();						// * gamma
 	alpha /= Ejectile.GetMomentumLab();					// over p
 	alpha  = TMath::ASin( alpha );
 	theta_lab = alpha;
