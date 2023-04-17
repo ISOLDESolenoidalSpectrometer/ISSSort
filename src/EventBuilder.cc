@@ -1671,7 +1671,7 @@ void ISSEventBuilder::ArrayFinder() {
 					     TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
 						
 						// Fill addback histogram
-						pn_pab[i][j]->Fill( psum_en, nen_list.at(0) );
+						pn_pab[i][j]->Fill( psum_en, nen_list.at( nindex.at(0) ) );
 
 						// Fill the addback event for p-side, but max for n-side
 						array_evt->SetEvent( psum_en,
@@ -1699,7 +1699,7 @@ void ISSEventBuilder::ArrayFinder() {
 					          TMath::Abs( ptd_list.at( pindex.at(1) ) - ntd_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
 						
 						// Fill addback histogram
-						pn_pab[i][j]->Fill( psum_en, nen_list.at( 1 ) );
+						pn_pab[i][j]->Fill( psum_en, nen_list.at( nindex.at(1) ) );
 
 						// Fill the addback event for p-side, but max for n-side
 						array_evt->SetEvent( psum_en,
