@@ -12,7 +12,8 @@
 # asic_<mod>_<asic>_<ch>.Threshold:	// software threshold in adc units (default = 0)
 # asic_<mod>_<asic>.Time:			// time offset in ns (default = 0)
 # asic_<mod>_<asic>.Enabled:		// enabled (true or 1) or disable (false or 0) ASIC by ASIC (default = 1)
-# asic_<mod>_<asic>.WalkN:			// time walk parameters in function = [0] + [1] * exp( -1.0 * [2] * x )
+# asic_<mod>_<asic>.WalkType:		// time walk function: 0 = Annie's, 1 = Sam's
+# asic_<mod>_<asic>.Walk<N>.Hit<X>:	// time walk parameters, N (=0-4), for hit bit X (=0/1) data
 #
 # Format - CAEN calibration
 # caen_<mod>_<ch>.Offset:		// energy calibration offset (default = 0.0)

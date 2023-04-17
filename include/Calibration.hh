@@ -60,7 +60,7 @@ public:
 	unsigned int AsicThreshold( unsigned int mod, unsigned int asic, unsigned int chan );
 	long AsicTime( unsigned int mod, unsigned int asic );
 	bool AsicEnabled( unsigned int mod, unsigned int asic );
-	float AsicWalk( unsigned int mod, unsigned int asic, float energy );
+	float AsicWalk( unsigned int mod, unsigned int asic, float energy, bool hit );
 	float CaenEnergy( unsigned int mod, unsigned int chan, int raw );
 	unsigned int CaenThreshold( unsigned int mod, unsigned int chan );
 	long CaenTime( unsigned int mod, unsigned int chan );
@@ -183,7 +183,8 @@ private:
 	std::vector< std::vector< std::vector<unsigned int> > > fAsicThreshold;///< Threshold for raw signals on the ASICs
 	std::vector< std::vector<long> > fAsicTime;///< Time offset for signals on a given ASIC
 	std::vector< std::vector<bool> > fAsicEnabled;///< Boolean determining if ASIC is enabled or not
-	std::vector< std::vector< std::vector<double> > > fAsicWalk;///< Time-walk parameters for the ASICs, with definitions in walk_function( double *x, double *params )
+	std::vector< std::vector< std::vector<double> > > fAsicWalkHit0;///< Time-walk parameters for the ASICs for hit bit 0 events
+	std::vector< std::vector< std::vector<double> > > fAsicWalkHit1;///< Time-walk parameters for the ASICs for hit bit 1 events
 	std::vector< std::vector<unsigned char> > fAsicWalkType;///< Type of time-walk parameters for the ASICs, with 0: Annie Dolan's poly + exp function and 1: Sam Reeve's inverted thing
 
 	std::vector< std::vector<float> > fCaenOffset;///< Constant in CAEN energy calculation

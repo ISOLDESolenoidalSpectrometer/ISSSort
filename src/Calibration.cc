@@ -87,7 +87,8 @@ void ISSCalibration::ReadCalibration() {
 	fAsicThreshold.resize( set->GetNumberOfArrayModules() );
 	fAsicTime.resize( set->GetNumberOfArrayModules() );
 	fAsicEnabled.resize( set->GetNumberOfArrayModules() );
-	fAsicWalk.resize( set->GetNumberOfArrayModules() );
+	fAsicWalkHit0.resize( set->GetNumberOfArrayModules() );
+	fAsicWalkHit1.resize( set->GetNumberOfArrayModules() );
 	fAsicWalkType.resize( set->GetNumberOfArrayModules() );
 	
 	fAsicOffsetDefault = -4100.0;
@@ -103,7 +104,8 @@ void ISSCalibration::ReadCalibration() {
 		fAsicThreshold[mod].resize( set->GetNumberOfArrayASICs() );
 		fAsicTime[mod].resize( set->GetNumberOfArrayASICs() );
 		fAsicEnabled[mod].resize( set->GetNumberOfArrayASICs() );
-		fAsicWalk[mod].resize( set->GetNumberOfArrayASICs() );
+		fAsicWalkHit0[mod].resize( set->GetNumberOfArrayASICs() );
+		fAsicWalkHit1[mod].resize( set->GetNumberOfArrayASICs() );
 		fAsicWalkType[mod].resize( set->GetNumberOfArrayASICs() );
 
 		for( unsigned int asic = 0; asic < set->GetNumberOfArrayASICs(); asic++ ){
@@ -117,10 +119,16 @@ void ISSCalibration::ReadCalibration() {
 			fAsicEnabled[mod][asic] = config->GetValue( Form( "asic_%d_%d.Enabled", mod, asic ), true );
 			
 			fAsicWalkType[mod][asic] = config->GetValue( Form( "asic_%d_%d.WalkType", mod, asic ), 0 ); // default is still Annie's
-			fAsicWalk[mod][asic].resize( nwalkpars );
-			for( unsigned int i = 0; i < nwalkpars; i++ )
-				fAsicWalk[mod][asic][i] = config->GetValue( Form( "asic_%d_%d.Walk%d", mod, asic, i ), 0.0 );
-
+			fAsicWalkHit0[mod][asic].resize( nwalkpars );
+			fAsicWalkHit1[mod][asic].resize( nwalkpars );
+			for( unsigned int i = 0; i < nwalkpars; i++ ) {
+				
+				double tmpwalk = config->GetValue( Form( "asic_%d_%d.Walk%d", mod, asic, i ), 0.0 ); // backwards compatibility
+				fAsicWalkHit0[mod][asic][i] = config->GetValue( Form( "asic_%d_%d.Walk%d.Hit0", mod, asic, i ), tmpwalk );
+				fAsicWalkHit1[mod][asic][i] = config->GetValue( Form( "asic_%d_%d.Walk%d.Hit1", mod, asic, i ), tmpwalk );
+				
+			}
+			
 			for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
 				
 				fAsicOffset[mod][asic][chan] = config->GetValue( Form( "asic_%d_%d_%d.Offset", mod, asic, chan ), fAsicOffsetDefault );
@@ -270,8 +278,9 @@ bool ISSCalibration::AsicEnabled( unsigned int mod, unsigned int asic ){
 /// \param[in] mod The module on the array
 /// \param[in] asic The ASIC number on the module
 /// \param[in] energy The energy of the signal
+/// \param[in] hit Tne hit bit value for the event
 /// \returns The time-walk-corrected energy of the signal
-float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energy ){
+float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energy, bool hit ){
 	
 	float walk = 0;
 	
@@ -280,10 +289,14 @@ float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energ
 		
 		// Check if all values are defaulted to zero - no walk correction
 		bool nowalk = true;
-		for( unsigned int i = 0; i < nwalkpars; i++ )
-			if( TMath::Abs( fAsicWalk[mod][asic][i] ) > 1.0e-6 )
+		for( unsigned int i = 0; i < nwalkpars; i++ ) {
+			
+			if( ( TMath::Abs( fAsicWalkHit0[mod][asic][i] ) > 1.0e-6 && !hit ) ||
+			    ( TMath::Abs( fAsicWalkHit1[mod][asic][i] ) > 1.0e-6 &&  hit ) )
 				nowalk = false;
-		
+			   
+		}
+			   
 		// If no walk correction, just return 0
 		if( nowalk ) return 0.0;
 
@@ -291,9 +304,13 @@ float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energ
 		else {
 			
 			// Params for time walk function ROOT finder
-			for( unsigned int i = 0; i < nwalkpars; i++ )
-				walk_params[i] = fAsicWalk[mod][asic][i];
-			
+			for( unsigned int i = 0; i < nwalkpars; i++ ){
+				
+				if( hit ) walk_params[i] = fAsicWalkHit1[mod][asic][i];
+				else walk_params[i] = fAsicWalkHit0[mod][asic][i];
+				
+			}
+				
 			// Last one is always the energy
 			walk_params[nwalkpars] = energy;
 			
@@ -324,7 +341,7 @@ float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energ
 			
 				// Functional form: f(x) = a + b/(c-d*x)
 				// Solved for x, where x is time walk and f(x) is energy
-				float walk = walk_params[2] - walk_params[1];
+				walk = walk_params[2] - walk_params[1];
 				walk /= walk_params[4] - walk_params[0];
 				walk /= walk_params[3];
 
@@ -459,10 +476,16 @@ void ISSCalibration::PrintCalibration( std::ostream &stream, std::string opt ){
 					if( fAsicTime[mod][asic] != 0 ) stream << Form( "asic_%d_%d.Time: %ld", mod, asic, fAsicTime[mod][asic] ) << std::endl;
 					if( !fAsicEnabled[mod][asic] ) stream << Form( "asic_%d_%d.Enabled: %d", mod, asic, 0 ) << std::endl;
 		
-					for( unsigned int i = 0; i < nwalkpars; i++ )
-						if( fAsicWalk[mod][asic][i] > 1e-9 || fAsicWalk[mod][asic][i] < 1e-9 )
-							stream << Form( "asic_%d_%d.Walk%d: %f", mod, asic, i, fAsicWalk[mod][asic][i] ) << std::endl;
-
+					for( unsigned int i = 0; i < nwalkpars; i++ ) {
+						
+						if( fAsicWalkHit0[mod][asic][i] > 1e-9 || fAsicWalkHit0[mod][asic][i] < 1e-9 )
+							stream << Form( "asic_%d_%d.Walk%d.Hit0: %f", mod, asic, i, fAsicWalkHit0[mod][asic][i] ) << std::endl;
+						
+						if( fAsicWalkHit1[mod][asic][i] > 1e-9 || fAsicWalkHit1[mod][asic][i] < 1e-9 )
+							stream << Form( "asic_%d_%d.Walk%d.Hit1: %f", mod, asic, i, fAsicWalkHit1[mod][asic][i] ) << std::endl;
+						
+					}
+					
 				}
 				
 				for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){

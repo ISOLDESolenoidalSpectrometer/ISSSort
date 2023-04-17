@@ -453,7 +453,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			
 				myenergy = cal->AsicEnergy( mymod, myasic,
 									 mych, asic_data->GetAdcValue() );
-				mywalk = cal->AsicWalk( mymod, myasic, myenergy );
+				mywalk = cal->AsicWalk( mymod, myasic, myenergy, myhitbit );
 			
 				if( asic_data->GetAdcValue() < cal->AsicThreshold( mymod, myasic, mych ) )
 					mythres = false;
