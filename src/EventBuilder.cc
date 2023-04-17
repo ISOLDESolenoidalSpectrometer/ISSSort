@@ -1630,15 +1630,15 @@ void ISSEventBuilder::ArrayFinder() {
 					     TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
 						
 						// Fill addback histogram
-						pn_pab[i][j]->Fill( psum_en, nen_list.at(0) );
+						pn_pab[i][j]->Fill( psum_en, nen_list.at( nindex.at(0) ) );
 
 						// Fill the addback event for p-side, but max for n-side
 						array_evt->SetEvent( psum_en,
-											 nen_list.at( 0 ),
+											 nen_list.at( nindex.at(0) ),
 											 pid_list.at( pmax_idx ),
-											 nid_list.at( 0 ),
+											 nid_list.at( nindex.at(0) ),
 											 pwalk_list.at( pmax_idx ),
-											 nwalk_list.at( 0 ),
+											 nwalk_list.at( nindex.at(0) ),
 											 i, j );
 
 						write_evts->AddEvt( array_evt );
@@ -1656,15 +1656,15 @@ void ISSEventBuilder::ArrayFinder() {
 					          TMath::Abs( ptd_list.at( pindex.at(1) ) - ntd_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
 						
 						// Fill addback histogram
-						pn_pab[i][j]->Fill( psum_en, nen_list.at( 1 ) );
+						pn_pab[i][j]->Fill( psum_en, nen_list.at( nindex.at(1) ) );
 
 						// Fill the addback event for p-side, but max for n-side
 						array_evt->SetEvent( psum_en,
-											 nen_list.at( 1 ),
+											 nen_list.at( nindex.at(1) ),
 											 pid_list.at( pmax_idx ),
-											 nid_list.at( 1 ),
+											 nid_list.at( nindex.at(1) ),
 											 pwalk_list.at( pmax_idx ),
-											 nwalk_list.at( 1 ),
+											 nwalk_list.at( nindex.at(1) ),
 											 i, j );
 
 						write_evts->AddEvt( array_evt );
