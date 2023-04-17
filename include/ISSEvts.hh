@@ -22,7 +22,8 @@ public:
 	void SetEvent( float mypen, float mynen,
 				   unsigned char mypid, unsigned char mynid,
 				   unsigned long myptime, unsigned long myntime,
-				   unsigned char mymod, unsigned char row );
+				   bool myphit, bool mynhit,
+				   unsigned char mymod, unsigned char myrow );
 	
 	// Copy event
 	void CopyEvent( std::shared_ptr<ISSArrayEvt> in );
@@ -37,6 +38,8 @@ public:
 	inline double			GetTimeDouble(){ return (double)ptime; };
 	inline unsigned long	GetPTime(){ return ptime; };
 	inline unsigned long 	GetNTime(){ return ntime; };
+	inline bool 			GetPHit(){ return phit; };
+	inline bool 			GetNHit(){ return nhit; };
 	inline unsigned char	GetModule(){ return mod; };
 	inline unsigned char	GetRow(){ return row; };
 
@@ -50,6 +53,8 @@ public:
 private:
 
 	// variables for particle event
+	bool			phit;	///< hit bit value for p-side event
+	bool			nhit;	///< hit bit value for n-side event
 	unsigned char	mod;	///< module number
 	unsigned char	row;	///< row number of the silicon
 	float			pen;	///< p-side energy in keV
@@ -60,7 +65,7 @@ private:
 	unsigned long	ntime;	///< n-side timestamp
 
 
-	ClassDef( ISSArrayEvt, 2 )
+	ClassDef( ISSArrayEvt, 3 )
 
 };
 

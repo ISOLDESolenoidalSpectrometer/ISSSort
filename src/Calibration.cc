@@ -88,6 +88,7 @@ void ISSCalibration::ReadCalibration() {
 	fAsicTime.resize( set->GetNumberOfArrayModules() );
 	fAsicEnabled.resize( set->GetNumberOfArrayModules() );
 	fAsicWalk.resize( set->GetNumberOfArrayModules() );
+	fAsicWalkType.resize( set->GetNumberOfArrayModules() );
 	
 	fAsicOffsetDefault = -4100.0;
 	fAsicGainDefault = 16.0;
@@ -103,6 +104,7 @@ void ISSCalibration::ReadCalibration() {
 		fAsicTime[mod].resize( set->GetNumberOfArrayASICs() );
 		fAsicEnabled[mod].resize( set->GetNumberOfArrayASICs() );
 		fAsicWalk[mod].resize( set->GetNumberOfArrayASICs() );
+		fAsicWalkType[mod].resize( set->GetNumberOfArrayASICs() );
 
 		for( unsigned int asic = 0; asic < set->GetNumberOfArrayASICs(); asic++ ){
 
@@ -113,7 +115,8 @@ void ISSCalibration::ReadCalibration() {
 
 			fAsicTime[mod][asic] = config->GetValue( Form( "asic_%d_%d.Time", mod, asic ), 0 );
 			fAsicEnabled[mod][asic] = config->GetValue( Form( "asic_%d_%d.Enabled", mod, asic ), true );
-
+			
+			fAsicWalkType[mod][asic] = config->GetValue( Form( "asic_%d_%d.WalkType", mod, asic ), 0 ); // default is still Annie's
 			fAsicWalk[mod][asic].resize( nwalkpars );
 			for( unsigned int i = 0; i < nwalkpars; i++ )
 				fAsicWalk[mod][asic][i] = config->GetValue( Form( "asic_%d_%d.Walk%d", mod, asic, i ), 0.0 );
@@ -293,23 +296,39 @@ float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energ
 			
 			// Last one is always the energy
 			walk_params[nwalkpars] = energy;
-
-			// Set parameters
-			fa->SetParameters( walk_params );
-			fb->SetParameters( walk_params );
 			
-			// Build the function and derivative, then solve
-			gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
-			ROOT::Math::GradFunctor1D wf( *fa, *fb );
-			rf->SetFunction( wf, -2e4, 2e4 ); // limits
-			rf->Solve( 500, 1e-4, 1e-5 );
-
-			// Check result
-			if( rf->Status() ){
-				walk = TMath::QuietNaN();
+			// Annie Dolan's function
+			if( fAsicWalkType[mod][asic] == 0 ) {
+				
+				// Set parameters
+				fa->SetParameters( walk_params );
+				fb->SetParameters( walk_params );
+				
+				// Build the function and derivative, then solve
+				gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
+				ROOT::Math::GradFunctor1D wf( *fa, *fb );
+				rf->SetFunction( wf, -2e4, 2e4 ); // limits
+				rf->Solve( 500, 1e-4, 1e-5 );
+				
+				// Check result
+				if( rf->Status() ){
+					walk = TMath::QuietNaN();
+				}
+				else walk = rf->Root();
+				gErrorIgnoreLevel = kInfo; // print info and above again
+				
 			}
-			else walk = rf->Root();
-			gErrorIgnoreLevel = kInfo; // print info and above again
+			
+			// Sam Reeve's function
+			if( fAsicWalkType[mod][asic] == 1 ) {
+			
+				// Functional form: f(x) = a + b/(c-d*x)
+				// Solved for x, where x is time walk and f(x) is energy
+				float walk = walk_params[2] - walk_params[1];
+				walk /= walk_params[4] - walk_params[0];
+				walk /= walk_params[3];
+
+			}
 			
 		}
 				

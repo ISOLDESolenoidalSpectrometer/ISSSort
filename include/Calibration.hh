@@ -184,6 +184,7 @@ private:
 	std::vector< std::vector<long> > fAsicTime;///< Time offset for signals on a given ASIC
 	std::vector< std::vector<bool> > fAsicEnabled;///< Boolean determining if ASIC is enabled or not
 	std::vector< std::vector< std::vector<double> > > fAsicWalk;///< Time-walk parameters for the ASICs, with definitions in walk_function( double *x, double *params )
+	std::vector< std::vector<unsigned char> > fAsicWalkType;///< Type of time-walk parameters for the ASICs, with 0: Annie Dolan's poly + exp function and 1: Sam Reeve's inverted thing
 
 	std::vector< std::vector<float> > fCaenOffset;///< Constant in CAEN energy calculation
 	std::vector< std::vector<float> > fCaenGain;///< Linear term in CAEN energy calculation

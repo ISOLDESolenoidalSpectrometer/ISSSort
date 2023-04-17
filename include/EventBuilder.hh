@@ -212,7 +212,8 @@ private:
 	unsigned char		myside;		///< p-side = 0; n-side = 1
 	unsigned char		myrow;		///< 4 wafers along array, 2 dE-E, 13 for gas
 	int					mystrip;	///< strip number for DSSSD
-	
+	bool				myhitbit;	///< hit bit enabled?
+
 	// Data variables - Recoil / ELUM / ZeroDegree / MWPC
 	unsigned char		myid;		///< generic detector id
 	unsigned char		mysector;	///< 4 quadrants of the recoil, for example
@@ -232,6 +233,8 @@ private:
 	std::vector<char>		nmod_list;	///< list of n-side modules numbers
 	std::vector<char>		prow_list;	///< list of p-side row numbers
 	std::vector<char>		nrow_list;	///< list of n-side row numbers
+	std::vector<bool>		phit_list;	///< list of p-side hit bit values
+	std::vector<bool>		nhit_list;	///< list of n-side hit bit values
 
 	// Recoil variables
 	std::vector<float>	ren_list;	///< list of recoil energies for RecoilFinder

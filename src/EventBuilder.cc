@@ -298,7 +298,9 @@ void ISSEventBuilder::Initialise(){
 	nmod_list.clear();
 	prow_list.clear();
 	nrow_list.clear();
-	
+	phit_list.clear();
+	nhit_list.clear();
+
 	ren_list.clear();
 	rtd_list.clear();
 	rid_list.clear();
@@ -334,7 +336,9 @@ void ISSEventBuilder::Initialise(){
 	std::vector<char>().swap(nmod_list);
 	std::vector<char>().swap(prow_list);
 	std::vector<char>().swap(nrow_list);
-	
+	std::vector<bool>().swap(phit_list);
+	std::vector<bool>().swap(nhit_list);
+
 	std::vector<float>().swap(ren_list);
 	std::vector<long>().swap(rtd_list);
 	std::vector<char>().swap(rid_list);
@@ -444,6 +448,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			myasic = asic_data->GetAsic();
 			myside = asic_side.at( myasic );
 			myrow = array_row.at( myasic ).at( mych );
+			myhitbit = asic_data->GetHitBit();
 			if( overwrite_cal ) {
 			
 				myenergy = cal->AsicEnergy( mymod, myasic,
@@ -486,6 +491,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 					pmod_list.push_back( mymod );
 					pid_list.push_back( mystrip );
 					prow_list.push_back( myrow );
+					phit_list.push_back( myhitbit );
 
 					hit_ctr++; // increase counter for bits of data included in this event
 
@@ -510,6 +516,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 					nmod_list.push_back( mymod );
 					nid_list.push_back( mystrip );
 					nrow_list.push_back( myrow );
+					nhit_list.push_back( myhitbit );
 
 					hit_ctr++; // increase counter for bits of data included in this event
 
@@ -1195,6 +1202,8 @@ void ISSEventBuilder::ArrayFinder() {
 										 nid_list.at( nindex.at(0) ),
 										 pwalk_list.at( pindex.at(0) ),
 										 nwalk_list.at( nindex.at(0) ),
+										 phit_list.at( pindex.at(0) ),
+										 nhit_list.at( nindex.at(0) ),
 										 i, j );
 					
 					write_evts->AddEvt( array_evt );
@@ -1216,6 +1225,8 @@ void ISSEventBuilder::ArrayFinder() {
 									  5,
 									  pwalk_list.at( pindex.at(0) ),
 									  0,
+									  phit_list.at( pindex.at(0) ),
+									  false,
 									  i, j );
 
 					write_evts->AddEvt( arrayp_evt );
@@ -1235,6 +1246,8 @@ void ISSEventBuilder::ArrayFinder() {
 									  5,
 									  pwalk_list.at( pindex.at(0) ),
 									  0,
+									  phit_list.at( pindex.at(0) ),
+									  false,
 									  i, j );
 
 				write_evts->AddEvt( arrayp_evt );
@@ -1271,6 +1284,8 @@ void ISSEventBuilder::ArrayFinder() {
 											 nid_list.at( nindex.at(0) ),
 											 pwalk_list.at( pmax_idx ),
 											 nwalk_list.at( nindex.at(0) ),
+											 phit_list.at( pindex.at(0) ),
+											 nhit_list.at( nindex.at(0) ),
 											 i, j );
 
 						write_evts->AddEvt( array_evt );
@@ -1292,6 +1307,8 @@ void ISSEventBuilder::ArrayFinder() {
 									  5,
 									  pwalk_list.at( pmax_idx ),
 									  0,
+									  phit_list.at( pmax_idx ),
+									  false,
 									  i, j );
 
 						write_evts->AddEvt( arrayp_evt );
@@ -1314,6 +1331,8 @@ void ISSEventBuilder::ArrayFinder() {
 											 nid_list.at( nindex.at(0) ),
 											 pwalk_list.at( pindex.at(0) ),
 											 nwalk_list.at( nindex.at(0) ),
+											 phit_list.at( pindex.at(0) ),
+											 nhit_list.at( nindex.at(0) ),
 											 i, j );
 						
 						write_evts->AddEvt( array_evt );
@@ -1336,6 +1355,8 @@ void ISSEventBuilder::ArrayFinder() {
 											 nid_list.at( nindex.at(0) ),
 											 pwalk_list.at( pindex.at(1) ),
 											 nwalk_list.at( nindex.at(0) ),
+											 phit_list.at( pindex.at(1) ),
+											 nhit_list.at( nindex.at(0) ),
 											 i, j );
 						
 						write_evts->AddEvt( array_evt );
@@ -1358,6 +1379,8 @@ void ISSEventBuilder::ArrayFinder() {
 									  5,
 									  pwalk_list.at( pmax_idx ),
 									  0,
+									  phit_list.at( pmax_idx ),
+									  false,
 									  i, j );
 
 						write_evts->AddEvt( arrayp_evt );
@@ -1398,6 +1421,8 @@ void ISSEventBuilder::ArrayFinder() {
 											 nid_list.at( nmax_idx ),
 											 pwalk_list.at( pindex.at(0) ),
 											 nwalk_list.at( nmax_idx ),
+											 phit_list.at( pindex.at(0) ),
+											 nhit_list.at( nmax_idx ),
 											 i, j );
 
 						write_evts->AddEvt( array_evt );
@@ -1419,6 +1444,8 @@ void ISSEventBuilder::ArrayFinder() {
 									  5,
 									  pwalk_list.at( pindex.at(0) ),
 									  0,
+									  phit_list.at( pindex.at(0) ),
+									  false,
 									  i, j );
 
 						write_evts->AddEvt( arrayp_evt );
@@ -1441,6 +1468,8 @@ void ISSEventBuilder::ArrayFinder() {
 											 nid_list.at( nindex.at(0) ),
 											 pwalk_list.at( pindex.at(0) ),
 											 nwalk_list.at( nindex.at(0) ),
+											 phit_list.at( pindex.at(0) ),
+											 nhit_list.at( nindex.at(0) ),
 											 i, j );
 						
 						write_evts->AddEvt( array_evt );
@@ -1463,6 +1492,8 @@ void ISSEventBuilder::ArrayFinder() {
 											 nid_list.at( nindex.at(1) ),
 											 pwalk_list.at( pindex.at(0) ),
 											 nwalk_list.at( nindex.at(1) ),
+											 phit_list.at( pindex.at(0) ),
+											 nhit_list.at( nindex.at(1) ),
 											 i, j );
 						
 						write_evts->AddEvt( array_evt );
@@ -1484,6 +1515,8 @@ void ISSEventBuilder::ArrayFinder() {
 									  5,
 									  pwalk_list.at( pindex.at(0) ),
 									  0,
+									  phit_list.at( pindex.at(0) ),
+									  false,
 									  i, j );
 
 						write_evts->AddEvt( arrayp_evt );
@@ -1517,6 +1550,8 @@ void ISSEventBuilder::ArrayFinder() {
 										  5,
 										  pwalk_list.at( pmax_idx ),
 										  0,
+										  phit_list.at( pmax_idx ),
+										  false,
 										  i, j );
 
 					write_evts->AddEvt( arrayp_evt );
@@ -1534,6 +1569,8 @@ void ISSEventBuilder::ArrayFinder() {
 										  5,
 										  pwalk_list.at( pmax_idx ),
 										  0,
+										  phit_list.at( pmax_idx ),
+										  false,
 										  i, j );
 
 					write_evts->AddEvt( arrayp_evt );
@@ -1581,6 +1618,8 @@ void ISSEventBuilder::ArrayFinder() {
 											 nid_list.at( nmax_idx ),
 											 pwalk_list.at( pmax_idx ),
 											 nwalk_list.at( nmax_idx ),
+											 phit_list.at( pmax_idx ),
+											 nhit_list.at( nmax_idx ),
 											 i, j );
 
 						write_evts->AddEvt( array_evt );
@@ -1606,6 +1645,8 @@ void ISSEventBuilder::ArrayFinder() {
 											  5,
 											  pwalk_list.at( pmax_idx ),
 											  0,
+											  phit_list.at( pmax_idx ),
+											  false,
 											  i, j );
 
 						write_evts->AddEvt( arrayp_evt );
@@ -1634,11 +1675,13 @@ void ISSEventBuilder::ArrayFinder() {
 
 						// Fill the addback event for p-side, but max for n-side
 						array_evt->SetEvent( psum_en,
-											 nen_list.at( 0 ),
+											 nen_list.at( nindex.at(0) ),
 											 pid_list.at( pmax_idx ),
-											 nid_list.at( 0 ),
+											 nid_list.at( nindex.at(0) ),
 											 pwalk_list.at( pmax_idx ),
-											 nwalk_list.at( 0 ),
+											 nwalk_list.at( nindex.at(0) ),
+											 phit_list.at( pmax_idx ),
+											 nhit_list.at( nindex.at(0) ),
 											 i, j );
 
 						write_evts->AddEvt( array_evt );
@@ -1660,11 +1703,13 @@ void ISSEventBuilder::ArrayFinder() {
 
 						// Fill the addback event for p-side, but max for n-side
 						array_evt->SetEvent( psum_en,
-											 nen_list.at( 1 ),
+											 nen_list.at( nindex.at(1) ),
 											 pid_list.at( pmax_idx ),
-											 nid_list.at( 1 ),
+											 nid_list.at( nindex.at(1) ),
 											 pwalk_list.at( pmax_idx ),
-											 nwalk_list.at( 1 ),
+											 nwalk_list.at( nindex.at(1) ),
+											 phit_list.at( pmax_idx ),
+											 nhit_list.at( nindex.at(1) ),
 											 i, j );
 
 						write_evts->AddEvt( array_evt );
@@ -1690,6 +1735,8 @@ void ISSEventBuilder::ArrayFinder() {
 										  5,
 										  pwalk_list.at( pmax_idx ),
 										  0,
+										  phit_list.at( pmax_idx ),
+										  false,
 										  i, j );
 
 						write_evts->AddEvt( arrayp_evt );
@@ -1722,6 +1769,8 @@ void ISSEventBuilder::ArrayFinder() {
 											 nid_list.at( nmax_idx ),
 											 pwalk_list.at( pindex.at(0) ),
 											 nwalk_list.at( nmax_idx ),
+											 phit_list.at( pindex.at(0) ),
+											 nhit_list.at( nmax_idx ),
 											 i, j );
 
 						write_evts->AddEvt( array_evt );
@@ -1748,6 +1797,8 @@ void ISSEventBuilder::ArrayFinder() {
 											 nid_list.at( nmax_idx ),
 											 pwalk_list.at( pindex.at(1) ),
 											 nwalk_list.at( nmax_idx ),
+											 phit_list.at( pindex.at(1) ),
+											 nhit_list.at( nmax_idx ),
 											 i, j );
 
 						write_evts->AddEvt( array_evt );
@@ -1792,6 +1843,8 @@ void ISSEventBuilder::ArrayFinder() {
 													 nid_list.at( ntmp_idx ),
 													 pwalk_list.at( ptmp_idx ),
 													 nwalk_list.at( ntmp_idx ),
+													 phit_list.at( ptmp_idx ),
+													 nhit_list.at( ntmp_idx ),
 													 i, j );
 
 								write_evts->AddEvt( array_evt );
@@ -1812,6 +1865,8 @@ void ISSEventBuilder::ArrayFinder() {
 													  5,
 													  pwalk_list.at( ptmp_idx ),
 													  0,
+													  phit_list.at( ptmp_idx ),
+													  false,
 													  i, j );
 
 								write_evts->AddEvt( arrayp_evt );
@@ -1844,6 +1899,8 @@ void ISSEventBuilder::ArrayFinder() {
 													 nid_list.at( ntmp_idx ),
 													 pwalk_list.at( ptmp_idx ),
 													 nwalk_list.at( ntmp_idx ),
+													 phit_list.at( ptmp_idx ),
+													 nhit_list.at( ntmp_idx ),
 													 i, j );
 
 								write_evts->AddEvt( array_evt );
@@ -1864,6 +1921,8 @@ void ISSEventBuilder::ArrayFinder() {
 													  5,
 													  pwalk_list.at( ptmp_idx ),
 													  0,
+													  phit_list.at( ptmp_idx ),
+													  false,
 													  i, j );
 
 								write_evts->AddEvt( arrayp_evt );
@@ -1891,6 +1950,8 @@ void ISSEventBuilder::ArrayFinder() {
 									 nid_list.at( nmax_idx ),
 									 pwalk_list.at( pmax_idx ),
 									 nwalk_list.at( nmax_idx ),
+									 phit_list.at( pmax_idx ),
+									 nhit_list.at( nmax_idx ),
 									 i, j );
 
 				write_evts->AddEvt( array_evt );

@@ -51,6 +51,8 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSArrayEvt> event ) {
 					   event->GetNID(),
 					   event->GetPTime(),
 					   event->GetNTime(),
+					   event->GetPHit(),
+					   event->GetNHit(),
 					   event->GetModule(),
 					   event->GetRow() );
 	
@@ -68,6 +70,8 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSArrayPEvt> event ) {
 					   event->GetNID(),
 					   event->GetPTime(),
 					   event->GetNTime(),
+					   event->GetPHit(),
+					   event->GetNHit(),
 					   event->GetModule(),
 					   event->GetRow() );
 
@@ -150,16 +154,19 @@ ISSArrayEvt::~ISSArrayEvt(){}
 void ISSArrayEvt::SetEvent( float mypen, float mynen,
 						 unsigned char mypid, unsigned char mynid,
 						 unsigned long myptime, unsigned long myntime,
+						 bool myphit, bool mynhit,
 						 unsigned char mymod, unsigned char myrow ) {
 	
 	pen = mypen;
 	ptime = myptime;
 	pid = mypid;
-	
+	phit = myphit;
+
 	nen = mynen;
 	ntime = myntime;
 	nid = mynid;
-	
+	nhit = mynhit;
+
 	mod = mymod;
 	row = myrow;
 
@@ -172,11 +179,13 @@ void ISSArrayEvt::CopyEvent( std::shared_ptr<ISSArrayEvt> in ){
 	pen 	= in->GetPEnergy();
 	ptime	= in->GetPTime();
 	pid		= in->GetPID();
-	
+	phit	= in->GetPHit();
+
 	nen		= in->GetNEnergy();
 	ntime	= in->GetNTime();
 	nid		= in->GetNID();
-	
+	nhit	= in->GetNHit();
+
 	mod		= in->GetModule();
 	row		= in->GetRow();
 
