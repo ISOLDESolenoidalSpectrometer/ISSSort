@@ -85,7 +85,7 @@ public:
 	int	SetOutputFile( std::string output_file_name ); ///< Sets the name of the output root file produced by the autocal hadd-ing process
 	
 	void DoFits(); ///< The heart of this class, moving from alpha spectra to a calibration
-	void FindPeaks( TH1F *h, std::vector<float> &centroids ); ///< Finds the desired number of alpha peaks
+	void FindPeaks( TH1F *h, std::vector<float> &centroids, unsigned int mod, unsigned int asic, unsigned int chan ); ///< Finds the desired number of alpha peaks
 	bool FitSpectrum( TH1F *h, std::vector<float> &centroids, std::vector<float> &errors, unsigned int mod, unsigned int asic, unsigned int chan ); ///< Fits the found/specified peaks with the user-specified fit shape
 	void CalibrateChannel( std::vector<float> &centroids, std::vector<float> &errors,
 						  unsigned int mod, unsigned int asic, unsigned int chan ); ///< Communicates with the ISSCalibration object to produce a calibration file
@@ -157,6 +157,7 @@ private:
 	float default_fit_peak_height_dip_fraction;			///< Ensures that the number of counts has dipped to this fraction of the height of the last peak before being ready to record another peak
 	float default_fit_peak_channel_threshold_lb;		///< Puts a lower limit on the channel number where peaks can be identified and fit
 	float default_fit_peak_channel_threshold_ub;		///< Puts an upper limit on the channel number where peaks can be identified and fit
+	bool default_missing_peak_is_last;					///< Set by the user to say that IF a peak is missing, THEN it will guess whether it is the first or last peak
 	
 	// Manual fits
 	std::vector< std::vector< std::vector<float> > > my_bg;							///< Vector used to store background guesses for the fits
@@ -169,6 +170,7 @@ private:
 	std::vector< std::vector< std::vector< std::vector<float> > > > my_centroid_lb; ///< Vector used to store centroid lower bound limits for the fits
 	std::vector< std::vector< std::vector< std::vector<float> > > > my_centroid_ub; ///< Vector used to store centroid upper bound limits for the fits
 	std::vector< std::vector< std::vector<bool> > > manual_fit_channel;				///< Boolean for deciding whether the channel is being manually fit or not
+	std::vector< std::vector< std::vector<bool> > > my_missing_peak_is_last;		///< Boolean for deciding whether the missing peak is first or last (default is value of default_missing_peak_is_last)
 	
 	// Plotting options (carry across different functions)
 	double my_max_amp;			///< Stores the maximum amplitude of peaks for plotting purposes

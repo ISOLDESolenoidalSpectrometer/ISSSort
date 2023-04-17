@@ -10,15 +10,15 @@ const int FF_num_alpha_peaks = 4;
 // Energies taken from NNDC in 2022 --> centroids using weighted average with intensities
 const float FF_alpha_peak_energy[FF_num_alpha_peaks] = {
 	3182.69,	// % 148Gd
-	5134.70,	// % 239Pu
-	5478.57,	// % 241Am
-	5795.00 	// % 244Cm
+	5148.31,	// % 239Pu
+	5478.62,	// % 241Am
+	5795.04 	// % 244Cm
 };
 const float FF_alpha_peak_energy_error[FF_num_alpha_peaks] = {
 	0.024,	// 100    % 148Gd
-	0.5,	//  70.77 % 239Pu
-	0.14,	//  84.8  % 241Am
-	1 	//  76.90 % 244Cm
+	0.338,	//  70.77 % 239Pu
+	0.144,	//  84.8  % 241Am
+	0.051 	//  76.90 % 244Cm
 };
 
 

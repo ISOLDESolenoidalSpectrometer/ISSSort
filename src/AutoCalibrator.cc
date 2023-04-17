@@ -169,9 +169,9 @@ void ISSAutoCalibrator::ReadAutocalSettings(){
 		default_fit_peak_channel_threshold_lb = 360;
 		default_fit_peak_channel_threshold_ub = 700;
 	}
-	
-	
-	
+
+	// Decide whether missing peak (if any) is probably first or last
+	default_missing_peak_is_last = config->GetValue( "DefaultFit.MissingPeakIsLast", 1 );
 	
 	// Prepare to read individual fit parameters
 	// Resize fit parameter vectors
@@ -185,6 +185,7 @@ void ISSAutoCalibrator::ReadAutocalSettings(){
 	my_centroid_lb.resize( set->GetNumberOfArrayModules() );
 	my_centroid_ub.resize( set->GetNumberOfArrayModules() );
 	manual_fit_channel.resize( set->GetNumberOfArrayModules() );
+	my_missing_peak_is_last.resize( set->GetNumberOfArrayModules() );
 	
 	for ( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ){
 	
@@ -198,6 +199,7 @@ void ISSAutoCalibrator::ReadAutocalSettings(){
 		my_centroid_lb[i].resize( set->GetNumberOfArrayASICs() );
 		my_centroid_ub[i].resize( set->GetNumberOfArrayASICs() );
 		manual_fit_channel[i].resize( set->GetNumberOfArrayASICs() );
+		my_missing_peak_is_last[i].resize( set->GetNumberOfArrayASICs() );
 		
 		for ( unsigned int j = 0; j < set->GetNumberOfArrayASICs(); ++j ){
 		
@@ -211,6 +213,7 @@ void ISSAutoCalibrator::ReadAutocalSettings(){
 			my_centroid_lb[i][j].resize( set->GetNumberOfArrayChannels() );
 			my_centroid_ub[i][j].resize( set->GetNumberOfArrayChannels() );
 			manual_fit_channel[i][j].resize( set->GetNumberOfArrayChannels() );
+			my_missing_peak_is_last[i][j].resize( set->GetNumberOfArrayChannels() );
 			
 			for ( unsigned int k = 0; k < set->GetNumberOfArrayChannels(); ++k ){
 			
@@ -218,7 +221,6 @@ void ISSAutoCalibrator::ReadAutocalSettings(){
 				my_centroid_lb[i][j][k].resize( FF_num_alpha_peaks );
 				my_centroid_ub[i][j][k].resize( FF_num_alpha_peaks );
 				manual_fit_channel[i][j][k] = false;
-				
 			}
 			
 		}
@@ -331,7 +333,9 @@ void ISSAutoCalibrator::ReadAutocalSettings(){
 				else if ( test_manual == 1 ){
 					manual_fit_channel[i][j][k] = true;
 				}
-				
+
+				// Set value of default missing peak
+				my_missing_peak_is_last[i][j][k] = config->GetValue( Form( "man_%d_%d_%d.MissingPeakIsLast", i, j, k ), default_missing_peak_is_last );
 				
 			} // channel
 			
@@ -395,7 +399,7 @@ void ISSAutoCalibrator::SaveCalFile( std::string name_results_file ){
 /// Looks throughout the alpha spectrum and determines where the alpha peaks are likely to be located. It then sets the values of centroids when it has found the number of peaks it thinks are correct. If it finds one less than expected, it will set centroids to have a dummy peak in the final position, which will then be dealt with in the ISSAutoCalibrator::FitSpectrum() function. The results of its peak-finding stages are printed out if the debug flag is enabled.
 /// \param[in] h The alpha spectrum histogram
 /// \param[in] centroids A vector of floats (passed by reference) that will store the guesses for the centroids for the ISSAutoCalibrator::FitSpectrum() stage
-void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids ){
+void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids, unsigned int mod, unsigned int asic, unsigned int chan ){
 
 	// Set maximum amplitude for plotting to zero
 	my_max_amp = 0;
@@ -590,7 +594,7 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids ){
 		h->Draw();
 		
 		// Set axis limits
-		h->GetXaxis()->SetRangeUser( default_fit_peak_channel_threshold_lb, default_fit_peak_channel_threshold_ub );
+		h->GetXaxis()->SetRangeUser( 0/*default_fit_peak_channel_threshold_lb*/, default_fit_peak_channel_threshold_ub );
 		h->GetYaxis()->SetRangeUser( 0, 1.1*my_max_amp );
 		
 		// Define triangle properties
@@ -616,6 +620,28 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids ){
 			p1[i]->SetFillColor(kBlue);
 			p1[i]->Draw("F SAME");
 			
+		}
+
+		// Format appearance of canvas
+		h->GetXaxis()->SetTitleFont(132);
+		h->GetXaxis()->SetLabelFont(132);
+		h->GetYaxis()->SetTitleFont(132);
+		h->GetYaxis()->SetLabelFont(132);
+
+		TVirtualPad* pad = c1->GetPad(0);
+		if ( pad ){
+			pad->Modified(); pad->Update();
+
+			TPaveStats* stats = (TPaveStats*)h->FindObject("stats");
+			if ( stats ){
+				stats->SetOptStat(10);
+				stats->SetX1NDC(0.8);
+				stats->SetX2NDC(0.9);
+				stats->SetY1NDC(0.84);
+				stats->SetY2NDC(0.9);
+				stats->SetTextFont(132);
+				pad->Modified(); pad->Update();
+			}
 		}
 		
 		// Print the canvas
@@ -674,7 +700,7 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids ){
 		
 	}
 	
-	// SPECIALISED TWEAKING BELOW
+	// SPECIALISED TWEAKING BELOW .............................................................. //
 	// If > gAlphaNumPeaks detected, find the smallest ones and delete those until we have the right number
 	while ( (int)peak_info.size() > FF_num_alpha_peaks ){
 		int min_index = 0;
@@ -689,8 +715,14 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids ){
 	if ( (int)peak_info.size() == FF_num_alpha_peaks - 1 ){
 		individual_peak[0] = -1;
 		individual_peak[1] = -1;
-		peak_info.push_back( individual_peak );
+		if ( my_missing_peak_is_last[mod][asic][chan] == true ){
+			peak_info.push_back( individual_peak );
+		}
+		else{
+			peak_info.insert( peak_info.begin(), individual_peak );
+		}
 	}
+	// ......................................................................................... //
 	
 	// Store the peak info into the alpha spectrum
 	if( (int)peak_info.size() ==  FF_num_alpha_peaks ) {
@@ -717,7 +749,7 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids ){
 		h->Draw();
 		
 		// Set axis limits
-		h->GetXaxis()->SetRangeUser( default_fit_peak_channel_threshold_lb, default_fit_peak_channel_threshold_ub );
+		h->GetXaxis()->SetRangeUser( 0/*default_fit_peak_channel_threshold_lb*/, default_fit_peak_channel_threshold_ub );
 		h->GetYaxis()->SetRangeUser( 0, 1.1*my_max_amp );
 		
 		// Define triangle properties
@@ -743,6 +775,28 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids ){
 			p2[i]->SetFillColor(kRed);
 			p2[i]->Draw("F SAME");
 			
+		}
+
+		// Format appearance of canvas
+		TVirtualPad* pad = c2->GetPad(0);
+		if ( pad ){
+			pad->Modified(); pad->Update();
+
+			// Format appearance of canvas
+			h->GetXaxis()->SetTitleFont(132);
+			h->GetXaxis()->SetLabelFont(132);
+			h->GetYaxis()->SetTitleFont(132);
+			h->GetYaxis()->SetLabelFont(132);
+
+			TPaveStats* stats = (TPaveStats*)h->FindObject("stats");
+			if ( stats ){
+				stats->SetOptStat(10);
+				stats->SetX1NDC(0.8);
+				stats->SetX2NDC(0.9);
+				stats->SetY1NDC(0.84);
+				stats->SetY2NDC(0.9);
+				pad->Modified(); pad->Update();
+			}
 		}
 		
 		// Print the canvas
@@ -809,9 +863,9 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 	
 
 	// Format total fit
-	total->SetNpx(600);
+	total->SetNpx(1400);
 	total->SetLineColor(kBlack);
-	total->SetLineWidth(2);
+	total->SetLineWidth(1);
 	
 	// Define individual fits
 	TF1 *indie_peaks[NumberOfFoundAlphaPeaks];
@@ -846,8 +900,8 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 	for( int i = 0; i < NumberOfFoundAlphaPeaks; i++ ){
 	
 		// Define the upper and lower bound guesses for the centroid
-		float lb = centroids[i] - 0.5*default_fit_peak_width_estimate;
-		float ub = centroids[i] + 0.5*default_fit_peak_width_estimate;
+		float lb = centroids[i] - 1.5*default_fit_peak_width_estimate;
+		float ub = centroids[i] + 1.5*default_fit_peak_width_estimate;
 		
 		// Check the lb values are OK and reassign to manual values from user if specified
 		if ( my_centroid_lb[mod][asic][chan][i] <= centroids[i] && my_centroid_lb[mod][asic][chan][i] > 0  ){
@@ -906,9 +960,9 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 		total->SetParName( mean_index, Form( "%02i Mean", i ) );
 		
 		// Formatting
-		indie_peaks[i]->SetNpx(600);
+		indie_peaks[i]->SetNpx(1400);
 		indie_peaks[i]->SetLineColor(kRed);
-		indie_peaks[i]->SetLineWidth(2);
+		indie_peaks[i]->SetLineWidth(1);
 
 	}
 	
@@ -919,9 +973,9 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 	
 	// Define fit string and fit the spectrum
 	std::string fit_string = ( _debug_ && _only_manual_fits_ ? "" : "Q" );
-	fit_string = fit_string + "0WLMS";
+	fit_string = fit_string + "0LMS";
 	TFitResultPtr fit_ptr = h->Fit( total, fit_string.data() );
-	
+
 	// Get the fit status and chi^2
 	bool fitstatus = (bool)fit_ptr;
 	double chi2 = fit_ptr->Chi2();
@@ -1049,14 +1103,14 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 	// Draw the fitted peaks on the spectrum, alongside the individual fits
 	TCanvas *c = new TCanvas( "c_fitted_peaks", Form( "Fitted alpha peaks: module %d asic %d channel %d", mod, asic, chan ), 1600, 900 );
 	c->cd();
-	
-	// Format appearance of canvas
+
 	gStyle->SetOptFit(1111);
-	h->GetXaxis()->SetRangeUser( default_fit_peak_channel_threshold_lb, default_fit_peak_channel_threshold_ub+200 );
+	h->GetXaxis()->SetRangeUser( 0/*default_fit_peak_channel_threshold_lb*/, default_fit_peak_channel_threshold_ub );
 	h->GetYaxis()->SetRangeUser( 0, 1.1*my_max_amp );
 	h->SetTitle( Form( "Fitted alpha peaks: module %d asic %d channel %d; ADC value; Counts", mod, asic, chan ) );
 	
 	// Draw the spectrum and all of the fits
+
 	h->Draw();
 	total->Draw("SAME");
 	for( int i = 0; i < NumberOfFoundAlphaPeaks; i++ ) indie_peaks[i]->Draw("SAME");
@@ -1269,7 +1323,7 @@ void ISSAutoCalibrator::DoFits(){
 					h->Rebin( rebin_factor );
 					
 					// Find the peak centroids for the starting parameters (or impose mandatory ones)
-					FindPeaks( h, centroids );
+					FindPeaks( h, centroids, mod, asic, chan );
 					
 					// Impose user-defined centroids to override those from the FindPeaks function
 					if ( manual_fit_channel[mod][asic][chan] ){
@@ -1317,7 +1371,7 @@ void ISSAutoCalibrator::DoFits(){
 					chanNo += chan;
 					float percent = chanNo*100.0/(float)nchans;
 
-					if( (int)chanNo % (nchans/100) == 0 || chanNo+1 == nchans ) {
+					//if( (int)chanNo % (nchans/100) == 0 || chanNo+1 == nchans ) {
 					
 						// Progress bar in GUI
 						//if( _prog_ ) prog->SetPosition( percent );
@@ -1328,7 +1382,7 @@ void ISSAutoCalibrator::DoFits(){
 						std::cout.flush();
 						gSystem->ProcessEvents();
 						
-					}
+					// }
 
 				}
 			} // chan
@@ -1336,7 +1390,7 @@ void ISSAutoCalibrator::DoFits(){
 		} // asic
 
 	} // mos
-	
+
 	return;
 	
 }
