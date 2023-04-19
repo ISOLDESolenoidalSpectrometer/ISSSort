@@ -125,7 +125,7 @@ void ISSCalibration::ReadCalibration() {
 				
 				double tmpwalk = config->GetValue( Form( "asic_%d_%d.Walk%d", mod, asic, i ), 0.0 ); // backwards compatibility
 				fAsicWalkHit0[mod][asic][i] = config->GetValue( Form( "asic_%d_%d.Walk%d.Hit0", mod, asic, i ), tmpwalk );
-				fAsicWalkHit1[mod][asic][i] = config->GetValue( Form( "asic_%d_%d.Walk%d.Hit1", mod, asic, i ), tmpwalk );
+				fAsicWalkHit1[mod][asic][i] = config->GetValue( Form( "asic_%d_%d.Walk%d.Hit1", mod, asic, i ), fAsicWalkHit0[mod][asic][i] );
 				
 			}
 			
