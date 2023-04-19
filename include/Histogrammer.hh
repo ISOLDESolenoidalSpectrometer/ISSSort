@@ -201,9 +201,10 @@ private:
 	// Timing
 	std::vector<std::vector<TH1F*>> recoil_array_td;
 	std::vector<std::vector<TH1F*>> recoil_elum_td;
-	TH2F *recoil_array_tw;
-    std::vector<std::vector<TH2F*>> recoil_array_tw_row;
-	TProfile *recoil_array_tw_prof;
+	TH2F *recoil_array_tw_hit0, *recoil_array_tw_hit1;
+	std::vector<std::vector<TH2F*>> recoil_array_tw_hit0_row;
+	std::vector<std::vector<TH2F*>> recoil_array_tw_hit1_row;
+	TProfile *recoil_array_tw_hit0_prof, *recoil_array_tw_hit1_prof;
 	TH1F *ebis_td_recoil, *ebis_td_array, *ebis_td_elum;
 	TH1F *t1_td_recoil, *sc_td_recoil;
 

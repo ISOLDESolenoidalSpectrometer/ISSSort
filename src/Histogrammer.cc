@@ -652,27 +652,40 @@ void ISSHistogrammer::MakeHists() {
 	
 	// Recoil-array time walk
 	output_file->cd( "Timing" );
-	recoil_array_tw = new TH2F( "tw_recoil_array",
-							   "Time-walk histogram for array-recoil coincidences;#Deltat [ns];Array energy [keV];Counts",
+	recoil_array_tw_hit0 = new TH2F( "tw_recoil_array_hit0",
+							   "Time-walk histogram for array-recoil coincidences with hit bit false;#Deltat [ns];Array energy [keV];Counts",
 							   1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
 							   800, 0, 16000 );
-	recoil_array_tw_prof = new TProfile( "tw_recoil_array_prof", "Time-walk profile for recoil-array coincidences;Array energy;#Delta t", 2000, 0, 60000 );
-	
-	recoil_array_tw_row.resize( set->GetNumberOfArrayModules() );
-	
+	recoil_array_tw_hit1 = new TH2F( "tw_recoil_array_hit1",
+							   "Time-walk histogram for array-recoil coincidences with hit bit true;#Deltat [ns];Array energy [keV];Counts",
+							   1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
+							   800, 0, 16000 );
+	recoil_array_tw_hit0_prof = new TProfile( "tw_recoil_array_hit0_prof", "Time-walk profile for recoil-array coincidences with hit bit false;Array energy;#Delta t", 2000, 0, 60000 );
+	recoil_array_tw_hit1_prof = new TProfile( "tw_recoil_array_hit1_prof", "Time-walk profile for recoil-array coincidences with hit bit true;Array energy;#Delta t", 2000, 0, 60000 );
+
+	recoil_array_tw_hit0_row.resize( set->GetNumberOfArrayModules() );
+	recoil_array_tw_hit1_row.resize( set->GetNumberOfArrayModules() );
+
 	// Loop over ISS modules
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 		
-		recoil_array_tw_row[i].resize( set->GetNumberOfArrayRows() );
-		
+		recoil_array_tw_hit0_row[i].resize( set->GetNumberOfArrayRows() );
+		recoil_array_tw_hit1_row[i].resize( set->GetNumberOfArrayRows() );
+
 		// Loop over rows of the array
 		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
 			
-			hname = "tw_recoil_array_mod_" + std::to_string(i) + "_row" + std::to_string(j);
+			hname = "tw_recoil_array_hit0_mod_" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "Time-walk histogram for array-recoil coincidences (module ";
-			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");Deltat [ns];Array energy [keV];Counts";
-			recoil_array_tw_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-												 800, 0, 16000 );
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ") with hit bit false;Deltat [ns];Array energy [keV];Counts";
+			recoil_array_tw_hit0_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
+													  800, 0, 16000 );
+			
+			hname = "tw_recoil_array_hit1_mod_" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "Time-walk histogram for array-recoil coincidences (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ") with hit bit true;Deltat [ns];Array energy [keV];Counts";
+			recoil_array_tw_hit1_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
+													  800, 0, 16000 );
 			
 		}
 		
@@ -765,19 +778,25 @@ void ISSHistogrammer::ResetHists() {
 		for( unsigned int j = 0; j < recoil_elum_td[i].size(); ++j )
 			recoil_elum_td[i][j]->Reset("ICESM");
 	
-	for( unsigned int i = 0; i < recoil_array_tw_row.size(); ++i )
-		for( unsigned int j = 0; j < recoil_array_tw_row[i].size(); ++j )
-			recoil_array_tw_row[i][j]->Reset("ICESM");
+	for( unsigned int i = 0; i < recoil_array_tw_hit0_row.size(); ++i )
+		for( unsigned int j = 0; j < recoil_array_tw_hit0_row[i].size(); ++j )
+			recoil_array_tw_hit0_row[i][j]->Reset("ICESM");
 	
+	for( unsigned int i = 0; i < recoil_array_tw_hit1_row.size(); ++i )
+		for( unsigned int j = 0; j < recoil_array_tw_hit1_row[i].size(); ++j )
+			recoil_array_tw_hit1_row[i][j]->Reset("ICESM");
 	
-	//recoil_array_tw_prof->Reset("ICESM");
+
+	//recoil_array_tw_hit0_prof->Reset("ICESM");
+	//recoil_array_tw_hit1_prof->Reset("ICESM");
 	ebis_td_recoil->Reset("ICESM");
 	ebis_td_array->Reset("ICESM");
 	ebis_td_elum->Reset("ICESM");
 	t1_td_recoil->Reset("ICESM");
 	sc_td_recoil->Reset("ICESM");
-	recoil_array_tw->Reset("ICESM");
-	
+	recoil_array_tw_hit0->Reset("ICESM");
+	recoil_array_tw_hit1->Reset("ICESM");
+
 	// Recoils
 	for( unsigned int i = 0; i < recoil_EdE.size(); ++i )
 		recoil_EdE[i]->Reset("ICESM");
@@ -1213,13 +1232,22 @@ unsigned long ISSHistogrammer::FillHists() {
 				// Time differences
 				tdiff = (double)recoil_evt->GetTime() - (double)array_evt->GetTime();
 				recoil_array_td[recoil_evt->GetSector()][array_evt->GetModule()]->Fill( tdiff );
-				recoil_array_tw->Fill( tdiff, array_evt->GetEnergy() );
-				recoil_array_tw_prof->Fill( array_evt->GetEnergy(), tdiff );
 				
-				for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i )
-					for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j )
-						if ( array_evt->GetModule() == i && array_evt->GetRow() == j )
-							recoil_array_tw_row[i][j]->Fill( tdiff, array_evt->GetEnergy() );
+				if( array_evt->GetPHit() ) { // hit bit = true
+					
+					recoil_array_tw_hit1->Fill( tdiff, array_evt->GetEnergy() );
+					recoil_array_tw_hit1_prof->Fill( array_evt->GetEnergy(), tdiff );
+					recoil_array_tw_hit1_row[array_evt->GetModule()][array_evt->GetRow()]->Fill( tdiff, array_evt->GetEnergy() );
+
+				}
+				
+				else { // hit bit = false
+					
+					recoil_array_tw_hit0->Fill( tdiff, array_evt->GetEnergy() );
+					recoil_array_tw_hit0_prof->Fill( array_evt->GetEnergy(), tdiff );
+					recoil_array_tw_hit0_row[array_evt->GetModule()][array_evt->GetRow()]->Fill( tdiff, array_evt->GetEnergy() );
+
+				}
 				
 				
 				// Check for prompt events with recoils
