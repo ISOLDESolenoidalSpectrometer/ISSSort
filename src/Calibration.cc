@@ -339,10 +339,12 @@ float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energ
 			// Sam Reeve's function
 			if( fAsicWalkType[mod][asic] == 1 ) {
 			
-				// Functional form: f(x) = a + b/(c-d*x)
-				// Solved for x, where x is time walk and f(x) is energy
-				walk = walk_params[2] - walk_params[1];
-				walk /= walk_params[4] - walk_params[0];
+				// Functional form: E = a + b / ( c - d*x )
+				// Solved for x, where x is time walk and E is energy
+				// x = ( c + b / ( a - E ) ) / d
+				walk = walk_params[1];
+				walk /= walk_params[0] - walk_params[4];
+				walk += walk_params[2];
 				walk /= walk_params[3];
 
 			}
