@@ -17,7 +17,7 @@ double alpha_function( double *x, double *params ){
 	double alpha = x[0];
 	double z = params[0];
 	double r_meas = params[1];
-	double p = params[2];	//  p / gamma3
+	double p = params[2];	//  p
 	double qb = params[3];	//  qb / 2*pi
 
 	double root = p * TMath::Sin(alpha);
@@ -39,7 +39,7 @@ double alpha_derivative( double *x, double *params ){
 	double alpha = x[0];
 	//double z = params[0]; // unused in derivative
 	double r_meas = params[1];
-	double p = params[2];	//  p / gamma3
+	double p = params[2];	//  p
 	double qb = params[3];	//  qb / 2*pi
 
 	double root = p * TMath::Cos(alpha);
@@ -60,12 +60,12 @@ double butler_function( double *x, double *params ){
 	double z = x[0];
 	double z_meas = params[0];
 	double r_meas = params[1];
-	double p = params[2];	//  p / gamma3
+	double p = params[2];	//  p
 	double qb = params[3];	//  qb / 2*pi
 
 	// From Sam Bennett's first derivation, modified by A. Ceulemans
 	double theta_lab = TMath::ACos( qb * z / p );
-	double r_max = TMath::Abs( 2.0 * p * TMath::Sin( theta_lab ) / (qb * TMath::TwoPi()) );
+	double r_max = TMath::Abs( 2.0 * p * TMath::Sin( theta_lab ) / ( qb * TMath::TwoPi()) );
 	double psi = 2 * TMath::ASin( r_meas / r_max );
 	double root = z_meas - z * ( 1.0 - psi / TMath::TwoPi() );
 
@@ -141,8 +141,8 @@ double theta_cm_function( double *x, double *params ){
 	double gamma3 = e3_lab / m3;
 
 	// Maximum radius of particle, z position and missing orbit fraction (psi)
-	double r_max = TMath::Abs( 2.0 * p3_lab * TMath::Sin( theta_lab ) / ( gamma3 * qb * TMath::TwoPi()) );
-	double z = p3_lab * TMath::Cos( theta_lab ) / ( gamma3 * qb );
+	double r_max = TMath::Abs( 2.0 * p3_lab * TMath::Sin( theta_lab ) / ( qb * TMath::TwoPi()) );
+	double z = p3_lab * TMath::Cos( theta_lab ) / qb;
 	double psi = 2.0 * TMath::ASin( r_meas / r_max );
 	
 	// This is the equation to find the root of
@@ -989,7 +989,6 @@ float ISSReaction::SimulateDecay( TVector3 vec, double en ){
 	params[0] = z_meas;										// z in mm
 	params[1] = vec.Perp();									// r_meas in mm
 	params[2] = Ejectile.GetMomentumLab();					// p3
-	params[2] /= Ejectile.GetGamma();						// p3 / gamma3
 	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 	params[3] /= TMath::TwoPi(); 							// qb/2pi
 		
@@ -1138,7 +1137,6 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	params[0] = z_meas;										// z in mm
 	params[1] = r_meas;										// r_meas in mm
 	params[2] = Ejectile.GetMomentumLab();					// p
-	params[2] /= Ejectile.GetGamma();						// p/gamma
 	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 	params[3] /= TMath::TwoPi(); 							// qb/2pi
 	
@@ -1160,7 +1158,6 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 		alpha  = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 		alpha /= TMath::TwoPi(); 							// qb/2pi
 		alpha *= z;											// * z
-		alpha *= Ejectile.GetGamma();						// * gamma
 		alpha /= Ejectile.GetMomentumLab();					// over p
 		alpha  = TMath::ASin( alpha );
 		
@@ -1184,7 +1181,6 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 
 		// Set parameters
 		params[2] = Ejectile.GetMomentumLab(); // p
-		params[2] /= Ejectile.GetGamma(); // p/g
 		fa->SetParameters( params );
 		fb->SetParameters( params );
 		ROOT::Math::GradFunctor1D wf( *fa, *fb );
@@ -1226,7 +1222,6 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	alpha  = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
 	alpha /= TMath::TwoPi(); 							// qb/2pi
 	alpha *= z;											// * z
-	alpha *= Ejectile.GetGamma();						// * gamma
 	alpha /= Ejectile.GetMomentumLab();					// over p
 	alpha  = TMath::ASin( alpha );
 	theta_lab = alpha;
