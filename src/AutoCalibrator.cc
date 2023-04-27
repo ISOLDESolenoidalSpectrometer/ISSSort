@@ -1175,7 +1175,7 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 	z += 125.5 * (3.0 - (float)row);	// move to correct row (125.0 mm wafer length + 0.5 mm inter-wafer gap)
 
 	// Assume it's in the centre of the side
-	TVector2 vec2( 26.75, 0.0 );
+	TVector2 vec2( 27.0, 0.0 ); // 54.0 mm face-to-face
 	vec2 = vec2.Rotate( -1.0 * TMath::Pi() / 6. );		// first face is at -30˚
 	vec2 = vec2.Rotate( side * 2. * TMath::Pi() / 6. );	// rotate 60˚ for each face
 

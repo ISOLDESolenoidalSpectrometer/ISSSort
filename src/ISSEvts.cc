@@ -241,7 +241,7 @@ TVector2 ISSArrayEvt::GetPhiXY(){
 	/// phi is positive in the clockwise direction, looking from the origin to positive z (beam direction)
 	
 	// Start with a flat wafer pointing to the sky
-	float x = 55.0 / 2.0; 	// diameter is 53.5 mm + silicon thickness of 1.0 mm + PCB of 0.5 mm?
+	float x = 54.0 / 2.0; 	// diameter is 54.0 mm according to Chris Everett's CAD drawings
 	float y = nid%11 - 5.0;	// take strip relative to centre (11 strips per face: 22 strips per module)
 	y *= 2.0;				// n-side strip pitch = 2.0 mm
 
