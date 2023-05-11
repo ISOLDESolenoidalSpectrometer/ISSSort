@@ -5,7 +5,7 @@
 /// \param[in] myset Pointer to a relevant ISSSettings object for this data
 /// \param[in] myreact Pointer to a relevant ISSReaction object for this data
 /// \param[in] autocal_file A string containing the file name of the autocal file that changes the way this object processes alpha data
-ISSAutoCalibrator::ISSAutoCalibrator( ISSSettings *myset, ISSReaction *myreact, std::string autocal_file = "" ){
+ISSAutoCalibrator::ISSAutoCalibrator( ISSSettings *myset, ISSReaction *myreact, const std::string& autocal_file = "" ){
 	
 	// First store the settings and reaction objects, and deal with the autocal input file
 	set = myset;
@@ -29,10 +29,6 @@ ISSAutoCalibrator::ISSAutoCalibrator( ISSSettings *myset, ISSReaction *myreact, 
 	// Set some global defaults
 	//ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Fumili");
 	
-	// Set defaults
-	my_max_amp = 0;
-	my_threshold = 0;
-	
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -40,7 +36,7 @@ ISSAutoCalibrator::ISSAutoCalibrator( ISSSettings *myset, ISSReaction *myreact, 
 void ISSAutoCalibrator::ReadAutocalSettings(){
 	
 	// Create a TEnv object for reading user inputs
-	TEnv *config = new TEnv( autocal_settings_input_file.data() );
+	std::unique_ptr<TEnv> config = std::make_unique<TEnv>( autocal_settings_input_file.data() );
 	
 	// Read the settings for controlling global behaviour
 	_debug_ = config->GetValue( "AutocalDebug", 0 );
@@ -185,6 +181,7 @@ void ISSAutoCalibrator::ReadAutocalSettings(){
 	my_centroid_lb.resize( set->GetNumberOfArrayModules() );
 	my_centroid_ub.resize( set->GetNumberOfArrayModules() );
 	manual_fit_channel.resize( set->GetNumberOfArrayModules() );
+	ignore_channel.resize( set->GetNumberOfArrayModules() );
 	my_missing_peak_is_last.resize( set->GetNumberOfArrayModules() );
 	
 	for ( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ){
@@ -199,6 +196,7 @@ void ISSAutoCalibrator::ReadAutocalSettings(){
 		my_centroid_lb[i].resize( set->GetNumberOfArrayASICs() );
 		my_centroid_ub[i].resize( set->GetNumberOfArrayASICs() );
 		manual_fit_channel[i].resize( set->GetNumberOfArrayASICs() );
+		ignore_channel[i].resize( set->GetNumberOfArrayASICs() );
 		my_missing_peak_is_last[i].resize( set->GetNumberOfArrayASICs() );
 		
 		for ( unsigned int j = 0; j < set->GetNumberOfArrayASICs(); ++j ){
@@ -213,6 +211,7 @@ void ISSAutoCalibrator::ReadAutocalSettings(){
 			my_centroid_lb[i][j].resize( set->GetNumberOfArrayChannels() );
 			my_centroid_ub[i][j].resize( set->GetNumberOfArrayChannels() );
 			manual_fit_channel[i][j].resize( set->GetNumberOfArrayChannels() );
+			ignore_channel[i][j].resize( set->GetNumberOfArrayChannels() );
 			my_missing_peak_is_last[i][j].resize( set->GetNumberOfArrayChannels() );
 			
 			for ( unsigned int k = 0; k < set->GetNumberOfArrayChannels(); ++k ){
@@ -221,6 +220,7 @@ void ISSAutoCalibrator::ReadAutocalSettings(){
 				my_centroid_lb[i][j][k].resize( FF_num_alpha_peaks );
 				my_centroid_ub[i][j][k].resize( FF_num_alpha_peaks );
 				manual_fit_channel[i][j][k] = false;
+				ignore_channel[i][j][k] = false;
 			}
 			
 		}
@@ -323,7 +323,10 @@ void ISSAutoCalibrator::ReadAutocalSettings(){
 					}	
 				
 				} // peak
-				
+
+				// See if the user wants to ignore the channel
+				ignore_channel[i][j][k] = config->GetValue( Form( "Ignore_%d_%d_%d", i, j, k ), false );
+
 				// Before we go, check whether the user has indicated whether they want the manual fit on or off. This overrides any automatic on or off switches!
 				int test_manual = config->GetValue( Form( "man_%d_%d_%d", i, j, k ), -1 ); // Set default to -1 so that we know whether this has worked
 				
@@ -343,10 +346,6 @@ void ISSAutoCalibrator::ReadAutocalSettings(){
 		
 	} // module
 	
-	
-	// Finished
-	delete config;
-
 	return;
 }
 
@@ -355,10 +354,10 @@ void ISSAutoCalibrator::ReadAutocalSettings(){
 /// This function is called in the do_autocal() function in the main body of iss_sort.cc
 /// \param[in] output_file_name The name of the file produced by hadd-ing all the source files together
 /// \returns 0 if it can open the output file, 1 if it cannot
-int ISSAutoCalibrator::SetOutputFile( std::string output_file_name ) {
+int ISSAutoCalibrator::SetOutputFile( const std::string& output_file_name ) {
 	
 	// Open output file.
-	output_file = new TFile( output_file_name.data(), "read" );
+	output_file = std::make_unique<TFile>( output_file_name.data(), "read" );
 	if( output_file->IsZombie() ) {
 		
 		std::cout << "Cannot open " << output_file_name << std::endl;
@@ -374,7 +373,7 @@ int ISSAutoCalibrator::SetOutputFile( std::string output_file_name ) {
 ///////////////////////////////////////////////////////////////////////////////
 /// Takes the ISSCalibration object that has been manipulated by the ISSAutoCalibrator functions and prints the total calibration into a file. This is called in the do_autocal() function in iss_sort.cc
 /// \param[in] name_results_file The name of the file that is to be printed
-void ISSAutoCalibrator::SaveCalFile( std::string name_results_file ){
+void ISSAutoCalibrator::SaveCalFile( const std::string& name_results_file ){
 	
 	// Output
 	std::ofstream cal_file;
@@ -399,11 +398,16 @@ void ISSAutoCalibrator::SaveCalFile( std::string name_results_file ){
 /// Looks throughout the alpha spectrum and determines where the alpha peaks are likely to be located. It then sets the values of centroids when it has found the number of peaks it thinks are correct. If it finds one less than expected, it will set centroids to have a dummy peak in the final position, which will then be dealt with in the ISSAutoCalibrator::FitSpectrum() function. The results of its peak-finding stages are printed out if the debug flag is enabled.
 /// \param[in] h The alpha spectrum histogram
 /// \param[in] centroids A vector of floats (passed by reference) that will store the guesses for the centroids for the ISSAutoCalibrator::FitSpectrum() stage
-void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids, unsigned int mod, unsigned int asic, unsigned int chan ){
+void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt ) const {
+
+	// Get mod, asic, chan
+	const unsigned int& mod = mac.mod;
+	const unsigned int& asic = mac.asic;
+	const unsigned int& chan = mac.chan;
 
 	// Set maximum amplitude for plotting to zero
-	my_max_amp = 0;
-	my_threshold = 0;
+	plot_opt.my_max_amp = 0;
+	plot_opt.my_threshold = 0;
 	
 	// Containers to hold information about potential peaks: centroids and heights
 	std::vector<std::vector<int>> peak_info;	// First index corresponds to individual peaks, second index corresponds to height (0) and channel (1)
@@ -509,10 +513,10 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids, unsig
 	}
 
 	// Define global maximum bin for other functions
-	my_max_amp = max;
+	plot_opt.my_max_amp = max;
 
 	// Define quantities based on this analysis
-	my_threshold = my_max_amp*default_fit_peak_height_threshold_fraction;	// Threshold on counts to stop accepting small peaks
+	plot_opt.my_threshold = plot_opt.my_max_amp*default_fit_peak_height_threshold_fraction;	// Threshold on counts to stop accepting small peaks
 	bool b_record_peaks = 1;		// Stores whether a peak has dipped enough to count as a peak (true if it has dipped enough)
 	int current_peak_height = 0;	// Stores the current height of a peak
 	
@@ -559,7 +563,7 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids, unsig
 			}
 		
 			// Check to see if the current bin is over the required thresholds
-			if ( b_record_peaks == 1 && h->GetBinContent(j) > my_threshold && h->GetBinLowEdge(j) > default_fit_peak_channel_threshold_lb ){
+			if ( b_record_peaks == 1 && h->GetBinContent(j) > plot_opt.my_threshold && h->GetBinLowEdge(j) > default_fit_peak_channel_threshold_lb ){
 			
 				// Now check if bins either side <= current bin content
 				// (shouldn't have peak on edge of spectrum, but may need to code that in later...)
@@ -585,7 +589,7 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids, unsig
 	if ( _debug_ ){
 	
 		// Draw histogram on a canvas
-		TCanvas *c1 = new TCanvas( "c_debug_all_peaks", "CANVAS", 1200, 900 );
+		std::unique_ptr<TCanvas> c1 = std::make_unique<TCanvas>( "c_debug_all_peaks", "CANVAS", 1200, 900 );
 		
 		// Format histogram
 		h->SetTitle( Form( "Possible peaks in %s; ADC value; Counts", h->GetName() ) );
@@ -595,13 +599,13 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids, unsig
 		
 		// Set axis limits
 		h->GetXaxis()->SetRangeUser( 0/*default_fit_peak_channel_threshold_lb*/, default_fit_peak_channel_threshold_ub );
-		h->GetYaxis()->SetRangeUser( 0, 1.1*my_max_amp );
+		h->GetYaxis()->SetRangeUser( 0, 1.1*plot_opt.my_max_amp );
 		
 		// Define triangle properties
 		double triangle_height = h->GetMaximum()*0.04;
 		double triangle_width = 4;
 		
-		TPolyLine *p1[peak_info.size()];
+		std::unique_ptr<TPolyLine> p1[peak_info.size()];
 		double x[3] = {0,0,0};
 		double y[3] = {0,0,0};
 		
@@ -616,7 +620,7 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids, unsig
 			}
 			
 			// Define and draw triangles
-			p1[i] = new TPolyLine(3,x,y);
+			p1[i] = std::make_unique<TPolyLine>(3,x,y);
 			p1[i]->SetFillColor(kBlue);
 			p1[i]->Draw("F SAME");
 			
@@ -648,10 +652,6 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids, unsig
 		gErrorIgnoreLevel = kWarning;
 		c1->SaveAs( Form("autocal/debug-find-possible-peaks/%s_FindPeaks_possible.%s", h->GetName(), image_file_type.data() ) );
 		gErrorIgnoreLevel = kInfo;
-		
-		// Delete the objects
-		delete c1;
-		for ( unsigned int i = 0; i < peak_info.size(); ++i ) delete p1[i];
 
 	}
 
@@ -740,7 +740,7 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids, unsig
 	if ( _debug_ ){
 	
 		// Draw histogram on a canvas
-		TCanvas *c2 = new TCanvas( "c_debug_final_peaks", "CANVAS", 1200, 900 );
+		std::unique_ptr<TCanvas> c2 = std::make_unique<TCanvas>( "c_debug_final_peaks", "CANVAS", 1200, 900 );
 		
 		// Format histogram
 		h->SetTitle( Form( "Found peaks in %s; ADC value; Counts", h->GetName() ) );
@@ -750,13 +750,13 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids, unsig
 		
 		// Set axis limits
 		h->GetXaxis()->SetRangeUser( 0/*default_fit_peak_channel_threshold_lb*/, default_fit_peak_channel_threshold_ub );
-		h->GetYaxis()->SetRangeUser( 0, 1.1*my_max_amp );
+		h->GetYaxis()->SetRangeUser( 0, 1.1*plot_opt.my_max_amp );
 		
 		// Define triangle properties
 		double triangle_height = h->GetMaximum()*0.04;
 		double triangle_width = 4;
 		
-		TPolyLine *p2[peak_info.size()];
+		std::unique_ptr<TPolyLine> p2[peak_info.size()];
 		double x[3] = {0,0,0};
 		double y[3] = {0,0,0};
 		
@@ -771,7 +771,7 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids, unsig
 			}
 			
 			// Define and draw triangles
-			p2[i] = new TPolyLine(3,x,y);
+			p2[i] = std::make_unique<TPolyLine>(3,x,y);
 			p2[i]->SetFillColor(kRed);
 			p2[i]->Draw("F SAME");
 			
@@ -803,10 +803,6 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids, unsig
 		gErrorIgnoreLevel = kWarning;
 		c2->SaveAs( Form("autocal/debug-find-actual-peaks/%s_FindPeaks_final.%s", h->GetName(), image_file_type.data() ) );
 		gErrorIgnoreLevel = kInfo;
-		
-		// Delete the objects
-		delete c2;
-		for ( unsigned int i = 0; i < peak_info.size(); ++i ) delete p2[i];
 
 	}
 	
@@ -823,8 +819,13 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids, unsig
 /// \param[in] mod The module number (used for implementing custom parameter guesses)
 /// \param[in] asic The asic number  (used for implementing custom parameter guesses)
 /// \param[in] chan The channel number  (used for implementing custom parameter guesses)
-/// \returns 0 if the fit worked, 1 if it did not
-bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std::vector<float> &errors, unsigned int mod, unsigned int asic, unsigned int chan ){
+/// \returns 1 if the fit worked, 0 if it did not
+bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt ) const {
+
+	// Get mod, asic, chan
+	const unsigned int& mod = mac.mod;
+	const unsigned int& asic = mac.asic;
+	const unsigned int& chan = mac.chan;
 
 	// First remove any dummies out of the fit (negative centroids)
 	for ( unsigned int i = 0; i < centroids.size(); ++i ){
@@ -840,7 +841,7 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 	
 	// Print statement if fitting fewer peaks than expected (debug only)
 	if ( _debug_ && NumberOfFoundAlphaPeaks < FF_num_alpha_peaks ){
-		std::cout << Form( "mod_%d_%d_%d: fitting only %d peaks...", mod, asic, chan, NumberOfFoundAlphaPeaks ) << std::endl;
+		PrintFitWarning( mac, "fit warning", Form( "fitting only %d peaks...", NumberOfFoundAlphaPeaks));
 	}
 
 	// Define array to store fit parameters based on the fit shape
@@ -853,12 +854,12 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 	double par[npars];
 	
 	// Define total fit based on fit shape
-	TF1 *total;
+	std::unique_ptr<TF1> total;
 	if ( myfit == fit_shape::gaussian ){
-		total = new TF1( "totalfit", MultiAlphaGaussianBG, default_fit_peak_channel_threshold_lb, default_fit_peak_channel_threshold_ub, npars );
+		total = std::make_unique<TF1>( "totalfit", MultiAlphaGaussianBG, default_fit_peak_channel_threshold_lb, default_fit_peak_channel_threshold_ub, npars );
 	}
 	else{
-		total = new TF1( "totalfit", MultiCrystalBallFunctionBG, default_fit_peak_channel_threshold_lb, default_fit_peak_channel_threshold_ub, npars );
+		total = std::make_unique<TF1>( "totalfit", MultiCrystalBallFunctionBG, default_fit_peak_channel_threshold_lb, default_fit_peak_channel_threshold_ub, npars );
 	}
 	
 
@@ -868,7 +869,7 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 	total->SetLineWidth(1);
 	
 	// Define individual fits
-	TF1 *indie_peaks[NumberOfFoundAlphaPeaks];
+	std::unique_ptr<TF1> indie_peaks[NumberOfFoundAlphaPeaks];
 	
 	// Set bg limits --> MUST BE PARAMETER 0 OF TOTAL FIT
 	total->SetParameter( 0, my_bg[mod][asic][chan] );	// Flat background
@@ -933,14 +934,14 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 		// Declare individual fits and calculate amp and mean indices
 		if ( myfit == fit_shape::gaussian ){
 		
-			indie_peaks[i] = new TF1( Form( "ind%i", i ), AlphaGaussianBG, lb, ub, 4 );
+			indie_peaks[i] = std::make_unique<TF1>( Form( "ind%i", i ), AlphaGaussianBG, lb, ub, 4 );
 			amp_index = 2*i + 2;
 			mean_index = 2*i + 3;
 			
 		}
 		else if ( myfit == fit_shape::crystalball ){
 		
-			indie_peaks[i] = new TF1( Form( "ind%i", i ), CrystalBallFunctionBG, lb, ub, 6 );
+			indie_peaks[i] = std::make_unique<TF1>( Form( "ind%i", i ), CrystalBallFunctionBG, lb, ub, 6 );
 			amp_index = 2*i + 4;
 			mean_index = 2*i + 5;
 			
@@ -974,17 +975,16 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 	// Define fit string and fit the spectrum
 	std::string fit_string = ( _debug_ && _only_manual_fits_ ? "" : "Q" );
 	fit_string = fit_string + "0LMS";
-	TFitResultPtr fit_ptr = h->Fit( total, fit_string.data() );
+	TFitResultPtr fit_ptr = h->Fit( total.get(), fit_string.data() );
 
 	// Get the fit status and chi^2
-	bool fitstatus = (bool)fit_ptr;
+	bool fitisgood = fit_ptr.Get()->IsValid();
 	double chi2 = fit_ptr->Chi2();
 	
 	// Print thresholds for fit to check whether anything is at the limit ( [debug + manual fits only] / fit fail )
-	if ( ( _debug_ && _only_manual_fits_ ) || fitstatus <= 0 ){
+	if ( ( _debug_ && _only_manual_fits_ ) || !fitisgood ){
 	
 		// Variables
-		int wid = 10;					// Print width
 		double par_min = 0;				// Value of parameter LB
 		double par_max = 0;				// Value of parameter UB
 		double par_val = 0;				// Parameter value
@@ -1000,20 +1000,14 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 			if ( TMath::Abs( par_val - par_min ) < 0.001 ){
 				
 				// Print the limit
-				std::cout << "Fit warning on module " << mod << ", asic " << asic << ", channel " << chan << ": " <<
-					std::left << std::setw(wid) << total->GetParName(i) << " at lower limit, " << 
-					par_min << " (actual value = " << par_val << ")" << std::endl;
-					
+				PrintFitWarning( mac, "fit warning", Form("at lower limit %8.4f (actual value = %8.4f)", par_min, par_val) );
 			}
 			
 			// Check if parameters at a higher limit (or very very close)
 			else if ( TMath::Abs( par_val - par_max ) < 0.001 ){
 				
 				// Print the limit
-				std::cout << "Fit warning on module " << mod << ", asic " << asic << ", channel " << chan << ": " <<
-					std::left << std::setw(wid) << total->GetParName(i) << " at upper limit, " << 
-					par_max << " (actual value = " << par_val << ")" << std::endl;
-					
+				PrintFitWarning( mac, "fit warning", Form("at upper limit %8.4f (actual value = %8.4f)", par_max, par_val) );
 			}
 				
 		}
@@ -1066,12 +1060,9 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 		
 		// Run some sensible checks and print warnings
 		// Check all heights are above the defined threshold
-		if ( par[amp_index] < my_threshold ){
+		if ( par[amp_index] < plot_opt.my_threshold ){
 		
-			std::cout << "Fit warning on module " << mod;
-			std::cout << ", asic " << asic;
-			std::cout << ", channel " << chan;
-			std::cout << ": peaks not above threshold" << std::endl;
+			PrintFitWarning( mac, "fit warning", "peaks not above threshold" );
 		}
 		
 		// Check that all of the peaks are well separated (at least 1 s.d. away from each other)
@@ -1079,34 +1070,36 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 		
 			if ( centroids[i+1] - centroids[i] - 2*par[1] < 0 ){
 			
-				std::cout << "Fit warning on module " << mod;
-				std::cout << ", asic " << asic;
-				std::cout << ", channel " << chan;
-				std::cout << ": peaks " << i << " and " << i+1 << " are quite close together" << std::endl;
-				
+				PrintFitWarning( mac, "fit warning", Form( "peaks %d and %d are quite close together", i, i+1) );
+
 			}
 			
 		}
-		
-		// Check the value of the chi^2
-		if ( chi2 > 1e6 ){
-		
-			std::cout << "Fit warning on module " << mod;
-			std::cout << ", asic " << asic;
-			std::cout << ", channel " << chan;
-			std::cout << ": chi-squared value very large" << std::endl;
-		
-		}
-		
+
+	}
+
+	// Continue sensible checks
+	// Check that the widths are not too large ()
+	double width_adc_threshold = 10;
+	double width = par[1]*2*TMath::Sqrt(2*TMath::Log(2));
+	if ( width > width_adc_threshold ){
+		PrintFitWarning( mac, "fit warning", "peak width " + std::to_string(width) + " > " + std::to_string(width_adc_threshold) + " channels in this spectrum");
+	}
+
+	// Check the value of the chi^2
+	if ( chi2 > 1e5 ){
+	
+		PrintFitWarning( mac, "fit warning", "chi-squared value very large (" + std::to_string(chi2) + ")" );
+	
 	}
 	
 	// Draw the fitted peaks on the spectrum, alongside the individual fits
-	TCanvas *c = new TCanvas( "c_fitted_peaks", Form( "Fitted alpha peaks: module %d asic %d channel %d", mod, asic, chan ), 1600, 900 );
+	std::unique_ptr<TCanvas> c = std::make_unique<TCanvas>( "c_fitted_peaks", Form( "Fitted alpha peaks: module %d asic %d channel %d", mod, asic, chan ), 1600, 900 );
 	c->cd();
 
 	gStyle->SetOptFit(1111);
 	h->GetXaxis()->SetRangeUser( 0/*default_fit_peak_channel_threshold_lb*/, default_fit_peak_channel_threshold_ub );
-	h->GetYaxis()->SetRangeUser( 0, 1.1*my_max_amp );
+	h->GetYaxis()->SetRangeUser( 0, 1.1*plot_opt.my_max_amp );
 	h->SetTitle( Form( "Fitted alpha peaks: module %d asic %d channel %d; ADC value; Counts", mod, asic, chan ) );
 	
 	// Draw the spectrum and all of the fits
@@ -1119,16 +1112,9 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 	std::string imgname = "autocal/spec/" + std::string(h->GetName()) + "_spec." + image_file_type;
 	c->SaveAs( imgname.data() );
 	gErrorIgnoreLevel = kInfo;
-	
-	// Clean up the memory
-	delete c;
-	delete total;
-	for( int i = 0; i < NumberOfFoundAlphaPeaks; ++i ){
-		delete indie_peaks[i];
-	}
 
 	// Return value
-	return fitstatus;
+	return fitisgood;
 	
 }
 
@@ -1140,14 +1126,17 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 /// \param[in] mod Module number
 /// \param[in] asic ASIC number
 /// \param[in] chan Channel number
-void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::vector<float> &errors,
-										 unsigned int mod, unsigned int asic, unsigned int chan ){
-						
+void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac ) const {
+	// Get mod, asic, chan
+	const unsigned int& mod = mac.mod;
+	const unsigned int& asic = mac.asic;
+	const unsigned int& chan = mac.chan;
+	
 	// Get the number of found alpha peaks				 
 	const int NumberOfFoundAlphaPeaks = centroids.size();
 	
 	// Simple linear fit
-	TF1 *calfit = new TF1( "calfit", "pol1", default_fit_peak_channel_threshold_lb, default_fit_peak_channel_threshold_ub );
+	std::unique_ptr<TF1> calfit = std::make_unique<TF1>( "calfit", "pol1", default_fit_peak_channel_threshold_lb, default_fit_peak_channel_threshold_ub );
 
 	// Work out the x,y,z position (approximatley)
 	// We would need to work with coincidences to do this properly
@@ -1194,15 +1183,14 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 	}
 	
 	// Now do a graph of the centroids against detected energy
-	
-	TGraphErrors *g = new TGraphErrors( NumberOfFoundAlphaPeaks,
+	TGraphErrors* g = new TGraphErrors( NumberOfFoundAlphaPeaks,
 									   centroids.data(), DetectedEnergy,
 									   errors.data(), FF_alpha_peak_energy_error );
 	g->SetTitle( "Calibration Fit; ADC Value; Alpha Particle Energy [keV]" );
 	
 	// Fit, nice and simple
 	gErrorIgnoreLevel = kError;
-	g->Fit( calfit, "Q" );
+	g->Fit( calfit.get(), "Q" );
 	
 	// Set the calibration in the calibration object
 	cal->SetAsicEnergyCalibration( mod, asic, chan,
@@ -1221,13 +1209,13 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 	}
 	
 	// Graph the resdiuals
-	TGraphErrors *r = new TGraphErrors( NumberOfFoundAlphaPeaks,
+	TGraphErrors* r = new TGraphErrors( NumberOfFoundAlphaPeaks,
 									   DetectedEnergy, Residuals,
 									   FF_alpha_peak_energy_error, ResErr );
 	r->SetTitle( "Residuals Plot; ADC Value; Alpha Particle Energy Residuals [keV]" );
 	
 	// Draw the results
-	TCanvas *c = new TCanvas("c","Calibration fits",800,900);
+	std::unique_ptr<TCanvas> c = std::make_unique<TCanvas>("c","Calibration fits",800,900);
 	c->Divide(1,2);
 	c->cd(1);
 	gStyle->SetOptFit(1111);
@@ -1247,16 +1235,15 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 	r->Draw("A*P");
 	
 	// Save to png
-	std::string imgname = "autocal/cal/asic_" + std::to_string(mod);
-	imgname += "_" + std::to_string(asic) + "_";
-	imgname += std::to_string(chan) + "_cal." + image_file_type;
+	std::string imgname = "autocal/cal/";
+	imgname += GetAsicHistName( mac );
+	imgname += "_cal." + image_file_type;
 	c->SaveAs( imgname.data() );
 	gErrorIgnoreLevel = kInfo;
 	
 	// Clean up memory
+	delete r;
 	delete g;
-	delete calfit;
-	delete c;
 	
 	return;
 	
@@ -1268,11 +1255,10 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 /// - ISSAutoCalibrator::FitSpectrum()
 /// - ISSAutoCalibrator::CalibrateChannel()
 /// Error messages are printed if any of the fits fail or warnings are issued
-void ISSAutoCalibrator::DoFits(){
+void ISSAutoCalibrator::DoFits() const {
 
 	// Stuff for histogram and peaks
 	TH2F *m;
-	TH1F *h;
 	std::vector<float> centroids;
 	std::vector<float> errors;
 	
@@ -1281,12 +1267,19 @@ void ISSAutoCalibrator::DoFits(){
 	nchans *= set->GetNumberOfArrayASICs();
 	nchans *= set->GetNumberOfArrayChannels();
 
+	// Mod asic chan container
+	ISSAutoCalModAsicChan mac;
+	unsigned int& mod = mac.mod;
+	unsigned int& asic = mac.asic;
+	unsigned int& chan = mac.chan;	
+
 	// Loop over all the channels and perform the alpha spectrum fits
 	// Loop over modules in the array
-	for( unsigned int mod = 0; mod < set->GetNumberOfArrayModules(); mod++ ){
+	for( mod = 0; mod < set->GetNumberOfArrayModules(); mod++ ){
+		mac.mod = mod;
 
 		// Loop over ASICs in the module
-		for( unsigned int asic = 0; asic < set->GetNumberOfArrayASICs(); asic++ ){
+		for( asic = 0; asic < set->GetNumberOfArrayASICs(); asic++ ){
 
 			// Get the histogram
 			std::string hname = "asic_";
@@ -1300,91 +1293,21 @@ void ISSAutoCalibrator::DoFits(){
 			m = (TH2F*)output_file->Get( mname.data() );
 
 			// Loop over channels in the asic
-			for( unsigned int chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
-				
-				// Only do the fits if the user desires
-				if ( _only_manual_fits_ == false || ( _only_manual_fits_ == true && manual_fit_channel[mod][asic][chan] == true ) ){
-				
-					// Clear and resize the vectors holding the centroid and error information
-					centroids.clear();
-					errors.clear();
-					centroids.resize( FF_num_alpha_peaks );
-					errors.resize( FF_num_alpha_peaks );
-					
-					// Get the histogram of the alpha spectrum
-					std::string pname = hname + "_" + std::to_string(chan);
-					h = (TH1F*)m->ProjectionY( pname.data(), chan+1, chan+1 );
-					
-					// Skip if it's an empty channel or just low stats
-					if( h->Integral( default_fit_peak_channel_threshold_lb, default_fit_peak_channel_threshold_ub ) < 100 )
-						continue;
-					
-					// Rebin if requested by user (default is 1)
-					h->Rebin( rebin_factor );
-					
-					// Find the peak centroids for the starting parameters (or impose mandatory ones)
-					FindPeaks( h, centroids, mod, asic, chan );
-					
-					// Impose user-defined centroids to override those from the FindPeaks function
-					if ( manual_fit_channel[mod][asic][chan] ){
-						
-						for ( int i = 0; i < FF_num_alpha_peaks; ++i ){
-						
-							if ( my_centroid[mod][asic][chan][i] > 0 ){ centroids[i] = my_centroid[mod][asic][chan][i]; }
-							
-						}
-						
-					}
+			for( chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
+				DoChannelFit( m, mac );
 
-					// Fit the spectrum with the user-defined peak shape, and get the status of the fit
-					int fitstatus = FitSpectrum( h, centroids, errors, mod, asic, chan );
-					
-					// Print error messages if the user-defined fit fails for some reason
-					if( fitstatus == 0 ) {
-						
-						std::cout << "Fit    fail on module " << mod;
-						std::cout << ", asic " << asic;
-						std::cout << ", channel " << chan;
-						std::cout << ": fit did not converge" << std::endl;
-						
-						if ( !_print_bad_calibrations_ ){
-							continue;	// Skip if it fails
-						}
+				// Print progress in percent complete
+				float chanNo = mod * set->GetNumberOfArrayASICs() * set->GetNumberOfArrayChannels();
+				chanNo += asic * set->GetNumberOfArrayChannels();
+				chanNo += chan;
+				float percent = chanNo*100.0/(float)nchans;
 
-					}
-					else{
-						// Print whether the fit succeeds if doing manual fits and in debug mode
-						if ( _debug_ && _only_manual_fits_ ){
-							std::cout << "Fit     win on module " << mod;
-							std::cout << ", asic " << asic;
-							std::cout << ", channel " << chan;
-							std::cout << std::endl;
-						}
-					}
-					
-					// Calibrate the channel
-					CalibrateChannel( centroids, errors, mod, asic, chan );
-					
-					// Print progress in percent complete
-					float chanNo = mod * set->GetNumberOfArrayASICs() * set->GetNumberOfArrayChannels();
-					chanNo += asic * set->GetNumberOfArrayChannels();
-					chanNo += chan;
-					float percent = chanNo*100.0/(float)nchans;
+				// Progress bar in terminal
+				std::cout << " " << std::setw(6) << std::setprecision(4);
+				std::cout << percent << "%    \r";
+				std::cout.flush();
+				gSystem->ProcessEvents();
 
-					//if( (int)chanNo % (nchans/100) == 0 || chanNo+1 == nchans ) {
-					
-						// Progress bar in GUI
-						//if( _prog_ ) prog->SetPosition( percent );
-
-						// Progress bar in terminal
-						std::cout << " " << std::setw(6) << std::setprecision(4);
-						std::cout << percent << "%    \r";
-						std::cout.flush();
-						gSystem->ProcessEvents();
-						
-					// }
-
-				}
 			} // chan
 
 		} // asic
@@ -1393,4 +1316,128 @@ void ISSAutoCalibrator::DoFits(){
 
 	return;
 	
+}
+///////////////////////////////////////////////////////////////////////////////
+/// Calibrates a particular channel for fitting
+/// \param[in] m    The 2D histogram that is used to generate all of the 1D histograms for a given mod,asic pair
+/// \param[in] mod  Module number
+/// \param[in] asic ASIC number
+/// \param[in] chan Channel number
+void ISSAutoCalibrator::DoChannelFit( TH2F* m, const ISSAutoCalModAsicChan& mac ) const {
+	// Get mod, asic, chan
+	const unsigned int& mod = mac.mod;
+	const unsigned int& asic = mac.asic;
+	const unsigned int& chan = mac.chan;
+
+	// Only do the fits if the user desires
+	if ( ( _only_manual_fits_ == false || ( _only_manual_fits_ == true && manual_fit_channel[mod][asic][chan] == true ) ) && ignore_channel[mod][asic][chan] == false ){
+
+		// Get the histogram of the alpha spectrum
+		std::string pname = GetAsicHistName( mac );
+		TH1F* h = (TH1F*)m->ProjectionY( pname.data(), chan+1, chan+1 );
+	
+		// Clear and resize the vectors holding the centroid and error information
+		std::vector<float> centroids;
+		std::vector<float> errors;
+		centroids.clear();
+		errors.clear();
+		centroids.resize( FF_num_alpha_peaks );
+		errors.resize( FF_num_alpha_peaks );
+		
+		// Skip if it's an empty channel or just low stats
+		if( h->Integral( default_fit_peak_channel_threshold_lb, default_fit_peak_channel_threshold_ub ) < 100 ){
+			if ( ( asic == 1 || asic == 4 ) && ( 
+					( chan >= 11 && chan <= 21 ) ||
+					( chan >= 28 && chan <= 38 ) || 
+					( chan >= 89 && chan <= 99 ) || 
+					( chan >= 106 && chan <= 116 ))
+			){
+				PrintFitWarning( mac, "FIT FAILURE", "empty or has too few counts" );
+			}
+			return;
+		}
+
+		// Rebin if requested by user (default is 1)
+		h->Rebin( rebin_factor );
+
+		// Establish common plotting options to be used between the different functions
+		ISSAutoCalPlottingOptions plot_opt;
+		
+		// Find the peak centroids for the starting parameters (or impose mandatory ones)
+		FindPeaks( h, centroids, mac, plot_opt );
+		
+		// Impose user-defined centroids to override those from the FindPeaks function
+		if ( manual_fit_channel[mod][asic][chan] ){
+			
+			for ( int i = 0; i < FF_num_alpha_peaks; ++i ){
+			
+				if ( my_centroid[mod][asic][chan][i] > 0 ){ centroids[i] = my_centroid[mod][asic][chan][i]; }
+				
+			}
+			
+		}
+
+		// Fit the spectrum with the user-defined peak shape, and get the status of the fit
+		bool fitisgood = FitSpectrum( h, centroids, errors, mac, plot_opt );
+		
+		// Print error messages if the user-defined fit fails for some reason
+		if( !fitisgood ) {
+			PrintFitWarning( mac, "FIT FAILURE", "fit did not converge");
+			
+			if ( !_print_bad_calibrations_ ){
+				return;	// Skip if it fails
+			}
+
+		}
+		else{
+			// Print whether the fit succeeds if doing manual fits and in debug mode
+			if ( _debug_ && _only_manual_fits_ ){
+				PrintFitWarning( mac, "FIT SUCCESS", "fit converged successfully");
+			}
+		}
+		
+		// Calibrate the channel
+		CalibrateChannel( centroids, errors, mac );
+
+	}
+
+	return;
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// Prints warnings on the fit with consistent formatting
+/// \param[in] mod Module number
+/// \param[in] asic ASIC number
+/// \param[in] chan Channel number
+/// \param[in] type Specifies the type (warning, failure etc.)
+/// \param[in] detail Tells the user more about the problem
+void ISSAutoCalibrator::PrintFitWarning( const ISSAutoCalModAsicChan& mac, const std::string& type, const std::string& detail ) const {
+	static unsigned int PFWmod = 256;
+	static unsigned int PFWasic = 256;
+	static unsigned int PFWchan = 256;
+
+	if ( PFWchan == mac.chan && PFWasic == mac.asic && PFWmod == mac.mod ){
+		std::cout << std::string( 12, ' ' );
+	}
+	else{
+		std::cout << std::setw(12) << std::left << GetAsicHistName(mac);
+		PFWmod = mac.mod;
+		PFWasic = mac.asic;
+		PFWchan = mac.chan;
+	}
+
+	std::cout << ": " << std::setw(11) << type << " -> ";
+	std::cout << detail << std::endl;
+
+	return;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// Returns the asic histogram name in the form asic_<mod>_<asic>_<channel>
+/// \param[in] mod Module number
+/// \param[in] asic ASIC number
+/// \param[in] chan Channel number
+std::string ISSAutoCalibrator::GetAsicHistName( const ISSAutoCalModAsicChan& mac ) const {
+	return "asic_" + std::to_string(mac.mod) + "_" + std::to_string(mac.asic) + "_" + std::to_string(mac.chan);
 }
