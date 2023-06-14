@@ -1120,7 +1120,7 @@ void ISSConverter::ProcessInfoData(){
 	// HSB of timestamp
 	if( my_info_code == set->GetTimestampCode() ) {
 		
-		my_tm_stp_hsb = my_info_field & 0x000FFFFF;
+		my_tm_stp_hsb = my_info_field & 0x0000FFFF;
 
 	}
 	
