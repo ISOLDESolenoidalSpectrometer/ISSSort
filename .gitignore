@@ -16,3 +16,4 @@ data/*.pdf
 utils/*.d
 utils/*.so
 utils/*.pcm
+.vscode/*

@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -70,26 +71,38 @@
 * Have fun calibrating all your channels!!
 */
 
+struct ISSAutoCalPlottingOptions{
+	// Plotting options (carry across different functions)
+	double my_max_amp;			///< Stores the maximum amplitude of peaks for plotting purposes
+	double my_threshold;		///< Stores the value of a count threshold for each alpha-particle spectrum
+};
+
+struct ISSAutoCalModAsicChan{
+	unsigned int mod;
+	unsigned int asic;
+	unsigned int chan;
+};
+
 class ISSAutoCalibrator {
 	
 public:
 
-	ISSAutoCalibrator( ISSSettings *myset, ISSReaction *myreact, std::string autocal_file ); ///< Constructor
-	virtual inline ~ISSAutoCalibrator(){}; ///< Destructor (currently empty)
+	ISSAutoCalibrator( ISSSettings *myset, ISSReaction *myreact, const std::string& autocal_file ); ///< Constructor
+	virtual ~ISSAutoCalibrator(){}; ///< Destructor (currently empty)
 	
 	void ReadAutocalSettings(); ///< Read the autocal settings from the input file
-	inline void SetFile( std::string filename ){
+	inline void SetFile( const std::string& filename ){
 		autocal_settings_input_file = filename;
 	} ///< Sets the name of the autocal input file in the class
 
-	int	SetOutputFile( std::string output_file_name ); ///< Sets the name of the output root file produced by the autocal hadd-ing process
+	int	SetOutputFile( const std::string& output_file_name ); ///< Sets the name of the output root file produced by the autocal hadd-ing process
 	
-	void DoFits(); ///< The heart of this class, moving from alpha spectra to a calibration
-	void FindPeaks( TH1F *h, std::vector<float> &centroids, unsigned int mod, unsigned int asic, unsigned int chan ); ///< Finds the desired number of alpha peaks
-	bool FitSpectrum( TH1F *h, std::vector<float> &centroids, std::vector<float> &errors, unsigned int mod, unsigned int asic, unsigned int chan ); ///< Fits the found/specified peaks with the user-specified fit shape
-	void CalibrateChannel( std::vector<float> &centroids, std::vector<float> &errors,
-						  unsigned int mod, unsigned int asic, unsigned int chan ); ///< Communicates with the ISSCalibration object to produce a calibration file
-	void SaveCalFile( std::string name_results_file ); ///< Saves the calibration to a file
+	void DoFits() const; ///< The heart of this class, moving from alpha spectra to a calibration
+	void DoChannelFit( TH2F*h, const ISSAutoCalModAsicChan& mac ) const; ///< The insides of the DoFits() function that calibrates for a given channel
+	void FindPeaks( TH1F *h, std::vector<float> &centroids, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt ) const; ///< Finds the desired number of alpha peaks
+	bool FitSpectrum( TH1F *h, std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt ) const; ///< Fits the found/specified peaks with the user-specified fit shape
+	void CalibrateChannel( std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac ) const; ///< Communicates with the ISSCalibration object to produce a calibration file
+	void SaveCalFile( const std::string& name_results_file ); ///< Saves the calibration to a file
 
 	inline void AddCalibration( ISSCalibration *mycal ){
 		cal = mycal;
@@ -100,9 +113,9 @@ public:
 		_prog_ = true;
 	}; ///< Adds a progress bar to the GUI
 	
-	inline bool GetDebugStatus(){ return _debug_; } ///< Returns the debug status of the ISSAutoCalibrator
-	inline bool OnlyManualFitStatus(){ return _only_manual_fits_; } ///< Returns the manual fit status of the ISSAutoCalibrator
-	inline std::string GetFitShapeName(){
+	inline bool GetDebugStatus() const { return _debug_; } ///< Returns the debug status of the ISSAutoCalibrator
+	inline bool OnlyManualFitStatus() const { return _only_manual_fits_; } ///< Returns the manual fit status of the ISSAutoCalibrator
+	inline std::string GetFitShapeName() const {
 		if ( myfit == fit_shape::gaussian ){ return "Gaussian"; }
 		else if ( myfit == fit_shape::crystalball ){ return "Crystal Ball"; }
 		else{ return "UNDEFINED"; }
@@ -111,7 +124,7 @@ public:
 private:
 	
 	// Output file
-	TFile *output_file; ///< The output file resulting from the hadd process of all the input files to iss_sort
+	std::unique_ptr<TFile> output_file; ///< The output file resulting from the hadd process of all the input files to iss_sort
 		
 	// Settings file
 	ISSSettings *set; ///< Pointer to the settings object
@@ -170,13 +183,12 @@ private:
 	std::vector< std::vector< std::vector< std::vector<float> > > > my_centroid_lb; ///< Vector used to store centroid lower bound limits for the fits
 	std::vector< std::vector< std::vector< std::vector<float> > > > my_centroid_ub; ///< Vector used to store centroid upper bound limits for the fits
 	std::vector< std::vector< std::vector<bool> > > manual_fit_channel;				///< Boolean for deciding whether the channel is being manually fit or not
+	std::vector< std::vector< std::vector<bool> > > ignore_channel;					///< Boolean for deciding whether the channel is to be ignored (e.g. contains bad/no data) or not
 	std::vector< std::vector< std::vector<bool> > > my_missing_peak_is_last;		///< Boolean for deciding whether the missing peak is first or last (default is value of default_missing_peak_is_last)
-	
-	// Plotting options (carry across different functions)
-	double my_max_amp;			///< Stores the maximum amplitude of peaks for plotting purposes
-	double my_threshold;		///< Stores the value of a threshold for each alpha-particle spectrum
 
+	// Print warnings in a constistent manner
+	void PrintFitWarning( const ISSAutoCalModAsicChan& mac, const std::string& type, const std::string& detail ) const; ///< Prints the warnings in a consistent manner
+	std::string GetAsicHistName( const ISSAutoCalModAsicChan& mac ) const; ///< Returns asic histogram name as used a lot in code
 };
 
 #endif
-
