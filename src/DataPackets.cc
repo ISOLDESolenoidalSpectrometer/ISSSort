@@ -124,7 +124,7 @@ unsigned long ISSDataPackets::GetTimeWithWalk(){
 
 UInt_t ISSDataPackets::GetTimeMSB(){
 	
-	return ( (this->GetTime() >> 32) & 0x0000FFFF );
+	return ( (this->GetTime() >> 32) & 0xFFFFFFFF );
 	
 }
 
