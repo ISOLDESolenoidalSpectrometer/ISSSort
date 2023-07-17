@@ -399,6 +399,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	input_tree->BuildIndex( "GetTime()" );
 	TTreeIndex *att_index = (TTreeIndex*)input_tree->GetTreeIndex();
 
+	(void) att_index; // Avoid unused variable warning.
+
 	// ------------------------------------------------------------------------ //
 	// Main loop over TTree to find events
 	// ------------------------------------------------------------------------ //
