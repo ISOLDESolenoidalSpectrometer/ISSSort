@@ -713,7 +713,7 @@ int main( int argc, char *argv[] ){
 			
 			std::cout << name_cal_file << " does not exist.";
 			std::cout << " Using defaults" << std::endl;
-			name_set_file = "dummy";
+			name_cal_file = "dummy";
 
 		}
 		
@@ -743,7 +743,7 @@ int main( int argc, char *argv[] ){
 			
 			std::cout << name_react_file << " does not exist.";
 			std::cout << " Using defaults" << std::endl;
-			name_set_file = "dummy";
+			name_react_file = "dummy";
 
 		}
 		
