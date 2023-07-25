@@ -189,22 +189,29 @@ void* monitor_run( void* ptr ){
 				}
 				
 				// Keep reading until we have all the data
+				// This could be multi-threaded to process data and go back to read more
 				int block_ctr = 0;
-				while( spy_length ){
-					
-					std::cout << "Got some data from DataSpy, block " << block_ctr << std::endl;
-					nblocks = conv_mon->ConvertBlock( (char*)buffer, 0 );
-					block_ctr += nblocks;
-					
-					// Stop after so long
-					if( block_ctr > 50 ) break;
+				long byte_ctr = 0;
+				int poll_ctr = 0;
+				while( block_ctr < 200 && poll_ctr < 1000 ){
+
+					//std::cout << "Got some data from DataSpy, block " << block_ctr << std::endl;
+					if( spy_length > 0 ) {
+						nblocks = conv_mon->ConvertBlock( (char*)buffer, 0 );
+						block_ctr += nblocks;
+					}
 					
 					// Read a new block
-					//gSystem->Sleep( 10 ); // wait 10 ms
+					gSystem->Sleep( 1 ); // wait 1 ms between each read
 					spy_length = myspy.Read( file_id, (char*)buffer, calfiles->myset->GetBlockSize() );
+
+					byte_ctr += spy_length;
+					poll_ctr++;
 					
 				}
-				
+
+				std::cout << "Got " << byte_ctr << " bytes of data from DataSpy" << std::endl;
+
 				// Sort the packets we just got, then do the rest of the analysis
 				conv_mon->SortTree();
 				
