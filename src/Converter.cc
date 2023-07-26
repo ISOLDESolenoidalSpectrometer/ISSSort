@@ -595,6 +595,8 @@ void ISSConverter::SetBlockData( char *input_data ){
 
 // Function to process data words
 void ISSConverter::ProcessBlockData( unsigned long nblock ){
+
+	(void) nblock; // Avoid unused parameter warning.
 	
 	// Get the data in 64-bit words and check endieness and swap if needed
 	// Data format here: http://npg.dl.ac.uk/documents/edoc504/edoc504.html
