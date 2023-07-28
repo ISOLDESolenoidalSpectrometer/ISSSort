@@ -414,7 +414,7 @@ bool do_build(){
 												  name_input_file.find_last_of(".") );
 		
 		name_output_file = datadir_name + "/" + name_output_file + "_events.root";
-		name_input_file = input_names.at(i) + ".root";
+		name_input_file = datadir_name + "/" + name_input_file + ".root";
 
 		// Check if the input file exists
 		ftest.open( name_input_file.data() );
@@ -495,7 +495,7 @@ void do_hist(){
 												   input_names.at(i).length() - input_names.at(i).find_last_of("/")-1 );
 		name_input_file = name_input_file.substr( 0,
 												 name_input_file.find_last_of(".") );
-		name_input_file = input_names.at(i) + "_events.root";
+		name_input_file = datadir_name + "/" + name_input_file + "_events.root";
 
 		ftest.open( name_input_file.data() );
 		if( !ftest.is_open() ) {

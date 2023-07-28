@@ -138,9 +138,6 @@ double theta_cm_function( double *x, double *params ){
 	double e3_lab = gamma * beta * p3_cm * TMath::Cos( TMath::Pi() - theta_cm );
 	e3_lab += gamma * e3_cm;
 	double p3_lab = TMath::Sqrt( e3_lab*e3_lab - m3*m3 );
-	double gamma3 = e3_lab / m3;
-
-	(void) gamma3; // Avoid unused variable warning.
 
 	// Maximum radius of particle, z position and missing orbit fraction (psi)
 	double r_max = TMath::Abs( 2.0 * p3_lab * TMath::Sin( theta_lab ) / ( qb * TMath::TwoPi()) );
