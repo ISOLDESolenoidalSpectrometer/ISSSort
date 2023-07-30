@@ -1,0 +1,23 @@
+name: ISSSort CI
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "master" ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: rootproject/root
+    steps:
+      - run: echo "Job triggered by ${{ github.event_name }} event."
+      - run: echo "Repo '${{ github.ref }}' branch '${{ github.repository }}'."
+      - uses: actions/checkout@v3
+#    - name: Install packages
+#      run: |
+#        sudo apt-get update -yq > /dev/null
+#        sudo apt-get install -y --no-install-recommends \
+#          bison build-essential flex pkg-config
+      - name: make
+        run: make
+
