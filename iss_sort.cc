@@ -552,7 +552,7 @@ void do_autocal(){
 	// Check each file
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 			
-		name_input_file = input_names.at(i) + "_source.root";
+		name_input_file = datadir_name + "/" + input_names.at(i) + "_source.root";
 
 		// Add to list if the converted file exists
 		ftest.open( name_input_file.data() );
@@ -687,7 +687,7 @@ int main( int argc, char *argv[] ){
 			
 			// Probably in the current working directory
 			if( input_names.at(0).find("/") == std::string::npos )
-				datadir_name = "./sorted/";
+				datadir_name = "./sorted";
 			
 			// Called from a different directory
 			else {
