@@ -593,31 +593,31 @@ void ISSHistogrammer::MakeHists() {
 		htitle = "Recoil dE-E plot for sector " + std::to_string(i);
 		htitle += " - singles;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 		recoil_EdE[i] = new TH2F( hname.data(), htitle.data(),
-								 2000, 0, 200000, 2000, 0, 200000 );
+								 4000, 0, 800000, 4000, 0, 800000 );
 		
 		hname = "recoil_EdE_cut_sec" + std::to_string(i);
 		htitle = "Recoil dE-E plot for sector " + std::to_string(i);
 		htitle += " - with energy cut;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 		recoil_EdE_cut[i] = new TH2F( hname.data(), htitle.data(),
-									 2000, 0, 200000, 2000, 0, 200000 );
+									 4000, 0, 800000, 4000, 0, 800000 );
 		
 		hname = "recoil_EdE_array_sec" + std::to_string(i);
 		htitle = "Recoil dE-E plot for sector " + std::to_string(i);
 		htitle += " - in coincidence with array;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 		recoil_EdE_array[i] = new TH2F( hname.data(), htitle.data(),
-									   2000, 0, 200000, 2000, 0, 200000 );
+									   4000, 0, 800000, 4000, 0, 800000 );
 		
 		hname = "recoil_bragg_sec" + std::to_string(i);
 		htitle = "Recoil Bragg plot for sector " + std::to_string(i);
 		htitle += ";Bragg ID;Energy loss, dE [keV];Counts";
 		recoil_bragg[i] = new TH2F( hname.data(), htitle.data(),
-								 set->GetNumberOfRecoilLayers(), -0.5, set->GetNumberOfRecoilLayers()-0.5, 2000, 0, 200000 );
+								 set->GetNumberOfRecoilLayers(), -0.5, set->GetNumberOfRecoilLayers()-0.5, 4000, 0, 800000 );
 
 		hname = "recoil_dE_vs_T1_sec" + std::to_string(i);
 		htitle = "Recoil dE plot versus T1 time for sector " + std::to_string(i);
 		htitle += ";Time since T1 proton pulse [ns];Energy loss, dE [keV];Counts";
 		recoil_dE_vs_T1[i] = new TH2F( hname.data(), htitle.data(),
-								 5000, 0, 50e9, 2000, 0, 200000 );
+								 5000, 0, 50e9, 4000, 0, 800000 );
 
 		// Timing plots
 		output_file->cd( "Timing" );
