@@ -2525,12 +2525,12 @@ void ISSEventBuilder::MakeHists(){
 		hname = "recoil_EdE" + std::to_string(i);
 		htitle = "Recoil dE vs E for sector " + std::to_string(i);
 		htitle += ";Rest energy, E [keV];Energy loss, dE [keV];Counts";
-		recoil_EdE[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 200000, 2000, 0, 200000 );
+		recoil_EdE[i] = new TH2F( hname.data(), htitle.data(), 4000, 0, 800000, 4000, 0, 800000 );
 		
 		hname = "recoil_dEsum" + std::to_string(i);
 		htitle = "Recoil dE vs Esum for sector " + std::to_string(i);
 		htitle += ";Total energy, Esum [keV];Energy loss, dE [keV];Counts";
-		recoil_dEsum[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 200000, 2000, 0, 200000 );
+		recoil_dEsum[i] = new TH2F( hname.data(), htitle.data(), 4000, 0, 800000, 4000, 0, 800000 );
 		
 		hname = "recoil_EdE_raw" + std::to_string(i);
 		htitle = "Recoil dE vs E for sector " + std::to_string(i);
@@ -2540,12 +2540,12 @@ void ISSEventBuilder::MakeHists(){
 		hname = "recoil_E_singles" + std::to_string(i);		
 		htitle = "Recoil E singles in sector " + std::to_string(i);
 		htitle += "; E [keV]; Counts";
-		recoil_E_singles[i] = new TH1F( hname.data(), htitle.data(), 2000, 0, 200000 );
+		recoil_E_singles[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
 		
 		hname = "recoil_dE_singles" + std::to_string(i);		
 		htitle = "Recoil dE singles in sector " + std::to_string(i);
 		htitle += "; dE [keV]; Counts";
-		recoil_dE_singles[i] = new TH1F( hname.data(), htitle.data(), 2000, 0, 200000 );
+		recoil_dE_singles[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
 		
 		hname = "recoil_E_dE_tdiff" + std::to_string(i);		
 		htitle = "Recoil E-dE time difference in sector" + std::to_string(i);
@@ -2623,7 +2623,7 @@ void ISSEventBuilder::MakeHists(){
 	
 	hname = "zd_EdE";
 	htitle = "ZeroDegree dE vs E;Rest Energy [keV];Energy Loss [keV];Counts";
-	zd_EdE = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 200000 );
+	zd_EdE = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 4000, 0, 800000 );
 
 	
 	// -------------------- //
