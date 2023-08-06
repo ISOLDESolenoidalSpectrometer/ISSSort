@@ -580,6 +580,8 @@ void ISSHistogrammer::MakeHists() {
 	recoil_EdE_array.resize( set->GetNumberOfRecoilSectors() );
 	recoil_bragg.resize( set->GetNumberOfRecoilSectors() );
 	recoil_dE_vs_T1.resize( set->GetNumberOfRecoilSectors() );
+	recoil_dE_eloss.resize( set->GetNumberOfRecoilSectors() );
+	recoil_E_eloss.resize( set->GetNumberOfRecoilSectors() );
 
 	// Loop over each recoil sector
 	for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
@@ -618,7 +620,17 @@ void ISSHistogrammer::MakeHists() {
 		htitle += ";Time since T1 proton pulse [ns];Energy loss, dE [keV];Counts";
 		recoil_dE_vs_T1[i] = new TH2F( hname.data(), htitle.data(),
 								 5000, 0, 50e9, 4000, 0, 800000 );
+			
+		hname = "recoil_dE_eloss_sec" + std::to_string(i);
+		htitle = "Recoil dE energy loss for sector " + std::to_string(i);
+		htitle += ";Energy loss, dE [keV];Counts";
+		recoil_dE_eloss[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
 
+		hname = "recoil_E_eloss_sec" + std::to_string(i);
+		htitle = "Recoil E energy loss for sector " + std::to_string(i);
+		htitle += ";Energy loss, E [keV];Counts";
+		recoil_E_eloss[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
+		
 		// Timing plots
 		output_file->cd( "Timing" );
 		recoil_array_td[i].resize( set->GetNumberOfArrayModules() );
@@ -810,6 +822,11 @@ void ISSHistogrammer::ResetHists() {
 	for( unsigned int i = 0; i < recoil_dE_vs_T1.size(); ++i )
 		recoil_dE_vs_T1[i]->Reset("ICESM");
 
+	for( unsigned int i = 0; i < recoil_dE_eloss.size(); ++i )
+		recoil_dE_eloss[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < recoil_E_eloss.size(); ++i )
+		recoil_E_eloss[i]->Reset("ICESM");
 
 	// Array - E vs. z
 	E_vs_z->Reset("ICESM");
@@ -1417,6 +1434,9 @@ unsigned long ISSHistogrammer::FillHists() {
 				recoil_EdE_cut[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
 															  recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 			
+			recoil_dE_eloss[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+			recoil_E_eloss[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
+
 		} // recoils
 		
 		// Progress bar
