@@ -214,6 +214,8 @@ private:
 	std::vector<TH2F*> recoil_EdE_array;
 	std::vector<TH2F*> recoil_bragg;
 	std::vector<TH2F*> recoil_dE_vs_T1;
+	std::vector<TH1F*> recoil_dE_eloss;
+	std::vector<TH1F*> recoil_E_eloss;
 
 	// Array - E vs. z
 	std::vector<TH2F*> E_vs_z_mod;
