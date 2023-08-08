@@ -33,7 +33,6 @@
 #ExternalTriggerCode: 14 
 #SyncCode: 4 
 #TimestampCode: 5
-#PulserModuleArray: 0
 #PulserAsicArray: 1
 #PulserChannelArray: 63
 #PulserCodeArray: 19
