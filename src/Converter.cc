@@ -772,6 +772,16 @@ void ISSConverter::ProcessASICData(){
 	// reconstruct time stamp= HSB+MSB+LSB
 	my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb_asic << 28 ) | my_tm_stp_lsb;
 	
+	// Calibrate
+	my_energy = cal->AsicEnergy( my_mod_id, my_asic_id, my_ch_id, my_adc_data );
+	
+	// Fill histograms
+	hasic[my_mod_id][my_asic_id]->Fill( my_ch_id, my_adc_data );
+	hasic_cal[my_mod_id][my_asic_id]->Fill( my_ch_id, my_energy );
+	
+	// Is it disabled?
+	if( !cal->AsicEnabled( my_mod_id, my_asic_id ) ) return;
+	
 	// Pulser in a spare n-side channel should be counted as info data
 	if( my_asic_id == set->GetArrayPulserAsic() &&
 		my_ch_id == set->GetArrayPulserChannel() ) {
@@ -793,47 +803,42 @@ void ISSConverter::ProcessASICData(){
 		}
 		
 	}
+	
+	// Otherwise fill a physics data item
+	else {
+		
+		if( my_asic_id == 0 || my_asic_id == 2 || my_asic_id == 3 || my_asic_id == 5 )
+			hpside[my_mod_id]->Fill( my_energy );
+		else if( my_asic_id == 1 || my_asic_id == 4 )
+			hnside[my_mod_id]->Fill( my_energy );
+		
+		
+		// Make an AsicData item
+		asic_data->SetTime( my_tm_stp + cal->AsicTime( my_mod_id, my_asic_id ) );
+		asic_data->SetWalk( (int)cal->AsicWalk( my_mod_id, my_asic_id, my_energy, my_hit ) );
+		asic_data->SetAdcValue( my_adc_data );
+		asic_data->SetHitBit( my_hit );
+		asic_data->SetModule( my_mod_id );
+		asic_data->SetAsic( my_asic_id );
+		asic_data->SetChannel( my_ch_id );
+		asic_data->SetEnergy( my_energy );
+		
+		// Check if it's over threshold
+		if( my_adc_data > cal->AsicThreshold( my_mod_id, my_asic_id, my_ch_id ) )
+			asic_data->SetThreshold( true );
+		else asic_data->SetThreshold( false );
+		
+		// Set this data and fill event to tree
+		data_packet->SetData( asic_data );
+		if( !flag_source ) output_tree->Fill();
+		asic_data->Clear();
+		data_packet->ClearData();
+		
+		// Count asic hit per module
+		ctr_asic_hit[my_mod_id]++;
+		hasic_hit[my_mod_id]->Fill( ctr_asic_hit[my_mod_id], my_tm_stp, 1 );
 
-	// Calibrate
-	my_energy = cal->AsicEnergy( my_mod_id, my_asic_id, my_ch_id, my_adc_data );
-	
-	// Is it disabled?
-	if( !cal->AsicEnabled( my_mod_id, my_asic_id ) ) return;
-	
-	// Fill histograms
-	hasic[my_mod_id][my_asic_id]->Fill( my_ch_id, my_adc_data );
-	hasic_cal[my_mod_id][my_asic_id]->Fill( my_ch_id, my_energy );
-	hasic_hit[my_mod_id]->Fill( ctr_asic_hit[my_mod_id], my_tm_stp, 1 );
-	
-	if( my_asic_id == 0 || my_asic_id == 2 || my_asic_id == 3 || my_asic_id == 5 )
-		hpside[my_mod_id]->Fill( my_energy );
-	else if( my_asic_id == 1 || my_asic_id == 4 )
-		hnside[my_mod_id]->Fill( my_energy );
-	
-	
-	// Make an AsicData item
-	asic_data->SetTime( my_tm_stp + cal->AsicTime( my_mod_id, my_asic_id ) );
-	asic_data->SetWalk( (int)cal->AsicWalk( my_mod_id, my_asic_id, my_energy, my_hit ) );
-	asic_data->SetAdcValue( my_adc_data );
-	asic_data->SetHitBit( my_hit );
-	asic_data->SetModule( my_mod_id );
-	asic_data->SetAsic( my_asic_id );
-	asic_data->SetChannel( my_ch_id );
-	asic_data->SetEnergy( my_energy );
-	
-	// Check if it's over threshold
-	if( my_adc_data > cal->AsicThreshold( my_mod_id, my_asic_id, my_ch_id ) )
-		asic_data->SetThreshold( true );
-	else asic_data->SetThreshold( false );
-	
-	// Set this data and fill event to tree
-	data_packet->SetData( asic_data );
-	if( !flag_source ) output_tree->Fill();
-	asic_data->Clear();
-	data_packet->ClearData();
-	
-	// Count asic hit per module
-	ctr_asic_hit[my_mod_id]++;
+	}
 		
 	return;
 	
