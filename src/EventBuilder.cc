@@ -754,7 +754,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			}
 			
 			// Update ISS pulser time in ASICs
-			else if( info_data->GetCode() == set->GetArrayPulserCode() ) {
+			else if( info_data->GetCode() == set->GetArrayPulserCode0() ) {
 			   
 				asic_time[info_data->GetModule()] = info_data->GetTime();
 				info_tdiff = (long long)asic_time[info_data->GetModule()] - (long long)asic_prev[info_data->GetModule()];
@@ -857,7 +857,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				caen_prev = caen_time;
 			if( info_data->GetCode() == set->GetExternalTriggerCode() )
 				fpga_prev[info_data->GetModule()] = fpga_time[info_data->GetModule()];
-			if( info_data->GetCode() == set->GetArrayPulserCode() )
+			if( info_data->GetCode() == set->GetArrayPulserCode0() )
 				asic_prev[info_data->GetModule()] = asic_time[info_data->GetModule()];
 
 						

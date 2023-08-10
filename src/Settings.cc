@@ -44,9 +44,12 @@ void ISSSettings::ReadSettings() {
 	thsb_code = config->GetValue( "TimestampCode", 5 );
 	pause_code = config->GetValue( "PauseCode", 2 );
 	resume_code = config->GetValue( "ResumeCode", 3 );
-	asic_pulser_asic = config->GetValue( "PulserAsicArray", 1 );
-	asic_pulser_ch = config->GetValue( "PulserChannelArray", 63 );
-	asic_pulser_code = config->GetValue( "PulserCodeArray", 19 );
+	asic_pulser_asic_0 = config->GetValue( "PulserAsicArray_0", 1 );
+	asic_pulser_ch_0 = config->GetValue( "PulserChannelArray_0", 63 );
+	asic_pulser_code_0 = config->GetValue( "PulserCodeArray_0", 18 );
+	asic_pulser_asic_1 = config->GetValue( "PulserAsicArray_1", 4 );
+	asic_pulser_ch_1 = config->GetValue( "PulserChannelArray_1", 63 );
+	asic_pulser_code_1 = config->GetValue( "PulserCodeArray_1", 19 );
 	asic_pulser_thres = config->GetValue( "PulserThresholdArray", 1000 );
 	caen_pulser_mod = config->GetValue( "PulserModuleCAEN", 1 );
 	caen_pulser_ch = config->GetValue( "PulserChannelCAEN", 13 );

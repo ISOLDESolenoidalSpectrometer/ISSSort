@@ -336,23 +336,14 @@ void ISSConverter::MakeHists() {
 		output_file->mkdir( dirname.data() );
 	output_file->cd( dirname.data() );
 	
-	// Energy histogram of pulser channel
-	if( output_file->GetListOfKeys()->Contains( "asic_pulser_energy" ) )
-		asic_pulser_energy = (TH1F*)output_file->Get( "asic_pulser_energy" );
-	
-	else {
+	// Loop over ISS modules
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 		
-		asic_pulser_energy = new TH1F( "asic_pulser_energy",
-									  "ASIC energy for pulser event;ADC value;counts",
-								   4096, -0.5, 4095.5 );
-	
-		asic_pulser_energy->SetDirectory(
-				output_file->GetDirectory( dirname.data() ) );
 		
-	}
-
+	} // i: number of ISS modules
 
 	// Resize vectors
+	asic_pulser_energy.resize( set->GetNumberOfArrayModules() );
 	hasic_hit.resize( set->GetNumberOfArrayModules() );
 	hasic_ext.resize( set->GetNumberOfArrayModules() );
 	hasic_pause.resize( set->GetNumberOfArrayModules() );
@@ -363,6 +354,32 @@ void ISSConverter::MakeHists() {
 	// Loop over ISS modules
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 		
+		asic_pulser_energy[i].resize(2);
+		
+		// Loop over pulsers per module
+		for( unsigned int j = 0; j < 2; ++j ) {
+			
+			// Energy histogram of pulser channel
+			hname = "asic_pulser_energy_" + std::to_string(i) + "_" + std::to_string(j);
+			htitle = "ASIC energy for pulser " + std::to_string(j) + " event in module ";
+			htitle += std::to_string(i) + ";ADC value;counts";
+			
+			if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+				asic_pulser_energy[i][j] = (TH1F*)output_file->Get( hname.data() );
+			
+			else {
+				
+				asic_pulser_energy[i][j] = new TH1F( hname.data(), htitle.data(), 4096, -0.5, 4095.5 );
+				
+				asic_pulser_energy[i][j]->SetDirectory(
+													   output_file->GetDirectory( dirname.data() ) );
+				
+			}
+			
+		} // j: number of pulsers per module
+
+
+		// Timestamp of hits
 		hname = "hasic_hit" + std::to_string(i);
 		htitle = "Profile of ts versus hit_id in ISS module " + std::to_string(i);
 
@@ -377,6 +394,7 @@ void ISSConverter::MakeHists() {
 
 		}
 		
+		// Timestamps of external FPGA triggers from 10 Hz sync pulser
 		hname = "hasic_ext" + std::to_string(i);
 		htitle = "Profile of external trigger ts versus hit_id in ISS module " + std::to_string(i);
 
@@ -391,6 +409,7 @@ void ISSConverter::MakeHists() {
 
 		}
 
+		// Pause events timestamps
 		hname = "hasic_pause" + std::to_string(i);
 		htitle = "Profile of ts versus pause events in ISS module " + std::to_string(i);
 
@@ -405,6 +424,7 @@ void ISSConverter::MakeHists() {
 
 		}
 
+		// Resume events timestamps
 		hname = "hasic_resume" + std::to_string(i);
 		htitle = "Profile of ts versus resume events in ISS module " + std::to_string(i);
 
@@ -481,7 +501,9 @@ void ISSConverter::ResetHists() {
 	for( unsigned int i = 0; i < hcaen_ext.size(); ++i )
 		hcaen_ext[i]->Reset("ICESM");
 	
-	asic_pulser_energy->Reset("ICESM");
+	for( unsigned int i = 0; i < asic_pulser_energy.size(); ++i )
+		for( unsigned int j = 0; j < asic_pulser_energy[i].size(); ++j )
+			asic_pulser_energy[i][j]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < hasic.size(); ++i )
 		for( unsigned int j = 0; j < hasic[i].size(); ++j )
@@ -783,26 +805,44 @@ void ISSConverter::ProcessASICData(){
 	if( !cal->AsicEnabled( my_mod_id, my_asic_id ) ) return;
 	
 	// Pulser in a spare n-side channel should be counted as info data
-	if( my_asic_id == set->GetArrayPulserAsic() &&
-		my_ch_id == set->GetArrayPulserChannel() ) {
+	bool pulser_trigger = false;
+	
+	if( my_asic_id == set->GetArrayPulserAsic0() &&
+	   my_ch_id == set->GetArrayPulserChannel0() ) {
 		
 		// Check energy to set threshold
-		asic_pulser_energy->Fill( my_adc_data );
+		asic_pulser_energy[my_mod_id][0]->Fill( my_adc_data );
 		
-		// If it's above an energy threshold, then count it
-		if( my_adc_data > set->GetArrayPulserThreshold() ) {
-		   
-			info_data->SetModule( my_mod_id );
-			info_data->SetTime( my_tm_stp );
-			info_data->SetCode( set->GetArrayPulserCode() );
-			data_packet->SetData( info_data );
-			if( !flag_source ) output_tree->Fill();
-			info_data->Clear();
-			data_packet->ClearData();
-			
-		}
+		info_data->SetModule( my_mod_id );
+		info_data->SetTime( my_tm_stp );
+		info_data->SetCode( set->GetArrayPulserCode0() );
+		pulser_trigger = true;
 		
 	}
+	
+	else if( my_asic_id == set->GetArrayPulserAsic1() &&
+	   my_ch_id == set->GetArrayPulserChannel1() ) {
+		
+		// Check energy to set threshold
+		asic_pulser_energy[my_mod_id][1]->Fill( my_adc_data );
+		
+		info_data->SetModule( my_mod_id );
+		info_data->SetTime( my_tm_stp );
+		info_data->SetCode( set->GetArrayPulserCode1() );
+		pulser_trigger = true;
+		
+	}
+
+	// If it's a pulser trigger above an energy threshold, then count it
+	if( my_adc_data > set->GetArrayPulserThreshold() && pulser_trigger ) {
+		
+		data_packet->SetData( info_data );
+		if( !flag_source ) output_tree->Fill();
+		info_data->Clear();
+		data_packet->ClearData();
+		
+	}
+
 	
 	// Otherwise fill a physics data item
 	else {
