@@ -472,10 +472,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 			// If it's below zero in energy, consider it below threshold
 			if( myenergy < 0 ) mythres = false;
-			
-			// If it's below threshold do not use as window opener
-			if( mythres ) event_open = true;
-			
+
 			// p-side event
 			if( myside == 0 && mythres ) {
 			
@@ -495,6 +492,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 					prow_list.push_back( myrow );
 					phit_list.push_back( myhitbit );
 
+					event_open = true; // real data open events (above threshold and from a strip)
 					hit_ctr++; // increase counter for bits of data included in this event
 
 				}
@@ -520,6 +518,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 					nrow_list.push_back( myrow );
 					nhit_list.push_back( myhitbit );
 
+					event_open = true; // // real data open events (above threshold and from a strip)
 					hit_ctr++; // increase counter for bits of data included in this event
 
 				}
