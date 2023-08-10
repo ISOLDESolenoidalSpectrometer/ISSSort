@@ -2312,7 +2312,7 @@ void ISSEventBuilder::MakeHists(){
 		asic_td[i] = new TH1F( hname.data(), htitle.data(), 1.6e3 , -4e3, 4e3 );
 		
 		hname = "asic_period_" + std::to_string(i);
-		htitle = "Period of pulser in ISS DAQ (ASICs) as a function of time in module ";
+		htitle = "Period of pulser in ISS DAQ (ASICs) in module ";
 		htitle += std::to_string(i) + ";time [ns];f [Hz]";
 		asic_period[i] = new TH1F( hname.data(), htitle.data(), 1000, 0, 1e9 );
 		
@@ -2332,18 +2332,18 @@ void ISSEventBuilder::MakeHists(){
 		fpga_td[i] = new TH1F( hname.data(), htitle.data(), 1.6e3 , -4e3, 4e3 );
 
 		hname = "fpga_period_" + std::to_string(i);
-		htitle = "Period of pulser in ISS DAQ (FPGA) as a function of time in module ";
+		htitle = "Period of pulser in ISS DAQ (FPGA) in module ";
 		htitle += std::to_string(i) + ";time [ns];f [Hz]";
 		fpga_period[i] = new TH1F( hname.data(), htitle.data(), 1000, 0, 1e9 );
 
 		hname = "fpga_sync_" + std::to_string(i);
-		htitle = "Number of missing/extra pulser events in FPGA as a function of time in module ";
-		htitle += std::to_string(i) + ";time [ns];(-ive CAEN missing, +ive ISS missing)";
+		htitle = "Time difference between FPGA and CAEN events as a function of time in module ";
+		htitle += std::to_string(i) + ";time [ns];#Delta t [ns]";
 		fpga_sync[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
 
 		hname = "fpga_pulser_loss_" + std::to_string(i);
-		htitle = "Period difference of pulser events in ISS/CAEN DAQs from FPGA as a function of time in module ";
-		htitle += std::to_string(i) + ";#time [ns];#Delta f [Hz]";
+		htitle = "Number of missing/extra pulser events in FPGA as a function of time in module ";
+		htitle += std::to_string(i) + ";#time [ns];(-ive CAEN missing, +ive ISS missing)";
 		fpga_pulser_loss[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
 
 	}
