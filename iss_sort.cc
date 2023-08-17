@@ -214,7 +214,8 @@ void* monitor_run( void* ptr ){
 
 				// Sort the packets we just got, then do the rest of the analysis
 				conv_mon->SortTree();
-				
+				conv_mon->PurgeOutput();
+
 			}
 			
 			// Only do the rest if it is not a source run
@@ -224,12 +225,12 @@ void* monitor_run( void* ptr ){
 				if( bFirstRun ) {
 					eb_mon->SetOutput( "monitor_events.root" );
 					eb_mon->StartFile();
-					
 				}
 				TTree *sorted_tree = conv_mon->GetSortedTree()->CloneTree();
 				eb_mon->SetInputTree( sorted_tree );
 				eb_mon->GetTree()->Reset();
 				nbuild = eb_mon->BuildEvents();
+				eb_mon->PurgeOutput();
 				delete sorted_tree;
 				
 				// Histogrammer
@@ -240,6 +241,7 @@ void* monitor_run( void* ptr ){
 					TTree *evt_tree = eb_mon->GetTree()->CloneTree();
 					hist_mon->SetInputTree( evt_tree );
 					hist_mon->FillHists();
+					hist_mon->PurgeOutput();
 					delete evt_tree;
 				}
 				

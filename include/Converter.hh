@@ -73,10 +73,12 @@ public:
 		std::cout << "\n Writing data and closing the file" << std::endl;
 		//output_tree->SetDirectory(0);
 		output_file->Write( 0, TObject::kWriteDelete );
+		PurgeOutput();
 		output_file->Close();
 		//output_tree->ResetBranchAddresses();
 		//sorted_tree->ResetBranchAddresses();
 	};
+	inline void PurgeOutput(){ output_file->Purge(2); }
 	inline TFile* GetFile(){ return output_file; };
 	inline TTree* GetTree(){ return output_tree; };
 	inline TTree* GetSortedTree(){ return sorted_tree; };

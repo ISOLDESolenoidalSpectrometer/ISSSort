@@ -102,12 +102,14 @@ public:
 	
 	inline void CloseOutput(){
 		output_tree->ResetBranchAddresses();
+		PurgeOutput();
 		output_file->Close();
 		input_tree->ResetBranchAddresses();
 		input_file->Close();
 		delete in_data;
 		log_file.close(); //?? to close or not to close?
 	}; ///< Closes the output files from this class
+	inline void PurgeOutput(){ output_file->Purge(2); }
 	void CleanHists(); ///< Deletes histograms from memory and clears vectors that store histograms
 
 	inline void AddProgressBar( std::shared_ptr<TGProgressBar> myprog ){
