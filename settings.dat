@@ -49,6 +49,12 @@
 #T1Module: 1
 #T1Channel: 15
 #T1Code: 22
+#SCModule: 1
+#SCChannel: 12
+#SCCode: 23
+#LaserModule: 1
+#LaserChannel: 11
+#LaserCode: 24
 
 
 #-------------#
