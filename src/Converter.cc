@@ -714,7 +714,7 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 			nsamples = word_0 & 0xFFFF; // 16 bits from 0
 			
 			// Get the samples from the trace
-			for( UInt_t j = 0; j < nsamples; j++ ){
+			for( UInt_t j = 0; j < nsamples/4; j++ ){
 				
 				// get next word
 				ULong64_t sample_packet = GetWord(i++);
