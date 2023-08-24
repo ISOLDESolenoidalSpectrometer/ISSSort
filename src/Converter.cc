@@ -724,10 +724,11 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 				
 				if( trace_test == 0 && block_test != 0x5E5E5E5E ){
 					
-					caen_data->AddSample( ( sample_packet >> 48 ) & 0x0000000000003FFF );
+					// Pairs need to be swapped
 					caen_data->AddSample( ( sample_packet >> 32 ) & 0x0000000000003FFF );
-					caen_data->AddSample( ( sample_packet >> 16 ) & 0x0000000000003FFF );
+					caen_data->AddSample( ( sample_packet >> 48 ) & 0x0000000000003FFF );
 					caen_data->AddSample( sample_packet & 0x0000000000003FFF );
+					caen_data->AddSample( ( sample_packet >> 16 ) & 0x0000000000003FFF );
 					
 				}
 				
