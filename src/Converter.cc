@@ -562,6 +562,7 @@ void ISSConverter::ProcessBlockHeader( unsigned long nblock ){
 	// Flags for CAEN data items
 	flag_caen_data0 = false;
 	flag_caen_data1 = false;
+	flag_caen_data2 = false;
 	flag_caen_data3 = false;
 	flag_caen_trace = false;
 
@@ -919,7 +920,7 @@ void ISSConverter::ProcessCAENData(){
 	else my_tm_stp = my_tm_stp*4;
 	
 	// First of the data items
-	if( !flag_caen_data0 && !flag_caen_data1 && !flag_caen_data3 ){
+	if( !flag_caen_data0 && !flag_caen_data1 && !flag_caen_data2 && !flag_caen_data3 ){
 		
 		// Make a CaenData item, need to add Qlong, Qshort and traces
 		caen_data->SetTime( my_tm_stp );
@@ -932,7 +933,7 @@ void ISSConverter::ProcessCAENData(){
 	// already occured before we found traces. This means that there
 	// is not trace data. So set the flag to be true and finish the
 	// event with an empty trace.
-	else if( flag_caen_data0 && flag_caen_data1 && flag_caen_data3 ){
+	else if( flag_caen_data0 && flag_caen_data1 && ( flag_caen_data2 || flag_caen_data3 ) ){
 		
 		// Fake trace flag, but with an empty trace
 		flag_caen_trace = true;
@@ -970,32 +971,68 @@ void ISSConverter::ProcessCAENData(){
 	}
 
 	// Extra word items
-	// Has to be defined what this is in the settings file
-	// 0: Fine timing
-	// 1: Baseline
+	// Do these have to be defined in the settings file?
+	//  set->GetCAENExtras( my_mod_id, my_ch_id ) == 0 or 1
+	//  0: Fine timing
+	//  1: Baseline
+	//if( my_data_id == 3 ) {
+	//
+	//	my_adc_data = my_adc_data & 0xFFFF; // 16 bits from 0
+	//	flag_caen_data3 = true;
+	//
+	//	// Fine timing
+	//	if( set->GetCAENExtras( my_mod_id, my_ch_id ) == 0 ){
+	//
+	//		// CAEN timestamps are 4 ns precision for V1725 and 2 ns for V1730
+	//		if( set->GetCAENModel( my_mod_id ) == 1730 )
+	//			caen_data->SetFineTime( (float)my_adc_data * 2. / 1000. );
+	//		else if( set->GetCAENModel( my_mod_id ) == 1725 )
+	//			caen_data->SetFineTime( (float)my_adc_data * 4. / 1000. );
+	//		caen_data->SetBaseline( 0.0 );
+	//
+	//	}
+	//
+	//	// Baseline
+	//	else if( set->GetCAENExtras( my_mod_id, my_ch_id ) == 1 ){
+	//
+	//		caen_data->SetFineTime( 0.0 );
+	//		caen_data->SetBaseline( (float)my_adc_data / 4. );
+	//
+	//	}
+	//
+	//}
+
+	
+	// But MIDAS says my_data_id == 2 or 3
+	//  2: basline
+	//  3: fine timing
+	// http://npg.dl.ac.uk/documents/edoc504/edoc504.html
+	
+	// Baseline
+	if( my_data_id == 2 ) {
+		
+		my_adc_data = my_adc_data & 0xFFFF; // 16 bits from 0
+		flag_caen_data2 = true;
+
+		caen_data->SetFineTime( 0.0 );
+		caen_data->SetBaseline( (float)my_adc_data / 4. );
+
+	}
+	
+	// Fine timing
 	if( my_data_id == 3 ) {
 		
 		my_adc_data = my_adc_data & 0x03FF; // 10 bits from 0
 		flag_caen_data3 = true;
 
-		// Fine timing
-		if( set->GetCAENExtras( my_mod_id, my_ch_id ) == 0 ){
-		
+		// CAEN timestamps are 4 ns precision for V1725 and 2 ns for V1730
+		if( set->GetCAENModel( my_mod_id ) == 1730 )
+			caen_data->SetFineTime( (float)my_adc_data * 2. / 1000. );
+		else if( set->GetCAENModel( my_mod_id ) == 1725 )
 			caen_data->SetFineTime( (float)my_adc_data * 4. / 1000. );
-			caen_data->SetBaseline( 0.0 );
-
-		}
-		
-		// Baseline
-		else if( set->GetCAENExtras( my_mod_id, my_ch_id ) == 1 ){
-		
-			caen_data->SetFineTime( 0.0 );
-			caen_data->SetBaseline( (float)my_adc_data / 4. );
-
-		}
+		caen_data->SetBaseline( 0.0 );
 
 	}
-
 	
 	return;
 
@@ -1004,7 +1041,7 @@ void ISSConverter::ProcessCAENData(){
 void ISSConverter::FinishCAENData(){
 	
 	// Got all items
-	if( flag_caen_data0 && flag_caen_data1 && flag_caen_data3 && flag_caen_trace ){
+	if( flag_caen_data0 && flag_caen_data1 && ( flag_caen_data2 || flag_caen_data3 ) && flag_caen_trace ){
 
 		// Fill histograms
 		hcaen_hit[caen_data->GetModule()]->Fill( ctr_caen_hit[caen_data->GetModule()], caen_data->GetTime(), 1 );
@@ -1129,6 +1166,7 @@ void ISSConverter::FinishCAENData(){
 		std::cout << "Missing something in CAEN data and new event occured" << std::endl;
 		std::cout << " Qlong       = " << flag_caen_data0 << std::endl;
 		std::cout << " Qshort      = " << flag_caen_data1 << std::endl;
+		std::cout << " baseline    = " << flag_caen_data2 << std::endl;
 		std::cout << " fine timing = " << flag_caen_data3 << std::endl;
 		std::cout << " trace data  = " << flag_caen_trace << std::endl;
 
@@ -1143,6 +1181,7 @@ void ISSConverter::FinishCAENData(){
 	// Assuming it did finish, in a good way or bad, clean up.
 	flag_caen_data0 = false;
 	flag_caen_data1 = false;
+	flag_caen_data2 = false;
 	flag_caen_data3 = false;
 	flag_caen_trace = false;
 	info_data->ClearData();

@@ -105,7 +105,7 @@ void ISSDataPackets::ClearData(){
 unsigned long ISSDataPackets::GetTime(){
 		
 	if( IsAsic() ) return GetAsicData()->GetTime();
-	if( IsCaen() ) return GetCaenData()->GetTime();
+	if( IsCaen() ) return GetCaenData()->GetTime() + GetCaenData()->GetFineTime();
 	if( IsInfo() ) return GetInfoData()->GetTime();
 
 	return 0;
@@ -115,7 +115,7 @@ unsigned long ISSDataPackets::GetTime(){
 unsigned long ISSDataPackets::GetTimeWithWalk(){
 		
 	if( IsAsic() ) return GetAsicData()->GetTime() + GetAsicData()->GetWalk();
-	if( IsCaen() ) return GetCaenData()->GetTime();
+	if( IsCaen() ) return GetCaenData()->GetTime() + GetCaenData()->GetFineTime();
 	if( IsInfo() ) return GetInfoData()->GetTime();
 
 	return 0;

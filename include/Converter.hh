@@ -182,6 +182,7 @@ private:
 	bool flag_asic_data;
 	bool flag_caen_data0;
 	bool flag_caen_data1;
+	bool flag_caen_data2;
 	bool flag_caen_data3;
 	bool flag_caen_trace;
 	bool flag_caen_info;
