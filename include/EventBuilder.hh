@@ -178,33 +178,33 @@ private:
 	bool event_open; ///< Flag for deciding whether an event is currently being recorded or not
 
 	// Time variables
-	long		 		time_diff;	///< Time difference between first hit in event and current hit
-	unsigned long long	time_prev;	///< Holds time of previous event
-	unsigned long long	time_min;	///< The minimum time in an event containing hits
-	unsigned long long	time_max;	///< The maximum time in an event containing hits
-	unsigned long long	time_first;	///< Time of the first caen/asic/info event in a file
-	unsigned long long  ebis_prev;	///< Holds time of previous ebis pulse
-	unsigned long long  t1_prev;	///< Holds time of previous T1 pulse
-	unsigned long long  sc_prev;	///< Holds time of previous SuperCycle pulse
-	unsigned long long  laser_prev;	///< Holds time of previous Laser status pulse
-	unsigned long long	caen_time;	///< Time from the caen DAQ
-	unsigned long long	caen_prev;	///< Holds previous time from the CAEN DAQ
-	std::vector<unsigned long long> fpga_time; 			///< FPGA time on a given module of the array
-	std::vector<unsigned long long> fpga_prev;			///< Previous FPGA time on a given module of the array
-	std::vector<unsigned long long> asic_time;			///< ASIC time on a given module of the array
-	std::vector<unsigned long long> asic_prev;			///< Previous ASIC time on a given module of the array
-	std::vector<unsigned long long> pause_time;			///< The pause time on a given module of the array
-	std::vector<unsigned long long> resume_time;		///< The resume time on a given module of the array
-	std::vector<unsigned long long> asic_dead_time;		///< ASIC dead time for a given module of the array
-	std::vector<unsigned long long> asic_time_start;	///< Holds the time of the first hit on each asic in the input time-sorted tree (index denotes asic module)
-	std::vector<unsigned long long> asic_time_stop;		///< Holds the time of the last hit on each asic in the input time-sorted tree (index denotes asic module)
-	std::vector<unsigned long long> caen_time_start;	///< Holds the time of the first hit on each caen in the input time-sorted tree (index denotes caen module)
-	std::vector<unsigned long long> caen_time_stop;		///< Holds the time of the last hit on each asic in the input time-sorted tree (index denotes caen module)
+	long double		time_diff;	///< Time difference between first hit in event and current hit
+	long double		time_prev;	///< Holds time of previous event
+	long double		time_min;	///< The minimum time in an event containing hits
+	long double		time_max;	///< The maximum time in an event containing hits
+	long double		time_first;	///< Time of the first caen/asic/info event in a file
+	long double		ebis_prev;	///< Holds time of previous ebis pulse
+	long double		t1_prev;	///< Holds time of previous T1 pulse
+	long double		sc_prev;	///< Holds time of previous SuperCycle pulse
+	long double		laser_prev;	///< Holds time of previous Laser status pulse
+	long double		caen_time;	///< Time from the caen DAQ
+	long double		caen_prev;	///< Holds previous time from the CAEN DAQ
+	std::vector<long double> fpga_time; 			///< FPGA time on a given module of the array
+	std::vector<long double> fpga_prev;				///< Previous FPGA time on a given module of the array
+	std::vector<long double> asic_time;				///< ASIC time on a given module of the array
+	std::vector<long double> asic_prev;				///< Previous ASIC time on a given module of the array
+	std::vector<long double> pause_time;			///< The pause time on a given module of the array
+	std::vector<long double> resume_time;			///< The resume time on a given module of the array
+	std::vector<long double> asic_dead_time;		///< ASIC dead time for a given module of the array
+	std::vector<long double> asic_time_start;		///< Holds the time of the first hit on each asic in the input time-sorted tree (index denotes asic module)
+	std::vector<long double> asic_time_stop;		///< Holds the time of the last hit on each asic in the input time-sorted tree (index denotes asic module)
+	std::vector<long double> caen_time_start;		///< Holds the time of the first hit on each caen in the input time-sorted tree (index denotes caen module)
+	std::vector<long double> caen_time_stop;		///< Holds the time of the last hit on each asic in the input time-sorted tree (index denotes caen module)
 
 	// Data variables - generic
 	unsigned char		mymod;		///< module number
 	unsigned char		mych;		///< channel number
-	unsigned long long	mytime;		///< absolute timestamp
+	long double			mytime;		///< absolute timestamp
 	float 				myenergy;	///< calibrated energy
 	int 				mywalk;		///< time walk correction
 	bool				mythres;	///< above threshold?
@@ -223,47 +223,47 @@ private:
 
 
 	// Array variables
-	std::vector<float>		pen_list;	///< list of p-side energies for ParticleFinder
-	std::vector<float>		nen_list;	///< list of n-side energies for ParticleFinder
-	std::vector<long>		ptd_list;	///< list of p-side time differences for ParticleFinder without time walk correction
-	std::vector<long>		ntd_list;	///< list of n-side time differences for ParticleFinder without time walk correction
-	std::vector<long>		pwalk_list;	///< list of p-side time differences for ParticleFinder WITH time walk correction
-	std::vector<long>		nwalk_list;	///< list of n-side time differences for ParticleFinder WITH time walk correction
-	std::vector<char>		pid_list;	///< list of p-side strip ids
-	std::vector<char>		nid_list;	///< list of n-side strip ids
-	std::vector<char>		pmod_list;	///< list of p-side modules numbers
-	std::vector<char>		nmod_list;	///< list of n-side modules numbers
-	std::vector<char>		prow_list;	///< list of p-side row numbers
-	std::vector<char>		nrow_list;	///< list of n-side row numbers
-	std::vector<bool>		phit_list;	///< list of p-side hit bit values
-	std::vector<bool>		nhit_list;	///< list of n-side hit bit values
+	std::vector<float>			pen_list;	///< list of p-side energies for ParticleFinder
+	std::vector<float>			nen_list;	///< list of n-side energies for ParticleFinder
+	std::vector<long double>	ptd_list;	///< list of p-side time differences for ParticleFinder without time walk correction
+	std::vector<long double>	ntd_list;	///< list of n-side time differences for ParticleFinder without time walk correction
+	std::vector<long double>	pwalk_list;	///< list of p-side time differences for ParticleFinder WITH time walk correction
+	std::vector<long double>	nwalk_list;	///< list of n-side time differences for ParticleFinder WITH time walk correction
+	std::vector<char>			pid_list;	///< list of p-side strip ids
+	std::vector<char>			nid_list;	///< list of n-side strip ids
+	std::vector<char>			pmod_list;	///< list of p-side modules numbers
+	std::vector<char>			nmod_list;	///< list of n-side modules numbers
+	std::vector<char>			prow_list;	///< list of p-side row numbers
+	std::vector<char>			nrow_list;	///< list of n-side row numbers
+	std::vector<bool>			phit_list;	///< list of p-side hit bit values
+	std::vector<bool>			nhit_list;	///< list of n-side hit bit values
 
 	// Recoil variables
-	std::vector<float>	ren_list;	///< list of recoil energies for RecoilFinder
-	std::vector<long>	rtd_list;	///< list of recoil time differences for RecoilFinder
-	std::vector<char>	rid_list;	///< list of recoil IDs/layers for RecoilFinder
-	std::vector<char>	rsec_list;	///< list of recoil sectors for RecoilFinder
+	std::vector<float>			ren_list;	///< list of recoil energies for RecoilFinder
+	std::vector<long double>	rtd_list;	///< list of recoil time differences for RecoilFinder
+	std::vector<char>			rid_list;	///< list of recoil IDs/layers for RecoilFinder
+	std::vector<char>			rsec_list;	///< list of recoil sectors for RecoilFinder
 	
 	// MWPC variables
 	std::vector<unsigned short>	mwpctac_list;	///< TAC time from the MWPC
-	std::vector<long>			mwpctd_list;	///< list of ELUM time differences for ELUMFinder
+	std::vector<long double>	mwpctd_list;	///< list of ELUM time differences for ELUMFinder
 	std::vector<char>			mwpcaxis_list;	///< list of axis IDs for the MWPC
 	std::vector<char>			mwpcid_list;	///< list of TAC IDs for the MWPC
 
 	// ELUM variables
-	std::vector<float>	een_list;	///< list of ELUM energies for ELUMFinder
-	std::vector<long>	etd_list;	///< list of ELUM time differences for ELUMFinder
-	std::vector<char>	esec_list;	///< list of ELUM sectors for ELUMFinder
+	std::vector<float>			een_list;	///< list of ELUM energies for ELUMFinder
+	std::vector<long double>	etd_list;	///< list of ELUM time differences for ELUMFinder
+	std::vector<char>			esec_list;	///< list of ELUM sectors for ELUMFinder
 
 	// ZeroDegree variables
-	std::vector<float>	zen_list;	///< list of ZeroDegree energies for ELUMFinder
-	std::vector<long>	ztd_list;	///< list of ZeroDegree time differences for ELUMFinder
-	std::vector<char>	zid_list;	///< list of ZeroDegree IDs/layers for ELUMFinder
+	std::vector<float>			zen_list;	///< list of ZeroDegree energies for ELUMFinder
+	std::vector<long double>	ztd_list;	///< list of ZeroDegree time differences for ELUMFinder
+	std::vector<char>			zid_list;	///< list of ZeroDegree IDs/layers for ELUMFinder
 
 	// ScintArray variables
-	std::vector<float>	saen_list;	///< list of ScintArray energies for GammaFinder
-	std::vector<long>	satd_list;	///< list of ScintArray time differences for GammaFinder
-	std::vector<char>	said_list;	///< list of ScintArray detectors ids for GammaFinder
+	std::vector<float>			saen_list;	///< list of ScintArray energies for GammaFinder
+	std::vector<long double>	satd_list;	///< list of ScintArray time differences for GammaFinder
+	std::vector<char>			said_list;	///< list of ScintArray detectors ids for GammaFinder
 
 	// Counters
 	unsigned int		hit_ctr;		///< Counts the number of hits that make up an event within a given file

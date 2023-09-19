@@ -76,87 +76,87 @@ public:
 	
 	// Recoil - array coincidence (numbers to go to reaction file?)
 	inline bool	PromptCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSArrayEvt> a ){
-		if( (double)r->GetTime() - (double)a->GetTime() > react->GetArrayRecoilPromptTime(0) &&
-			(double)r->GetTime() - (double)a->GetTime() < react->GetArrayRecoilPromptTime(1) ) return true;
+		if( r->GetTime() - a->GetTime() > react->GetArrayRecoilPromptTime(0) &&
+			r->GetTime() - a->GetTime() < react->GetArrayRecoilPromptTime(1) ) return true;
 		else return false;
 	};
 	
 	// Recoil - elum coincidence
 	inline bool	PromptCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSElumEvt> e ){
-		if( (double)r->GetTime() - (double)e->GetTime() > -200 &&
-			(double)r->GetTime() - (double)e->GetTime() < 200 ) return true;
+		if( r->GetTime() - e->GetTime() > -200 &&
+			r->GetTime() - e->GetTime() < 200 ) return true;
 		else return false;
 	};
 	
 	inline bool	RandomCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSArrayEvt> a ){
-		if( (double)r->GetTime() - (double)a->GetTime() > react->GetArrayRecoilRandomTime(0) &&
-			(double)r->GetTime() - (double)a->GetTime() < react->GetArrayRecoilRandomTime(1) ) return true;
+		if( r->GetTime() - a->GetTime() > react->GetArrayRecoilRandomTime(0) &&
+			r->GetTime() - a->GetTime() < react->GetArrayRecoilRandomTime(1) ) return true;
 		else return false;
 	};
 	
 	inline bool	RandomCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSElumEvt> e ){
-		if( (double)r->GetTime() - (double)e->GetTime() > 1000 &&
-			(double)r->GetTime() - (double)e->GetTime() < 1400 ) return true;
+		if( r->GetTime() - e->GetTime() > 1000 &&
+			r->GetTime() - e->GetTime() < 1400 ) return true;
 		else return false;
 	};
 	inline bool	OnBeam( std::shared_ptr<ISSRecoilEvt> r ){
-		if( (double)r->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
-			(double)r->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
+		if( r->GetTime() - read_evts->GetEBIS() >= 0 &&
+			r->GetTime() - read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
 	inline bool	OnBeam( std::shared_ptr<ISSElumEvt> e ){
-		if( (double)e->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
-			(double)e->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
+		if( e->GetTime() - read_evts->GetEBIS() >= 0 &&
+			e->GetTime() - read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
 	inline bool	OnBeam( std::shared_ptr<ISSArrayEvt> a ){
-		if( (double)a->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
-			(double)a->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
+		if( a->GetTime() - read_evts->GetEBIS() >= 0 &&
+			a->GetTime() - read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
 	inline bool	OnBeam( std::shared_ptr<ISSZeroDegreeEvt> z ){
-		if( (double)z->GetTime() - (double)read_evts->GetEBIS() >= 0 &&
-			(double)z->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
+		if( z->GetTime() - read_evts->GetEBIS() >= 0 &&
+			z->GetTime() - read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
 	inline bool	OffBeam( std::shared_ptr<ISSRecoilEvt> r ){
-		if( (double)r->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
-			(double)r->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
+		if( r->GetTime() - read_evts->GetEBIS() >= react->GetEBISOnTime() &&
+			r->GetTime() - read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
 	inline bool	OffBeam( std::shared_ptr<ISSElumEvt> e ){
-		if( (double)e->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
-			(double)e->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
+		if( e->GetTime() - read_evts->GetEBIS() >= react->GetEBISOnTime() &&
+			e->GetTime() - read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
 	inline bool	OffBeam( std::shared_ptr<ISSArrayEvt> a ){
-		if( (double)a->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
-			(double)a->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
+		if( a->GetTime() - read_evts->GetEBIS() >= react->GetEBISOnTime() &&
+			a->GetTime() - read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
 	inline bool	OffBeam( std::shared_ptr<ISSZeroDegreeEvt> z ){
-		if( (double)z->GetTime() - (double)read_evts->GetEBIS() >= react->GetEBISOnTime() &&
-			(double)z->GetTime() - (double)read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
+		if( z->GetTime() - read_evts->GetEBIS() >= react->GetEBISOnTime() &&
+			z->GetTime() - read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
 	inline bool	T1Cut( std::shared_ptr<ISSRecoilEvt> r ){
-		if( (double)r->GetTime() - (double)read_evts->GetT1() > react->GetT1MinTime() &&
-			(double)r->GetTime() - (double)read_evts->GetT1() < react->GetT1MaxTime() ) return true;
+		if( r->GetTime() - read_evts->GetT1() > react->GetT1MinTime() &&
+			r->GetTime() - read_evts->GetT1() < react->GetT1MaxTime() ) return true;
 		else return false;
 	};
 	inline bool	T1Cut( std::shared_ptr<ISSElumEvt> e ){
-		if( (double)e->GetTime() - (double)read_evts->GetT1() > react->GetT1MinTime() &&
-			(double)e->GetTime() - (double)read_evts->GetT1() < react->GetT1MaxTime() ) return true;
+		if( e->GetTime() - read_evts->GetT1() > react->GetT1MinTime() &&
+			e->GetTime() - read_evts->GetT1() < react->GetT1MaxTime() ) return true;
 		else return false;
 	};
 	inline bool	T1Cut( std::shared_ptr<ISSArrayEvt> a ){
-		if( (double)a->GetTime() - (double)read_evts->GetT1() > react->GetT1MinTime() &&
-			(double)a->GetTime() - (double)read_evts->GetT1() < react->GetT1MaxTime() ) return true;
+		if( a->GetTime() - read_evts->GetT1() > react->GetT1MinTime() &&
+			a->GetTime() - read_evts->GetT1() < react->GetT1MaxTime() ) return true;
 		else return false;
 	};
 	inline bool	T1Cut( std::shared_ptr<ISSZeroDegreeEvt> z ){
-		if( (double)z->GetTime() - (double)read_evts->GetT1() > react->GetT1MinTime() &&
-			(double)z->GetTime() - (double)read_evts->GetT1() < react->GetT1MaxTime() ) return true;
+		if( z->GetTime() - read_evts->GetT1() > react->GetT1MinTime() &&
+			z->GetTime() - read_evts->GetT1() < react->GetT1MaxTime() ) return true;
 		else return false;
 	};
 	inline bool	LaserOn(){ return read_evts->GetLaserStatus(); };

@@ -1133,7 +1133,7 @@ unsigned long ISSHistogrammer::FillHists() {
 			
 			
 			// EBIS time
-			ebis_td_array->Fill( (double)array_evt->GetTime() - (double)read_evts->GetEBIS() );
+			ebis_td_array->Fill( array_evt->GetTime() - read_evts->GetEBIS() );
 			
 			// Check for events in the EBIS on-beam window
 			if( OnBeam( array_evt ) ){
@@ -1156,7 +1156,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				Ex_vs_z_ebis_on_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 				
 				// Check for events in the user-defined T1 window
-				Ex_vs_T1->Fill( (double)array_evt->GetTime() - read_evts->GetT1(), react->GetEx() );
+				Ex_vs_T1->Fill( array_evt->GetTime() - read_evts->GetT1(), react->GetEx() );
 				if( T1Cut( array_evt ) ) {
 					
 					E_vs_z_T1->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
@@ -1182,7 +1182,7 @@ unsigned long ISSHistogrammer::FillHists() {
 						Ex_vs_z_ebis_on_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
 						
 						// Check for events in the user-defined T1 window
-						Ex_vs_T1_cut[k]->Fill( (double)array_evt->GetTime() - read_evts->GetT1(), react->GetEx() );
+						Ex_vs_T1_cut[k]->Fill( array_evt->GetTime() - read_evts->GetT1(), react->GetEx() );
 						if( T1Cut( array_evt ) ) {
 							
 							E_vs_z_T1_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
@@ -1247,7 +1247,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				recoil_evt = read_evts->GetRecoilEvt(k);
 				
 				// Time differences
-				tdiff = (double)recoil_evt->GetTime() - (double)array_evt->GetTime();
+				tdiff = recoil_evt->GetTime() - array_evt->GetTime();
 				recoil_array_td[recoil_evt->GetSector()][array_evt->GetModule()]->Fill( tdiff );
 				
 				if( array_evt->GetPHit() ) { // hit bit = true
@@ -1348,7 +1348,7 @@ unsigned long ISSHistogrammer::FillHists() {
 			elum_evt = read_evts->GetElumEvt(j);
 			
 			// EBIS time
-			ebis_td_elum->Fill( (double)elum_evt->GetTime() - (double)read_evts->GetEBIS() );
+			ebis_td_elum->Fill( elum_evt->GetTime() - read_evts->GetEBIS() );
 			
 			// Singles
 			elum->Fill( elum_evt->GetEnergy() );
@@ -1361,7 +1361,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				elum_ebis_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
 				elum_ebis_on->Fill( elum_evt->GetEnergy() );
 				elum_ebis_on_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
-				elum_vs_T1->Fill( (double)elum_evt->GetTime() - (double)read_evts->GetT1(), elum_evt->GetEnergy() );
+				elum_vs_T1->Fill( elum_evt->GetTime() - read_evts->GetT1(), elum_evt->GetEnergy() );
 
 			} // ebis
 			
@@ -1382,7 +1382,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				recoil_evt = read_evts->GetRecoilEvt(k);
 				
 				// Time differences
-				tdiff = (double)recoil_evt->GetTime() - (double)elum_evt->GetTime();
+				tdiff = recoil_evt->GetTime() - elum_evt->GetTime();
 				recoil_elum_td[recoil_evt->GetSector()][elum_evt->GetSector()]->Fill( tdiff );
 				
 				// Check for prompt events with recoils
@@ -1413,16 +1413,16 @@ unsigned long ISSHistogrammer::FillHists() {
 			recoil_evt = read_evts->GetRecoilEvt(j);
 			
 			// EBIS, T1, SC time
-			ebis_td_recoil->Fill( (double)recoil_evt->GetTime() - (double)read_evts->GetEBIS() );
-			t1_td_recoil->Fill( (double)recoil_evt->GetTime() - (double)read_evts->GetT1() );
-			sc_td_recoil->Fill( (double)recoil_evt->GetTime() - (double)read_evts->GetSC() );
+			ebis_td_recoil->Fill( recoil_evt->GetTime() - read_evts->GetEBIS() );
+			t1_td_recoil->Fill( recoil_evt->GetTime() - read_evts->GetT1() );
+			sc_td_recoil->Fill( recoil_evt->GetTime() - read_evts->GetSC() );
 
 			// Energy EdE plot, unconditioned
 			recoil_EdE[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
 													  recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 
 			// Energy dE versus T1 time
-			recoil_dE_vs_T1[recoil_evt->GetSector()]->Fill( (double)recoil_evt->GetTime() - (double)read_evts->GetT1(),
+			recoil_dE_vs_T1[recoil_evt->GetSector()]->Fill( recoil_evt->GetTime() - read_evts->GetT1(),
 														   recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 
 			// Bragg curve

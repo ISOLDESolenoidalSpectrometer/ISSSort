@@ -67,7 +67,8 @@ public:
 			  bool th );
 	~ISSCaenData();
 
-	inline unsigned long	GetTime() { return time; };
+	inline long double		GetTime() { return (double)time + (double)finetime; };
+	inline unsigned long	GetTimeStamp() { return time; };
 	inline float			GetFineTime() { return finetime; };
 	inline float			GetBaseline() { return baseline; };
 	inline unsigned short	GetTraceLength() { return trace.size(); };
@@ -113,7 +114,7 @@ protected:
 	float						energy;
 
 	
-	ClassDef( ISSCaenData, 5 )
+	ClassDef( ISSCaenData, 6 )
 	
 };
 
@@ -125,7 +126,7 @@ public:
 	ISSInfoData( unsigned long t, unsigned char c, unsigned char m );
 	~ISSInfoData();
 	
-	inline unsigned long GetTime(){ return time; };
+	inline long double	 GetTime(){ return (double)time; };
 	inline unsigned char GetCode(){ return code; };
 	inline unsigned char GetModule(){ return mod; };
 	
@@ -147,7 +148,7 @@ protected:
 	/// code = 22 is T1 timestamp
 
 	
-	ClassDef( ISSInfoData, 1 )
+	ClassDef( ISSInfoData, 2 )
 	
 };
 
@@ -169,8 +170,8 @@ public:
 	inline std::shared_ptr<ISSInfoData> GetInfoData() { return std::make_shared<ISSInfoData>( info_packets.at(0) ); };
 	
 	// Complicated way to get the time...
-	unsigned long GetTime();
-	unsigned long GetTimeWithWalk();
+	long double GetTime();
+	long double GetTimeWithWalk();
 	UInt_t GetTimeMSB();
 	UInt_t GetTimeLSB();
 
@@ -182,7 +183,7 @@ protected:
 	std::vector<ISSCaenData> caen_packets;
 	std::vector<ISSInfoData> info_packets;
 
-	ClassDef( ISSDataPackets, 1 )
+	ClassDef( ISSDataPackets, 2 )
 
 };
 

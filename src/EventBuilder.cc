@@ -326,10 +326,10 @@ void ISSEventBuilder::Initialise(){
 	// Now swap all these vectors with empty vectors to ensure they are fully cleared
 	std::vector<float>().swap(pen_list);
 	std::vector<float>().swap(nen_list);
-	std::vector<long>().swap(ptd_list);
-	std::vector<long>().swap(ntd_list);
-    std::vector<long>().swap(pwalk_list);
-    std::vector<long>().swap(nwalk_list);
+	std::vector<long double>().swap(ptd_list);
+	std::vector<long double>().swap(ntd_list);
+    std::vector<long double>().swap(pwalk_list);
+    std::vector<long double>().swap(nwalk_list);
 	std::vector<char>().swap(pid_list);
 	std::vector<char>().swap(nid_list);
 	std::vector<char>().swap(pmod_list);
@@ -340,25 +340,25 @@ void ISSEventBuilder::Initialise(){
 	std::vector<bool>().swap(nhit_list);
 
 	std::vector<float>().swap(ren_list);
-	std::vector<long>().swap(rtd_list);
+	std::vector<long double>().swap(rtd_list);
 	std::vector<char>().swap(rid_list);
 	std::vector<char>().swap(rsec_list);
 	
 	std::vector<unsigned short>().swap(mwpctac_list);
-	std::vector<long>().swap(mwpctd_list);
+	std::vector<long double>().swap(mwpctd_list);
 	std::vector<char>().swap(mwpcaxis_list);
 	std::vector<char>().swap(mwpcid_list);
 
 	std::vector<float>().swap(een_list);
-	std::vector<long>().swap(etd_list);
+	std::vector<long double>().swap(etd_list);
 	std::vector<char>().swap(esec_list);
 	
 	std::vector<float>().swap(zen_list);
-	std::vector<long>().swap(ztd_list);
+	std::vector<long double>().swap(ztd_list);
 	std::vector<char>().swap(zid_list);
 
 	std::vector<float>().swap(saen_list);
-	std::vector<long>().swap(satd_list);
+	std::vector<long double>().swap(satd_list);
 	std::vector<char>().swap(said_list);
 
 	write_evts->ClearEvt();
@@ -673,7 +673,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			if( info_data->GetCode() == set->GetEBISCode() ){
 			
 				// Each ASIC module sends ebis_time signal, so make sure difference between last ebis pulse and now is longer than the time it takes for them all to enter the DAQ
-				info_tdiff = (long long)info_data->GetTime() - (long long)ebis_prev;
+				info_tdiff = info_data->GetTime() - ebis_prev;
 				if( TMath::Abs( info_tdiff ) > 1e3 ){
 					
 					ebis_prev = info_data->GetTime();
@@ -687,7 +687,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// Update T1 time
 			else if( info_data->GetCode() == set->GetT1Code() ){
 				
-				info_tdiff = (long long)info_data->GetTime() - (long long)t1_prev;
+				info_tdiff = info_data->GetTime() - t1_prev;
 				if( TMath::Abs( info_tdiff ) > 1e3 ){
 				
 					t1_prev = info_data->GetTime();
@@ -704,7 +704,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// Update SuperCycle time
 			else if( info_data->GetCode() == set->GetSCCode() ){
 				
-				info_tdiff = (long long)info_data->GetTime() - (long long)sc_prev;
+				info_tdiff = info_data->GetTime() - sc_prev;
 				if( TMath::Abs( info_tdiff ) > 1e3 ){
 				
 					sc_prev = info_data->GetTime();
@@ -718,7 +718,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// Update Laser status time
 			else if( info_data->GetCode() == set->GetLaserCode() ){
 				
-				info_tdiff = (long long)info_data->GetTime() - (long long)laser_prev;
+				info_tdiff = info_data->GetTime() - laser_prev;
 				if( TMath::Abs( info_tdiff ) > 1e3 ){
 				
 					laser_prev = info_data->GetTime();
@@ -744,7 +744,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			else if( info_data->GetCode() == set->GetExternalTriggerCode() ) {
 			   
 				fpga_time[info_data->GetModule()] = info_data->GetTime();
-				info_tdiff = (long long)fpga_time[info_data->GetModule()] - (long long)fpga_prev[info_data->GetModule()];
+				info_tdiff = fpga_time[info_data->GetModule()] - fpga_prev[info_data->GetModule()];
 
 				if( fpga_prev[info_data->GetModule()] != 0 )
 					fpga_period[info_data->GetModule()]->Fill( info_tdiff );
@@ -757,7 +757,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			else if( info_data->GetCode() == set->GetArrayPulserCode0() ) {
 			   
 				asic_time[info_data->GetModule()] = info_data->GetTime();
-				info_tdiff = (long long)asic_time[info_data->GetModule()] - (long long)asic_prev[info_data->GetModule()];
+				info_tdiff = asic_time[info_data->GetModule()] - asic_prev[info_data->GetModule()];
 
 				if( asic_prev[info_data->GetModule()] != 0 )
 					asic_period[info_data->GetModule()]->Fill( info_tdiff );
@@ -799,7 +799,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 						std::cout << "Module " << info_data->GetModule();
 						std::cout << " was blocked at start of run for ";
-						std::cout << (double)resume_time[info_data->GetModule()]/1e9;
+						std::cout << resume_time[info_data->GetModule()]/1e9;
 						std::cout << " seconds" << std::endl;
 
 					}
@@ -827,14 +827,14 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			
 				for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
 				
-					double fpga_tdiff = (double)caen_time - (double)fpga_time[j];
-					double asic_tdiff = (double)caen_time - (double)asic_time[j];
+					double fpga_tdiff = caen_time - fpga_time[j];
+					double asic_tdiff = caen_time - asic_time[j];
 
 					// If diff is greater than 5 ms, we have the wrong pair
-					if( fpga_tdiff > 5e6 ) fpga_tdiff = (double)caen_prev - (double)fpga_time[j];
-					else if( fpga_tdiff < -5e6 ) fpga_tdiff = (double)caen_time - (double)fpga_prev[j];
-					if( asic_tdiff > 5e6 ) asic_tdiff = (double)caen_prev - (double)asic_time[j];
-					else if( asic_tdiff < -5e6 ) asic_tdiff = (double)caen_time - (double)asic_prev[j];
+					if( fpga_tdiff > 5e6 ) fpga_tdiff = caen_prev - fpga_time[j];
+					else if( fpga_tdiff < -5e6 ) fpga_tdiff = caen_time - fpga_prev[j];
+					if( asic_tdiff > 5e6 ) asic_tdiff = caen_prev - asic_time[j];
+					else if( asic_tdiff < -5e6 ) asic_tdiff = caen_time - asic_prev[j];
 					
 					// ??? Could be the case that |fpga_tdiff| > 5e6 after these conditional statements...change to while loop? Or have an extra condition?
 
@@ -964,7 +964,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				write_evts->SetEBIS( ebis_prev );
 				write_evts->SetT1( t1_prev );
 				write_evts->SetSC( sc_prev );
-				if( TMath::Abs( (double)ebis_prev - (double)laser_prev ) < 1e3
+				if( TMath::Abs( ebis_prev - laser_prev ) < 1e3
 					&& laser_prev > 0 ) write_evts->SetLaserStatus( true );
 				else
 					write_evts->SetLaserStatus( false );
@@ -1033,13 +1033,13 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 		ss_log << "   Module " << i << " pause = " << n_asic_pause[i] << std::endl;
 		ss_log << "           resume = " << n_asic_resume[i] << std::endl;
-		ss_log << "        dead time = " << (double)asic_dead_time[i]/1e9 << " s" << std::endl;
-		ss_log << "        live time = " << (double)(asic_time_stop[i]-asic_time_start[i])/1e9 << " s" << std::endl;
+		ss_log << "        dead time = " << asic_dead_time[i]/1e9 << " s" << std::endl;
+		ss_log << "        live time = " << (asic_time_stop[i]-asic_time_start[i])/1e9 << " s" << std::endl;
 	}
 	ss_log << "  CAEN data packets = " << n_caen_data << std::endl;
 	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
 		ss_log << "   Module " << i << " live time = ";
-		ss_log << (double)(caen_time_stop[i]-caen_time_start[i])/1e9;
+		ss_log << (caen_time_stop[i]-caen_time_start[i])/1e9;
 		ss_log << " s" << std::endl;
 	}
 	ss_log << "  Info data packets = " << n_info_data << std::endl;
@@ -2243,7 +2243,7 @@ void ISSEventBuilder::GammaRayFinder() {
 		// Coincidences
 		for( unsigned int j = i+1; j < saen_list.size(); ++j ) {
 			
-			double tdiff = (double)satd_list[j] - (double)satd_list[i];
+			double tdiff = satd_list[j] - satd_list[i];
 			gamma_gamma_td->Fill( tdiff );
 			gamma_gamma_td->Fill( -tdiff );
 			
