@@ -1161,7 +1161,7 @@ void ISSConverter::FinishCAENData(){
 	}
 	
 	// missing something
-	else if( my_tm_stp != caen_data->GetTime() ) {
+	else if( (long long)my_tm_stp != (long long)caen_data->GetTime() ) {
 		
 		std::cout << "Missing something in CAEN data and new event occured" << std::endl;
 		std::cout << " Qlong       = " << flag_caen_data0 << std::endl;
@@ -1451,7 +1451,7 @@ unsigned long long ISSConverter::SortTree(){
 	if( output_tree->GetEntries() ){
 
 		std::cout << "\n Building time-ordered index of events..." << std::endl;
-		output_tree->BuildIndex( "data.GetTime()" );
+		output_tree->BuildIndex( "data.GetTimeInteger()" );
 
 	}
 	else return 0;

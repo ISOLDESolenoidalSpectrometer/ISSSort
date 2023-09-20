@@ -10,24 +10,24 @@ class ISSAsicData : public TObject {
 public:
 
 	ISSAsicData();
-	ISSAsicData( unsigned long t, unsigned short adc,
+	ISSAsicData( long double t, unsigned short adc,
 			  unsigned char m, unsigned char a,
 			  unsigned char c, bool h, bool th,
-			  float e, int w );
+			  float e, double w );
 	~ISSAsicData();
 	
-	inline unsigned long	GetTime() { return time; };
+	inline long double		GetTime() { return time; };
 	inline unsigned short	GetAdcValue() { return adc_value; };
 	inline unsigned char	GetModule() { return mod; };
 	inline unsigned char	GetAsic() { return asic; };
 	inline unsigned char	GetChannel() { return ch; };
 	inline bool				GetHitBit() { return hit_bit; };
 	inline float			GetEnergy() { return energy; };
-	inline int				GetWalk() { return walk; };
+	inline double			GetWalk() { return walk; };
 	inline bool				IsOverThreshold() { return thres; };
 
-	inline void SetTime( unsigned long t ){ time = t; };
-	inline void SetWalk( int w ){ walk = w; };
+	inline void SetTime( long double t ){ time = t; };
+	inline void SetWalk( double w ){ walk = w; };
 	inline void SetAdcValue( unsigned short adc ){ adc_value = adc; };
 	inline void SetModule( unsigned char m ){ mod = m; };
 	inline void SetAsic( unsigned char a ){ asic = a; };
@@ -40,7 +40,7 @@ public:
 
 protected:
 	
-	unsigned long	time;
+	long double		time;
 	unsigned short	adc_value;
 	unsigned char	mod;
 	unsigned char	asic;
@@ -48,7 +48,7 @@ protected:
 	bool			hit_bit;
 	bool			thres;		///< is the energy over threshold?
 	float			energy;
-	int				walk;
+	double			walk;
 
 	
 	ClassDef( ISSAsicData, 3 )
@@ -60,15 +60,15 @@ class ISSCaenData : public TObject {
 public:
 
 	ISSCaenData();
-	ISSCaenData( unsigned long t, float f, float b,
+	ISSCaenData( long double t, float f, float b,
 			  std::vector<unsigned short> tr,
 			  unsigned short ql, unsigned short qs,
 			  unsigned char m, unsigned char c,
 			  bool th );
 	~ISSCaenData();
 
-	inline long double		GetTime() { return (double)time + (double)finetime; };
-	inline unsigned long	GetTimeStamp() { return time; };
+	inline long double		GetTime() { return time + finetime; };
+	inline unsigned long	GetTimeStamp() { return (unsigned long)time; };
 	inline float			GetFineTime() { return finetime; };
 	inline float			GetBaseline() { return baseline; };
 	inline unsigned short	GetTraceLength() { return trace.size(); };
@@ -85,7 +85,7 @@ public:
 	inline float			GetEnergy() { return energy; };
 	inline bool				IsOverThreshold() { return thres; };
 
-	inline void	SetTime( unsigned long t ) { time = t; };
+	inline void	SetTime( long double t ) { time = t; };
 	inline void	SetFineTime( float t ) { finetime = t; };
 	inline void	SetBaseline( float b ) { baseline = b; };
 	inline void	SetTrace( std::vector<unsigned short> t ) { trace = t; };
@@ -102,7 +102,7 @@ public:
 
 protected:
 	
-	unsigned long				time;
+	long double					time;
 	float						finetime;
 	float						baseline;
 	std::vector<unsigned short>	trace;
@@ -123,14 +123,14 @@ class ISSInfoData : public TObject {
 public:
 
 	ISSInfoData();
-	ISSInfoData( unsigned long t, unsigned char c, unsigned char m );
+	ISSInfoData( long double t, unsigned char c, unsigned char m );
 	~ISSInfoData();
 	
 	inline long double	 GetTime(){ return (double)time; };
 	inline unsigned char GetCode(){ return code; };
 	inline unsigned char GetModule(){ return mod; };
 	
-	inline void SetTime( unsigned long t ){ time = t; };
+	inline void SetTime( long double t ){ time = t; };
 	inline void SetCode( unsigned char c ){ code = c; };
 	inline void SetModule( unsigned char m ){ mod = m; };
 
@@ -138,7 +138,7 @@ public:
 
 protected:
 	
-	unsigned long	time;	///< timestamp of info event
+	long double		time;	///< timestamp of info event
 	unsigned char	code;	///< code here represents which information timestamp we have
 	unsigned char	mod;	///< module ID of the event
 	/// code = 4 is extended timestimp, i.e. next 16 bits
@@ -174,6 +174,12 @@ public:
 	long double GetTimeWithWalk();
 	UInt_t GetTimeMSB();
 	UInt_t GetTimeLSB();
+	inline unsigned long long GetTimeInteger(){
+		return (unsigned long long)GetTime();
+	};
+	inline unsigned long long GetTimeWithWalkInteger(){
+		return (unsigned long long)GetTimeWithWalk();
+	};
 
 	void ClearData();
 

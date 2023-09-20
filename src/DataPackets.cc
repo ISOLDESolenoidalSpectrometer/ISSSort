@@ -7,13 +7,13 @@ ClassImp(ISSDataPackets)
 
 ISSAsicData::ISSAsicData(){}
 ISSAsicData::~ISSAsicData(){}
-ISSAsicData::ISSAsicData( unsigned long t, unsigned short adc, unsigned char m,
-					unsigned char a, unsigned char c, bool h, bool th, float e, int w ) :
+ISSAsicData::ISSAsicData( long double t, unsigned short adc, unsigned char m,
+					unsigned char a, unsigned char c, bool h, bool th, float e, double w ) :
 					time(t), adc_value(adc), mod(m), asic(a), ch(c), hit_bit(h), thres(th), energy(e), walk(w) {}
 
 ISSCaenData::ISSCaenData(){}
 ISSCaenData::~ISSCaenData(){}
-ISSCaenData::ISSCaenData( unsigned long t, float f, float b,
+ISSCaenData::ISSCaenData( long double t, float f, float b,
 				    std::vector<unsigned short> tr,
 					unsigned short ql, unsigned short qs,
 					unsigned char m, unsigned char c,
@@ -22,7 +22,7 @@ ISSCaenData::ISSCaenData( unsigned long t, float f, float b,
 
 ISSInfoData::ISSInfoData(){}
 ISSInfoData::~ISSInfoData(){}
-ISSInfoData::ISSInfoData( unsigned long t, unsigned char c, unsigned char m ) :
+ISSInfoData::ISSInfoData( long double t, unsigned char c, unsigned char m ) :
 					time(t), code(c), mod(m) {}
 
 

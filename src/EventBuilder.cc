@@ -396,7 +396,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	// Apply time-walk correction, i.e. get new time ordering
 	//std::cout << " Event Building: applying time walk-correction to event ordering" << std::endl;
 	//input_tree->BuildIndex( "GetTimeWithWalk()" );
-	input_tree->BuildIndex( "GetTime()" );
+	input_tree->BuildIndex( "GetTimeInteger()" );
 	TTreeIndex *att_index = (TTreeIndex*)input_tree->GetTreeIndex();
 
 	(void) att_index; // Avoid unused variable warning.
@@ -422,7 +422,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		//std::cout << i << "\t" << mytime << std::endl;
 				
 		// check time stamp monotonically increases!
-		if( time_prev > mytime ) {
+		if( (long long)time_prev > (long long)mytime ) {
 			
 			std::cout << "Out of order event in file ";
 			std::cout << input_tree->GetName() << std::endl;
