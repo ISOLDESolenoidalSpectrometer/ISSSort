@@ -2155,9 +2155,7 @@ void ISSEventBuilder::ElumFinder() {
 		// Write event to tree
 		write_evts->AddEvt( elum_evt );
 		elum_ctr++;
-		
-		std::cout << write_evts->GetElumEvt(i)->GetTime() << std::endl;
-		
+
 		// Histogram the data
 		elum_E->Fill( een_list[i] );
 		elum_E_vs_sec->Fill( esec_list[i], een_list[i] );
