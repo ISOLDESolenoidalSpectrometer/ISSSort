@@ -2,6 +2,7 @@
 #define __DATAPACKETS_hh
 
 #include <memory>
+#include <iostream>
 
 #include "TObject.h"
 
@@ -10,23 +11,24 @@ class ISSAsicData : public TObject {
 public:
 
 	ISSAsicData();
-	ISSAsicData( long double t, unsigned short adc,
+	ISSAsicData( unsigned long long t, unsigned short adc,
 			  unsigned char m, unsigned char a,
 			  unsigned char c, bool h, bool th,
 			  float e, double w );
 	~ISSAsicData();
 	
-	inline long double		GetTime() { return time; };
-	inline unsigned short	GetAdcValue() { return adc_value; };
-	inline unsigned char	GetModule() { return mod; };
-	inline unsigned char	GetAsic() { return asic; };
-	inline unsigned char	GetChannel() { return ch; };
-	inline bool				GetHitBit() { return hit_bit; };
-	inline float			GetEnergy() { return energy; };
-	inline double			GetWalk() { return walk; };
-	inline bool				IsOverThreshold() { return thres; };
+	inline double				GetTime() { return (double)timestamp; };
+	inline unsigned long long		GetTimeStamp() { return timestamp; };
+	inline unsigned short			GetAdcValue() { return adc_value; };
+	inline unsigned char			GetModule() { return mod; };
+	inline unsigned char			GetAsic() { return asic; };
+	inline unsigned char			GetChannel() { return ch; };
+	inline bool						GetHitBit() { return hit_bit; };
+	inline float					GetEnergy() { return energy; };
+	inline double					GetWalk() { return walk; };
+	inline bool						IsOverThreshold() { return thres; };
 
-	inline void SetTime( long double t ){ time = t; };
+	inline void SetTimeStamp( unsigned long long t ){ timestamp = t; };
 	inline void SetWalk( double w ){ walk = w; };
 	inline void SetAdcValue( unsigned short adc ){ adc_value = adc; };
 	inline void SetModule( unsigned char m ){ mod = m; };
@@ -40,15 +42,15 @@ public:
 
 protected:
 	
-	long double		time;
-	unsigned short	adc_value;
-	unsigned char	mod;
-	unsigned char	asic;
-	unsigned char	ch;
-	bool			hit_bit;
-	bool			thres;		///< is the energy over threshold?
-	float			energy;
-	double			walk;
+	unsigned long long		timestamp;
+	unsigned short			adc_value;
+	unsigned char			mod;
+	unsigned char			asic;
+	unsigned char			ch;
+	bool					hit_bit;
+	bool					thres;		///< is the energy over threshold?
+	float					energy;
+	double					walk;
 
 	
 	ClassDef( ISSAsicData, 3 )
@@ -60,15 +62,15 @@ class ISSCaenData : public TObject {
 public:
 
 	ISSCaenData();
-	ISSCaenData( long double t, float f, float b,
+	ISSCaenData( unsigned long long t, float f, float b,
 			  std::vector<unsigned short> tr,
 			  unsigned short ql, unsigned short qs,
 			  unsigned char m, unsigned char c,
 			  bool th );
 	~ISSCaenData();
 
-	inline long double		GetTime() { return time + finetime; };
-	inline unsigned long	GetTimeStamp() { return (unsigned long)time; };
+	inline double		GetTime() { return (double)timestamp + finetime; };
+	inline unsigned long	GetTimeStamp() { return timestamp; };
 	inline float			GetFineTime() { return finetime; };
 	inline float			GetBaseline() { return baseline; };
 	inline unsigned short	GetTraceLength() { return trace.size(); };
@@ -85,7 +87,7 @@ public:
 	inline float			GetEnergy() { return energy; };
 	inline bool				IsOverThreshold() { return thres; };
 
-	inline void	SetTime( long double t ) { time = t; };
+	inline void	SetTimeStamp( unsigned long long t ) { timestamp = t; };
 	inline void	SetFineTime( float t ) { finetime = t; };
 	inline void	SetBaseline( float b ) { baseline = b; };
 	inline void	SetTrace( std::vector<unsigned short> t ) { trace = t; };
@@ -102,7 +104,7 @@ public:
 
 protected:
 	
-	long double					time;
+	unsigned long long			timestamp;
 	float						finetime;
 	float						baseline;
 	std::vector<unsigned short>	trace;
@@ -123,14 +125,15 @@ class ISSInfoData : public TObject {
 public:
 
 	ISSInfoData();
-	ISSInfoData( long double t, unsigned char c, unsigned char m );
+	ISSInfoData( unsigned long long t, unsigned char c, unsigned char m );
 	~ISSInfoData();
 	
-	inline long double	 GetTime(){ return (double)time; };
-	inline unsigned char GetCode(){ return code; };
-	inline unsigned char GetModule(){ return mod; };
+	inline double	 		GetTime(){ return (double)timestamp; };
+	inline unsigned long long	GetTimeStamp(){ return timestamp; };
+	inline unsigned char 		GetCode(){ return code; };
+	inline unsigned char 		GetModule(){ return mod; };
 	
-	inline void SetTime( long double t ){ time = t; };
+	inline void SetTimeStamp( unsigned long long t ){ timestamp = t; };
 	inline void SetCode( unsigned char c ){ code = c; };
 	inline void SetModule( unsigned char m ){ mod = m; };
 
@@ -138,9 +141,9 @@ public:
 
 protected:
 	
-	long double		time;	///< timestamp of info event
-	unsigned char	code;	///< code here represents which information timestamp we have
-	unsigned char	mod;	///< module ID of the event
+	unsigned long long		timestamp;	///< timestamp of info event
+	unsigned char			code;	///< code here represents which information timestamp we have
+	unsigned char			mod;	///< module ID of the event
 	/// code = 4 is extended timestimp, i.e. next 16 bits
 	/// code = 14 is external timestamp to ISS for checking sync to CAEN
 	/// code = 20 is CAEN pulser event for checking sync to ISS
@@ -170,16 +173,11 @@ public:
 	inline std::shared_ptr<ISSInfoData> GetInfoData() { return std::make_shared<ISSInfoData>( info_packets.at(0) ); };
 	
 	// Complicated way to get the time...
-	long double GetTime();
-	long double GetTimeWithWalk();
+	double GetTime();
+	double GetTimeWithWalk();
+	unsigned long long GetTimeStamp();
 	UInt_t GetTimeMSB();
 	UInt_t GetTimeLSB();
-	inline unsigned long long GetTimeInteger(){
-		return (unsigned long long)GetTime();
-	};
-	inline unsigned long long GetTimeWithWalkInteger(){
-		return (unsigned long long)GetTimeWithWalk();
-	};
 
 	void ClearData();
 

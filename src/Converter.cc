@@ -816,7 +816,7 @@ void ISSConverter::ProcessASICData(){
 		asic_pulser_energy[my_mod_id][0]->Fill( my_adc_data );
 		
 		info_data->SetModule( my_mod_id );
-		info_data->SetTime( my_tm_stp );
+		info_data->SetTimeStamp( my_tm_stp );
 		info_data->SetCode( set->GetArrayPulserCode0() );
 		pulser_trigger = true;
 		
@@ -829,7 +829,7 @@ void ISSConverter::ProcessASICData(){
 		asic_pulser_energy[my_mod_id][1]->Fill( my_adc_data );
 		
 		info_data->SetModule( my_mod_id );
-		info_data->SetTime( my_tm_stp );
+		info_data->SetTimeStamp( my_tm_stp );
 		info_data->SetCode( set->GetArrayPulserCode1() );
 		pulser_trigger = true;
 		
@@ -856,7 +856,7 @@ void ISSConverter::ProcessASICData(){
 		
 		
 		// Make an AsicData item
-		asic_data->SetTime( my_tm_stp + cal->AsicTime( my_mod_id, my_asic_id ) );
+		asic_data->SetTimeStamp( my_tm_stp + cal->AsicTime( my_mod_id, my_asic_id ) );
 		asic_data->SetWalk( (int)cal->AsicWalk( my_mod_id, my_asic_id, my_energy, my_hit ) );
 		asic_data->SetAdcValue( my_adc_data );
 		asic_data->SetHitBit( my_hit );
@@ -923,10 +923,10 @@ void ISSConverter::ProcessCAENData(){
 	if( !flag_caen_data0 && !flag_caen_data1 && !flag_caen_data2 && !flag_caen_data3 ){
 		
 		// Make a CaenData item, need to add Qlong, Qshort and traces
-		caen_data->SetTime( my_tm_stp );
+		caen_data->SetTimeStamp( my_tm_stp );
 		caen_data->SetModule( my_mod_id );
 		caen_data->SetChannel( my_ch_id );
-		
+
 	}
 	
 	// If we already have all the data items, then the next event has
@@ -942,7 +942,7 @@ void ISSConverter::ProcessCAENData(){
 		FinishCAENData();
 
 		// Then set the info correctly for this event
-		caen_data->SetTime( my_tm_stp );
+		caen_data->SetTimeStamp( my_tm_stp );
 		caen_data->SetModule( my_mod_id );
 		caen_data->SetChannel( my_ch_id );
 		
@@ -1122,7 +1122,7 @@ void ISSConverter::FinishCAENData(){
 			if( caen_data->IsOverThreshold() ) {
 			
 				// Add the time offset to this channel
-				info_data->SetTime( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
+				info_data->SetTimeStamp( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
 				info_data->SetModule( caen_data->GetModule() + set->GetNumberOfArrayModules() );
 				info_data->SetCode( my_info_code );
 				data_packet->SetData( info_data );
@@ -1148,7 +1148,7 @@ void ISSConverter::FinishCAENData(){
 	
 			// Set this data and fill event to tree
 			// Also add the time offset when we do this
-			caen_data->SetTime( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
+			caen_data->SetTimeStamp( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
 			data_packet->SetData( caen_data );
 			if( !flag_source ) output_tree->Fill();
 			data_packet->ClearData();
@@ -1174,7 +1174,7 @@ void ISSConverter::FinishCAENData(){
 
 	// This is normal, just not finished yet
 	else return;
-	
+
 	// Count the hit, even if it's bad
 	ctr_caen_hit[caen_data->GetModule()]++;
 	
@@ -1272,7 +1272,7 @@ void ISSConverter::ProcessInfoData(){
 	    my_info_code == 15 ) {
 
 		info_data->SetModule( my_mod_id );
-		info_data->SetTime( my_tm_stp );
+		info_data->SetTimeStamp( my_tm_stp );
 		info_data->SetCode( my_info_code );
 		data_packet->SetData( info_data );
 		if( !flag_source ) output_tree->Fill();
@@ -1451,7 +1451,7 @@ unsigned long long ISSConverter::SortTree(){
 	if( output_tree->GetEntries() ){
 
 		std::cout << "\n Building time-ordered index of events..." << std::endl;
-		output_tree->BuildIndex( "data.GetTimeInteger()" );
+		output_tree->BuildIndex( "data.GetTimeStamp()" );
 
 	}
 	else return 0;

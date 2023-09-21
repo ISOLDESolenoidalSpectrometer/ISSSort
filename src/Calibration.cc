@@ -115,7 +115,7 @@ void ISSCalibration::ReadCalibration() {
 			fAsicGainQuadr[mod][asic].resize( set->GetNumberOfArrayChannels() );
 			fAsicThreshold[mod][asic].resize( set->GetNumberOfArrayChannels() );
 
-			fAsicTime[mod][asic] = config->GetValue( Form( "asic_%d_%d.Time", mod, asic ), 0 );
+			fAsicTime[mod][asic] = config->GetValue( Form( "asic_%d_%d.Time", mod, asic ), 0.0 );
 			fAsicEnabled[mod][asic] = config->GetValue( Form( "asic_%d_%d.Enabled", mod, asic ), true );
 			
 			fAsicWalkType[mod][asic] = config->GetValue( Form( "asic_%d_%d.WalkType", mod, asic ), 0 ); // default is still Annie's
@@ -171,7 +171,7 @@ void ISSCalibration::ReadCalibration() {
 			fCaenGain[mod][chan] = config->GetValue( Form( "caen_%d_%d.Gain", mod, chan ), fCaenGainDefault );
 			fCaenGainQuadr[mod][chan] = config->GetValue( Form( "caen_%d_%d.GainQuadr", mod, chan ), fCaenGainQuadrDefault );
 			fCaenThreshold[mod][chan] = config->GetValue( Form( "caen_%d_%d.Threshold", mod, chan ), 0 );
-			fCaenTime[mod][chan] = config->GetValue( Form( "caen_%d_%d.Time", mod,  chan ), 0 );
+			fCaenTime[mod][chan] = config->GetValue( Form( "caen_%d_%d.Time", mod,  chan ), 0.0 );
 			fCaenType[mod][chan] = config->GetValue( Form( "caen_%d_%d.Type", mod,  chan ), "Qlong" );
 
 		}
@@ -243,7 +243,7 @@ unsigned int ISSCalibration::AsicThreshold( unsigned int mod, unsigned int asic,
 /// Getter for the ASIC time
 /// \param[in] mod The module on the array
 /// \param[in] asic The ASIC number on the module
-long ISSCalibration::AsicTime( unsigned int mod, unsigned int asic ){
+long double ISSCalibration::AsicTime( unsigned int mod, unsigned int asic ){
 	
 	if( mod < set->GetNumberOfArrayModules() &&
 	   asic < set->GetNumberOfArrayASICs() ) {
@@ -417,7 +417,7 @@ unsigned int ISSCalibration::CaenThreshold( unsigned int mod, unsigned int chan 
 /// Getter for the CAEN time
 /// \param[in] mod The number of the CAEN module
 /// \param[in] chan The channel number of the detector
-long ISSCalibration::CaenTime( unsigned int mod, unsigned int chan ){
+long double ISSCalibration::CaenTime( unsigned int mod, unsigned int chan ){
 	
 	if( mod < set->GetNumberOfCAENModules() &&
 	   chan < set->GetNumberOfCAENChannels() ) {
@@ -475,7 +475,7 @@ void ISSCalibration::PrintCalibration( std::ostream &stream, std::string opt ){
 				if( !energy_only ) {
 					
 					// Don't bother printing if they are just defaults
-					if( fAsicTime[mod][asic] != 0 ) stream << Form( "asic_%d_%d.Time: %ld", mod, asic, fAsicTime[mod][asic] ) << std::endl;
+					if( TMath::Abs( fAsicTime[mod][asic] ) > 1e-9 ) stream << Form( "asic_%d_%d.Time: %Lf", mod, asic, fAsicTime[mod][asic] ) << std::endl;
 					if( !fAsicEnabled[mod][asic] ) stream << Form( "asic_%d_%d.Enabled: %d", mod, asic, 0 ) << std::endl;
 		
 					for( unsigned int i = 0; i < nwalkpars; i++ ) {
@@ -534,8 +534,8 @@ void ISSCalibration::PrintCalibration( std::ostream &stream, std::string opt ){
 				if( fCaenThreshold[mod][chan] != 0 )
 					stream << Form( "caen_%d_%d.Threshold: %u", mod, chan, fCaenThreshold[mod][chan] ) << std::endl;
 
-				if( !energy_only && fCaenTime[mod][chan] != 0 )
-					stream << Form( "caen_%d_%d.Time: %ld", mod, chan, fCaenTime[mod][chan] ) << std::endl;
+				if( !energy_only && TMath::Abs( fCaenTime[mod][chan] ) > 1e-9 )
+					stream << Form( "caen_%d_%d.Time: %Lf", mod, chan, fCaenTime[mod][chan] ) << std::endl;
 
 				if( !energy_only && fCaenType[mod][chan] != 0 )
 					stream << Form( "caen_%d_%d.Type: %s", mod, chan, fCaenType[mod][chan].data() ) << std::endl;

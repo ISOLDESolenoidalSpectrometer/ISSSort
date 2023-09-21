@@ -326,10 +326,10 @@ void ISSEventBuilder::Initialise(){
 	// Now swap all these vectors with empty vectors to ensure they are fully cleared
 	std::vector<float>().swap(pen_list);
 	std::vector<float>().swap(nen_list);
-	std::vector<long double>().swap(ptd_list);
-	std::vector<long double>().swap(ntd_list);
-    std::vector<long double>().swap(pwalk_list);
-    std::vector<long double>().swap(nwalk_list);
+	std::vector<double>().swap(ptd_list);
+	std::vector<double>().swap(ntd_list);
+    std::vector<double>().swap(pwalk_list);
+    std::vector<double>().swap(nwalk_list);
 	std::vector<char>().swap(pid_list);
 	std::vector<char>().swap(nid_list);
 	std::vector<char>().swap(pmod_list);
@@ -340,25 +340,25 @@ void ISSEventBuilder::Initialise(){
 	std::vector<bool>().swap(nhit_list);
 
 	std::vector<float>().swap(ren_list);
-	std::vector<long double>().swap(rtd_list);
+	std::vector<double>().swap(rtd_list);
 	std::vector<char>().swap(rid_list);
 	std::vector<char>().swap(rsec_list);
 	
 	std::vector<unsigned short>().swap(mwpctac_list);
-	std::vector<long double>().swap(mwpctd_list);
+	std::vector<double>().swap(mwpctd_list);
 	std::vector<char>().swap(mwpcaxis_list);
 	std::vector<char>().swap(mwpcid_list);
 
 	std::vector<float>().swap(een_list);
-	std::vector<long double>().swap(etd_list);
+	std::vector<double>().swap(etd_list);
 	std::vector<char>().swap(esec_list);
 	
 	std::vector<float>().swap(zen_list);
-	std::vector<long double>().swap(ztd_list);
+	std::vector<double>().swap(ztd_list);
 	std::vector<char>().swap(zid_list);
 
 	std::vector<float>().swap(saen_list);
-	std::vector<long double>().swap(satd_list);
+	std::vector<double>().swap(satd_list);
 	std::vector<char>().swap(said_list);
 
 	write_evts->ClearEvt();
@@ -396,7 +396,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	// Apply time-walk correction, i.e. get new time ordering
 	//std::cout << " Event Building: applying time walk-correction to event ordering" << std::endl;
 	//input_tree->BuildIndex( "GetTimeWithWalk()" );
-	input_tree->BuildIndex( "GetTimeInteger()" );
+	input_tree->BuildIndex( "GetTimeStamp()" );
 	TTreeIndex *att_index = (TTreeIndex*)input_tree->GetTreeIndex();
 
 	(void) att_index; // Avoid unused variable warning.
@@ -419,10 +419,12 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		mytime = in_data->GetTime(); // no correction
 		//mytime = in_data->GetTimeWithWalk(); // with correction
 
-		//std::cout << i << "\t" << mytime << std::endl;
+		//std::cout << std::setprecision(15) << i << "\t";
+		//std::cout << in_data->GetTimeStamp() << "\t" << mytime << std::endl;
 				
 		// check time stamp monotonically increases!
-		if( (long long)time_prev > (long long)mytime ) {
+		// but allow for the fine time of the CAEN system
+		if( (unsigned long long)(time_prev-5.0) > in_data->GetTimeStamp() ) {
 			
 			std::cout << "Out of order event in file ";
 			std::cout << input_tree->GetName() << std::endl;
@@ -546,6 +548,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			mymod = caen_data->GetModule();
 			mych = caen_data->GetChannel();
 
+			//std::cout << i << "\t" << caen_data->GetTimeStamp() << "\t" << caen_data->GetFineTime() << std::endl;
+			
 			if( overwrite_cal ) {
 				
 				std::string entype = cal->CaenType( mymod, mych );
@@ -610,7 +614,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				een_list.push_back( myenergy );
 				etd_list.push_back( mytime );
 				esec_list.push_back( mysector );
-
+				
 				hit_ctr++; // increase counter for bits of data included in this event
 
 			}
@@ -669,7 +673,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// CHECK ALL OF THE INFO DATA CODE VALUES
 			// Update EBIS time
 			// N.B. if you are exceeding the limits of long long, then your DAQ has been running too long
-			long long info_tdiff;
+			double info_tdiff;
 			if( info_data->GetCode() == set->GetEBISCode() ){
 			
 				// Each ASIC module sends ebis_time signal, so make sure difference between last ebis pulse and now is longer than the time it takes for them all to enter the DAQ
@@ -2151,6 +2155,8 @@ void ISSEventBuilder::ElumFinder() {
 		// Write event to tree
 		write_evts->AddEvt( elum_evt );
 		elum_ctr++;
+		
+		std::cout << write_evts->GetElumEvt(i)->GetTime() << std::endl;
 		
 		// Histogram the data
 		elum_E->Fill( een_list[i] );

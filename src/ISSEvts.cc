@@ -153,7 +153,7 @@ ISSArrayEvt::~ISSArrayEvt(){}
 
 void ISSArrayEvt::SetEvent( float mypen, float mynen,
 						 unsigned char mypid, unsigned char mynid,
-						 long double myptime, long double myntime,
+						 double myptime, double myntime,
 						 bool myphit, bool mynhit,
 						 unsigned char mymod, unsigned char myrow ) {
 	
@@ -280,7 +280,7 @@ ISSRecoilEvt::~ISSRecoilEvt(){}
 
 void ISSRecoilEvt::SetEvent( std::vector<float> myenergy,
 						  std::vector<unsigned char> myid, unsigned char mysec,
-						  long double mydetime, long double myetime ) {
+						  double mydetime, double myetime ) {
 	
 	energy = myenergy;
 	id = myid;
@@ -308,7 +308,7 @@ ISSMwpcEvt::ISSMwpcEvt(){}
 ISSMwpcEvt::~ISSMwpcEvt(){}
 
 void ISSMwpcEvt::SetEvent( int mytacdiff, unsigned char myaxis,
-						long double mytime ) {
+						double mytime ) {
 	
 	tacdiff = mytacdiff;
 	axis = myaxis;
@@ -326,7 +326,7 @@ ISSElumEvt::ISSElumEvt(){}
 ISSElumEvt::~ISSElumEvt(){}
 
 void ISSElumEvt::SetEvent( float myenergy, unsigned char myid,
-						unsigned char mysec, long double mytime ) {
+						unsigned char mysec, double mytime ) {
 	
 	energy = myenergy;
 	id = myid;
@@ -346,7 +346,7 @@ ISSZeroDegreeEvt::~ISSZeroDegreeEvt(){}
 
 void ISSZeroDegreeEvt::SetEvent( std::vector<float> myenergy,
 							  std::vector<unsigned char> myid, unsigned char mysec,
-							  long double mydetime, long double myetime ) {
+							  double mydetime, double myetime ) {
 	
 	energy = myenergy;
 	id = myid;
@@ -375,7 +375,7 @@ ISSGammaRayEvt::ISSGammaRayEvt(){}
 ISSGammaRayEvt::~ISSGammaRayEvt(){}
 
 void ISSGammaRayEvt::SetEvent( float myenergy, unsigned char myid,
-							  unsigned char mytype, long double mytime ) {
+							  unsigned char mytype, double mytime ) {
 	
 	energy = myenergy;
 	id = myid;
