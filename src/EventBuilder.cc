@@ -424,7 +424,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				
 		// check time stamp monotonically increases!
 		// but allow for the fine time of the CAEN system
-		if( (unsigned long long)(time_prev-5.0) > in_data->GetTimeStamp() ) {
+		if( (unsigned long long)time_prev > in_data->GetTimeStamp() + 5.0 ) {
 			
 			std::cout << "Out of order event in file ";
 			std::cout << input_tree->GetName() << std::endl;
