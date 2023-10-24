@@ -711,8 +711,18 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 		// Trace header
 		else if( my_type == 0x1 ){
 			
+			// Get channel ID
+			GetCAENChanID();
+			caen_data->SetModule( my_mod_id );
+			caen_data->SetChannel( my_ch_id );
+
 			// contains the sample length
 			nsamples = word_0 & 0xFFFF; // 16 bits from 0
+			
+			// reconstruct time stamp= MSB+LSB
+			my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  // 28 bits from 0
+			my_tm_stp = ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
+			caen_data->SetTimeStamp( my_tm_stp );
 			
 			// Get the samples from the trace
 			for( UInt_t j = 0; j < nsamples/4; j++ ){
@@ -723,8 +733,9 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 				UInt_t block_test = ( sample_packet >> 32 ) & 0x00000000FFFFFFFF;
 				unsigned char trace_test = ( sample_packet >> 62 ) & 0x0000000000000003;
 				
-				if( trace_test == 0 && block_test != 0x5E5E5E5E ){
-					
+				//if( trace_test == 0 && block_test != 0x5E5E5E5E ){
+				if( block_test != 0x5E5E5E5E ){
+				
 					// Pairs need to be swapped
 					caen_data->AddSample( ( sample_packet >> 32 ) & 0x0000000000003FFF );
 					caen_data->AddSample( ( sample_packet >> 48 ) & 0x0000000000003FFF );
@@ -735,12 +746,12 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 				
 				else {
 					
-					//std::cout << "This isn't a trace anymore..." << std::endl;
-					//std::cout << "Sample #" << j << " of " << nsamples << std::endl;
-					//std::cout << " trace_test = " << (int)trace_test << std::endl;
+					std::cout << "This isn't a trace anymore..." << std::endl;
+					std::cout << "Sample #" << j << " of " << nsamples << std::endl;
+					std::cout << " trace_test = " << (int)trace_test << std::endl;
 
-					i--;
-					break;
+					//i--;
+					//break;
 					
 				}
 
@@ -886,10 +897,7 @@ void ISSConverter::ProcessASICData(){
 	
 }
 
-void ISSConverter::ProcessCAENData(){
-
-	// CAEN data format
-	my_adc_data = word_0 & 0xFFFF; // 16 bits from 0
+void ISSConverter::GetCAENChanID(){
 	
 	// ADCchannelIdent are bits 28:16
 	// mod_id= bit 12:8, data_id= bit 7:6, ch_id= bit 5:0
@@ -898,6 +906,16 @@ void ISSConverter::ProcessCAENData(){
 	my_mod_id = (ADCchanIdent >> 8) & 0x001F; // 5 bits from 8
 	my_data_id = (ADCchanIdent >> 6 ) & 0x0003; // 2 bits from 6
 	my_ch_id = ADCchanIdent & 0x003F; // 6 bits from 0
+
+	return;
+	
+}
+
+void ISSConverter::ProcessCAENData(){
+
+	// CAEN data format
+	my_adc_data = word_0 & 0xFFFF; // 16 bits from 0
+	GetCAENChanID();
 	
 	// Check things make sense
 	if( my_mod_id >= set->GetNumberOfCAENModules() ||

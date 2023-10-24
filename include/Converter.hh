@@ -66,6 +66,7 @@ public:
 	void ProcessCAENData();
 	void ProcessInfoData();
 	void FinishCAENData();
+	void GetCAENChanID();
 
 	void SetOutput( std::string output_file_name );
 	
