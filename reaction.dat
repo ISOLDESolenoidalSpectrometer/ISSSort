@@ -42,6 +42,7 @@
 #ELUM.Distance: -1.0		# Negative number means it doesn't exist by default (in mm)
 #ELUM.OuterRadius: 48.0		# outer radius of the ELUM detector (default for S1, in mm)
 #ELUM.InnerRadius: 24.0		# inner radius of the ELUM detector (default for S1, in mm)
+#ELUM.Deadlayer: 0.0004		# Dead layer on surface of the ELUM in mm of Al (0.4 µm from data sheets)
 
 
 # EBIS windows

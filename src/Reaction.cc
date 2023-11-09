@@ -481,9 +481,10 @@ void ISSReaction::ReadReaction() {
 	y_offset = config->GetValue( "TargetOffset.Y", 0.0 );	// of course this should be 0.0 if you centre the beam! Units of mm, horizontal
 
 	// ELUM geometry
-	elum_z    = config->GetValue( "ELUM.Distance", -1.0 ); // units of mm
-	elum_rin  = config->GetValue( "ELUM.InnerRadius", 10.0 ); // units of mm
-	elum_rout = config->GetValue( "ELUM.OuterRadius", 20.0 ); // units of mm
+	elum_z    		= config->GetValue( "ELUM.Distance", -1.0 ); // units of mm
+	elum_rin  		= config->GetValue( "ELUM.InnerRadius", 24.0 ); // units of mm
+	elum_rout 		= config->GetValue( "ELUM.OuterRadius", 48.0 ); // units of mm
+	elum_deadlayer	= config->GetValue( "ELUM.Deadlayer", 0.00125 ); // units of mm of Si equivalent
 
 	// If it's a source run, we can ignore most of that
 	// or better still, initialise everything and overwrite what we need
@@ -499,7 +500,7 @@ void ISSReaction::ReadReaction() {
 	
 	// Get the stopping powers in TGraphs
 	stopping = true;
-	for( unsigned int i = 0; i < 5; ++i ) {
+	for( unsigned int i = 0; i < 6; ++i ) {
 		gStopping.push_back( std::make_unique<TGraph>() );
 		gRange.push_back( std::make_unique<TGraph>() );
 	}
@@ -514,7 +515,8 @@ void ISSReaction::ReadReaction() {
 	phcurves = true;
 	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[3], gRange[3], true, false ); // electric only from SRIM files
 	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[4], gRange[4], false, true ); // nuclear only from SRIM files
-	
+	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[5], gRange[5] );				 // total stopping from SRIM files
+
 	// Get the PHC data in a TGraph
 	gPHC = std::make_unique<TGraph>();
 	gPHC_inv = std::make_unique<TGraph>();
@@ -534,7 +536,7 @@ void ISSReaction::ReadReaction() {
 		std::cout << target_thickness << " mg/cm^2" << std::endl;
 
 	}
-	else std::cout << std::endl << " +++  Alpha Source Run  +++";
+	else std::cout << std::endl << " +++  Alpha Source Run  +++" << std::endl;
 	
 	// Calculate the energy loss
 	if( stopping ){
@@ -554,9 +556,11 @@ void ISSReaction::ReadReaction() {
 
 	
 	// Do some ELUM calculations
-	double theta_cm_inner, theta_cm_outer, theta_cm_centre;
-	double energy_inner,   energy_outer,   energy_centre;
-	if( elum_z > 0 ) {
+	double theta_cm_inner,  theta_cm_outer,  theta_cm_centre;
+	double theta_lab_inner, theta_lab_outer, theta_lab_centre;
+	double energy_inner,    energy_outer,    energy_centre;
+	double enloss_inner,    enloss_outer,    enloss_centre;
+	if( elum_z > 0 && !flag_source ) {
 		
 		// Remember the real ejectile information
 		int tmpA = Ejectile.GetA();
@@ -587,18 +591,30 @@ void ISSReaction::ReadReaction() {
 
 		// Simulate the elastic scattering reaction - inner
 		SimulateReaction( elum_inner_hit );
-		theta_cm_inner = Recoil.GetThetaCM();
+		theta_cm_inner  = Recoil.GetThetaCM();
+		theta_lab_inner = Ejectile.GetThetaLab();
 		energy_inner = Ejectile.GetEnergyLab();
+		enloss_inner = GetEnergyLoss( energy_inner,
+									 elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_inner ) ),
+									 gStopping[2] );
 
 		// Simulate the elastic scattering reaction - outer
 		SimulateReaction( elum_outer_hit );
-		theta_cm_outer = Recoil.GetThetaCM();
+		theta_cm_outer  = Recoil.GetThetaCM();
+		theta_lab_outer = Ejectile.GetThetaLab();
 		energy_outer = Ejectile.GetEnergyLab();
+		enloss_outer = GetEnergyLoss( energy_outer,
+									 elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_outer ) ),
+									 gStopping[2] );
 
 		// Simulate the elastic scattering reaction - centre
 		SimulateReaction( elum_centre_hit );
-		theta_cm_centre = Recoil.GetThetaCM();
+		theta_cm_centre  = Recoil.GetThetaCM();
+		theta_lab_centre = Ejectile.GetThetaLab();
 		energy_centre = Ejectile.GetEnergyLab();
+		enloss_centre = GetEnergyLoss( energy_centre,
+									 elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_centre ) ),
+									 gStopping[2] );
 
 		// Change ejectile and recoils back again
 		Ejectile.SetA( tmpA );
@@ -611,11 +627,14 @@ void ISSReaction::ReadReaction() {
 		std::cout << std::setprecision(5);
 		std::cout << "ELUM found at " << elum_z << " mm" << std::endl;
 		std::cout << " θ_cm = " << theta_cm_centre * TMath::RadToDeg();
-		std::cout << " degrees; E_lab = " << energy_centre << " keV" << std::endl;
+		std::cout << " degrees; E_lab = " << energy_centre << " keV; E_det = ";
+		std::cout << energy_centre - enloss_centre << " keV" << std::endl;
 		std::cout << "\t" << theta_cm_inner * TMath::RadToDeg();
 		std::cout << " < θ_cm  < " << theta_cm_outer * TMath::RadToDeg();
 		std::cout << " degrees" << std::endl << "\t" << energy_inner;
 		std::cout << " < E_lab < " << energy_outer << " keV" << std::endl;
+		std::cout << "\t" << energy_inner - enloss_inner << " < E_det < ";
+		std::cout << energy_outer - enloss_outer << " keV " << std::endl;
 
 	}
 	
@@ -967,8 +986,9 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 /// theta_lab, etc. It returns the detected energy of the ejectile
 /// \param[in] vec The position of the interaction with the detector
 /// \param[in] en The energy of the decay
+/// \param[in] detector The detector to simulate: 0 = array, 1 = ELUM, 2 = recoil Si
 /// \returns en-eloss
-float ISSReaction::SimulateDecay( TVector3 vec, double en ){
+float ISSReaction::SimulateDecay( TVector3 vec, double en, int detector ){
 
 	// Apply the X and Y offsets directly to the TVector3 input
 	// We move the array opposite to the target, which replicates the same
@@ -1017,7 +1037,11 @@ float ISSReaction::SimulateDecay( TVector3 vec, double en ){
 	
 	// Calculate the energy loss
 	// Distance is postive because energy is lost
-	double dist = 1.0 * deadlayer / TMath::Abs( TMath::Cos( alpha ) );
+	double dist = 0.0;
+	if( detector == 0 )
+		dist = deadlayer / TMath::Abs( TMath::Cos( alpha ) );
+	else if( detector == 1 )
+		dist = elum_deadlayer / TMath::Abs( TMath::Sin( alpha ) );
 	double eloss = GetEnergyLoss( en, dist, gStopping[2] );
 	
 	//std::cout << "z = " << z_meas << " mm, angle = ";

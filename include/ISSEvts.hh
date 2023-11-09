@@ -417,7 +417,7 @@ private:
 	double ebis;		///< absolute EBIS pulse time
 	double t1;			///< absolute proton pulse time
 	double sc;			///< absolute SuperCycle pulse time
-	bool laser;				///< laser status, true = ON, false = OFF
+	bool laser;			///< laser status, true = ON, false = OFF
 
 	std::vector<ISSArrayEvt> array_event;
 	std::vector<ISSArrayPEvt> arrayp_event;
