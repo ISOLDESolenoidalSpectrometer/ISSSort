@@ -223,7 +223,7 @@ float ISSArrayEvt::GetZ(){
 
 	float d = 127.5 - (float)pid;		// take centre of the end strip
 	d *= 0.953;							// p-side strip pitch = 0.953 mm
-	d += 1.508;							// distance from wafer edge to active region
+	d += 1.508;							// distance from wafer edge to active region 
 	d += 125.5 * (3.0 - (float)row);	// move to correct row (125.0 mm wafer length + 0.5 mm inter-wafer gap)
 
 	return d; // in mm
@@ -249,8 +249,9 @@ TVector2 ISSArrayEvt::GetPhiXY(){
 	TVector2 vec( x, y );
 	
 	vec = vec.Rotate( -1.0 * TMath::Pi() / 6. );		// first face is at -30˚
-	vec = vec.Rotate( nid%2 * 2. * TMath::Pi() / 6. );	// rotate 60˚ for each face
 	vec = vec.Rotate( mod * 2. * TMath::Pi() / 3. );	// rotate 120˚ for each module
+	if( nid > 10 )
+		vec = vec.Rotate(  2. * TMath::Pi() / 6. );	// rotate 60˚ for each face
 	
 	return vec;
 
