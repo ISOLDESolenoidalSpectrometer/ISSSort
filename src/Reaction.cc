@@ -500,7 +500,7 @@ void ISSReaction::ReadReaction() {
 	
 	// Get the stopping powers in TGraphs
 	stopping = true;
-	for( unsigned int i = 0; i < 5; ++i ) {
+	for( unsigned int i = 0; i < 6; ++i ) {
 		gStopping.push_back( std::make_unique<TGraph>() );
 		gRange.push_back( std::make_unique<TGraph>() );
 	}
@@ -515,7 +515,8 @@ void ISSReaction::ReadReaction() {
 	phcurves = true;
 	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[3], gRange[3], true, false ); // electric only from SRIM files
 	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[4], gRange[4], false, true ); // nuclear only from SRIM files
-	
+	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[5], gRange[5] ); // BRJ Total stopping 
+
 	// Get the PHC data in a TGraph
 	gPHC = std::make_unique<TGraph>();
 	gPHC_inv = std::make_unique<TGraph>();
@@ -640,14 +641,18 @@ double ISSReaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGrap
 	double dx = dist/(double)Nmeshpoints;
 	double E = Ei;
 	
-	for( unsigned int i = 0; i < Nmeshpoints; i++ ){
+	  // Create a spline for the provided TGraph
+    TSpline3* spline = new TSpline3("spline", g.get(), "akima"); // Use akima spline to make energy loss graph smoother - BRJ
 
-		if( E < 100. ) break; // when we fall below 100 keV we assume maximum energy loss
-		E -= g->Eval(E) * dx;
-		
-	}
-	
-	return Ei - E;
+    for (unsigned int i = 0; i < Nmeshpoints; i++) {
+        if (E < 100.) break; // when we fall below 100 keV we assume maximum energy loss
+        E -= spline->Eval(E) * dx;
+    }
+
+    // Don't forget to delete the spline object to prevent memory leaks
+    delete spline;
+
+    return Ei - E;
 
 }
 
@@ -668,15 +673,22 @@ double ISSReaction::GetNuclearEnergyLoss( double Ei, double range, std::unique_p
 	double E = Ei;
 	double En = 0;
 	
-	for( unsigned int i = 0; i < Nmeshpoints; i++ ){
-
-		if( E < 0.5 ) break; // when we fall below 0.5 keV we assume we're stopped
-		E -= gtot->Eval(E) * dx;
-		En += gn->Eval(E) * dx;
-		
-	}
 	
-	return En;
+    // Create splines for the provided TGraphs
+    TSpline3* splineTot = new TSpline3("splineTot", gtot.get(), "akima"); // Use akima spline to make energy loss graph smoother - BRJ
+    TSpline3* splineN = new TSpline3("splineN", gn.get(), "akima"); // Use akima spline to make energy loss graph smoother - BRJ
+
+    for (unsigned int i = 0; i < Nmeshpoints; i++) {
+        if (E < 0.5) break; // when we fall below 0.5 keV we assume we're stopped
+        E -= splineTot->Eval(E) * dx;
+        En += splineN->Eval(E) * dx;
+    }
+
+    // Delete the spline objects to prevent memory leaks
+    delete splineTot;
+    delete splineN;
+
+    return En;
 
 }
 
@@ -907,6 +919,11 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	double dE = Emax/(double)Nmeshpoints;
 	double Edet = 0.0;
 
+	// Create splines for the TGraphs used in the calculation
+    TSpline3* splineRange = new TSpline3("splineRange", gRange[3].get(), "akima"); // // Use akima spline to make phc smoother - BRJ
+    TSpline3* splineStoppingPower = new TSpline3("splineStoppingPower", gStopping[3].get(), "akima"); //Use akima spline to make phc smoother - BRJ
+
+
 	// Do the numerical integration
 	for( unsigned int i = 0; i < Nmeshpoints; i++ ){
 
@@ -914,14 +931,14 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 		E *= dE;
 		
 		// Evaluate stopping powers and range
-		range = gRange[3]->Eval(E);
-		dEdx_e = gStopping[3]->Eval(E);
+	    range = splineRange->Eval(E);
+        dEdx_e = splineStoppingPower->Eval(E);
 
 		// Calculate the nuclear stopping
 		// NB: this is inefficient, but still only takes a couple of seconds
 		// ideally the integrated nuclear energy loss versus energy would be
 		// calculated only once and stored as a TGraph or something. Who cares?
-		dEdx_n = GetNuclearEnergyLoss( E, range, gStopping[4], gStopping[2] );
+		dEdx_n = GetNuclearEnergyLoss( E, range, gStopping[4], gStopping[5] ); //BRJ
 		
 		// From W. N. Lennard et al. NIM A248 (1986) 454
 		double PHC = e0_Si - k_Si * dEdx_e;
@@ -953,8 +970,17 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	std::string pdfname = std::string( SRIM_DIR ) + "/" + isotope + "_phc.pdf";
 	c->SaveAs( pdfname.c_str() );
 
+	// BRJ - these lines make root files for PH residual and eloss for the isotope that is read in 
+
+	std::string tfilenameroot = std::string( SRIM_DIR ) + "/" + isotope + "_phc.root";
+	TFile *tfile = new TFile(tfilenameroot.c_str(),"recreate");
+	gRes->Write("gRes");
+	tfile->Close();
+
 	delete c;
 	delete gRes;
+	delete splineRange;
+    delete splineStoppingPower;
 	
 	// ROOT can be noisy again
 	gErrorIgnoreLevel = kInfo;
