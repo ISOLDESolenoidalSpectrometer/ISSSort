@@ -336,23 +336,14 @@ void ISSConverter::MakeHists() {
 		output_file->mkdir( dirname.data() );
 	output_file->cd( dirname.data() );
 	
-	// Energy histogram of pulser channel
-	if( output_file->GetListOfKeys()->Contains( "asic_pulser_energy" ) )
-		asic_pulser_energy = (TH1F*)output_file->Get( "asic_pulser_energy" );
-	
-	else {
+	// Loop over ISS modules
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 		
-		asic_pulser_energy = new TH1F( "asic_pulser_energy",
-									  "ASIC energy for pulser event;ADC value;counts",
-								   4096, -0.5, 4095.5 );
-	
-		asic_pulser_energy->SetDirectory(
-				output_file->GetDirectory( dirname.data() ) );
 		
-	}
-
+	} // i: number of ISS modules
 
 	// Resize vectors
+	asic_pulser_energy.resize( set->GetNumberOfArrayModules() );
 	hasic_hit.resize( set->GetNumberOfArrayModules() );
 	hasic_ext.resize( set->GetNumberOfArrayModules() );
 	hasic_pause.resize( set->GetNumberOfArrayModules() );
@@ -363,6 +354,32 @@ void ISSConverter::MakeHists() {
 	// Loop over ISS modules
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 		
+		asic_pulser_energy[i].resize(2);
+		
+		// Loop over pulsers per module
+		for( unsigned int j = 0; j < 2; ++j ) {
+			
+			// Energy histogram of pulser channel
+			hname = "asic_pulser_energy_" + std::to_string(i) + "_" + std::to_string(j);
+			htitle = "ASIC energy for pulser " + std::to_string(j) + " event in module ";
+			htitle += std::to_string(i) + ";ADC value;counts";
+			
+			if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+				asic_pulser_energy[i][j] = (TH1F*)output_file->Get( hname.data() );
+			
+			else {
+				
+				asic_pulser_energy[i][j] = new TH1F( hname.data(), htitle.data(), 4096, -0.5, 4095.5 );
+				
+				asic_pulser_energy[i][j]->SetDirectory(
+													   output_file->GetDirectory( dirname.data() ) );
+				
+			}
+			
+		} // j: number of pulsers per module
+
+
+		// Timestamp of hits
 		hname = "hasic_hit" + std::to_string(i);
 		htitle = "Profile of ts versus hit_id in ISS module " + std::to_string(i);
 
@@ -377,6 +394,7 @@ void ISSConverter::MakeHists() {
 
 		}
 		
+		// Timestamps of external FPGA triggers from 10 Hz sync pulser
 		hname = "hasic_ext" + std::to_string(i);
 		htitle = "Profile of external trigger ts versus hit_id in ISS module " + std::to_string(i);
 
@@ -391,6 +409,7 @@ void ISSConverter::MakeHists() {
 
 		}
 
+		// Pause events timestamps
 		hname = "hasic_pause" + std::to_string(i);
 		htitle = "Profile of ts versus pause events in ISS module " + std::to_string(i);
 
@@ -405,6 +424,7 @@ void ISSConverter::MakeHists() {
 
 		}
 
+		// Resume events timestamps
 		hname = "hasic_resume" + std::to_string(i);
 		htitle = "Profile of ts versus resume events in ISS module " + std::to_string(i);
 
@@ -481,7 +501,9 @@ void ISSConverter::ResetHists() {
 	for( unsigned int i = 0; i < hcaen_ext.size(); ++i )
 		hcaen_ext[i]->Reset("ICESM");
 	
-	asic_pulser_energy->Reset("ICESM");
+	for( unsigned int i = 0; i < asic_pulser_energy.size(); ++i )
+		for( unsigned int j = 0; j < asic_pulser_energy[i].size(); ++j )
+			asic_pulser_energy[i][j]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < hasic.size(); ++i )
 		for( unsigned int j = 0; j < hasic[i].size(); ++j )
@@ -540,6 +562,7 @@ void ISSConverter::ProcessBlockHeader( unsigned long nblock ){
 	// Flags for CAEN data items
 	flag_caen_data0 = false;
 	flag_caen_data1 = false;
+	flag_caen_data2 = false;
 	flag_caen_data3 = false;
 	flag_caen_trace = false;
 
@@ -595,6 +618,8 @@ void ISSConverter::SetBlockData( char *input_data ){
 
 // Function to process data words
 void ISSConverter::ProcessBlockData( unsigned long nblock ){
+
+	(void) nblock; // Avoid unused parameter warning.
 	
 	// Get the data in 64-bit words and check endieness and swap if needed
 	// Data format here: http://npg.dl.ac.uk/documents/edoc504/edoc504.html
@@ -686,11 +711,21 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 		// Trace header
 		else if( my_type == 0x1 ){
 			
+			// Get channel ID
+			GetCAENChanID();
+			caen_data->SetModule( my_mod_id );
+			caen_data->SetChannel( my_ch_id );
+
 			// contains the sample length
 			nsamples = word_0 & 0xFFFF; // 16 bits from 0
 			
+			// reconstruct time stamp= MSB+LSB
+			my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  // 28 bits from 0
+			my_tm_stp = ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
+			caen_data->SetTimeStamp( my_tm_stp );
+			
 			// Get the samples from the trace
-			for( UInt_t j = 0; j < nsamples; j++ ){
+			for( UInt_t j = 0; j < nsamples/4; j++ ){
 				
 				// get next word
 				ULong64_t sample_packet = GetWord(i++);
@@ -698,23 +733,25 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 				UInt_t block_test = ( sample_packet >> 32 ) & 0x00000000FFFFFFFF;
 				unsigned char trace_test = ( sample_packet >> 62 ) & 0x0000000000000003;
 				
-				if( trace_test == 0 && block_test != 0x5E5E5E5E ){
-					
-					caen_data->AddSample( ( sample_packet >> 48 ) & 0x0000000000003FFF );
+				//if( trace_test == 0 && block_test != 0x5E5E5E5E ){
+				if( block_test != 0x5E5E5E5E ){
+				
+					// Pairs need to be swapped
 					caen_data->AddSample( ( sample_packet >> 32 ) & 0x0000000000003FFF );
-					caen_data->AddSample( ( sample_packet >> 16 ) & 0x0000000000003FFF );
+					caen_data->AddSample( ( sample_packet >> 48 ) & 0x0000000000003FFF );
 					caen_data->AddSample( sample_packet & 0x0000000000003FFF );
+					caen_data->AddSample( ( sample_packet >> 16 ) & 0x0000000000003FFF );
 					
 				}
 				
 				else {
 					
-					//std::cout << "This isn't a trace anymore..." << std::endl;
-					//std::cout << "Sample #" << j << " of " << nsamples << std::endl;
-					//std::cout << " trace_test = " << (int)trace_test << std::endl;
+					std::cout << "This isn't a trace anymore..." << std::endl;
+					std::cout << "Sample #" << j << " of " << nsamples << std::endl;
+					std::cout << " trace_test = " << (int)trace_test << std::endl;
 
-					i--;
-					break;
+					//i--;
+					//break;
 					
 				}
 
@@ -770,49 +807,67 @@ void ISSConverter::ProcessASICData(){
 	// reconstruct time stamp= HSB+MSB+LSB
 	my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb_asic << 28 ) | my_tm_stp_lsb;
 	
+	// Calibrate
+	my_energy = cal->AsicEnergy( my_mod_id, my_asic_id, my_ch_id, my_adc_data );
+	
+	// Fill histograms
+	hasic[my_mod_id][my_asic_id]->Fill( my_ch_id, my_adc_data );
+	hasic_cal[my_mod_id][my_asic_id]->Fill( my_ch_id, my_energy );
+	
+	// Is it disabled?
+	if( !cal->AsicEnabled( my_mod_id, my_asic_id ) ) return;
+	
 	// Pulser in a spare n-side channel should be counted as info data
-	if( my_asic_id == set->GetArrayPulserAsic() &&
-		my_ch_id == set->GetArrayPulserChannel() ) {
+	bool pulser_trigger = false;
+	
+	if( my_asic_id == set->GetArrayPulserAsic0() &&
+	   my_ch_id == set->GetArrayPulserChannel0() ) {
 		
 		// Check energy to set threshold
-		asic_pulser_energy->Fill( my_adc_data );
+		asic_pulser_energy[my_mod_id][0]->Fill( my_adc_data );
 		
-		// If it's above an energy threshold, then count it
-		if( my_adc_data > set->GetArrayPulserThreshold() ) {
-		   
-			info_data->SetModule( my_mod_id );
-			info_data->SetTime( my_tm_stp );
-			info_data->SetCode( set->GetArrayPulserCode() );
-			data_packet->SetData( info_data );
-			if( !flag_source ) output_tree->Fill();
-			info_data->Clear();
-			data_packet->ClearData();
-			
-		}
+		info_data->SetModule( my_mod_id );
+		info_data->SetTimeStamp( my_tm_stp );
+		info_data->SetCode( set->GetArrayPulserCode0() );
+		pulser_trigger = true;
+		
+	}
+	
+	else if( my_asic_id == set->GetArrayPulserAsic1() &&
+	   my_ch_id == set->GetArrayPulserChannel1() ) {
+		
+		// Check energy to set threshold
+		asic_pulser_energy[my_mod_id][1]->Fill( my_adc_data );
+		
+		info_data->SetModule( my_mod_id );
+		info_data->SetTimeStamp( my_tm_stp );
+		info_data->SetCode( set->GetArrayPulserCode1() );
+		pulser_trigger = true;
 		
 	}
 
+	// If it's a pulser trigger above an energy threshold, then count it
+	if( my_adc_data > set->GetArrayPulserThreshold() && pulser_trigger ) {
+		
+		data_packet->SetData( info_data );
+		if( !flag_source ) output_tree->Fill();
+		info_data->Clear();
+		data_packet->ClearData();
+		
+	}
+
+	
+	// Otherwise fill a physics data item
 	else {
-
-		// Calibrate
-		my_energy = cal->AsicEnergy( my_mod_id, my_asic_id, my_ch_id, my_adc_data );
 		
-		// Is it disabled?
-		if( !cal->AsicEnabled( my_mod_id, my_asic_id ) ) return;
-		
-		// Fill histograms
-		hasic[my_mod_id][my_asic_id]->Fill( my_ch_id, my_adc_data );
-		hasic_cal[my_mod_id][my_asic_id]->Fill( my_ch_id, my_energy );
-		hasic_hit[my_mod_id]->Fill( ctr_asic_hit[my_mod_id], my_tm_stp, 1 );
-
 		if( my_asic_id == 0 || my_asic_id == 2 || my_asic_id == 3 || my_asic_id == 5 )
 			hpside[my_mod_id]->Fill( my_energy );
 		else if( my_asic_id == 1 || my_asic_id == 4 )
 			hnside[my_mod_id]->Fill( my_energy );
-
-
+		
+		
 		// Make an AsicData item
-		asic_data->SetTime( my_tm_stp + cal->AsicTime( my_mod_id, my_asic_id ) );
+		asic_data->SetTimeStamp( my_tm_stp + cal->AsicTime( my_mod_id, my_asic_id ) );
 		asic_data->SetWalk( (int)cal->AsicWalk( my_mod_id, my_asic_id, my_energy, my_hit ) );
 		asic_data->SetAdcValue( my_adc_data );
 		asic_data->SetHitBit( my_hit );
@@ -834,6 +889,7 @@ void ISSConverter::ProcessASICData(){
 		
 		// Count asic hit per module
 		ctr_asic_hit[my_mod_id]++;
+		hasic_hit[my_mod_id]->Fill( ctr_asic_hit[my_mod_id], my_tm_stp, 1 );
 
 	}
 		
@@ -841,10 +897,7 @@ void ISSConverter::ProcessASICData(){
 	
 }
 
-void ISSConverter::ProcessCAENData(){
-
-	// CAEN data format
-	my_adc_data = word_0 & 0xFFFF; // 16 bits from 0
+void ISSConverter::GetCAENChanID(){
 	
 	// ADCchannelIdent are bits 28:16
 	// mod_id= bit 12:8, data_id= bit 7:6, ch_id= bit 5:0
@@ -853,6 +906,16 @@ void ISSConverter::ProcessCAENData(){
 	my_mod_id = (ADCchanIdent >> 8) & 0x001F; // 5 bits from 8
 	my_data_id = (ADCchanIdent >> 6 ) & 0x0003; // 2 bits from 6
 	my_ch_id = ADCchanIdent & 0x003F; // 6 bits from 0
+
+	return;
+	
+}
+
+void ISSConverter::ProcessCAENData(){
+
+	// CAEN data format
+	my_adc_data = word_0 & 0xFFFF; // 16 bits from 0
+	GetCAENChanID();
 	
 	// Check things make sense
 	if( my_mod_id >= set->GetNumberOfCAENModules() ||
@@ -875,20 +938,20 @@ void ISSConverter::ProcessCAENData(){
 	else my_tm_stp = my_tm_stp*4;
 	
 	// First of the data items
-	if( !flag_caen_data0 && !flag_caen_data1 && !flag_caen_data3 ){
+	if( !flag_caen_data0 && !flag_caen_data1 && !flag_caen_data2 && !flag_caen_data3 ){
 		
 		// Make a CaenData item, need to add Qlong, Qshort and traces
-		caen_data->SetTime( my_tm_stp );
+		caen_data->SetTimeStamp( my_tm_stp );
 		caen_data->SetModule( my_mod_id );
 		caen_data->SetChannel( my_ch_id );
-		
+
 	}
 	
 	// If we already have all the data items, then the next event has
 	// already occured before we found traces. This means that there
 	// is not trace data. So set the flag to be true and finish the
 	// event with an empty trace.
-	else if( flag_caen_data0 && flag_caen_data1 && flag_caen_data3 ){
+	else if( flag_caen_data0 && flag_caen_data1 && ( flag_caen_data2 || flag_caen_data3 ) ){
 		
 		// Fake trace flag, but with an empty trace
 		flag_caen_trace = true;
@@ -897,7 +960,7 @@ void ISSConverter::ProcessCAENData(){
 		FinishCAENData();
 
 		// Then set the info correctly for this event
-		caen_data->SetTime( my_tm_stp );
+		caen_data->SetTimeStamp( my_tm_stp );
 		caen_data->SetModule( my_mod_id );
 		caen_data->SetChannel( my_ch_id );
 		
@@ -926,32 +989,68 @@ void ISSConverter::ProcessCAENData(){
 	}
 
 	// Extra word items
-	// Has to be defined what this is in the settings file
-	// 0: Fine timing
-	// 1: Baseline
+	// Do these have to be defined in the settings file?
+	//  set->GetCAENExtras( my_mod_id, my_ch_id ) == 0 or 1
+	//  0: Fine timing
+	//  1: Baseline
+	//if( my_data_id == 3 ) {
+	//
+	//	my_adc_data = my_adc_data & 0xFFFF; // 16 bits from 0
+	//	flag_caen_data3 = true;
+	//
+	//	// Fine timing
+	//	if( set->GetCAENExtras( my_mod_id, my_ch_id ) == 0 ){
+	//
+	//		// CAEN timestamps are 4 ns precision for V1725 and 2 ns for V1730
+	//		if( set->GetCAENModel( my_mod_id ) == 1730 )
+	//			caen_data->SetFineTime( (float)my_adc_data * 2. / 1000. );
+	//		else if( set->GetCAENModel( my_mod_id ) == 1725 )
+	//			caen_data->SetFineTime( (float)my_adc_data * 4. / 1000. );
+	//		caen_data->SetBaseline( 0.0 );
+	//
+	//	}
+	//
+	//	// Baseline
+	//	else if( set->GetCAENExtras( my_mod_id, my_ch_id ) == 1 ){
+	//
+	//		caen_data->SetFineTime( 0.0 );
+	//		caen_data->SetBaseline( (float)my_adc_data / 4. );
+	//
+	//	}
+	//
+	//}
+
+	
+	// But MIDAS says my_data_id == 2 or 3
+	//  2: basline
+	//  3: fine timing
+	// http://npg.dl.ac.uk/documents/edoc504/edoc504.html
+	
+	// Baseline
+	if( my_data_id == 2 ) {
+		
+		my_adc_data = my_adc_data & 0xFFFF; // 16 bits from 0
+		flag_caen_data2 = true;
+
+		caen_data->SetFineTime( 0.0 );
+		caen_data->SetBaseline( (float)my_adc_data / 4. );
+
+	}
+	
+	// Fine timing
 	if( my_data_id == 3 ) {
 		
 		my_adc_data = my_adc_data & 0x03FF; // 10 bits from 0
 		flag_caen_data3 = true;
 
-		// Fine timing
-		if( set->GetCAENExtras( my_mod_id, my_ch_id ) == 0 ){
-		
+		// CAEN timestamps are 4 ns precision for V1725 and 2 ns for V1730
+		if( set->GetCAENModel( my_mod_id ) == 1730 )
+			caen_data->SetFineTime( (float)my_adc_data * 2. / 1000. );
+		else if( set->GetCAENModel( my_mod_id ) == 1725 )
 			caen_data->SetFineTime( (float)my_adc_data * 4. / 1000. );
-			caen_data->SetBaseline( 0.0 );
-
-		}
-		
-		// Baseline
-		else if( set->GetCAENExtras( my_mod_id, my_ch_id ) == 1 ){
-		
-			caen_data->SetFineTime( 0.0 );
-			caen_data->SetBaseline( (float)my_adc_data / 4. );
-
-		}
+		caen_data->SetBaseline( 0.0 );
 
 	}
-
 	
 	return;
 
@@ -960,7 +1059,7 @@ void ISSConverter::ProcessCAENData(){
 void ISSConverter::FinishCAENData(){
 	
 	// Got all items
-	if( flag_caen_data0 && flag_caen_data1 && flag_caen_data3 && flag_caen_trace ){
+	if( ( flag_caen_data0 && flag_caen_data1 && ( flag_caen_data2 || flag_caen_data3 ) ) || flag_caen_trace ){
 
 		// Fill histograms
 		hcaen_hit[caen_data->GetModule()]->Fill( ctr_caen_hit[caen_data->GetModule()], caen_data->GetTime(), 1 );
@@ -1041,7 +1140,7 @@ void ISSConverter::FinishCAENData(){
 			if( caen_data->IsOverThreshold() ) {
 			
 				// Add the time offset to this channel
-				info_data->SetTime( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
+				info_data->SetTimeStamp( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
 				info_data->SetModule( caen_data->GetModule() + set->GetNumberOfArrayModules() );
 				info_data->SetCode( my_info_code );
 				data_packet->SetData( info_data );
@@ -1067,7 +1166,7 @@ void ISSConverter::FinishCAENData(){
 	
 			// Set this data and fill event to tree
 			// Also add the time offset when we do this
-			caen_data->SetTime( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
+			caen_data->SetTimeStamp( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
 			data_packet->SetData( caen_data );
 			if( !flag_source ) output_tree->Fill();
 			data_packet->ClearData();
@@ -1080,11 +1179,12 @@ void ISSConverter::FinishCAENData(){
 	}
 	
 	// missing something
-	else if( my_tm_stp != caen_data->GetTime() ) {
+	else if( (long long)my_tm_stp != (long long)caen_data->GetTime() ) {
 		
 		std::cout << "Missing something in CAEN data and new event occured" << std::endl;
 		std::cout << " Qlong       = " << flag_caen_data0 << std::endl;
 		std::cout << " Qshort      = " << flag_caen_data1 << std::endl;
+		std::cout << " baseline    = " << flag_caen_data2 << std::endl;
 		std::cout << " fine timing = " << flag_caen_data3 << std::endl;
 		std::cout << " trace data  = " << flag_caen_trace << std::endl;
 
@@ -1092,13 +1192,14 @@ void ISSConverter::FinishCAENData(){
 
 	// This is normal, just not finished yet
 	else return;
-	
+
 	// Count the hit, even if it's bad
 	ctr_caen_hit[caen_data->GetModule()]++;
 	
 	// Assuming it did finish, in a good way or bad, clean up.
 	flag_caen_data0 = false;
 	flag_caen_data1 = false;
+	flag_caen_data2 = false;
 	flag_caen_data3 = false;
 	flag_caen_trace = false;
 	info_data->ClearData();
@@ -1120,7 +1221,7 @@ void ISSConverter::ProcessInfoData(){
 	// HSB of timestamp
 	if( my_info_code == set->GetTimestampCode() ) {
 		
-		my_tm_stp_hsb = my_info_field & 0x000FFFFF;
+		my_tm_stp_hsb = my_info_field & 0x0000FFFF;
 
 	}
 	
@@ -1189,7 +1290,7 @@ void ISSConverter::ProcessInfoData(){
 	    my_info_code == 15 ) {
 
 		info_data->SetModule( my_mod_id );
-		info_data->SetTime( my_tm_stp );
+		info_data->SetTimeStamp( my_tm_stp );
 		info_data->SetCode( my_info_code );
 		data_packet->SetData( info_data );
 		if( !flag_source ) output_tree->Fill();
@@ -1368,7 +1469,7 @@ unsigned long long ISSConverter::SortTree(){
 	if( output_tree->GetEntries() ){
 
 		std::cout << "\n Building time-ordered index of events..." << std::endl;
-		output_tree->BuildIndex( "data.GetTime()" );
+		output_tree->BuildIndex( "data.GetTimeStamp()" );
 
 	}
 	else return 0;

@@ -66,6 +66,7 @@ public:
 	void ProcessCAENData();
 	void ProcessInfoData();
 	void FinishCAENData();
+	void GetCAENChanID();
 
 	void SetOutput( std::string output_file_name );
 	
@@ -73,10 +74,12 @@ public:
 		std::cout << "\n Writing data and closing the file" << std::endl;
 		//output_tree->SetDirectory(0);
 		output_file->Write( 0, TObject::kWriteDelete );
+		PurgeOutput();
 		output_file->Close();
 		//output_tree->ResetBranchAddresses();
 		//sorted_tree->ResetBranchAddresses();
 	};
+	inline void PurgeOutput(){ output_file->Purge(2); }
 	inline TFile* GetFile(){ return output_file; };
 	inline TTree* GetTree(){ return output_tree; };
 	inline TTree* GetSortedTree(){ return sorted_tree; };
@@ -180,6 +183,7 @@ private:
 	bool flag_asic_data;
 	bool flag_caen_data0;
 	bool flag_caen_data1;
+	bool flag_caen_data2;
 	bool flag_caen_data3;
 	bool flag_caen_trace;
 	bool flag_caen_info;
@@ -242,7 +246,7 @@ private:
 	std::vector<TProfile*> hcaen_ext;
 	
 	// ASIC pulser for timing
-	TH1F *asic_pulser_energy;
+	std::vector<std::vector<TH1F*>> asic_pulser_energy;
 
 	std::vector<std::vector<TH2F*>> hasic;
 	std::vector<std::vector<TH2F*>> hasic_cal;

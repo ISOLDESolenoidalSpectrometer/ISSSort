@@ -58,12 +58,12 @@ public:
 
 	float AsicEnergy( unsigned int mod, unsigned int asic, unsigned int chan, unsigned short raw );
 	unsigned int AsicThreshold( unsigned int mod, unsigned int asic, unsigned int chan );
-	long AsicTime( unsigned int mod, unsigned int asic );
+	long double AsicTime( unsigned int mod, unsigned int asic );
 	bool AsicEnabled( unsigned int mod, unsigned int asic );
 	float AsicWalk( unsigned int mod, unsigned int asic, float energy, bool hit );
 	float CaenEnergy( unsigned int mod, unsigned int chan, int raw );
 	unsigned int CaenThreshold( unsigned int mod, unsigned int chan );
-	long CaenTime( unsigned int mod, unsigned int chan );
+	long double CaenTime( unsigned int mod, unsigned int chan );
 	std::string CaenType( unsigned int mod, unsigned int chan );
 	
 	/// Setter for the ASIC energy calibration parameters
@@ -102,7 +102,7 @@ public:
 	/// \param[in] asic The ASIC number on the module
 	/// \param[in] time The time value
 	inline void SetAsicTime( unsigned int mod, unsigned int asic,
-							long time ){
+							long double time ){
 		if( mod < set->GetNumberOfArrayModules() &&
 		   asic < set->GetNumberOfArrayASICs() )
 			fAsicTime[mod][asic] = time;
@@ -151,7 +151,7 @@ public:
 	/// \param[in] chan The channel number of the CAEN module
 	/// \param[in] time The time value
 	inline void SetCaenTime( unsigned int mod, unsigned int chan,
-							long time ){
+							long double time ){
 		if( mod < set->GetNumberOfCAENModules() &&
 		   chan < set->GetNumberOfCAENChannels() )
 			fCaenTime[mod][chan] = time;
@@ -181,7 +181,7 @@ private:
 	std::vector< std::vector< std::vector<float> > > fAsicGain;///< Linear term in ASIC energy calculation
 	std::vector< std::vector< std::vector<float> > > fAsicGainQuadr;///< Quadratic term in ASIC energy calibration
 	std::vector< std::vector< std::vector<unsigned int> > > fAsicThreshold;///< Threshold for raw signals on the ASICs
-	std::vector< std::vector<long> > fAsicTime;///< Time offset for signals on a given ASIC
+	std::vector< std::vector<long double> > fAsicTime;///< Time offset for signals on a given ASIC
 	std::vector< std::vector<bool> > fAsicEnabled;///< Boolean determining if ASIC is enabled or not
 	std::vector< std::vector< std::vector<double> > > fAsicWalkHit0;///< Time-walk parameters for the ASICs for hit bit 0 events
 	std::vector< std::vector< std::vector<double> > > fAsicWalkHit1;///< Time-walk parameters for the ASICs for hit bit 1 events
@@ -191,7 +191,7 @@ private:
 	std::vector< std::vector<float> > fCaenGain;///< Linear term in CAEN energy calculation
 	std::vector< std::vector<float> > fCaenGainQuadr;///< Quadratic term in CAEN energy calibration
 	std::vector< std::vector<unsigned int> > fCaenThreshold;///< Threshold for raw signals from detectors in the CAEN DAQ
-	std::vector< std::vector<long> > fCaenTime;///< Time offset for signals on a given detector in the CAEN DAQ
+	std::vector< std::vector<long double> > fCaenTime;///< Time offset for signals on a given detector in the CAEN DAQ
 	std::vector< std::vector<std::string> > fCaenType;///< The type assigned to the CAEN signal
 
 	float fAsicOffsetDefault;///< The default constant in ASIC energy calculations

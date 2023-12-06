@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <iostream>
+
 #if( defined SOLARIS || defined POSIX )
 
 #include <unistd.h>
@@ -16,7 +18,7 @@
 # ifdef __cplusplus
 extern "C" {
 # endif
-	int shm_open(const char *, int, mode_t);
+int shm_open(const char *, int, mode_t);
 # ifdef __cplusplus
 }
 # endif
@@ -38,24 +40,24 @@ extern "C" {
 
 
 typedef struct s_buffer_header {
-    int buffer_offset;                 //    offset to first buffer
-    int buffer_number;                 //    number of buffers
-    int buffer_length;                 //    length of buffers
-    int buffer_next;                   //    next buffer to be written
-    int buffer_max;                    //    MAX_BUFFERS
-    int buffer_spare1;
-    int buffer_spare2;
-    int buffer_spare3;
+	int buffer_offset;                 //    offset to first buffer
+	int buffer_number;                 //    number of buffers
+	int buffer_length;                 //    length of buffers
+	int buffer_next;                   //    next buffer to be written
+	int buffer_max;                    //    MAX_BUFFERS
+	int buffer_spare1;
+	int buffer_spare2;
+	int buffer_spare3;
 #ifdef WIN32
-    int buffer_currentage;
-    int padding1;
-    int buffer_age[MAX_BUFFERS];
-    int padding2[MAX_BUFFERS];
+	int buffer_currentage;
+	int padding1;
+	int buffer_age[MAX_BUFFERS];
+	int padding2[MAX_BUFFERS];
 #else
-    unsigned long long buffer_currentage;
-    unsigned long long buffer_age[MAX_BUFFERS];
+	unsigned long long buffer_currentage;
+	unsigned long long buffer_age[MAX_BUFFERS];
 #endif
-    int buffer_status[MAX_BUFFERS];
+	int buffer_status[MAX_BUFFERS];
 }  BUFFER_HEADER;
 
 
@@ -79,18 +81,18 @@ public:
 #else
 	key_t shmkey = SHM_KEY;
 #endif
-
+	
 	void * shm_bufferarea[MAX_ID];
 	int shmid[MAX_ID];
 	BUFFER_HEADER * baseaddress;
-
+	
 	int number_of_buffers[MAX_ID];
 	int buffers_offset[MAX_ID];
 	int next_index[MAX_ID];
 	unsigned long long current_age[MAX_ID];
-
+	
 	int verbose;
-
+	
 };
 
 

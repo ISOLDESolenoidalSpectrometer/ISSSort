@@ -64,9 +64,12 @@ public:
 	inline unsigned char GetPauseCode(){ return pause_code;};
 	inline unsigned char GetResumeCode(){ return resume_code;};
 
-	inline unsigned char GetArrayPulserAsic(){ return asic_pulser_asic; };
-	inline unsigned char GetArrayPulserChannel(){ return asic_pulser_ch; };
-	inline unsigned char GetArrayPulserCode(){ return asic_pulser_code; };
+	inline unsigned char GetArrayPulserAsic0(){ return asic_pulser_asic_0; };
+	inline unsigned char GetArrayPulserChannel0(){ return asic_pulser_ch_0; };
+	inline unsigned char GetArrayPulserCode0(){ return asic_pulser_code_0; };
+	inline unsigned char GetArrayPulserAsic1(){ return asic_pulser_asic_1; };
+	inline unsigned char GetArrayPulserChannel1(){ return asic_pulser_ch_1; };
+	inline unsigned char GetArrayPulserCode1(){ return asic_pulser_code_1; };
 	inline unsigned char GetArrayPulserThreshold(){ return asic_pulser_thres; };
 
 	inline unsigned char GetCAENPulserModule(){ return caen_pulser_mod; };
@@ -174,9 +177,12 @@ private:
 	unsigned char thsb_code;			///< Highest significant bits of the timestamp are here
 	unsigned char pause_code;      		///< Info code when ISS acquisition has paused due to a full buffer
 	unsigned char resume_code;			///< Info code when ISS acquisition has resumed after a pause.
-	unsigned char asic_pulser_asic;		///< Location of the pulser in the ASIC frontends (asic)
-	unsigned char asic_pulser_ch;		///< Location of the pulser in the ASIC frontends (channel)
-	unsigned char asic_pulser_code;		///< Info code when we have a pulser event in InfoData packets from ASICs
+	unsigned char asic_pulser_asic_0;	///< Location of the pulser in the ASIC frontends (asic)
+	unsigned char asic_pulser_ch_0;		///< Location of the pulser in the ASIC frontends (channel)
+	unsigned char asic_pulser_code_0;	///< Info code when we have a pulser event in InfoData packets from ASICs
+	unsigned char asic_pulser_asic_1;	///< Location of the pulser in the ASIC frontends (asic)
+	unsigned char asic_pulser_ch_1;		///< Location of the pulser in the ASIC frontends (channel)
+	unsigned char asic_pulser_code_1;	///< Info code when we have a pulser event in InfoData packets from ASICs
 	unsigned char asic_pulser_thres;	///< Threshold on energy for the pulser event in InfoData packets from ASICs
 	unsigned char caen_pulser_mod;		///< Location of the pulser in the CAEN system (module)
 	unsigned char caen_pulser_ch;		///< Location of the pulser in the CAEN system (channel) - Daresbury test

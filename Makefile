@@ -111,7 +111,7 @@ iss_sortDict.o: iss_sortDict.cc iss_sortDict$(DICTEXT) $(INC_DIR)/RootLinkDef.h
 	cp iss_sortDict$(DICTEXT) $(BIN_DIR)/
 	cp iss_sortDict$(DICTEXT) $(LIB_DIR)/
 
-iss_sortDict.cc: $(DEPENDENCIES) $(INC_DIR)/RootLinkDef.h
+iss_sortDict.cc iss_sortDict$(DICTEXT): $(DEPENDENCIES) $(INC_DIR)/RootLinkDef.h
 	$(ROOTDICT) -f $@ -c $(INCLUDES) $(DEPENDENCIES) $(INC_DIR)/RootLinkDef.h
 
 clean:

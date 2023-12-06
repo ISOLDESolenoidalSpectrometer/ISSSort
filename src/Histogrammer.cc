@@ -55,15 +55,15 @@ void ISSHistogrammer::MakeHists() {
 	
 	hname = "Ex";
 	htitle = "Excitation energy;Excitation energy [keV];Counts per 20 keV";
-	Ex = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+	Ex = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 	
 	hname = "Ex_vs_theta";
 	htitle = "Excitation energy vs. centre of mass angle;#theta_{CM} [deg.];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, -1000, 15000 );
+	Ex_vs_theta = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 	
 	hname = "Ex_vs_z";
 	htitle = "Excitation energy vs. measured z;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 850, -2000, 15000 );
+	Ex_vs_z = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 	
 	// For each user cut
 	E_vs_z_cut.resize( react->GetNumberOfEvsZCuts() );
@@ -84,17 +84,17 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
 		htitle += ";Excitation energy [keV];Counts per 20 keV";
-		Ex_cut[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		Ex_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_theta_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += ";#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+		Ex_vs_theta_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += ";z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 850, -2000, 15000 );
+		Ex_vs_z_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 		
 	}
@@ -119,17 +119,17 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_mod" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
 		htitle += ";Excitation energy [keV];Counts per 20 keV";
-		Ex_mod[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		Ex_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_theta_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += ";#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+		Ex_vs_theta_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += ";z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(),  850, -2000, 15000 );
+		Ex_vs_z_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(),  1000, -5000, 15000 );
 		
 	}
 	
@@ -152,39 +152,39 @@ void ISSHistogrammer::MakeHists() {
 	
 	hname = "Ex_ebis";
 	htitle = "Excitation energy gated by EBIS and off beam subtracted;Excitation energy [keV];Counts per 20 keV";
-	Ex_ebis = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+	Ex_ebis = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 	
 	hname = "Ex_ebis_on";
 	htitle = "Excitation energy gated on EBIS;Excitation energy [keV];Counts per 20 keV";
-	Ex_ebis_on = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+	Ex_ebis_on = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 	
 	hname = "Ex_ebis_off";
 	htitle = "Excitation energy gated off EBIS;Excitation energy [keV];Counts per 20 keV";
-	Ex_ebis_off = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+	Ex_ebis_off = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 	
 	hname = "Ex_vs_theta_ebis";
 	htitle = "Excitation energy vs. centre of mass angle gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta_ebis = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, -1000, 15000 );
+	Ex_vs_theta_ebis = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 	
 	hname = "Ex_vs_theta_ebis_on";
 	htitle = "Excitation energy vs. centre of mass angle gated on EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta_ebis_on = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, -1000, 15000 );
+	Ex_vs_theta_ebis_on = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 	
 	hname = "Ex_vs_theta_ebis_off";
 	htitle = "Excitation energy vs. centre of mass angle gated off EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta_ebis_off = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, -1000, 15000 );
+	Ex_vs_theta_ebis_off = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 	
 	hname = "Ex_vs_z_ebis";
 	htitle = "Excitation energy vs. measured z gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_ebis = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(),  850, -2000, 15000 );
+	Ex_vs_z_ebis = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(),  1000, -5000, 15000 );
 	
 	hname = "Ex_vs_z_ebis_on";
 	htitle = "Excitation energy vs. measured z gated on EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_ebis_on = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 850, -2000, 15000 );
+	Ex_vs_z_ebis_on = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 	
 	hname = "Ex_vs_z_ebis_off";
 	htitle = "Excitation energy vs. measured z gated off EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_ebis_off = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 850, -2000, 15000 );
+	Ex_vs_z_ebis_off = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 	
 	// For each user cut
 	E_vs_z_ebis_cut.resize( react->GetNumberOfEvsZCuts() );
@@ -223,47 +223,47 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_ebis_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_ebis_cut[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		Ex_ebis_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_ebis_on_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
 		htitle += " gated on EBIS;Excitation energy [keV];Counts per 20 keV";
-		Ex_ebis_on_cut[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		Ex_ebis_on_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_ebis_off_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
 		htitle += " gated off EBIS;Excitation energy [keV];Counts per 20 keV";
-		Ex_ebis_off_cut[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		Ex_ebis_off_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_theta_ebis_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+		Ex_vs_theta_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_theta_ebis_on_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+		Ex_vs_theta_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_theta_ebis_off_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+		Ex_vs_theta_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_ebis_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 850, -2000, 15000 );
+		Ex_vs_z_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_ebis_on_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 850, -2000, 15000 );
+		Ex_vs_z_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_ebis_off_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 850, -2000, 15000 );
+		Ex_vs_z_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 	}
 	
@@ -304,47 +304,47 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_ebis_mod" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_ebis_mod[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		Ex_ebis_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_ebis_on_mod" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
 		htitle += " gated on EBIS;Excitation energy [keV];Counts per 20 keV";
-		Ex_ebis_on_mod[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		Ex_ebis_on_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_ebis_off_mod" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
 		htitle += " gated off EBIS;Excitation energy [keV];Counts per 20 keV";
-		Ex_ebis_off_mod[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		Ex_ebis_off_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_theta_ebis_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+		Ex_vs_theta_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_theta_ebis_on_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+		Ex_vs_theta_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_theta_ebis_off_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+		Ex_vs_theta_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_ebis_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 850, -2000, 15000 );
+		Ex_vs_z_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_ebis_on_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 850, -2000, 15000 );
+		Ex_vs_z_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_ebis_off_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 850, -2000, 15000 );
+		Ex_vs_z_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 	}
 	
@@ -363,27 +363,27 @@ void ISSHistogrammer::MakeHists() {
 	
 	hname = "Ex_recoil";
 	htitle = "Excitation energy gated by recoils;Excitation energy [keV];Counts per 20 keV";
-	Ex_recoil = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
+	Ex_recoil = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 	
 	hname = "Ex_recoilT";
 	htitle = "Excitation energy with a time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
-	Ex_recoilT = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
+	Ex_recoilT = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 	
 	hname = "Ex_vs_theta_recoil";
 	htitle = "Excitation energy vs. centre of mass angle gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta_recoil = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, -1000, 15000 );
+	Ex_vs_theta_recoil = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 	
 	hname = "Ex_vs_theta_recoilT";
 	htitle = "Excitation energy vs. centre of mass angle with a time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta_recoilT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, -1000, 15000 );
+	Ex_vs_theta_recoilT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 	
 	hname = "Ex_vs_z_recoil";
 	htitle = "Excitation energy vs. measured z gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_recoil = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, -1000, 15000 );
+	Ex_vs_z_recoil = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 	
 	hname = "Ex_vs_z_recoilT";
 	htitle = "Excitation energy vs. measured z with a time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, -1000, 15000 );
+	Ex_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 	
 	// For each user cut
 	E_vs_z_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
@@ -413,32 +413,32 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_recoil_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
 		htitle += " gated by recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoil_cut[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		Ex_recoil_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_recoilT_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
 		htitle += " with a time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoilT_cut[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		Ex_recoilT_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_theta_recoil_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += " gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+		Ex_vs_theta_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_theta_recoilT_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += " with a time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+		Ex_vs_theta_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_recoil_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 		htitle += " gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 850, -2000, 15000 );
+		Ex_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_recoilT_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 		htitle += " with a time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 850, -2000, 15000 );
+		Ex_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 	} // Array
 	
@@ -470,32 +470,32 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_recoil_mod" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
 		htitle += " gated by recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoil_mod[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		Ex_recoil_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_recoilT_mod" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
 		htitle += " with a time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoilT_mod[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		Ex_recoilT_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_theta_recoil_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += " gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+		Ex_vs_theta_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_theta_recoilT_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += " with a time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+		Ex_vs_theta_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_recoil_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
 		htitle += " gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 850, -2000, 15000 );
+		Ex_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_recoilT_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
 		htitle += " with a time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 850, -2000, 15000 );
+		Ex_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 	} // Array
 	
@@ -511,19 +511,19 @@ void ISSHistogrammer::MakeHists() {
 	
 	hname = "Ex_T1";
 	htitle = "Excitation energy with a time gate on T1 proton pulse;Excitation energy [keV];Counts per 20 keV";
-	Ex_T1 = new TH1F( hname.data(), htitle.data(), 800, -1000, 15000 );
+	Ex_T1 = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 	
 	hname = "Ex_vs_T1";
 	htitle = "Excitation energy as a function of time since T1 proton pulse;Event time - T1 [ns];Excitation energy [keV];Counts per 20 keV";
-	Ex_vs_T1 = new TH2F( hname.data(), htitle.data(), 1000, 0, 100e9, 800, -1000, 15000 );
+	Ex_vs_T1 = new TH2F( hname.data(), htitle.data(), 1000, 0, 100e9, 1000, -5000, 15000 );
 	
 	hname = "Ex_vs_theta_T1";
 	htitle = "Excitation energy vs. centre of mass angle with a time gate on T1 proton pulse;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta_T1 = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, -1000, 15000 );
+	Ex_vs_theta_T1 = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 	
 	hname = "Ex_vs_z_T1";
 	htitle = "Excitation energy vs. measured z with a time gate on T1 proton pulse;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_T1 = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, -1000, 15000 );
+	Ex_vs_z_T1 = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 	
 	// For each user cut
 	E_vs_z_T1_cut.resize( react->GetNumberOfEvsZCuts() );
@@ -545,21 +545,21 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_T1_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
 		htitle += " with a time gate on T1 proton pulse;Excitation energy [keV];Counts per 20 keV";
-		Ex_T1_cut[j] = new TH1F( hname.data(), htitle.data(), 850, -2000, 15000 );
+		Ex_T1_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_T1_cut" + std::to_string(j);
 		htitle = "Excitation energy as a function of time since T1 proton pulse;Event time - T1 [ns];Excitation energy [keV];Counts per 20 keV";
-		Ex_vs_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 1000, 0, 100e9, 800, -1000, 15000 );
+		Ex_vs_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 1000, 0, 100e9, 1000, -5000, 15000 );
 
 		hname = "Ex_vs_theta_T1_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += " with a time gate on T1 proton pulse;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 850, -2000, 15000 );
+		Ex_vs_theta_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_T1_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 		htitle += " with a time gate on T1 proton pulse;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_T1_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 850, -2000, 15000 );
+		Ex_vs_z_T1_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 	} // Array
 
@@ -580,6 +580,8 @@ void ISSHistogrammer::MakeHists() {
 	recoil_EdE_array.resize( set->GetNumberOfRecoilSectors() );
 	recoil_bragg.resize( set->GetNumberOfRecoilSectors() );
 	recoil_dE_vs_T1.resize( set->GetNumberOfRecoilSectors() );
+	recoil_dE_eloss.resize( set->GetNumberOfRecoilSectors() );
+	recoil_E_eloss.resize( set->GetNumberOfRecoilSectors() );
 
 	// Loop over each recoil sector
 	for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
@@ -593,32 +595,42 @@ void ISSHistogrammer::MakeHists() {
 		htitle = "Recoil dE-E plot for sector " + std::to_string(i);
 		htitle += " - singles;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 		recoil_EdE[i] = new TH2F( hname.data(), htitle.data(),
-								 2000, 0, 200000, 2000, 0, 200000 );
+								 4000, 0, 800000, 4000, 0, 800000 );
 		
 		hname = "recoil_EdE_cut_sec" + std::to_string(i);
 		htitle = "Recoil dE-E plot for sector " + std::to_string(i);
 		htitle += " - with energy cut;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 		recoil_EdE_cut[i] = new TH2F( hname.data(), htitle.data(),
-									 2000, 0, 200000, 2000, 0, 200000 );
+									 4000, 0, 800000, 4000, 0, 800000 );
 		
 		hname = "recoil_EdE_array_sec" + std::to_string(i);
 		htitle = "Recoil dE-E plot for sector " + std::to_string(i);
 		htitle += " - in coincidence with array;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 		recoil_EdE_array[i] = new TH2F( hname.data(), htitle.data(),
-									   2000, 0, 200000, 2000, 0, 200000 );
+									   4000, 0, 800000, 4000, 0, 800000 );
 		
 		hname = "recoil_bragg_sec" + std::to_string(i);
 		htitle = "Recoil Bragg plot for sector " + std::to_string(i);
 		htitle += ";Bragg ID;Energy loss, dE [keV];Counts";
 		recoil_bragg[i] = new TH2F( hname.data(), htitle.data(),
-								 set->GetNumberOfRecoilLayers(), -0.5, set->GetNumberOfRecoilLayers()-0.5, 2000, 0, 200000 );
+								 set->GetNumberOfRecoilLayers(), -0.5, set->GetNumberOfRecoilLayers()-0.5, 4000, 0, 800000 );
 
 		hname = "recoil_dE_vs_T1_sec" + std::to_string(i);
 		htitle = "Recoil dE plot versus T1 time for sector " + std::to_string(i);
 		htitle += ";Time since T1 proton pulse [ns];Energy loss, dE [keV];Counts";
 		recoil_dE_vs_T1[i] = new TH2F( hname.data(), htitle.data(),
-								 5000, 0, 50e9, 2000, 0, 200000 );
+								 5000, 0, 50e9, 4000, 0, 800000 );
+			
+		hname = "recoil_dE_eloss_sec" + std::to_string(i);
+		htitle = "Recoil dE energy loss for sector " + std::to_string(i);
+		htitle += ";Energy loss, dE [keV];Counts";
+		recoil_dE_eloss[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
 
+		hname = "recoil_E_eloss_sec" + std::to_string(i);
+		htitle = "Recoil E energy loss for sector " + std::to_string(i);
+		htitle += ";Energy loss, E [keV];Counts";
+		recoil_E_eloss[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
+		
 		// Timing plots
 		output_file->cd( "Timing" );
 		recoil_array_td[i].resize( set->GetNumberOfArrayModules() );
@@ -810,6 +822,11 @@ void ISSHistogrammer::ResetHists() {
 	for( unsigned int i = 0; i < recoil_dE_vs_T1.size(); ++i )
 		recoil_dE_vs_T1[i]->Reset("ICESM");
 
+	for( unsigned int i = 0; i < recoil_dE_eloss.size(); ++i )
+		recoil_dE_eloss[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < recoil_E_eloss.size(); ++i )
+		recoil_E_eloss[i]->Reset("ICESM");
 
 	// Array - E vs. z
 	E_vs_z->Reset("ICESM");
@@ -1116,7 +1133,7 @@ unsigned long ISSHistogrammer::FillHists() {
 			
 			
 			// EBIS time
-			ebis_td_array->Fill( (double)array_evt->GetTime() - (double)read_evts->GetEBIS() );
+			ebis_td_array->Fill( array_evt->GetTime() - read_evts->GetEBIS() );
 			
 			// Check for events in the EBIS on-beam window
 			if( OnBeam( array_evt ) ){
@@ -1139,7 +1156,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				Ex_vs_z_ebis_on_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 				
 				// Check for events in the user-defined T1 window
-				Ex_vs_T1->Fill( (double)array_evt->GetTime() - read_evts->GetT1(), react->GetEx() );
+				Ex_vs_T1->Fill( array_evt->GetTime() - read_evts->GetT1(), react->GetEx() );
 				if( T1Cut( array_evt ) ) {
 					
 					E_vs_z_T1->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
@@ -1165,7 +1182,7 @@ unsigned long ISSHistogrammer::FillHists() {
 						Ex_vs_z_ebis_on_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
 						
 						// Check for events in the user-defined T1 window
-						Ex_vs_T1_cut[k]->Fill( (double)array_evt->GetTime() - read_evts->GetT1(), react->GetEx() );
+						Ex_vs_T1_cut[k]->Fill( array_evt->GetTime() - read_evts->GetT1(), react->GetEx() );
 						if( T1Cut( array_evt ) ) {
 							
 							E_vs_z_T1_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
@@ -1230,7 +1247,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				recoil_evt = read_evts->GetRecoilEvt(k);
 				
 				// Time differences
-				tdiff = (double)recoil_evt->GetTime() - (double)array_evt->GetTime();
+				tdiff = recoil_evt->GetTime() - array_evt->GetTime();
 				recoil_array_td[recoil_evt->GetSector()][array_evt->GetModule()]->Fill( tdiff );
 				
 				if( array_evt->GetPHit() ) { // hit bit = true
@@ -1331,7 +1348,7 @@ unsigned long ISSHistogrammer::FillHists() {
 			elum_evt = read_evts->GetElumEvt(j);
 			
 			// EBIS time
-			ebis_td_elum->Fill( (double)elum_evt->GetTime() - (double)read_evts->GetEBIS() );
+			ebis_td_elum->Fill( elum_evt->GetTime() - read_evts->GetEBIS() );
 			
 			// Singles
 			elum->Fill( elum_evt->GetEnergy() );
@@ -1344,7 +1361,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				elum_ebis_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
 				elum_ebis_on->Fill( elum_evt->GetEnergy() );
 				elum_ebis_on_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
-				elum_vs_T1->Fill( (double)elum_evt->GetTime() - (double)read_evts->GetT1(), elum_evt->GetEnergy() );
+				elum_vs_T1->Fill( elum_evt->GetTime() - read_evts->GetT1(), elum_evt->GetEnergy() );
 
 			} // ebis
 			
@@ -1365,7 +1382,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				recoil_evt = read_evts->GetRecoilEvt(k);
 				
 				// Time differences
-				tdiff = (double)recoil_evt->GetTime() - (double)elum_evt->GetTime();
+				tdiff = recoil_evt->GetTime() - elum_evt->GetTime();
 				recoil_elum_td[recoil_evt->GetSector()][elum_evt->GetSector()]->Fill( tdiff );
 				
 				// Check for prompt events with recoils
@@ -1396,16 +1413,16 @@ unsigned long ISSHistogrammer::FillHists() {
 			recoil_evt = read_evts->GetRecoilEvt(j);
 			
 			// EBIS, T1, SC time
-			ebis_td_recoil->Fill( (double)recoil_evt->GetTime() - (double)read_evts->GetEBIS() );
-			t1_td_recoil->Fill( (double)recoil_evt->GetTime() - (double)read_evts->GetT1() );
-			sc_td_recoil->Fill( (double)recoil_evt->GetTime() - (double)read_evts->GetSC() );
+			ebis_td_recoil->Fill( recoil_evt->GetTime() - read_evts->GetEBIS() );
+			t1_td_recoil->Fill( recoil_evt->GetTime() - read_evts->GetT1() );
+			sc_td_recoil->Fill( recoil_evt->GetTime() - read_evts->GetSC() );
 
 			// Energy EdE plot, unconditioned
 			recoil_EdE[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
 													  recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 
 			// Energy dE versus T1 time
-			recoil_dE_vs_T1[recoil_evt->GetSector()]->Fill( (double)recoil_evt->GetTime() - (double)read_evts->GetT1(),
+			recoil_dE_vs_T1[recoil_evt->GetSector()]->Fill( recoil_evt->GetTime() - read_evts->GetT1(),
 														   recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 
 			// Bragg curve
@@ -1417,6 +1434,9 @@ unsigned long ISSHistogrammer::FillHists() {
 				recoil_EdE_cut[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
 															  recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 			
+			recoil_dE_eloss[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+			recoil_E_eloss[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
+
 		} // recoils
 		
 		// Progress bar

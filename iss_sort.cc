@@ -26,7 +26,7 @@
 
 // Default parameters and name
 std::string output_name;
-std::string datadir_name = "/eos/experiment/isolde-iss/2022/ISS";
+std::string datadir_name;
 std::string name_set_file;
 std::string name_cal_file;
 std::string name_react_file;
@@ -189,25 +189,33 @@ void* monitor_run( void* ptr ){
 				}
 				
 				// Keep reading until we have all the data
+				// This could be multi-threaded to process data and go back to read more
 				int block_ctr = 0;
-				while( spy_length ){
-					
-					std::cout << "Got some data from DataSpy, block " << block_ctr << std::endl;
-					nblocks = conv_mon->ConvertBlock( (char*)buffer, 0 );
-					block_ctr += nblocks;
-					
-					// Stop after so long
-					if( block_ctr > 50 ) break;
+				long byte_ctr = 0;
+				int poll_ctr = 0;
+				while( block_ctr < 200 && poll_ctr < 1000 ){
+
+					//std::cout << "Got some data from DataSpy, block " << block_ctr << std::endl;
+					if( spy_length > 0 ) {
+						nblocks = conv_mon->ConvertBlock( (char*)buffer, 0 );
+						block_ctr += nblocks;
+					}
 					
 					// Read a new block
-					//gSystem->Sleep( 10 ); // wait 10 ms
+					gSystem->Sleep( 1 ); // wait 1 ms between each read
 					spy_length = myspy.Read( file_id, (char*)buffer, calfiles->myset->GetBlockSize() );
+
+					byte_ctr += spy_length;
+					poll_ctr++;
 					
 				}
-				
+
+				std::cout << "Got " << byte_ctr << " bytes of data from DataSpy" << std::endl;
+
 				// Sort the packets we just got, then do the rest of the analysis
 				conv_mon->SortTree();
-				
+				conv_mon->PurgeOutput();
+
 			}
 			
 			// Only do the rest if it is not a source run
@@ -217,12 +225,12 @@ void* monitor_run( void* ptr ){
 				if( bFirstRun ) {
 					eb_mon->SetOutput( "monitor_events.root" );
 					eb_mon->StartFile();
-					
 				}
 				TTree *sorted_tree = conv_mon->GetSortedTree()->CloneTree();
 				eb_mon->SetInputTree( sorted_tree );
 				eb_mon->GetTree()->Reset();
 				nbuild = eb_mon->BuildEvents();
+				eb_mon->PurgeOutput();
 				delete sorted_tree;
 				
 				// Histogrammer
@@ -233,6 +241,7 @@ void* monitor_run( void* ptr ){
 					TTree *evt_tree = eb_mon->GetTree()->CloneTree();
 					hist_mon->SetInputTree( evt_tree );
 					hist_mon->FillHists();
+					hist_mon->PurgeOutput();
 					delete evt_tree;
 				}
 				
@@ -294,9 +303,6 @@ void start_http(){
 	//serv->Hide("/Start");
 	//serv->Hide("/Stop");
 	//serv->Hide("/Reset");
-
-	// Add data directory
-	if( datadir_name.size() > 0 ) serv->AddLocation( "data/", datadir_name.data() );
 	
 	return;
 	
@@ -320,9 +326,17 @@ void do_convert(){
 	// Check each file
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 			
+		name_input_file = input_names.at(i).substr( input_names.at(i).find_last_of("/")+1,
+												   input_names.at(i).length() - input_names.at(i).find_last_of("/")-1 );
+		name_input_file = name_input_file.substr( 0,
+												 name_input_file.find_last_of(".") );
+		name_output_file = name_input_file.substr( 0,
+												  name_input_file.find_last_of(".") );
+		if( flag_source ) name_output_file = name_output_file + "_source.root";
+		else name_output_file = name_output_file + ".root";
+		
+		name_output_file = datadir_name + "/" + name_output_file;
 		name_input_file = input_names.at(i);
-		if( flag_source ) name_output_file = input_names.at(i) + "_source.root";
-		else name_output_file = input_names.at(i) + ".root";
 
 		force_convert.push_back( false );
 
@@ -394,9 +408,16 @@ bool do_build(){
 	// Do event builder for each file individually
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 			
-		name_input_file = input_names.at(i) + ".root";
-		name_output_file = input_names.at(i) + "_events.root";
+		name_input_file = input_names.at(i).substr( input_names.at(i).find_last_of("/")+1,
+												   input_names.at(i).length() - input_names.at(i).find_last_of("/")-1 );
+		name_input_file = name_input_file.substr( 0,
+												 name_input_file.find_last_of(".") );
+		name_output_file = name_input_file.substr( 0,
+												  name_input_file.find_last_of(".") );
 		
+		name_output_file = datadir_name + "/" + name_output_file + "_events.root";
+		name_input_file = datadir_name + "/" + name_input_file + ".root";
+
 		// Check if the input file exists
 		ftest.open( name_input_file.data() );
 		if( !ftest.is_open() ) {
@@ -472,7 +493,11 @@ void do_hist(){
 	// We are going to chain all the event files now
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 
-		name_input_file = input_names.at(i) + "_events.root";
+		name_input_file = input_names.at(i).substr( input_names.at(i).find_last_of("/")+1,
+												   input_names.at(i).length() - input_names.at(i).find_last_of("/")-1 );
+		name_input_file = name_input_file.substr( 0,
+												 name_input_file.find_last_of(".") );
+		name_input_file = datadir_name + "/" + name_input_file + "_events.root";
 
 		ftest.open( name_input_file.data() );
 		if( !ftest.is_open() ) {
@@ -529,7 +554,7 @@ void do_autocal(){
 	// Check each file
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 			
-		name_input_file = input_names.at(i) + "_source.root";
+		name_input_file = datadir_name + "/" + input_names.at(i) + "_source.root";
 
 		// Add to list if the converted file exists
 		ftest.open( name_input_file.data() );
@@ -586,7 +611,7 @@ int main( int argc, char *argv[] ){
 	interface->Add("-spy", "Flag to run the DataSpy", &flag_spy );
 	interface->Add("-m", "Monitor input file every X seconds", &mon_time );
 	interface->Add("-p", "Port number for web server (default 8030)", &port_num );
-	interface->Add("-d", "Data directory to add to the monitor", &datadir_name );
+	interface->Add("-d", "Output directory for sorted files", &datadir_name );
 	interface->Add("-g", "Launch the GUI", &gui_flag );
 	interface->Add("-h", "Print this help", &help_flag );
 
@@ -642,7 +667,7 @@ int main( int argc, char *argv[] ){
 		
 	}
 	
-	else if( mon_time > 0 && input_names.size() == 1 ) {
+	else if( mon_time >= 0 && input_names.size() == 1 ) {
 		
 		flag_monitor = true;
 		std::cout << "Running sort in a loop every " << mon_time;
@@ -650,23 +675,66 @@ int main( int argc, char *argv[] ){
 		
 	}
 	
-	else if( mon_time > 0 && input_names.size() != 1 ) {
+	else if( mon_time >= 0 && input_names.size() != 1 ) {
 		
 		flag_monitor = false;
 		std::cout << "Cannot monitor multiple input files, switching to normal mode" << std::endl;
 				
 	}
 	
+	// Check the directory we are writing to
+	if( datadir_name.length() == 0 ) {
+		
+		if( bool( input_names.size() ) ) {
+			
+			// Probably in the current working directory
+			if( input_names.at(0).find("/") == std::string::npos )
+				datadir_name = "./sorted";
+			
+			// Called from a different directory
+			else {
+				
+				datadir_name = input_names.at(0).substr( 0,
+														input_names.at(0).find_last_of("/") );
+				datadir_name += "/sorted";
+				
+			}
+			
+			// Create the directory if it doesn't exist (not Windows compliant)
+			std::string cmd = "mkdir -p " + datadir_name;
+			gSystem->Exec( cmd.data() );
+			
+		}
+		
+		else datadir_name = "dataspy";
+		
+		std::cout << "Sorted data files being saved to " << datadir_name << std::endl;
+		
+	}
+
 	// Check the ouput file name
 	if( output_name.length() == 0 ) {
-	
-		if( bool( input_names.size() ) )
-			output_name = input_names.at(0) + "_hists.root";
 		
-		else output_name = "spy_hists.root";
-	
+		if( bool( input_names.size() ) ) {
+			
+			std::string name_input_file = input_names.at(0).substr( input_names.at(0).find_last_of("/")+1,
+																   input_names.at(0).length() - input_names.at(0).find_last_of("/")-1 );
+			name_input_file = name_input_file.substr( 0,
+													 name_input_file.find_last_of(".") );
+			
+			if( input_names.size() > 1 ) {
+				output_name = datadir_name + "/" + name_input_file + "_hists_";
+				output_name += std::to_string(input_names.size()) + "_subruns.root";
+			}
+			else
+				output_name = datadir_name + "/" + name_input_file + "_hists.root";
+			
+		}
+		
+		else output_name = datadir_name + "/monitor_hists.root";
+		
 	}
-	
+
 	// Check we have a Settings file
 	if( name_set_file.length() > 0 ) {
 		
@@ -706,7 +774,7 @@ int main( int argc, char *argv[] ){
 			
 			std::cout << name_cal_file << " does not exist.";
 			std::cout << " Using defaults" << std::endl;
-			name_set_file = "dummy";
+			name_cal_file = "dummy";
 
 		}
 		
@@ -736,7 +804,7 @@ int main( int argc, char *argv[] ){
 			
 			std::cout << name_react_file << " does not exist.";
 			std::cout << " Using defaults" << std::endl;
-			name_set_file = "dummy";
+			name_react_file = "dummy";
 
 		}
 		
