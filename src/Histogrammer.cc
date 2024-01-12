@@ -1663,13 +1663,13 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 		// Create an array event assuming that it hits it
 		if( mod >= 0 && row >= 0 && pid >= 0 && nid >= 0 ){
 			
-			std::cout << "Ep_lab = " << Ep_lab;
-			std::cout << ", Ep_det = " << Edet;
-			std::cout << ", theta_lab = " << Ap_lab;
-			std::cout << ", z_meas = " << pace4react.GetZmeasured();
-			std::cout << ", mod = " << (int)mod << ", row = " << (int)row;
-			std::cout << ", pid = " << (int)pid << ", nid = " << (int)nid;
-			std::cout << std::endl;
+			//std::cout << "Ep_lab = " << Ep_lab;
+			//std::cout << ", Ep_det = " << Edet;
+			//std::cout << ", theta_lab = " << Ap_lab;
+			//std::cout << ", z_meas = " << pace4react.GetZmeasured();
+			//std::cout << ", mod = " << (int)mod << ", row = " << (int)row;
+			//std::cout << ", pid = " << (int)pid << ", nid = " << (int)nid;
+			//std::cout << std::endl;
 			
 			array_evt->SetEvent( Edet, Edet, pid, nid, 1e6, 1e6, true, true, mod, row );
 			arrayp_evt->SetEvent( Edet, Edet, pid, nid, 1e6, 1e6, true, true, mod, row );
