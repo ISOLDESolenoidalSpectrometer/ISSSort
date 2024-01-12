@@ -11,6 +11,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TMath.h>
+#include <TRandom3.h>
 #include <TChain.h>
 #include <TProfile.h>
 #include <TH1.h>
@@ -38,7 +39,7 @@
 
 // Compiler switch for the pside only histogramming
 // uncomment the line below to ignore the p/n coincidences
-//#define pside_only
+#define pside_only
 
 
 class ISSHistogrammer {
@@ -55,6 +56,10 @@ public:
 	void SetInputFile( std::vector<std::string> input_file_names );
 	void SetInputFile( std::string input_file_name );
 	void SetInputTree( TTree* user_tree );
+
+	void SetPace4File( std::vector<std::string> input_file_names );
+	void SetPace4File( std::string input_file_name );
+	void ReadPace4File( std::string input_file_name );
 
 	inline void SetOutput( std::string output_file_name ){
 		output_file = new TFile( output_file_name.data(), "recreate" );

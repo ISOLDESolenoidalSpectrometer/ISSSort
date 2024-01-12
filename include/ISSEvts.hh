@@ -34,10 +34,10 @@ public:
 	inline float 			GetNEnergy(){ return nen; };
 	inline unsigned char 	GetPID(){ return pid; };
 	inline unsigned char 	GetNID(){ return nid; };
-	inline double		GetTime(){ return ptime; };
-	inline double		GetTimeDouble(){ return ptime; };
-	inline double		GetPTime(){ return ptime; };
-	inline double	 	GetNTime(){ return ntime; };
+	inline double			GetTime(){ return ptime; };
+	inline double			GetTimeDouble(){ return ptime; };
+	inline double			GetPTime(){ return ptime; };
+	inline double	 		GetNTime(){ return ntime; };
 	inline bool 			GetPHit(){ return phit; };
 	inline bool 			GetNHit(){ return nhit; };
 	inline unsigned char	GetModule(){ return mod; };
@@ -49,6 +49,12 @@ public:
 	float		GetPhi();
 	TVector2	GetPhiXY();
 	TVector3	GetPosition();
+	
+	char	FindPID( double z );
+	char	FindNID( double phi );
+	char	FindModule( double phi );
+	char	FindRow( double z );
+
 
 private:
 
@@ -61,8 +67,8 @@ private:
 	float 			nen;	///< n-side energy in keV
 	unsigned char	pid;	///< p-side strip id, from 0 - 511, i.e along all 4 wafers
 	unsigned char	nid;	///< n-side strip id, from 0 - 65, i.e. around all 6 sides
-	double		ptime;	///< p-side timestamp
-	double		ntime;	///< n-side timestamp
+	double			ptime;	///< p-side timestamp
+	double			ntime;	///< n-side timestamp
 
 
 	ClassDef( ISSArrayEvt, 4 )

@@ -209,6 +209,78 @@ ISSReaction::ISSReaction( std::string filename, ISSSettings *myset, bool source 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+/// ISS Copy constructor
+ISSReaction::ISSReaction( ISSReaction &t ){
+
+	set = new ISSSettings( *t.GetSettings() );
+	
+	fInputFile = t.GetFileName();
+	
+	Beam = t.CopyBeam();
+	Target = t.CopyTarget();
+	Ejectile = t.CopyEjectile();
+	Recoil = t.CopyRecoil();
+	
+	ame_be = t.GetMassTables();
+	Mfield = t.GetField();
+	
+	z0 = t.GetArrayDistance();
+	deadlayer = t.GetArrayDeadlayer();
+	
+	elum_z = t.GetELUMDistance();
+	elum_rin = t.GetELUMInnerRadius();
+	elum_rout = t.GetELUMOuterRadius();
+	elum_deadlayer = t.GetELUMDeadlayer();
+	
+	EBIS_On = t.GetEBISOnTime();
+	EBIS_Off = t.GetEBISOffTime();
+	EBIS_ratio = t.GetEBISFillRatio();
+	
+	t1_min_time = t.GetT1MinTime();
+	t1_max_time = t.GetT1MaxTime();
+	
+	x_offset = t.GetOffsetX();
+	y_offset = t.GetOffsetY();
+	
+	flag_source = t.IsSource();
+	
+	// Copy the cuts
+	for( unsigned int i = 0; i < t.GetNumberOfRecoilCuts(); ++i )
+		recoil_cut.push_back( (TCutG*)(t.GetRecoilCut(i)->Clone()) );
+	
+	for( unsigned int i = 0; i < t.GetNumberOfEvsZCuts(); ++i )
+		e_vs_z_cut.push_back( (TCutG*)(t.GetEvsZCut(i)->Clone()) );
+
+	
+	// Get the stopping powers in TGraphs
+	stopping = true;
+	for( unsigned int i = 0; i < 6; ++i ) {
+		gStopping.push_back( std::make_unique<TGraph>() );
+		gRange.push_back( std::make_unique<TGraph>() );
+	}
+	
+	if( !flag_source ) {
+		stopping &= ReadStoppingPowers( Beam.GetIsotope(), Target.GetIsotope(), gStopping[0], gRange[0] );
+		stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), Target.GetIsotope(), gStopping[1], gRange[1] );
+	}
+	stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), "Al", gStopping[2], gRange[2] );
+
+	// Get the electric and nuclear stopping powers for the PHC in a TGraph
+	phcurves = true;
+	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[3], gRange[3], true, false ); // electric only from SRIM files
+	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[4], gRange[4], false, true ); // nuclear only from SRIM files
+	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[5], gRange[5] );				 // total stopping from SRIM files
+
+	// Get the PHC data in a TGraph
+	gPHC = std::make_unique<TGraph>();
+	gPHC_inv = std::make_unique<TGraph>();
+	CalculatePulseHeightCorrection( Ejectile.GetIsotope() );
+
+	// TODO: copy the time gates
+	
+}
+
+///////////////////////////////////////////////////////////////////////////////
 /// Deletes the pointers to the TCutG recoil cuts and clears the vector holding
 /// them.
 ISSReaction::~ISSReaction(){
@@ -484,7 +556,7 @@ void ISSReaction::ReadReaction() {
 	elum_z    		= config->GetValue( "ELUM.Distance", -1.0 ); // units of mm
 	elum_rin  		= config->GetValue( "ELUM.InnerRadius", 24.0 ); // units of mm
 	elum_rout 		= config->GetValue( "ELUM.OuterRadius", 48.0 ); // units of mm
-	elum_deadlayer	= config->GetValue( "ELUM.Deadlayer", 0.00125 ); // units of mm of Si equivalent
+	elum_deadlayer	= config->GetValue( "ELUM.Deadlayer", 0.00095 ); // units of mm of Si equivalent
 
 	// If it's a source run, we can ignore most of that
 	// or better still, initialise everything and overwrite what we need
@@ -737,6 +809,10 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 	title += "Range in " + isotope2;
 	title += " [mm]";
 	r->SetTitle( title.c_str() );
+	
+	// Start graphs fresh
+	g->Set(0);
+	r->Set(0);
 
 	// Keep things quiet from ROOT
 	gErrorIgnoreLevel = kWarning;
@@ -979,6 +1055,66 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	 
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/// This function will use the energy of the ejectile, and the laboratory theta
+/// phi angles to solve the kinematics and define parameters such as:
+/// z_meas, etc. It returns the detected energy of the ejectile
+/// \param[in] en The energy of the decay
+/// \param[in] theta_lab The theta angle in radians in the laboratory frame that the particle is emitted at
+/// \param[in] phi_lab The phi angle in radians in the laboratory frame that the particle is emitted at
+/// \param[in] detector The detector to simulate: 0 = array, 1 = ELUM, 2 = recoil Si
+/// \returns E_det
+double ISSReaction::SimulateEmission( double en, double theta_lab, double phi_lab, int detector ){
+	
+	// Set the energy and lab angle
+	Ejectile.SetEnergyLab( en );
+	Ejectile.SetThetaLab( theta_lab );
+	
+	// z when returning to axis
+	z  = Ejectile.GetBeta() * TMath::Cos( theta_lab );
+	z *= TMath::TwoPi() * Ejectile.GetMass();
+	z /= (double)Ejectile.GetZ() * GetField_corr();
+	
+	// Centre of mass velocity/energy
+	double v3_cm_para = Ejectile.GetBeta() * TMath::Cos( theta_lab );
+	v3_cm_para -= GetBeta();
+	double v3_cm_perp = Ejectile.GetBeta() * TMath::Sin( theta_lab );
+	double v3_cm = TMath::Sqrt( v3_cm_para * v3_cm_para +  v3_cm_perp * v3_cm_perp );
+	e3_cm = ( v3_cm * v3_cm + 1.0 ) * Ejectile.GetMass() * Ejectile.GetMass();
+	e3_cm = TMath::Sqrt( e3_cm );
+	Ejectile.SetEnergyTotCM( e3_cm );
+	
+	// Centre of mass angle
+	double theta_cm = TMath::ASin( v3_cm_perp / v3_cm );
+	Ejectile.SetThetaCM( theta_cm );
+	
+	// cyclotron radius
+	double r_cyc = Ejectile.GetMomentumLab() * TMath::Sin( theta_lab );
+	r_cyc /= (double)Ejectile.GetZ() * GetField_corr();
+
+	// measured z distance needs radius of detection
+	// TODO: this will depend on the phi emission angle
+	double r_det = 28.75; // for now just assume standard detector radius
+	double omega = TMath::TwoPi() - 2.0 * TMath::ASin( 0.5 * r_det / r_cyc );
+	z_meas = z * omega / TMath::TwoPi();
+	
+	// Calculate the energy lost in the target
+	double dist = 0.5 * target_thickness / TMath::Abs( TMath::Sin( theta_lab ) );
+	double eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
+	Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
+	
+	// Calculate the energy loss in the deadlayer
+	if( detector == 0 )
+		dist = deadlayer / TMath::Abs( TMath::Cos( theta_lab - TMath::PiOver2() ) );
+	else if( detector == 1 )
+		dist = elum_deadlayer / TMath::Abs( TMath::Sin( theta_lab - TMath::PiOver2() ) );
+	eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[2] );
+	Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
+	
+	return Ejectile.GetEnergyLab();
+	
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 /// This function will use the interaction position and decay energy of an ejectile
@@ -988,7 +1124,7 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 /// \param[in] en The energy of the decay
 /// \param[in] detector The detector to simulate: 0 = array, 1 = ELUM, 2 = recoil Si
 /// \returns en-eloss
-float ISSReaction::SimulateDecay( TVector3 vec, double en, int detector ){
+double ISSReaction::SimulateDecay( TVector3 vec, double en, int detector ){
 
 	// Apply the X and Y offsets directly to the TVector3 input
 	// We move the array opposite to the target, which replicates the same
@@ -1008,7 +1144,7 @@ float ISSReaction::SimulateDecay( TVector3 vec, double en, int detector ){
 	params[0] = z_meas;										// z in mm
 	params[1] = vec.Perp();									// r_meas in mm
 	params[2] = Ejectile.GetMomentumLab();					// p3
-	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
+	params[3] = (double)Ejectile.GetZ() * GetField_corr(); 	// qb
 	params[3] /= TMath::TwoPi(); 							// qb/2pi
 		
 	// Set parameters
@@ -1029,7 +1165,7 @@ float ISSReaction::SimulateDecay( TVector3 vec, double en, int detector ){
 	gErrorIgnoreLevel = kInfo; // print info and above again
 
 	// Calculate the lab angle from z position (Butler method)
-	alpha  = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
+	alpha  = (double)Ejectile.GetZ() * GetField_corr(); 	// qb
 	alpha /= TMath::TwoPi(); 							// qb/2pi
 	alpha *= z / Ejectile.GetMomentumLab();				// * z/p
 	alpha  = TMath::ASin( alpha );
@@ -1077,7 +1213,7 @@ void ISSReaction::SimulateReaction( TVector3 vec ){
 	params[0] = z_meas;										// z in mm
 	params[1] = r_meas;										// r_meas in mm
 	params[2] = Recoil.GetEx();								// Ex
-	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
+	params[3] = (double)Ejectile.GetZ() * GetField_corr(); 	// qb
 	params[3] /= TMath::TwoPi(); 							// qb/2pi
 	params[4] = Beam.GetEnergyLab();						// beam energy
 	params[5] = Beam.GetMass();
@@ -1114,7 +1250,7 @@ void ISSReaction::SimulateReaction( TVector3 vec ){
 	Ejectile.SetEnergyTotCM( e3_cm );
 	
 	// From Daniel Clarke:
-	theta_lab = Ejectile.GetMomentumCM() * TMath::Sin( Ejectile.GetThetaCM() );
+	double theta_lab = Ejectile.GetMomentumCM() * TMath::Sin( Ejectile.GetThetaCM() );
 	theta_lab /= Ejectile.GetMomentumCM() * TMath::Cos( Ejectile.GetThetaCM() ) + GetBeta() * Ejectile.GetEnergyTotCM();
 	theta_lab /= GetGamma();
 	theta_lab = TMath::ATan( theta_lab );
@@ -1160,7 +1296,7 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	params[0] = z_meas;										// z in mm
 	params[1] = r_meas;										// r_meas in mm
 	params[2] = Ejectile.GetMomentumLab();					// p
-	params[3] = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
+	params[3] = (double)Ejectile.GetZ() * GetField_corr(); 	// qb
 	params[3] /= TMath::TwoPi(); 							// qb/2pi
 	
 	//for( unsigned int i = 0; i < 4; ++i )
@@ -1178,7 +1314,7 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	while( TMath::Abs( ( z - z_prev ) / z ) > 0.00001 && iter < 50 ) {
 
 		// Calculate the lab angle from z position (Butler method)
-		alpha  = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
+		alpha  = (double)Ejectile.GetZ() * GetField_corr(); 	// qb
 		alpha /= TMath::TwoPi(); 							// qb/2pi
 		alpha *= z;											// * z
 		alpha /= Ejectile.GetMomentumLab();					// over p
@@ -1242,12 +1378,12 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 
 #ifdef butler_algorithm
 	// Calculate the lab angle from z position (Butler method)
-	alpha  = (float)Ejectile.GetZ() * GetField_corr(); 	// qb
+	alpha  = (double)Ejectile.GetZ() * GetField_corr(); 	// qb
 	alpha /= TMath::TwoPi(); 							// qb/2pi
 	alpha *= z;											// * z
 	alpha /= Ejectile.GetMomentumLab();					// over p
 	alpha  = TMath::ASin( alpha );
-	theta_lab = alpha;
+	double theta_lab = alpha;
 	if( z_meas < 0 ) theta_lab += TMath::PiOver2();
 	Ejectile.SetThetaLab( theta_lab );
 #else

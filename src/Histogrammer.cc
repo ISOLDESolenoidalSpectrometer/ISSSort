@@ -1500,12 +1500,191 @@ void ISSHistogrammer::SetInputFile( std::string input_file_name ) {
 	
 }
 
+void ISSHistogrammer::SetPace4File( std::vector<std::string> input_file_names ) {
+	
+	/// Overloaded function for a single file or multiple files
+	TTree *pace4tree = new TTree( "evt_tree", "evt_tree" );
+	input_tree = (TChain*)pace4tree;
+	read_evts = new ISSEvts;
+	input_tree->Branch( "ISSEvts", "ISSEvts", &read_evts );
+	
+	for( unsigned int i = 0; i < input_file_names.size(); i++ ) {
+		
+		ReadPace4File( input_file_names[i] );
+		
+	}
+
+	return;
+	
+}
+
+void ISSHistogrammer::SetPace4File( std::string input_file_name ) {
+	
+	/// Overloaded function for a single file or multiple files
+	TTree *pace4tree = new TTree( "evt_tree", "evt_tree" );
+	input_tree = (TChain*)pace4tree;
+	read_evts = new ISSEvts;
+	input_tree->Branch( "ISSEvts", "ISSEvts", &read_evts );
+	
+	ReadPace4File( input_file_name );
+	
+	return;
+	
+}
+
 void ISSHistogrammer::SetInputTree( TTree *user_tree ){
 	
 	// Find the tree and set branch addresses
 	input_tree = (TChain*)user_tree;
 	input_tree->SetBranchAddress( "ISSEvts", &read_evts );
 	
+	return;
+	
+}
+
+void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
+	
+	// Get a copy of the reaction stuff
+	// TODO: Make sure this is done inside the loop to get accurate energy losses
+	ISSReaction pace4react( *react );
+	
+	// Need some array event objects for later
+	array_evt = std::make_unique<ISSArrayEvt>();
+	arrayp_evt = std::make_unique<ISSArrayPEvt>();
+
+	// Random generator
+	TRandom3 rand;
+	
+	// Open the file
+	std::ifstream pace4file;
+	pace4file.open( input_file_name );
+	
+	// Check it is open
+	if( !pace4file.is_open() ) {
+		
+		std::cout << "Couldn't open PACE4 file: " << input_file_name << std::endl;
+		return;
+		
+	}
+	
+	// Read data on each line of the file
+	std::string line;
+	std::stringstream line_ss;
+	double decay_mode, N_mode, N_All, chain, Z_f, N_f;
+	double Z_c, N_c, J_c, J_f, M_Jc, fiss_prob;
+	double Ex_i, Ex_f, Ep_lab, Ap_lab;
+	
+	// First two lines are headers
+	for( unsigned int i = 0; i < 2; i++ )
+		std::getline( pace4file, line );
+	
+	// The rest should be data
+	while( std::getline( pace4file, line ) && !pace4file.eof() ){
+		
+		// Clear the old data
+		read_evts->ClearEvt();
+
+		// Skip over really short lines
+		if( line.length() < 10 ) continue;
+
+		// Read in data
+		line_ss.clear();
+		line_ss.str("");
+		line_ss << line;
+		line_ss >> decay_mode >> N_mode >> N_All >> chain;
+		line_ss >> Z_f >> N_f >> Z_c >> N_c >> J_c >> J_f;
+		line_ss >> M_Jc >> fiss_prob >> Ex_i >> Ex_f >> Ep_lab >> Ap_lab;
+		
+		// sensible results?
+		if( Ep_lab < 0 || Ap_lab < 0 || decay_mode <= 0 || decay_mode >= 4 )
+			continue;
+		
+		// Check for fission when Z_c is negative
+		if( Z_c < 0 ) continue;
+		
+		// Energy is in MeV, we need keV
+		Ep_lab *= 1e3;
+		
+		// Now randomise the energy in the 100 keV bin width of PACE4
+		Ep_lab += rand.Rndm() * 100. - 50.;
+		
+		// Angle is in degrees, we need radians
+		Ap_lab *= TMath::DegToRad();
+		
+		// particle ID is decay_mode
+		// 1: neutron
+		if( decay_mode == 1 ) {
+			
+			pace4react.GetEjectile()->SetZ(0);
+			pace4react.GetEjectile()->SetA(1);
+
+		}
+
+		// 2: proton
+		else if( decay_mode == 2 ) {
+			
+			pace4react.GetEjectile()->SetZ(1);
+			pace4react.GetEjectile()->SetA(1);
+
+		}
+		
+		// 3: alpha
+		else if( decay_mode == 3 ) {
+			
+			pace4react.GetEjectile()->SetZ(2);
+			pace4react.GetEjectile()->SetA(4);
+
+		}
+		
+		// Randomly generate the phi angle
+		double phi_lab = rand.Rndm() * TMath::TwoPi();
+		double phi_det = TMath::TwoPi() - phi_lab; // almost true
+		
+		// Simulate the particle emission and get the detected energy
+		double Edet = pace4react.SimulateEmission( Ep_lab, Ap_lab, phi_lab, 0 );
+		
+		// Important z values
+		double z_meas = pace4react.GetZmeasured();
+		double z0 = pace4react.GetArrayDistance();
+
+		// If we're not in the same hemisphere, forget it
+		if( z0 * z_meas < 0 ) continue;
+
+		// Shift the z in to the array reference
+		z_meas -= pace4react.GetArrayDistance();
+		if( z_meas < 0. ) z_meas = -1.0;
+
+		// Find out where we hit the array
+		int mod = array_evt->FindModule( phi_det );
+		int row = array_evt->FindRow( z_meas );
+		int pid = array_evt->FindPID( z_meas );
+		int nid = array_evt->FindNID( phi_det );
+		
+		// Create an array event assuming that it hits it
+		if( mod >= 0 && row >= 0 && pid >= 0 && nid >= 0 ){
+			
+			std::cout << "Ep_lab = " << Ep_lab;
+			std::cout << ", Ep_det = " << Edet;
+			std::cout << ", theta_lab = " << Ap_lab;
+			std::cout << ", z_meas = " << pace4react.GetZmeasured();
+			std::cout << ", mod = " << (int)mod << ", row = " << (int)row;
+			std::cout << ", pid = " << (int)pid << ", nid = " << (int)nid;
+			std::cout << std::endl;
+			
+			array_evt->SetEvent( Edet, Edet, pid, nid, 1e6, 1e6, true, true, mod, row );
+			arrayp_evt->SetEvent( Edet, Edet, pid, nid, 1e6, 1e6, true, true, mod, row );
+			read_evts->AddEvt( array_evt );
+			read_evts->AddEvt( arrayp_evt );
+
+			// Fill the tree
+			input_tree->Fill();
+		
+		}
+			
+	}
+	
+	// Close file and return
+	pace4file.close();
 	return;
 	
 }

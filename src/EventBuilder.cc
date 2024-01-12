@@ -968,7 +968,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				write_evts->SetEBIS( ebis_prev );
 				write_evts->SetT1( t1_prev );
 				write_evts->SetSC( sc_prev );
-				if( TMath::Abs( ebis_prev - laser_prev ) < 1e3
+				if( TMath::Abs( (double)ebis_prev - (double)laser_prev ) < 1e3
 					&& laser_prev > 0 ) write_evts->SetLaserStatus( true );
 				else
 					write_evts->SetLaserStatus( false );

@@ -166,6 +166,7 @@ public:
 	
 	// setup functions
 	ISSReaction( std::string filename, ISSSettings *myset, bool source );///< Constructor
+	ISSReaction( ISSReaction &t ); ///< Copy constructor
 	virtual ~ISSReaction();///< Destructor
 	
 	// Main functions
@@ -184,7 +185,8 @@ public:
 	// This is the function called event-by-event
 	void	MakeReaction( TVector3 vec, double en );///< Called event-by-event for transfer reactions
 	void	SimulateReaction( TVector3 vec );///< Setup your particles, then call this with the ejectile detection position
-	float	SimulateDecay( TVector3 vec, double en, int detector = 0 );///< Called during the autocalibration process with alphas
+	double	SimulateDecay( TVector3 vec, double en, int detector = 0 );///< Called during the autocalibration process with alphas
+	double	SimulateEmission( double en, double theta_lab, double phi_lab, int detector = 0 );///< Called during the simulation of particle emission
 
 	// Getters
 	inline double GetField(){ return Mfield; };///< Getter for the magnetic field strength
@@ -198,6 +200,9 @@ public:
 	inline double GetThetaCM(){ return Recoil.GetThetaCM(); };///< Getter for the CM angle of the recoil/ejectile
 	inline double GetDistance(){ return z; };///< Getter for the interaction point
 	inline double GetEx(){ return Recoil.GetEx(); };///< Getter for the excitation energy
+
+	inline double GetOffsetX(){ return x_offset; };
+	inline double GetOffsetY(){ return y_offset; };
 
 	inline double GetEBISOnTime(){ return EBIS_On; };///< Getter for the EBIS ON time
 	inline double GetEBISOffTime(){ return EBIS_Off; };///< Getter for the EBIS OFF time
@@ -279,6 +284,7 @@ public:
 	void CalculatePulseHeightCorrection( std::string isotope ); ///< This function generates all neccessary pulse-height correction plots
 
 	// Get cuts
+	inline unsigned int GetNumberOfRecoilCuts(){ return nrecoilcuts; };///< Getter for the number of recoil cuts
 	inline TCutG* GetRecoilCut( unsigned int i ){
 		if( i < nrecoilcuts ) return recoil_cut.at(i);
 		else return nullptr;
@@ -293,8 +299,19 @@ public:
 
 	// It's a source only measurement
 	inline void SourceOnly(){ flag_source = true; };///< Flags the measurement as source only
-
+	inline bool IsSource(){ return flag_source; };
 	
+	// Get filename and other copy stuff
+	inline std::string GetFileName(){ return fInputFile; };
+	inline ISSSettings* GetSettings(){ return set; };
+	inline std::map< std::string, double > GetMassTables(){ return ame_be; };
+	
+	// Copiers for the particles
+	inline ISSParticle CopyBeam(){ return Beam; };
+	inline ISSParticle CopyTarget(){ return Target; };
+	inline ISSParticle CopyEjectile(){ return Ejectile; };
+	inline ISSParticle CopyRecoil(){ return Recoil; };
+
 	// Getters for the particles
 	inline ISSParticle* GetBeam(){ return &Beam; };
 	inline ISSParticle* GetTarget(){ return &Target; };
@@ -336,7 +353,6 @@ private:
 	double e3_cm;				///< Total energy of ejectile in centre of mass
 	double Ex;					///< Excitation energy of recoil
 	double theta_cm;			///< CM angle for ejectile/recoil
-	double theta_lab;			///< Theta lab (not used currently)
 	double alpha;				///< An angle used for calculating ThetaCM and Ex
 
 	// EBIS time windows
@@ -351,7 +367,7 @@ private:
 	// Coincidence windows
 	double array_recoil_prompt[2]; ///< Prompt time windows between recoil and array event
 	double array_recoil_random[2]; ///< Prompt time window between recoil and array event
-	float array_recoil_ratio; // fill ratios
+	double array_recoil_ratio; // fill ratios
 
 	// Experimental info on the ejectile
 	double r_meas;		///< Measured radius of the ejectile when it interects the array
