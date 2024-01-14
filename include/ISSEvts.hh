@@ -54,6 +54,10 @@ public:
 	char	FindNID( double phi );
 	char	FindModule( double phi );
 	char	FindRow( double z );
+	char	FindModule( unsigned short detNo );
+	char	FindRow( unsigned short detNo );
+	char	FindAsicP( unsigned short detNo );
+	char	FindAsicN( unsigned short detNo );
 
 
 private:

@@ -1,6 +1,6 @@
 #include "Converter.hh"
 
-ISSConverter::ISSConverter( ISSSettings *myset ) {
+ISSConverter::ISSConverter( std::shared_ptr<ISSSettings> myset ) {
 
 	// We need to do initialise, but only after Settings are added
 	set = myset;

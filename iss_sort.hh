@@ -9,7 +9,7 @@
 
 // C++ include.
 #include <iostream>
-#include <stdio.h>
+//#include <cstdio>
 #include <string>
 #include <vector>
 #include <sstream>
@@ -73,21 +73,21 @@ bool flag_monitor = false;
 int mon_time = -1; // update time in seconds
 
 // Settings file
-ISSSettings *myset;
+std::shared_ptr<ISSSettings> myset;
 
 // Calibration file
-ISSCalibration *mycal;
+std::shared_ptr<ISSCalibration> mycal;
 bool overwrite_cal = false;
 
 // Reaction file
-ISSReaction *myreact;
+std::shared_ptr<ISSReaction> myreact;
 
 // Struct for passing to the thread
 typedef struct thptr {
 	
-	ISSCalibration *mycal;
-	ISSSettings *myset;
-	ISSReaction *myreact;
+	std::shared_ptr<ISSCalibration> mycal;
+	std::shared_ptr<ISSSettings> myset;
+	std::shared_ptr<ISSReaction> myreact;
 	
 } thread_data;
 

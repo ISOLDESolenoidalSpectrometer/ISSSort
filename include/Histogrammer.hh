@@ -46,7 +46,7 @@ class ISSHistogrammer {
 	
 public:
 
-	ISSHistogrammer( ISSReaction *myreact, ISSSettings *myset );
+	ISSHistogrammer( std::shared_ptr<ISSReaction> myreact, std::shared_ptr<ISSSettings> myset );
 	virtual ~ISSHistogrammer(){};
 	
 	void MakeHists();
@@ -68,7 +68,7 @@ public:
 	inline void CloseOutput(){
 		PurgeOutput();
 		output_file->Close();
-		input_tree->ResetBranchAddresses();
+		//input_tree->ResetBranchAddresses();
 	};
 	inline void PurgeOutput(){ output_file->Purge(2); }
 
@@ -177,14 +177,14 @@ public:
 private:
 	
 	// Reaction
-	ISSReaction *react;
+	std::shared_ptr<ISSReaction> react;
 	
 	// Settings file
-	ISSSettings *set;
+	std::shared_ptr<ISSSettings> set;
 	
 	/// Input tree
 	TChain *input_tree;
-	ISSEvts *read_evts = 0;
+	ISSEvts *read_evts = nullptr;
 	std::shared_ptr<ISSArrayEvt> array_evt;
 	std::shared_ptr<ISSArrayPEvt> arrayp_evt;
 	std::shared_ptr<ISSRecoilEvt> recoil_evt;

@@ -87,7 +87,7 @@ class ISSAutoCalibrator {
 	
 public:
 
-	ISSAutoCalibrator( ISSSettings *myset, ISSReaction *myreact, const std::string& autocal_file ); ///< Constructor
+	ISSAutoCalibrator( std::shared_ptr<ISSSettings> myset, std::shared_ptr<ISSReaction> myreact, const std::string& autocal_file ); ///< Constructor
 	virtual ~ISSAutoCalibrator(){}; ///< Destructor (currently empty)
 	
 	void ReadAutocalSettings(); ///< Read the autocal settings from the input file
@@ -104,7 +104,7 @@ public:
 	void CalibrateChannel( std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac ) const; ///< Communicates with the ISSCalibration object to produce a calibration file
 	void SaveCalFile( const std::string& name_results_file ); ///< Saves the calibration to a file
 
-	inline void AddCalibration( ISSCalibration *mycal ){
+	inline void AddCalibration( std::shared_ptr<ISSCalibration> mycal ){
 		cal = mycal;
 	}; ///< Assigns the calibration pointer in the ISSAutoCalibrator object
 
@@ -127,13 +127,13 @@ private:
 	std::unique_ptr<TFile> output_file; ///< The output file resulting from the hadd process of all the input files to iss_sort
 		
 	// Settings file
-	ISSSettings *set; ///< Pointer to the settings object
+	std::shared_ptr<ISSSettings> set; ///< Pointer to the settings object
 
 	// Calibration
-	ISSCalibration *cal; ///< Pointer to the calibration object
+	std::shared_ptr<ISSCalibration> cal; ///< Pointer to the calibration object
 
 	// Reaction information
-	ISSReaction *react; ///< Pointer to the reaction object
+	std::shared_ptr<ISSReaction> react; ///< Pointer to the reaction object
 
 	// Progress bar
 	bool _prog_;							///< True if the GUI is being used

@@ -165,7 +165,7 @@ class ISSReaction {
 public:
 	
 	// setup functions
-	ISSReaction( std::string filename, ISSSettings *myset, bool source );///< Constructor
+	ISSReaction( std::string filename, std::shared_ptr<ISSSettings> myset, bool source );///< Constructor
 	ISSReaction( ISSReaction &t ); ///< Copy constructor
 	virtual ~ISSReaction();///< Destructor
 	
@@ -285,14 +285,14 @@ public:
 
 	// Get cuts
 	inline unsigned int GetNumberOfRecoilCuts(){ return nrecoilcuts; };///< Getter for the number of recoil cuts
-	inline TCutG* GetRecoilCut( unsigned int i ){
+	inline std::shared_ptr<TCutG> GetRecoilCut( unsigned int i ){
 		if( i < nrecoilcuts ) return recoil_cut.at(i);
 		else return nullptr;
 	};///< Getter for particular recoil cuts
 	
 	// Get cuts
 	inline unsigned int GetNumberOfEvsZCuts(){ return nevszcuts; };///< Getter for the number of E vs z cuts
-	inline TCutG* GetEvsZCut( unsigned int i ){
+	inline std::shared_ptr<TCutG> GetEvsZCut( unsigned int i ){
 		if( i < nevszcuts ) return e_vs_z_cut.at(i);
 		else return nullptr;
 	};///< Returns a particular cut applied to the E vs z plot
@@ -303,9 +303,21 @@ public:
 	
 	// Get filename and other copy stuff
 	inline std::string GetFileName(){ return fInputFile; };
-	inline ISSSettings* GetSettings(){ return set; };
+	inline std::shared_ptr<ISSSettings> GetSettings(){ return set; };
 	inline std::map< std::string, double > GetMassTables(){ return ame_be; };
-	
+	inline std::shared_ptr<TF1> GetMinimisationFunction(){
+		return fa;
+	};
+	inline std::shared_ptr<TF1> GetMinimisationDerivative(){
+		return fb;
+	};
+	inline std::shared_ptr<TF1> GetSimulationFunction(){
+		return fsim;
+	};
+	inline std::shared_ptr<TF1> GetSimulationDerivative(){
+		return dsim;
+	};
+
 	// Copiers for the particles
 	inline ISSParticle CopyBeam(){ return Beam; };
 	inline ISSParticle CopyTarget(){ return Target; };
@@ -323,7 +335,7 @@ private:
 	std::string fInputFile;///< The directory location of the input reaction file
 	
 	// Settings file
-	ISSSettings *set;///< Pointer to the ISSSettings object
+	std::shared_ptr<ISSSettings> set;///< Smart pointer to the ISSSettings object
 	
 	// Mass tables
 	std::map< std::string, double > ame_be;///< List of binding energies from AME2020
@@ -345,10 +357,10 @@ private:
 	// Stuff for the Ex calculation
 	std::unique_ptr<ROOT::Math::RootFinder> rf;		///< Pointer to a root finder object
 	std::unique_ptr<ROOT::Math::RootFinder> rfsim;	///< Pointer to a root finder object for the simulation of the reaction
-	std::unique_ptr<TF1> fa;	///< Pointer to the minimisation function
-	std::unique_ptr<TF1> fb;	///< Pointer to the derivative of the minimisation function
-	std::unique_ptr<TF1> fsim;	///< Pointer to the minimisation function for the simulation of the reaction
-	std::unique_ptr<TF1> dsim;	///< Pointer to the derivative of the minimisation function for the simulation of the reaction
+	std::shared_ptr<TF1> fa;	///< Pointer to the minimisation function
+	std::shared_ptr<TF1> fb;	///< Pointer to the derivative of the minimisation function
+	std::shared_ptr<TF1> fsim;	///< Pointer to the minimisation function for the simulation of the reaction
+	std::shared_ptr<TF1> dsim;	///< Pointer to the derivative of the minimisation function for the simulation of the reaction
 	double params[9];			///< Array for holding parameters for the functions
 	double e3_cm;				///< Total energy of ejectile in centre of mass
 	double Ex;					///< Excitation energy of recoil
@@ -394,8 +406,8 @@ private:
 	std::vector<std::string> evszcutname;		///< The names of the E vs z cuts
 	TFile *recoil_file;							///< Pointer for opening the recoil cut files (??? could this be a local variable)
 	TFile *e_vs_z_file;							///< Pointer for the E vs z cut file names (??? could this be a local variable)
-	std::vector<TCutG*> recoil_cut;				///< Vector containing the recoil cuts
-	std::vector<TCutG*> e_vs_z_cut;				///< Vector containing the E vs z cuts
+	std::vector<std::shared_ptr<TCutG>> recoil_cut;				///< Vector containing the recoil cuts
+	std::vector<std::shared_ptr<TCutG>> e_vs_z_cut;				///< Vector containing the E vs z cuts
 
 	// Stopping powers
 	std::vector<std::unique_ptr<TGraph>> gStopping;	///< Vector of pointer to relevant stopping-power TGraphs relevant to the reaction of study

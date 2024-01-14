@@ -171,7 +171,7 @@ double theta_cm_derivative( double *x, double *params ){
 /// \param[in] filename A string holding the name of the reaction file
 /// \param[in] myset A pointer to the ISSSettings object
 /// \param[in] source A boolean to check if this run is a source run
-ISSReaction::ISSReaction( std::string filename, ISSSettings *myset, bool source ){
+ISSReaction::ISSReaction( std::string filename, std::shared_ptr<ISSSettings> myset, bool source ){
 		
 	// Setup the ROOT finder algorithms
 #ifdef butler_algorithm
@@ -180,18 +180,18 @@ ISSReaction::ISSReaction( std::string filename, ISSSettings *myset, bool source 
 	double upp_limit = z0;
 	if( z0 < 0.0 ) low_limit -= 600.0;
 	else upp_limit += 600.0;
-	fa = std::make_unique<TF1>( "butler_function",   butler_function,   low_limit, upp_limit, 4 );
-	fb = std::make_unique<TF1>( "butler_derivative", butler_derivative, low_limit, upp_limit, 4 );
+	fa = std::make_shared<TF1>( "butler_function",   butler_function,   low_limit, upp_limit, 4 );
+	fb = std::make_shared<TF1>( "butler_derivative", butler_derivative, low_limit, upp_limit, 4 );
 #else
 	// Root finder algorithm - for alpha like Ryan Tang does
-	fa = std::make_unique<TF1>( "alpha_function",   alpha_function,   0.0, TMath::PiOver2(), 4 );
-	fb = std::make_unique<TF1>( "alpha_derivative", alpha_derivative, 0.0, TMath::PiOver2(), 4 );
+	fa = std::make_shared<TF1>( "alpha_function",   alpha_function,   0.0, TMath::PiOver2(), 4 );
+	fb = std::make_shared<TF1>( "alpha_derivative", alpha_derivative, 0.0, TMath::PiOver2(), 4 );
 #endif
 	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
 
 	// Root finder for the simulation function
-	fsim = std::make_unique<TF1>( "theta_cm_function",   theta_cm_function,   0.0, TMath::Pi(), 9 );
-	dsim = std::make_unique<TF1>( "theta_cm_derivative", theta_cm_derivative, 0.0, TMath::Pi(), 9 );
+	fsim = std::make_shared<TF1>( "theta_cm_function",   theta_cm_function,   0.0, TMath::Pi(), 9 );
+	dsim = std::make_shared<TF1>( "theta_cm_derivative", theta_cm_derivative, 0.0, TMath::Pi(), 9 );
 	rfsim = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
 
 
@@ -212,9 +212,9 @@ ISSReaction::ISSReaction( std::string filename, ISSSettings *myset, bool source 
 /// ISS Copy constructor
 ISSReaction::ISSReaction( ISSReaction &t ){
 
-	set = new ISSSettings( *t.GetSettings() );
+	set = t.GetSettings();
 	
-	fInputFile = t.GetFileName();
+	SetFile( t.GetFileName() );
 	
 	Beam = t.CopyBeam();
 	Target = t.CopyTarget();
@@ -244,12 +244,15 @@ ISSReaction::ISSReaction( ISSReaction &t ){
 	
 	flag_source = t.IsSource();
 	
-	// Copy the cuts
-	for( unsigned int i = 0; i < t.GetNumberOfRecoilCuts(); ++i )
-		recoil_cut.push_back( (TCutG*)(t.GetRecoilCut(i)->Clone()) );
+	nrecoilcuts = t.GetNumberOfRecoilCuts();
+	nevszcuts = t.GetNumberOfEvsZCuts();
 	
-	for( unsigned int i = 0; i < t.GetNumberOfEvsZCuts(); ++i )
-		e_vs_z_cut.push_back( (TCutG*)(t.GetEvsZCut(i)->Clone()) );
+	// Copy the cuts
+	for( unsigned int i = 0; i < nrecoilcuts; ++i )
+		recoil_cut.push_back( t.GetRecoilCut(i) );
+	
+	for( unsigned int i = 0; i < nevszcuts; ++i )
+		e_vs_z_cut.push_back( t.GetEvsZCut(i) );
 
 	
 	// Get the stopping powers in TGraphs
@@ -276,8 +279,20 @@ ISSReaction::ISSReaction( ISSReaction &t ){
 	gPHC_inv = std::make_unique<TGraph>();
 	CalculatePulseHeightCorrection( Ejectile.GetIsotope() );
 
+	fa = t.GetMinimisationFunction();
+	fb = t.GetMinimisationDerivative();
+	fsim = t.GetSimulationFunction();
+	dsim = t.GetSimulationDerivative();
+	
+	// Root finder for the simulation function
+	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
+	rfsim = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
+	fsim = std::make_unique<TF1>( "theta_cm_function",   theta_cm_function,   0.0, TMath::Pi(), 9 );
+	dsim = std::make_unique<TF1>( "theta_cm_derivative", theta_cm_derivative, 0.0, TMath::Pi(), 9 );
+
 	// TODO: copy the time gates
 	
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -285,10 +300,13 @@ ISSReaction::ISSReaction( ISSReaction &t ){
 /// them.
 ISSReaction::~ISSReaction(){
 
-	for( unsigned int i = 0; i < recoil_cut.size(); ++i )
-		delete (recoil_cut[i]);
-	recoil_cut.clear();
-	//recoil_file->Close();
+	//for( unsigned int i = 0; i < recoil_cut.size(); ++i )
+	//	delete (recoil_cut[i]);
+	//recoil_cut.clear();
+
+	//for( unsigned int i = 0; i < e_vs_z_cut.size(); ++i )
+	//	delete (e_vs_z_cut[i]);
+	//e_vs_z_cut.clear();
 
 }
 
@@ -478,7 +496,7 @@ void ISSReaction::ReadReaction() {
 				if( !recoil_file->GetListOfKeys()->Contains( recoilcutname.at(i).data() ) )
 					std::cout << "Couldn't find " << recoilcutname.at(i) << " in " << recoilcutfile.at(i) << std::endl;
 				else
-					recoil_cut.at(i) = (TCutG*)recoil_file->Get( recoilcutname.at(i).data() )->Clone();
+					recoil_cut.at(i) = std::make_shared<TCutG>( *(TCutG*)recoil_file->Get( recoilcutname.at(i).data() )->Clone() );
 
 			}
 			
@@ -487,7 +505,7 @@ void ISSReaction::ReadReaction() {
 		}
 		
 		// Assign an empty cut file if none is given, so the code doesn't crash
-		if( !recoil_cut.at(i) ) recoil_cut.at(i) = new TCutG();
+		if( !recoil_cut.at(i) ) recoil_cut.at(i) = std::make_shared<TCutG>();
 	
 	}
 	
@@ -513,7 +531,7 @@ void ISSReaction::ReadReaction() {
 				if( !e_vs_z_file->GetListOfKeys()->Contains( evszcutname.at(i).data() ) )
 					std::cout << "Couldn't find " << evszcutname.at(i) << " in " << evszcutfile.at(i) << std::endl;
 				else
-					e_vs_z_cut.at(i) = (TCutG*)e_vs_z_file->Get( evszcutname.at(i).data() )->Clone();
+					e_vs_z_cut.at(i) = std::make_shared<TCutG>( *(TCutG*)e_vs_z_file->Get( evszcutname.at(i).data() )->Clone() );
 
 			}
 			
@@ -522,7 +540,7 @@ void ISSReaction::ReadReaction() {
 		}
 		
 		// Assign an empty cut file if none is given, so the code doesn't crash
-		if( !e_vs_z_cut.at(i) ) e_vs_z_cut.at(i) = new TCutG();
+		if( !e_vs_z_cut.at(i) ) e_vs_z_cut.at(i) = std::make_shared<TCutG>();
 	
 	}
 	

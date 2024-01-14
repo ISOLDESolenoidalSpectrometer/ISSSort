@@ -57,7 +57,7 @@ double walk_derivative( double *x, double *params ){
 /// \param[in] filename String containing the directory location of the input 
 /// calibration file
 /// \param[in] myset Pointer to the ISSSettings object
-ISSCalibration::ISSCalibration( std::string filename, ISSSettings *myset ) {
+ISSCalibration::ISSCalibration( std::string filename, std::shared_ptr<ISSSettings> myset ) {
 
 	SetFile( filename );
 	set = myset;

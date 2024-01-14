@@ -2,7 +2,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// This constructs the event-builder object, setting parameters for this process by grabbing information from the settings file (or using default parameters defined in the constructor)
 /// \param[in] myset The ISSSettings object which is constructed by the ISSSettings constructor used in iss_sort.cc
-ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
+ISSEventBuilder::ISSEventBuilder( std::shared_ptr<ISSSettings> myset ){
 	
 	// First get the settings
 	set = myset;
@@ -116,10 +116,12 @@ ISSEventBuilder::ISSEventBuilder( ISSSettings *myset ){
 			}
 			
 			// n-side and p-side: empty channels -> set to -1; set array_row to 0
-			else{
-				array_nid[i].push_back(-1);
+			else {
+				
+				array_nid[i].push_back( -1 );
 				array_pid[i].push_back( -1 );
 				array_row.at(i).push_back( 0 );	// N.B. these should only be for unused channels for the n-sides, but this is an actual row number so could run into problems down the line...
+	
 			}
 	
 		}
@@ -234,12 +236,51 @@ void ISSEventBuilder::SetInputTree( TTree *user_tree ){
 	
 	// Find the tree and set branch addresses
 	input_tree = user_tree;
-	in_data = nullptr;
 	input_tree->SetBranchAddress( "data", &in_data );
 
 	return;
 	
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/// This reads in the NPTool simulation data and creates
+/// \param [in] input_file_name The ROOT file containing the TIssData tree from NPTool
+void ISSEventBuilder::SetNPToolFile( std::string input_file_name ) {
+	
+	// Open Simulation Root input file from NPTool.
+	input_file = new TFile( input_file_name.data(), "read" );
+	if( input_file->IsZombie() ) {
+		
+		std::cout << "Cannot open " << input_file_name << std::endl;
+		return;
+		
+	}
+	
+	flag_input_file = true;
+	flag_nptool = true;
+
+	// Set the input tree
+	SetNPToolTree( (TTree*)input_file->Get("SimulatedTree") );
+	StartFile();
+
+	return;
+	
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Sets the nptool_tree to the parameter user_tree, sets the branch address
+/// \param [in] user_tree The name of the tree in the ROOT file containing the NPTool simulation events
+void ISSEventBuilder::SetNPToolTree( TTree *user_tree ){
+	
+	// Find the tree and set branch addresses
+	nptool_tree = user_tree;
+	nptool_tree->SetBranchAddress( "ISS", &sim_data );
+
+	return;
+	
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Constructs a number of objects for storing measurements from different detectors, that can then be wrapped up into physics events. Also creates an output file and output tree, and calls the ISSEventBuilder::MakeHists function
@@ -1087,6 +1128,179 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	return n_entries;
 	
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/// This loops over all events found in the input NPTool simualtion file and wraps them up and stores them in the output file
+/// \return The number of entries in the tree that have been sorted (=0 if there is an error)
+unsigned long ISSEventBuilder::BuildSimulatedEvents() {
+	
+	/// Function to loop over the sort tree and build array and recoil events
+
+	if( nptool_tree->LoadTree(0) < 0 ){
+		
+		std::cout << " Event Building with NPTool data: nothing to do" << std::endl;
+		return 0;
+		
+	}
+	
+	// Get ready and go
+	Initialise();
+	n_entries = nptool_tree->GetEntries();
+
+	std::cout << " Event Building with NPTool data: number of entries in input tree = ";
+	std::cout << n_entries << std::endl;
+	
+	// ------------------------------------------------------------------------ //
+	// Main loop over TTree to find events
+	// ------------------------------------------------------------------------ //
+	for( unsigned long i = 0; i < n_entries; ++i ) {
+
+		// Current event data
+		nptool_tree->GetEntry(i);
+
+		// ------------------------------------------- //
+		// Find particles on the front strips of array //
+		// ------------------------------------------- //
+		for( unsigned int j = 0; j < sim_data->GetMultiplicityFront(); j++ ){
+			
+			mymod = array_evt->FindModule( sim_data->GetFront_DetectorNbr(j) );
+			myrow = array_evt->FindRow( sim_data->GetFront_DetectorNbr(j) );
+			myasic = array_evt->FindAsicP( sim_data->GetFront_DetectorNbr(j) );
+			mystrip = 128 - sim_data->GetFront_StripNbr(j);
+			myenergy = sim_data->GetFront_Energy(j);
+			mytime = sim_data->GetFront_Time(j);
+			myhitbit = 1;
+			
+			// If it's below zero in energy, consider it below threshold
+			// Only use if it is an event from a detector
+			if( myenergy < 0 || mystrip < 0 ) continue;
+			
+			pen_list.push_back( myenergy );
+			ptd_list.push_back( mytime );
+			pwalk_list.push_back( mytime );
+			pmod_list.push_back( mymod );
+			pid_list.push_back( mystrip );
+			prow_list.push_back( myrow );
+			phit_list.push_back( myhitbit );
+			
+			event_open = true; // real data open events (above threshold and from a strip)
+			hit_ctr++; // increase counter for bits of data included in this event
+			
+		} // j
+		
+		// ------------------------------------------ //
+		// Find particles on the back strips of array //
+		// ------------------------------------------ //
+		for( unsigned int j = 0; j < sim_data->GetMultiplicityBack(); j++ ){
+			
+			mymod = array_evt->FindModule( sim_data->GetBack_DetectorNbr(j) );
+			myrow = array_evt->FindRow( sim_data->GetBack_DetectorNbr(j) );
+			myasic = array_evt->FindAsicN( sim_data->GetBack_DetectorNbr(j) );
+			mystrip = 11 - sim_data->GetBack_StripNbr(j);
+			myenergy = sim_data->GetBack_Energy(j);
+			mytime = sim_data->GetBack_Time(j);
+			myhitbit = 1;
+			
+			// If it's below zero in energy, consider it below threshold
+			// Only use if it is an event from a detector
+			if( myenergy < 0 || mystrip < 0 ) continue;
+			
+			nen_list.push_back( myenergy );
+			ntd_list.push_back( mytime );
+			nwalk_list.push_back( mytime );
+			nmod_list.push_back( mymod );
+			nid_list.push_back( mystrip );
+			nrow_list.push_back( myrow );
+			nhit_list.push_back( myhitbit );
+			
+			event_open = true; // real data open events (above threshold and from a strip)
+			hit_ctr++; // increase counter for bits of data included in this event
+			
+		} // j
+		
+		// If we opened the event, then sort it out
+		if( event_open ) {
+
+			//----------------------------------
+			// Build array events, recoils, etc
+			//----------------------------------
+			ArrayFinder();		// add an ArrayEvt for each n/p pair
+			
+			// ------------------------------------
+			// Add timing and fill the ISSEvts tree
+			// ------------------------------------
+			
+			// Fill only if we have some physics events
+			if( write_evts->GetArrayMultiplicity() ||
+			   write_evts->GetArrayPMultiplicity() )
+				output_tree->Fill();
+			
+		}
+		
+		//--------------------------------------------------
+		// clear values of arrays to store intermediate info
+		//--------------------------------------------------
+		Initialise();
+		
+		// Progress bar
+		bool update_progress = false;
+		if( n_entries < 200 )
+			update_progress = true;
+		else if( i % (n_entries/100) == 0 || i+1 == n_entries )
+			update_progress = true;
+		
+		if( update_progress ) {
+			
+			// Percent complete
+			float percent = (float)(i+1)*100.0/(float)n_entries;
+			
+			// Progress bar in GUI
+			if( _prog_ ) {
+				
+				prog->SetPosition( percent );
+				gSystem->ProcessEvents();
+				
+			}
+			
+			// Progress bar in terminal
+			std::cout << " " << std::setw(6) << std::setprecision(4);
+			std::cout << percent << "%    \r";
+			std::cout.flush();
+			
+		}
+		
+		
+	} // End of main loop over TTree to process raw MIDAS data entries (for n_entries)
+	
+	//--------------------------
+	// Clean up
+	//--------------------------
+	std::stringstream ss_log;
+	ss_log << "\n ISSEventBuilder for NPTool data finished..." << std::endl;
+	ss_log << "   Array p/n-side correlated events = " << array_ctr << std::endl;
+	ss_log << "   Array p-side only events = " << arrayp_ctr << std::endl;
+	ss_log << "  Tree entries = " << output_tree->GetEntries() << std::endl;
+
+	std::cout << ss_log.str();
+	if( log_file.is_open() && flag_input_file ) log_file << ss_log.str();
+	
+	std::cout << " Writing output file...\r";
+	std::cout.flush();
+	
+	// Force the rest of the events in the buffer to disk
+	output_tree->FlushBaskets();
+	output_file->Write( 0, TObject::kWriteDelete );
+	
+	// Dump the input buffers
+	nptool_tree->DropBaskets();
+
+	std::cout << " Writing output file... Done!" << std::endl << std::endl;
+
+	return n_entries;
+	
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// This function processes a series of vectors that are populated in a given build window, and deals with the signals accordingly. This is currently done on a case-by-case basis i.e. each different number of p-side and n-side hits is dealt with in it's own section. Charge addback is implemented for neighbouring strips that fall within a prompt coincidence window defined by the user in the ISSSettings file.

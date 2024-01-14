@@ -467,22 +467,29 @@ void do_hist(){
 
 void do_nptool(){
 	
-	//------------------------------------------------------//
-	// Make some histograms from the NPTool simulation data //
-	//------------------------------------------------------//
-	ISSHistogrammer hist( myreact, myset );
-	std::cout << "\n +++ ISS Analysis:: processing Histogrammer with NPTool data +++" << std::endl;
-
+	//-----------------------//
+	// Physics event builder //
+	//-----------------------//
+	ISSEventBuilder eb( myset );
+	std::cout << "\n +++ ISS Analysis:: processing EventBuilder for NPTool data +++" << std::endl;
+	
+	TFile *rtest;
 	std::ifstream ftest;
 	std::string name_input_file;
+	std::string name_output_file;
 	
-	std::vector<std::string> name_hist_files;
-	
-	// We are going to chain all the event files now
+	// Do event builder for each file individually
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
-
+		
+		name_input_file = input_names.at(i).substr( input_names.at(i).find_last_of("/")+1,
+												   input_names.at(i).length() - input_names.at(i).find_last_of("/")-1 );
+		name_output_file = name_input_file.substr( 0,
+												  name_input_file.find_last_of(".") );
+		
+		name_output_file = datadir_name + "/" + name_output_file + "_events.root";
 		name_input_file = input_names.at(i);
-
+		
+		// Check if the input file exists
 		ftest.open( name_input_file.data() );
 		if( !ftest.is_open() ) {
 			
@@ -490,20 +497,49 @@ void do_nptool(){
 			continue;
 			
 		}
-		else ftest.close();
-
-		name_hist_files.push_back( name_input_file );
+		else {
+			
+			ftest.close();
+			
+		}
 		
-	}
-
-	// Only do something if there are valid files
-	if( name_hist_files.size() ) {
+		// We need to do event builder if there is a specific
+		// request to do so with either the -e or -f flag
+		if( flag_convert || flag_events )
+			force_events = true;
 		
-		hist.SetOutput( output_name );
-		hist.SetInputFile( name_hist_files );
-		hist.FillHists();
-		hist.CloseOutput();
-
+		// If it doesn't exist, we have to sort it anyway
+		else {
+			
+			ftest.open( name_output_file.data() );
+			if( !ftest.is_open() ) force_events = true;
+			else {
+				
+				ftest.close();
+				rtest = new TFile( name_output_file.data() );
+				if( rtest->IsZombie() ) force_events = true;
+				if( !force_events )
+					std::cout << name_output_file << " already built" << std::endl;
+				rtest->Close();
+				
+			}
+			
+		}
+		
+		if( force_events ) {
+			
+			std::cout << name_input_file << " --> ";
+			std::cout << name_output_file << std::endl;
+			
+			eb.SetNPToolFile( name_input_file );
+			eb.SetOutput( name_output_file );
+			eb.BuildSimulatedEvents();
+			eb.CloseOutput();
+			
+			force_events = false;
+			
+		}
+		
 	}
 	
 	return;
@@ -694,7 +730,7 @@ int main( int argc, char *argv[] ){
 	}
 	
 	// Check if we have real data, i.e. not simulation
-	if( !flag_pace4 && !flag_pace4 ) flag_data = true;
+	if( !flag_pace4 && !flag_nptool ) flag_data = true;
 	
 	
 	// Check if we should be monitoring the input
@@ -874,9 +910,9 @@ int main( int argc, char *argv[] ){
 
 	}
 	
-	myset = new ISSSettings( name_set_file );
-	mycal = new ISSCalibration( name_cal_file, myset );
-	myreact = new ISSReaction( name_react_file, myset, flag_source );
+	myset = std::make_shared<ISSSettings>( name_set_file );
+	mycal = std::make_shared<ISSCalibration>( name_cal_file, myset );
+	myreact = std::make_shared<ISSReaction>( name_react_file, myset, flag_source );
 
 	
 	//-------------------//
@@ -937,7 +973,12 @@ int main( int argc, char *argv[] ){
 	else if( flag_pace4 ) do_pace4();
 	
 	// Simulation analysis - NPTool
-	else if( flag_nptool ) do_nptool();
+	else if( flag_nptool ) {
+		
+		do_nptool();
+		do_hist();
+		
+	}
 	
 	std::cout << "\n\nFinished!\n";
 

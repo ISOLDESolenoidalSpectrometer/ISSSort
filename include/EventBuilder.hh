@@ -43,6 +43,11 @@
 # include "ISSEvts.hh"
 #endif
 
+// NPTtol Events tree
+#ifndef __ISSDATA__
+# include "TIssData.hh"
+#endif
+
 // Reaction header
 #ifndef __REACTION_HH
 # include "Reaction.hh"
@@ -70,12 +75,17 @@ class ISSEventBuilder {
 	
 public:
 	
-	ISSEventBuilder( ISSSettings *myset ); ///< Constructor
+	ISSEventBuilder( std::shared_ptr<ISSSettings> myset ); ///< Constructor
 	virtual ~ISSEventBuilder(){}; /// Destructor (currently empty)
 
-	void	SetInputFile( std::string input_file_name ); ///< Function to set the input file from which events are built
+	void	SetInputFile( std::string input_file_name ); ///< Function to set the input data file from which events are built
 	void	SetInputTree( TTree* user_tree ); ///< Grabs the input tree from the input file defined in ISSEventBuilder::SetInputFile
+
+	void	SetNPToolFile( std::string input_file_name ); ///< Function to set the input simulation file from which events are built
+	void	SetNPToolTree( TTree* user_tree ); ///< Grabs the TIssData tree from the NPTool simulation file
+
 	void	SetOutput( std::string output_file_name ); ///< Configures the output for the class
+
 	void	StartFile();	///< Called for every file
 	void	Initialise();	///< Called for every event
 	void	MakeHists(); ///< Creates histograms for events that occur
@@ -83,12 +93,13 @@ public:
 
 	/// Adds the calibration from the external calibration file to the class
 	/// \param[in] mycal The ISSCalibration object which is constructed by the ISSCalibration constructor used in iss_sort.cc
-	inline void AddCalibration( ISSCalibration *mycal ){
+	inline void AddCalibration( std::shared_ptr<ISSCalibration> mycal ){
 		cal = mycal;
 		overwrite_cal = true;
 	};
 	
 	unsigned long	BuildEvents(); ///< The heart of this class
+	unsigned long	BuildSimulatedEvents(); ///< The heart of this class
 
 	// Resolve multiplicities etc
 	void ArrayFinder(); ///< Processes all hits on the array that fall within the build window
@@ -105,9 +116,11 @@ public:
 		output_tree->ResetBranchAddresses();
 		PurgeOutput();
 		output_file->Close();
-		input_tree->ResetBranchAddresses();
+		//input_tree->ResetBranchAddresses();
+		//nptool_tree->ResetBranchAddresses();
 		input_file->Close();
-		delete in_data;
+		if( in_data != nullptr ) delete in_data;
+		if( sim_data != nullptr ) delete sim_data;
 		log_file.close(); //?? to close or not to close?
 	}; ///< Closes the output files from this class
 	inline void PurgeOutput(){ output_file->Purge(2); }
@@ -124,8 +137,10 @@ private:
 	
 	/// Input treze
 	TFile *input_file; ///< Pointer to the time-sorted input ROOT file
-	TTree *input_tree; ///< Pointer to the TTree in the input file
-	ISSDataPackets *in_data; ///< Pointer to the TBranch containing the data in the time-sorted input ROOT file
+	TTree *input_tree; ///< Pointer to the TTree in the data input file
+	TTree *nptool_tree; ///< Pointer to the TTree in the simulation input file
+	ISSDataPackets *in_data = nullptr; ///< Pointer to the TBranch containing the data in the time-sorted input ROOT file
+	TIssData *sim_data = nullptr; ///< Pointer to the TBranch containing the data in the NPTool input file
 	std::shared_ptr<ISSAsicData> asic_data; ///< Pointer to a given entry in the tree of some data from the ASICs
 	std::shared_ptr<ISSCaenData> caen_data; ///< Pointer to a given entry in the tree of some data from the CAEN
 	std::shared_ptr<ISSInfoData> info_data; ///< Pointer to a given entry in the tree of the "info" datatype
@@ -145,11 +160,11 @@ private:
 	std::unique_ptr<ISSEvts> write_evts; ///< Container for storing hits on all detectors in order to construct events
 	
 	// Do calibration
-	ISSCalibration *cal; ///< Pointer to an ISSCalibration object, used for accessing gain-matching parameters and thresholds
+	std::shared_ptr<ISSCalibration> cal; ///< Pointer to an ISSCalibration object, used for accessing gain-matching parameters and thresholds
 	bool overwrite_cal; ///< Boolean determining whether an energy calibration should be used (true) or not (false). Set in the ISSEventBuilder::AddCalibration function
 	
 	// Settings file
-	ISSSettings *set; ///< Pointer to the settings object. Assigned in constructor
+	std::shared_ptr<ISSSettings> set; ///< Pointer to the settings object. Assigned in constructor
 	
 	// Progress bar
 	bool _prog_; ///< Boolean determining if there is a progress bar (in the GUI)
@@ -160,6 +175,9 @@ private:
 	
 	// Flag to know we've opened a file on disk
 	bool flag_input_file;
+	
+	// Flag to know that we have simulation data from NPTool
+	bool flag_nptool = false;
 
 	// These things are in the settings file
 	long build_window;  ///< Length of build window in ns

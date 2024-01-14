@@ -522,8 +522,8 @@ void ISSGUI::gui_convert(){
 	//------------------------//
 	// Run conversion to ROOT //
 	//------------------------//
-	ISSConverter conv( myset.get() );
-	conv.AddCalibration( mycal.get() );
+	ISSConverter conv( myset );
+	conv.AddCalibration( mycal );
 	conv.AddProgressBar( prog_conv );
 	std::cout << "\n +++ ISS Analysis:: processing Converter +++" << std::endl;
 
@@ -625,7 +625,7 @@ void ISSGUI::gui_build(){
 	//-----------------------//
 	// Physics event builder //
 	//-----------------------//
-	ISSEventBuilder eb( myset.get() );
+	ISSEventBuilder eb( myset );
 	eb.AddProgressBar( prog_evnt );
 	std::cout << "\n +++ ISS Analysis:: processing EventBuilder +++" << std::endl;
 
@@ -641,7 +641,7 @@ void ISSGUI::gui_build(){
 	
 	// Update calibration file if given
 	if( mycal->InputFile() != "dummy" )
-		eb.AddCalibration( mycal.get() );
+		eb.AddCalibration( mycal );
 
 	// Do event builder for each file individually
 	for( unsigned int i = 0; i < filelist.size(); i++ ){
@@ -712,7 +712,7 @@ void ISSGUI::gui_hist(){
 	//------------------------------//
 	// Finally make some histograms //
 	//------------------------------//
-	ISSHistogrammer hist( myrea.get(), myset.get() );
+	ISSHistogrammer hist( myrea, myset );
 	hist.AddProgressBar( prog_hist );
 	std::cout << "\n +++ ISS Analysis:: processing Histogrammer +++" << std::endl;
 
@@ -762,9 +762,9 @@ void ISSGUI::gui_autocal(){
 	//-----------------------------------//
 	// Run automatic calibration routine //
 	//-----------------------------------//
-	ISSAutoCalibrator autocal( myset.get(), myrea.get(), "" ); // TODO implement autocal file here!
+	ISSAutoCalibrator autocal( myset, myrea, "" ); // TODO implement autocal file here!
 	autocal.AddProgressBar( prog_hist );
-	autocal.AddCalibration( mycal.get() );
+	autocal.AddCalibration( mycal );
 	std::cout << "\n +++ ISS Analysis:: processing AutoCalibration +++" << std::endl;
 
 	// Update everything
@@ -858,8 +858,8 @@ void ISSGUI::on_sort_clicked() {
 	if( flag_autocal ) flag_source = true;
 
 	myset = std::make_shared<ISSSettings>( name_set_file );
-	mycal = std::make_shared<ISSCalibration>( name_cal_file, myset.get() );
-	myrea = std::make_shared<ISSReaction>( name_rea_file, myset.get(), flag_source );
+	mycal = std::make_shared<ISSCalibration>( name_cal_file, myset );
+	myrea = std::make_shared<ISSReaction>( name_rea_file, myset, flag_source );
 	
 	//------------------//
 	// Run the analysis //

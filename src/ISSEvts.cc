@@ -265,6 +265,49 @@ TVector3 ISSArrayEvt::GetPosition(){
 	
 }
 
+char ISSArrayEvt::FindModule( unsigned short detNo ){
+	
+	/// Return the module number depending on the detector number from NPTool
+	if( detNo > 23 ) return -1;
+	return ( ( detNo - 1 ) % 8 ) / 2;
+	
+}
+
+char ISSArrayEvt::FindRow( unsigned short detNo ){
+	
+	/// Return the row number depending on the detector number from NPTool
+	if( detNo > 24 ) return -1;
+	else return 3 - ( detNo - 1 ) / 6;
+	
+}
+
+char ISSArrayEvt::FindAsicP( unsigned short detNo ){
+	
+	/// Return the p-side ASIC number depending on the detector number from NPTool
+	if( detNo > 24 ) return -1;
+
+	unsigned char row = FindRow( detNo );
+	unsigned char asic = row;
+	if( row > 0 ) asic++;
+	if( row > 3 ) asic++;
+
+	return asic;
+	
+}
+
+char ISSArrayEvt::FindAsicN( unsigned short detNo ){
+	
+	/// Return the n-side ASIC number depending on the detector number from NPTool
+	if( detNo > 24 ) return -1;
+
+	unsigned char row = FindRow( detNo );
+	unsigned char asic = 1;
+	if( row == 2 || row == 3 ) asic = 4;
+
+	return asic;
+	
+}
+
 char ISSArrayEvt::FindModule( double phi ){
 	
 	/// Return the module number depending on the phi angle

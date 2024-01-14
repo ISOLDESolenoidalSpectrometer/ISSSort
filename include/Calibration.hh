@@ -36,7 +36,7 @@ class ISSCalibration {
 
 public:
 
-	ISSCalibration( std::string filename, ISSSettings *myset );///< Constructor
+	ISSCalibration( std::string filename, std::shared_ptr<ISSSettings> myset );///< Constructor
 	/// Destructor
 	inline virtual ~ISSCalibration() {
 		delete fRand;
@@ -172,7 +172,7 @@ private:
 
 	std::string fInputFile;///< The location of the calibration input file
 	
-	ISSSettings *set;///< Pointer to the ISSSettings object
+	std::shared_ptr<ISSSettings> set;///< Pointer to the ISSSettings object
 	
 	TRandom *fRand;///< Used to eliminate binning issues
 

@@ -1,6 +1,6 @@
 #include "Histogrammer.hh"
 
-ISSHistogrammer::ISSHistogrammer( ISSReaction *myreact, ISSSettings *myset ){
+ISSHistogrammer::ISSHistogrammer( std::shared_ptr<ISSReaction> myreact, std::shared_ptr<ISSSettings> myset ){
 	
 	react = myreact;
 	set = myset;
@@ -1474,6 +1474,16 @@ unsigned long ISSHistogrammer::FillHists() {
 	
 }
 
+void ISSHistogrammer::SetInputTree( TTree *user_tree ){
+	
+	// Find the tree and set branch addresses
+	input_tree = (TChain*)user_tree;
+	input_tree->SetBranchAddress( "ISSEvts", &read_evts );
+	
+	return;
+	
+}
+
 void ISSHistogrammer::SetInputFile( std::vector<std::string> input_file_names ) {
 	
 	/// Overlaaded function for a single file or multiple files
@@ -1507,6 +1517,7 @@ void ISSHistogrammer::SetPace4File( std::vector<std::string> input_file_names ) 
 	input_tree = (TChain*)pace4tree;
 	read_evts = new ISSEvts;
 	input_tree->Branch( "ISSEvts", "ISSEvts", &read_evts );
+	input_tree->SetDirectory(0);
 	
 	for( unsigned int i = 0; i < input_file_names.size(); i++ ) {
 		
@@ -1525,18 +1536,9 @@ void ISSHistogrammer::SetPace4File( std::string input_file_name ) {
 	input_tree = (TChain*)pace4tree;
 	read_evts = new ISSEvts;
 	input_tree->Branch( "ISSEvts", "ISSEvts", &read_evts );
-	
-	ReadPace4File( input_file_name );
-	
-	return;
-	
-}
+	input_tree->SetDirectory(0);
 
-void ISSHistogrammer::SetInputTree( TTree *user_tree ){
-	
-	// Find the tree and set branch addresses
-	input_tree = (TChain*)user_tree;
-	input_tree->SetBranchAddress( "ISSEvts", &read_evts );
+	ReadPace4File( input_file_name );
 	
 	return;
 	
@@ -1546,7 +1548,12 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 	
 	// Get a copy of the reaction stuff
 	// TODO: Make sure this is done inside the loop to get accurate energy losses
-	ISSReaction pace4react( *react );
+	//ISSReaction pace4react( *react );
+	std::unique_ptr<ISSReaction> pace4react = std::make_unique<ISSReaction>( *react );
+
+	// Default reaction stuff
+	double z0 = pace4react->GetArrayDistance();
+
 	
 	// Need some array event objects for later
 	array_evt = std::make_unique<ISSArrayEvt>();
@@ -1615,24 +1622,24 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 		// 1: neutron
 		if( decay_mode == 1 ) {
 			
-			pace4react.GetEjectile()->SetZ(0);
-			pace4react.GetEjectile()->SetA(1);
+			pace4react->GetEjectile()->SetZ(0);
+			pace4react->GetEjectile()->SetA(1);
 
 		}
 
 		// 2: proton
 		else if( decay_mode == 2 ) {
 			
-			pace4react.GetEjectile()->SetZ(1);
-			pace4react.GetEjectile()->SetA(1);
+			pace4react->GetEjectile()->SetZ(1);
+			pace4react->GetEjectile()->SetA(1);
 
 		}
 		
 		// 3: alpha
 		else if( decay_mode == 3 ) {
 			
-			pace4react.GetEjectile()->SetZ(2);
-			pace4react.GetEjectile()->SetA(4);
+			pace4react->GetEjectile()->SetZ(2);
+			pace4react->GetEjectile()->SetA(4);
 
 		}
 		
@@ -1641,17 +1648,16 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 		double phi_det = TMath::TwoPi() - phi_lab; // almost true
 		
 		// Simulate the particle emission and get the detected energy
-		double Edet = pace4react.SimulateEmission( Ep_lab, Ap_lab, phi_lab, 0 );
+		double Edet = pace4react->SimulateEmission( Ep_lab, Ap_lab, phi_lab, 0 );
 		
 		// Important z values
-		double z_meas = pace4react.GetZmeasured();
-		double z0 = pace4react.GetArrayDistance();
+		double z_meas = pace4react->GetZmeasured();
 
 		// If we're not in the same hemisphere, forget it
 		if( z0 * z_meas < 0 ) continue;
 
 		// Shift the z in to the array reference
-		z_meas -= pace4react.GetArrayDistance();
+		z_meas -= z0;
 		if( z_meas < 0. ) z_meas = -1.0;
 
 		// Find out where we hit the array
