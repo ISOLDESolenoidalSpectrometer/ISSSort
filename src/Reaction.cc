@@ -180,20 +180,19 @@ ISSReaction::ISSReaction( std::string filename, std::shared_ptr<ISSSettings> mys
 	double upp_limit = z0;
 	if( z0 < 0.0 ) low_limit -= 600.0;
 	else upp_limit += 600.0;
-	fa = std::make_shared<TF1>( "butler_function",   butler_function,   low_limit, upp_limit, 4 );
-	fb = std::make_shared<TF1>( "butler_derivative", butler_derivative, low_limit, upp_limit, 4 );
+	fa = new TF1( "butler_function",   butler_function,   low_limit, upp_limit, 4 );
+	fb = new TF1( "butler_derivative", butler_derivative, low_limit, upp_limit, 4 );
 #else
 	// Root finder algorithm - for alpha like Ryan Tang does
-	fa = std::make_shared<TF1>( "alpha_function",   alpha_function,   0.0, TMath::PiOver2(), 4 );
-	fb = std::make_shared<TF1>( "alpha_derivative", alpha_derivative, 0.0, TMath::PiOver2(), 4 );
+	fa = new TF1( "alpha_function",   alpha_function,   0.0, TMath::PiOver2(), 4 );
+	fb = new TF1( "alpha_derivative", alpha_derivative, 0.0, TMath::PiOver2(), 4 );
 #endif
 	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
 
 	// Root finder for the simulation function
-	fsim = std::make_shared<TF1>( "theta_cm_function",   theta_cm_function,   0.0, TMath::Pi(), 9 );
-	dsim = std::make_shared<TF1>( "theta_cm_derivative", theta_cm_derivative, 0.0, TMath::Pi(), 9 );
+	fsim = new TF1( "theta_cm_function",   theta_cm_function,   0.0, TMath::Pi(), 9 );
+	dsim = new TF1( "theta_cm_derivative", theta_cm_derivative, 0.0, TMath::Pi(), 9 );
 	rfsim = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
-
 
 	// Read in mass tables
 	ReadMassTables();
@@ -210,105 +209,87 @@ ISSReaction::ISSReaction( std::string filename, std::shared_ptr<ISSSettings> mys
 
 ///////////////////////////////////////////////////////////////////////////////
 /// ISS Copy constructor
-ISSReaction::ISSReaction( ISSReaction &t ){
-
-	set = t.GetSettings();
-	
-	SetFile( t.GetFileName() );
-	
-	Beam = t.CopyBeam();
-	Target = t.CopyTarget();
-	Ejectile = t.CopyEjectile();
-	Recoil = t.CopyRecoil();
-	
-	ame_be = t.GetMassTables();
-	Mfield = t.GetField();
-	
-	z0 = t.GetArrayDistance();
-	deadlayer = t.GetArrayDeadlayer();
-	
-	elum_z = t.GetELUMDistance();
-	elum_rin = t.GetELUMInnerRadius();
-	elum_rout = t.GetELUMOuterRadius();
-	elum_deadlayer = t.GetELUMDeadlayer();
-	
-	EBIS_On = t.GetEBISOnTime();
-	EBIS_Off = t.GetEBISOffTime();
-	EBIS_ratio = t.GetEBISFillRatio();
-	
-	t1_min_time = t.GetT1MinTime();
-	t1_max_time = t.GetT1MaxTime();
-	
-	x_offset = t.GetOffsetX();
-	y_offset = t.GetOffsetY();
-	
-	flag_source = t.IsSource();
-	
-	nrecoilcuts = t.GetNumberOfRecoilCuts();
-	nevszcuts = t.GetNumberOfEvsZCuts();
-	
-	// Copy the cuts
-	for( unsigned int i = 0; i < nrecoilcuts; ++i )
-		recoil_cut.push_back( t.GetRecoilCut(i) );
-	
-	for( unsigned int i = 0; i < nevszcuts; ++i )
-		e_vs_z_cut.push_back( t.GetEvsZCut(i) );
-
-	
-	// Get the stopping powers in TGraphs
-	stopping = true;
-	for( unsigned int i = 0; i < 6; ++i ) {
-		gStopping.push_back( std::make_unique<TGraph>() );
-		gRange.push_back( std::make_unique<TGraph>() );
-	}
-	
-	if( !flag_source ) {
-		stopping &= ReadStoppingPowers( Beam.GetIsotope(), Target.GetIsotope(), gStopping[0], gRange[0] );
-		stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), Target.GetIsotope(), gStopping[1], gRange[1] );
-	}
-	stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), "Al", gStopping[2], gRange[2] );
-
-	// Get the electric and nuclear stopping powers for the PHC in a TGraph
-	phcurves = true;
-	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[3], gRange[3], true, false ); // electric only from SRIM files
-	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[4], gRange[4], false, true ); // nuclear only from SRIM files
-	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[5], gRange[5] );				 // total stopping from SRIM files
-
-	// Get the PHC data in a TGraph
-	gPHC = std::make_unique<TGraph>();
-	gPHC_inv = std::make_unique<TGraph>();
-	CalculatePulseHeightCorrection( Ejectile.GetIsotope() );
-
-	fa = t.GetMinimisationFunction();
-	fb = t.GetMinimisationDerivative();
-	fsim = t.GetSimulationFunction();
-	dsim = t.GetSimulationDerivative();
-	
-	// Root finder for the simulation function
-	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
-	rfsim = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
-	fsim = std::make_unique<TF1>( "theta_cm_function",   theta_cm_function,   0.0, TMath::Pi(), 9 );
-	dsim = std::make_unique<TF1>( "theta_cm_derivative", theta_cm_derivative, 0.0, TMath::Pi(), 9 );
-
-	// TODO: copy the time gates
-	
-
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/// Deletes the pointers to the TCutG recoil cuts and clears the vector holding
-/// them.
-ISSReaction::~ISSReaction(){
-
-	//for( unsigned int i = 0; i < recoil_cut.size(); ++i )
-	//	delete (recoil_cut[i]);
-	//recoil_cut.clear();
-
-	//for( unsigned int i = 0; i < e_vs_z_cut.size(); ++i )
-	//	delete (e_vs_z_cut[i]);
-	//e_vs_z_cut.clear();
-
-}
+//ISSReaction::ISSReaction( ISSReaction &t ){
+//
+//	set = t.GetSettings();
+//
+//	SetFile( t.GetFileName() );
+//
+//	Beam = t.CopyBeam();
+//	Target = t.CopyTarget();
+//	Ejectile = t.CopyEjectile();
+//	Recoil = t.CopyRecoil();
+//
+//	ame_be = t.GetMassTables();
+//	Mfield = t.GetField();
+//
+//	z0 = t.GetArrayDistance();
+//	deadlayer = t.GetArrayDeadlayer();
+//
+//	elum_z = t.GetELUMDistance();
+//	elum_rin = t.GetELUMInnerRadius();
+//	elum_rout = t.GetELUMOuterRadius();
+//	elum_deadlayer = t.GetELUMDeadlayer();
+//
+//	EBIS_On = t.GetEBISOnTime();
+//	EBIS_Off = t.GetEBISOffTime();
+//	EBIS_ratio = t.GetEBISFillRatio();
+//
+//	t1_min_time = t.GetT1MinTime();
+//	t1_max_time = t.GetT1MaxTime();
+//
+//	x_offset = t.GetOffsetX();
+//	y_offset = t.GetOffsetY();
+//
+//	flag_source = t.IsSource();
+//
+//	nrecoilcuts = t.GetNumberOfRecoilCuts();
+//	nevszcuts = t.GetNumberOfEvsZCuts();
+//
+//	// Copy the cuts
+//	for( unsigned int i = 0; i < nrecoilcuts; ++i )
+//		recoil_cut.push_back( t.GetRecoilCut(i) );
+//
+//	for( unsigned int i = 0; i < nevszcuts; ++i )
+//		e_vs_z_cut.push_back( t.GetEvsZCut(i) );
+//
+//
+//	// Get the stopping powers in TGraphs
+//	stopping = true;
+//	for( unsigned int i = 0; i < 6; ++i ) {
+//		gStopping.push_back( std::make_unique<TGraph>() );
+//		gRange.push_back( std::make_unique<TGraph>() );
+//	}
+//
+//	if( !flag_source ) {
+//		stopping &= ReadStoppingPowers( Beam.GetIsotope(), Target.GetIsotope(), gStopping[0], gRange[0] );
+//		stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), Target.GetIsotope(), gStopping[1], gRange[1] );
+//	}
+//	stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), "Al", gStopping[2], gRange[2] );
+//
+//	// Get the electric and nuclear stopping powers for the PHC in a TGraph
+//	phcurves = true;
+//	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[3], gRange[3], true, false ); // electric only from SRIM files
+//	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[4], gRange[4], false, true ); // nuclear only from SRIM files
+//	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[5], gRange[5] );				 // total stopping from SRIM files
+//
+//	// Get the PHC data in a TGraph
+//	gPHC = std::make_unique<TGraph>();
+//	gPHC_inv = std::make_unique<TGraph>();
+//	CalculatePulseHeightCorrection( Ejectile.GetIsotope() );
+//
+//	t.CopyMinimisationFunction( fa );
+//	t.CopyMinimisationDerivative( fb );
+//
+//	// Root finder for the simulation function
+//	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
+//	rfsim = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
+//	fsim = std::make_unique<TF1>( "theta_cm_function",   theta_cm_function,   0.0, TMath::Pi(), 9 );
+//	dsim = std::make_unique<TF1>( "theta_cm_derivative", theta_cm_derivative, 0.0, TMath::Pi(), 9 );
+//
+//	// TODO: copy the time gates
+//
+//}
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Adds a binding energy from a string from the mass table to the ame_be
@@ -487,7 +468,7 @@ void ISSReaction::ReadReaction() {
 		// Check if it is given by the user
 		if( recoilcutfile.at(i) != "NULL" ) {
 		
-			recoil_file = new TFile( recoilcutfile.at(i).data(), "READ" );
+			TFile *recoil_file = new TFile( recoilcutfile.at(i).data(), "READ" );
 			if( recoil_file->IsZombie() )
 				std::cout << "Couldn't open " << recoilcutfile.at(i) << " correctly" << std::endl;
 				
@@ -496,7 +477,7 @@ void ISSReaction::ReadReaction() {
 				if( !recoil_file->GetListOfKeys()->Contains( recoilcutname.at(i).data() ) )
 					std::cout << "Couldn't find " << recoilcutname.at(i) << " in " << recoilcutfile.at(i) << std::endl;
 				else
-					recoil_cut.at(i) = std::make_shared<TCutG>( *(TCutG*)recoil_file->Get( recoilcutname.at(i).data() )->Clone() );
+					recoil_cut.at(i) = std::make_shared<TCutG>( *static_cast<TCutG*>( recoil_file->Get( recoilcutname.at(i).data() )->Clone() ) );
 
 			}
 			
@@ -522,7 +503,7 @@ void ISSReaction::ReadReaction() {
 		// Check if it is given by the user
 		if( evszcutfile.at(i) != "NULL" ) {
 		
-			e_vs_z_file = new TFile( evszcutfile.at(i).data(), "READ" );
+			TFile *e_vs_z_file = new TFile( evszcutfile.at(i).data(), "READ" );
 			if( e_vs_z_file->IsZombie() )
 				std::cout << "Couldn't open " << evszcutfile.at(i) << " correctly" << std::endl;
 				
@@ -531,7 +512,7 @@ void ISSReaction::ReadReaction() {
 				if( !e_vs_z_file->GetListOfKeys()->Contains( evszcutname.at(i).data() ) )
 					std::cout << "Couldn't find " << evszcutname.at(i) << " in " << evszcutfile.at(i) << std::endl;
 				else
-					e_vs_z_cut.at(i) = std::make_shared<TCutG>( *(TCutG*)e_vs_z_file->Get( evszcutname.at(i).data() )->Clone() );
+					e_vs_z_cut.at(i) = std::make_shared<TCutG>( *static_cast<TCutG*>( e_vs_z_file->Get( evszcutname.at(i).data() )->Clone() ) );
 
 			}
 			
@@ -1087,6 +1068,7 @@ double ISSReaction::SimulateEmission( double en, double theta_lab, double phi_la
 	// Set the energy and lab angle
 	Ejectile.SetEnergyLab( en );
 	Ejectile.SetThetaLab( theta_lab );
+	phi_lab *= 1.0; // to prevent compiler warning (we don't use it here atm)
 	
 	// z when returning to axis
 	z  = Ejectile.GetBeta() * TMath::Cos( theta_lab );

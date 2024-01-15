@@ -1548,12 +1548,14 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 	
 	// Get a copy of the reaction stuff
 	// TODO: Make sure this is done inside the loop to get accurate energy losses
+	// for that, we need to have a working copy constructor.
 	//ISSReaction pace4react( *react );
-	std::unique_ptr<ISSReaction> pace4react = std::make_unique<ISSReaction>( *react );
+	
+	// for now, we just point to the original, which is fine for everything except energy losses
+	std::shared_ptr<ISSReaction> pace4react = react;
 
 	// Default reaction stuff
 	double z0 = pace4react->GetArrayDistance();
-
 	
 	// Need some array event objects for later
 	array_evt = std::make_unique<ISSArrayEvt>();

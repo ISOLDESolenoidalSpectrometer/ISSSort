@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <algorithm>
 #include <memory>
 
 #include "TSystem.h"
@@ -18,6 +19,7 @@
 #include "TVector3.h"
 #include "TAxis.h"
 #include "TF1.h"
+#include "TFormula.h"
 #include "TError.h"
 #include "TCanvas.h"
 #include "TGraph.h"
@@ -166,8 +168,8 @@ public:
 	
 	// setup functions
 	ISSReaction( std::string filename, std::shared_ptr<ISSSettings> myset, bool source );///< Constructor
-	ISSReaction( ISSReaction &t ); ///< Copy constructor
-	virtual ~ISSReaction();///< Destructor
+	//ISSReaction( ISSReaction &t ); ///< TODO: Copy constructor
+	~ISSReaction(){};///< Destructor
 	
 	// Main functions
 	void AddBindingEnergy( short Ai, short Zi, TString ame_be_str );///< Add a binding energy to the ame_be mass-table map
@@ -305,18 +307,12 @@ public:
 	inline std::string GetFileName(){ return fInputFile; };
 	inline std::shared_ptr<ISSSettings> GetSettings(){ return set; };
 	inline std::map< std::string, double > GetMassTables(){ return ame_be; };
-	inline std::shared_ptr<TF1> GetMinimisationFunction(){
-		return fa;
-	};
-	inline std::shared_ptr<TF1> GetMinimisationDerivative(){
-		return fb;
-	};
-	inline std::shared_ptr<TF1> GetSimulationFunction(){
-		return fsim;
-	};
-	inline std::shared_ptr<TF1> GetSimulationDerivative(){
-		return dsim;
-	};
+	//inline void CopyMinimisationFunction( std::shared_ptr<TF1> f ){
+	//	fa->Copy( *f.get() );
+	//};
+	//inline void CopyMinimisationDerivative( std::shared_ptr<TF1> f ){
+	//	fa->Copy( *f.get() );
+	//};
 
 	// Copiers for the particles
 	inline ISSParticle CopyBeam(){ return Beam; };
@@ -357,10 +353,10 @@ private:
 	// Stuff for the Ex calculation
 	std::unique_ptr<ROOT::Math::RootFinder> rf;		///< Pointer to a root finder object
 	std::unique_ptr<ROOT::Math::RootFinder> rfsim;	///< Pointer to a root finder object for the simulation of the reaction
-	std::shared_ptr<TF1> fa;	///< Pointer to the minimisation function
-	std::shared_ptr<TF1> fb;	///< Pointer to the derivative of the minimisation function
-	std::shared_ptr<TF1> fsim;	///< Pointer to the minimisation function for the simulation of the reaction
-	std::shared_ptr<TF1> dsim;	///< Pointer to the derivative of the minimisation function for the simulation of the reaction
+	TF1 *fa;	///< Pointer to the minimisation function
+	TF1 *fb;	///< Pointer to the derivative of the minimisation function
+	TF1 *fsim;	///< Pointer to the minimisation function for the simulation of the reaction
+	TF1 *dsim;	///< Pointer to the derivative of the minimisation function for the simulation of the reaction
 	double params[9];			///< Array for holding parameters for the functions
 	double e3_cm;				///< Total energy of ejectile in centre of mass
 	double Ex;					///< Excitation energy of recoil
@@ -404,8 +400,8 @@ private:
 	std::vector<std::string> recoilcutname;		///< The names of the recoil cuts
 	std::vector<std::string> evszcutfile;		///< The location of the E vs z cut files
 	std::vector<std::string> evszcutname;		///< The names of the E vs z cuts
-	TFile *recoil_file;							///< Pointer for opening the recoil cut files (??? could this be a local variable)
-	TFile *e_vs_z_file;							///< Pointer for the E vs z cut file names (??? could this be a local variable)
+	//TFile *recoil_file;							///< Pointer for opening the recoil cut files (??? could this be a local variable)
+	//TFile *e_vs_z_file;							///< Pointer for the E vs z cut file names (??? could this be a local variable)
 	std::vector<std::shared_ptr<TCutG>> recoil_cut;				///< Vector containing the recoil cuts
 	std::vector<std::shared_ptr<TCutG>> e_vs_z_cut;				///< Vector containing the E vs z cuts
 
