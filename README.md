@@ -34,20 +34,24 @@ The input options are described below.
 
 ```
 use iss_sort with following flags:
-        [-i       <vector<string>>: List of input files]
-        [-m       <int           >: Monitor input file every X seconds]
-        [-p       <int           >: Port number for web server (default 8030)]
-        [-o       <string        >: Output file for histogram file]
-        [-d       <string        >: Data directory to add to the monitor]
-        [-f                       : Flag to force new ROOT conversion]
-        [-e                       : Flag to force new event builder (new calibration)]
-        [-source                  : Flag to define an source only run]
-        [-autocal                 : Flag to perform automatic calibration of alpha source data]
-        [-s       <string        >: Settings file]
-        [-c       <string        >: Calibration file]
-        [-r       <string        >: Reaction file]
-        [-g                       : Launch the GUI]
-        [-h                       : Print this help]
+        [-i           <vector<string>>: List of input files]
+        [-o           <string        >: Output file for histogram file]
+        [-s           <string        >: Settings file]
+        [-c           <string        >: Calibration file]
+        [-r           <string        >: Reaction file]
+        [-nptool                      : Flag for NPTool simulation input]
+        [-pace4                       : Flag for PACE4 particle input]
+        [-f                           : Flag to force new ROOT conversion]
+        [-e                           : Flag to force new event builder (new calibration)]
+        [-source                      : Flag to define an source only run]
+        [-autocal                     : Flag to perform automatic calibration of alpha source data]
+        [-autocalfile <string        >: Alpha source fit control file]
+        [-spy                         : Flag to run the DataSpy]
+        [-m           <int           >: Monitor input file every X seconds]
+        [-p           <int           >: Port number for web server (default 8030)]
+        [-d           <string        >: Output directory for sorted files]
+        [-g                           : Launch the GUI]
+        [-h                           : Print this help]
 ```
 
 ## Sorting Philosophy
@@ -101,6 +105,17 @@ Pulse height corrections are also performed at this step to account for the non-
 Users can edit this code as they please, producing their own plots.
 There is no "user input" specifically, but if there are extra histograms that are of use to the community, please send me an email or raise 
 a feature request on GitHub and I will consider adding it to the standard code.
+
+
+## Extra features
+
+### NPTool sorting
+You can sort simulation output files from NPTool by using the `-nptool` flag.
+You need to give the ROOT file containing the `SimulatedTree` as the input and the reaction file as normal.
+
+### PACE4 fusion-evaporation simulations
+One can perform fusion-evaporation simulations using the output from PACE4, by passing the `-pace4` flag.
+You need to give the `pName.particles` file that is produced by PACE4 containing the Monte-Carlo proton and alpha particle data as the input and the reaction file as normal.
 
 ## Dependencies
 
