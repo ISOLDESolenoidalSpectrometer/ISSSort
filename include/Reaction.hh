@@ -307,12 +307,8 @@ public:
 	inline std::string GetFileName(){ return fInputFile; };
 	inline std::shared_ptr<ISSSettings> GetSettings(){ return set; };
 	inline std::map< std::string, double > GetMassTables(){ return ame_be; };
-	//inline void CopyMinimisationFunction( std::shared_ptr<TF1> f ){
-	//	fa->Copy( *f.get() );
-	//};
-	//inline void CopyMinimisationDerivative( std::shared_ptr<TF1> f ){
-	//	fa->Copy( *f.get() );
-	//};
+	//inline void CopyMinimisationFunction( TF1 *fin ){ fa->Copy( *fin ); };
+	//inline void CopyMinimisationDerivative( TF1 *fin ){ fb->Copy( *fin ); };
 
 	// Copiers for the particles
 	inline ISSParticle CopyBeam(){ return Beam; };

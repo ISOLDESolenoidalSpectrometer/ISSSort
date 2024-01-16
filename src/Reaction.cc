@@ -278,14 +278,13 @@ ISSReaction::ISSReaction( std::string filename, std::shared_ptr<ISSSettings> mys
 //	gPHC_inv = std::make_unique<TGraph>();
 //	CalculatePulseHeightCorrection( Ejectile.GetIsotope() );
 //
+//	// Root finder for the simulation function
 //	t.CopyMinimisationFunction( fa );
 //	t.CopyMinimisationDerivative( fb );
-//
-//	// Root finder for the simulation function
 //	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
 //	rfsim = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
-//	fsim = std::make_unique<TF1>( "theta_cm_function",   theta_cm_function,   0.0, TMath::Pi(), 9 );
-//	dsim = std::make_unique<TF1>( "theta_cm_derivative", theta_cm_derivative, 0.0, TMath::Pi(), 9 );
+//	fsim = new TF1( "theta_cm_function",   theta_cm_function,   0.0, TMath::Pi(), 9 );
+//	dsim = new TF1( "theta_cm_derivative", theta_cm_derivative, 0.0, TMath::Pi(), 9 );
 //
 //	// TODO: copy the time gates
 //
