@@ -1619,7 +1619,11 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 		else if( Ep_lab < 800. ) Ep_lab += ( rand.Rndm() - 0.5 ) * 800.;
 		else if( Ep_lab < 1200. ) Ep_lab += ( rand.Rndm() - 0.5 ) * 1200.;
 		else Ep_lab += ( rand.Rndm() - 0.5 ) * 1600.;
-
+		
+		// Threshold the energy at 200 keV
+		// This is lower than reality, but reasonable for simulation
+		if( Ep_lab < 200. ) continue;
+		
 		// Randomise angle across the 0.1 degree precision
 		// and convert from degrees to radians
 		Ap_lab += rand.Rndm() * 0.1 - 0.05;
