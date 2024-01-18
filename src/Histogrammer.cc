@@ -1557,8 +1557,7 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 	// Default reaction stuff
 	double z0 = pace4react->GetArrayDistance();
 	
-	// Need some array event objects for later
-	array_evt = std::make_unique<ISSArrayEvt>();
+	// Need an array event objects for later
 	arrayp_evt = std::make_unique<ISSArrayPEvt>();
 
 	// Random generator
@@ -1683,10 +1682,9 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 			//std::cout << ", pid = " << (int)pid << ", nid = " << (int)nid;
 			//std::cout << std::endl;
 			
-			array_evt->SetEvent( Edet, Edet, pid, nid, 1e6, 1e6, true, true, mod, row );
 			arrayp_evt->SetEvent( Edet, Edet, pid, nid, 1e6, 1e6, true, true, mod, row );
-			read_evts->AddEvt( array_evt );
-			read_evts->AddEvt( arrayp_evt );
+			read_evts->AddEvt( static_cast<std::shared_ptr<ISSArrayEvt>>( arrayp_evt ) );
+			read_evts->AddEvt( static_cast<std::shared_ptr<ISSArrayPEvt>>( arrayp_evt ) );
 
 			// Fill the tree
 			input_tree->Fill();
