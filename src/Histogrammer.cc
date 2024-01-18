@@ -1614,20 +1614,20 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 		// Energy is in MeV, we need keV
 		Ep_lab *= 1e3;
 		
-		// Now randomise the energy in the 100 keV bin width of PACE4
-		Ep_lab += rand.Rndm() * 100. - 50.;
-		
-		// Angle is in degrees, we need radians
-		Ap_lab *= TMath::DegToRad();
-		
-		// particle ID is decay_mode
-		// 1: neutron
-		if( decay_mode == 1 ) {
-			
-			pace4react->GetEjectile()->SetZ(0);
-			pace4react->GetEjectile()->SetA(1);
+		// Now randomise the energy because PACE4 gives strange descrete values
+		if( Ep_lab < 400. ) Ep_lab += ( rand.Rndm() - 0.5 ) * 400.;
+		else if( Ep_lab < 800. ) Ep_lab += ( rand.Rndm() - 0.5 ) * 800.;
+		else if( Ep_lab < 1200. ) Ep_lab += ( rand.Rndm() - 0.5 ) * 1200.;
+		else Ep_lab += ( rand.Rndm() - 0.5 ) * 1600.;
 
-		}
+		// Randomise angle across the 0.1 degree precision
+		// and convert from degrees to radians
+		Ap_lab += rand.Rndm() * 0.1 - 0.05;
+		Ap_lab *= TMath::DegToRad();
+
+		// particle ID is decay_mode
+		// 1: neutron - we don't care about these
+		if( decay_mode == 1 ) continue;
 
 		// 2: proton
 		else if( decay_mode == 2 ) {
@@ -1660,7 +1660,7 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 
 		// Shift the z in to the array reference
 		z_meas -= z0;
-		if( z_meas < 0. ) z_meas = -1.0;
+		if( z0 < 0. ) z_meas *= -1.0;
 
 		// Find out where we hit the array
 		int mod = array_evt->FindModule( phi_det );
