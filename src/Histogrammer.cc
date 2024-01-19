@@ -1625,7 +1625,7 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 		
 		// Randomise angle across the 0.1 degree precision
 		// and convert from degrees to radians
-		Ap_lab += rand.Rndm() * 0.1 - 0.05;
+		Ap_lab += rand.Rndm() * 8.0 - 4.0;
 		Ap_lab *= TMath::DegToRad();
 
 		// particle ID is decay_mode
@@ -1662,8 +1662,8 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 		if( z0 * z_meas < 0 ) continue;
 
 		// Shift the z in to the array reference
-		z_meas -= z0;
-		if( z0 < 0. ) z_meas *= -1.0;
+		if( z0 < 0. ) z_meas = -1.0 * z_meas + z0;
+		else z_meas -= z0;
 
 		// Find out where we hit the array
 		int mod = array_evt->FindModule( phi_det );
