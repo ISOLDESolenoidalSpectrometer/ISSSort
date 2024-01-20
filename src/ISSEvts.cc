@@ -268,7 +268,7 @@ TVector3 ISSArrayEvt::GetPosition(){
 char ISSArrayEvt::FindModule( unsigned short detNo ){
 	
 	/// Return the module number depending on the detector number from NPTool
-	if( detNo > 23 ) return -1;
+	if( detNo > 24 ) return -1;
 	return ( ( detNo - 1 ) % 8 ) / 2;
 	
 }
@@ -323,7 +323,7 @@ char ISSArrayEvt::FindModule( double phi ){
 	else if( phi > TMath::Pi() / 3. && phi <= TMath::Pi() ) return 1;
 
 	// module 2 combos
-	else if( phi > TMath::Pi() && phi <= 5. * TMath::Pi() / 3. ) return 1;
+	else if( phi > TMath::Pi() && phi <= 5. * TMath::Pi() / 3. ) return 2;
 
 	// shouldn't be anything else left
 	else return -1;
