@@ -10,8 +10,8 @@
 // root [3] get_theta_cm( z_det, E_x )  --> in radians
 // root [4] get_theta_cm( z_det, E_x ) * TMath::RadToDeg()  --> in degrees
 
-#include "include/Settings.hh"
-#include "include/Reaction.hh"
+//#include "include/Settings.hh"
+//#include "include/Reaction.hh"
 
 #include "TVector3.h"
 #include "TGraph2D.h"
@@ -25,16 +25,16 @@ const double min_z = 0.0; // mm
 const double max_z = 510.0; // mm
 const double radius = 27.5; // mm
 
-ISSSettings *myset;
-ISSReaction *myreact;
+std::shared_ptr<ISSSettings> myset;
+std::shared_ptr<ISSReaction> myreact;
 
 TGraph2D *g;
 
 void z_to_angle_simulator( std::string reaction_file ){
 
 	// Make a reaction instance
-	myset = new ISSSettings( "dummy" );
-	myreact = new ISSReaction( reaction_file, myset, false );
+	myset = std::make_shared<ISSSettings>( "dummy" );
+	myreact = std::make_shared<ISSReaction>( reaction_file, myset, false );
 
 	// Array distance
 	double z_0 = myreact->GetArrayDistance();
