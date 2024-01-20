@@ -1591,11 +1591,28 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 	for( unsigned int i = 0; i < 2; i++ )
 		std::getline( pace4file, line );
 	
+	// Record position in the file to return to later
+	std::streampos data_start = pace4file.tellg();
+	std::ios_base::iostate file_state = pace4file.rdstate();
+
+	// Count the number of data
+	unsigned long number_of_data = 0;
+	while( std::getline( pace4file, line ) && !pace4file.eof() )
+		number_of_data++;
+	std::cout << "Found " << number_of_data << " PACE4 events" << std::endl;
+	
+	// Go back to the start of the data
+	pace4file.clear();
+	pace4file.seekg( data_start );
+	pace4file.setstate( file_state );
+	
 	// The rest should be data
+	unsigned long current_data = 0;
 	while( std::getline( pace4file, line ) && !pace4file.eof() ){
 		
-		// Clear the old data
+		// Clear the old data and increment counter
 		read_evts->ClearEvt();
+		current_data++;
 
 		// Skip over really short lines
 		if( line.length() < 10 ) continue;
@@ -1698,6 +1715,34 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 			input_tree->Fill();
 		
 		}
+		
+		// Progress bar
+		bool update_progress = false;
+		if( number_of_data < 200 )
+			update_progress = true;
+		else if( current_data % (number_of_data/100) == 0 ||
+				 current_data == number_of_data )
+			update_progress = true;
+		
+		if( update_progress ) {
+			
+			// Percent complete
+			float percent = (float)current_data*100.0/(float)number_of_data;
+			
+			// Progress bar in GUI
+			if( _prog_ ) {
+				
+				prog->SetPosition( percent );
+				gSystem->ProcessEvents();
+				
+			}
+			
+			// Progress bar in terminal
+			std::cout << " Reading data: " << std::setw(6) << std::setprecision(4);
+			std::cout << percent << "%    \r";
+			std::cout.flush();
+			
+		} // progress bar
 			
 	}
 
