@@ -363,8 +363,6 @@ char ISSArrayEvt::FindPID( double z ){
 	// Straight away return 0 if we don't hit the silicon
 	if( row < 0 ) return -1;
 	
-	double zinit = z;
-	
 	// Physical silicon length and gaps
 	double wafer_length = 125.0;
 	double wafer_gap = 0.5;
@@ -387,8 +385,6 @@ char ISSArrayEvt::FindPID( double z ){
 		
 	}
 	
-	std::cout << "initial z of dropped event = " << zinit << std::endl;
-
 	// everything else won't hit the silicon
 	return -1;
 	
@@ -403,8 +399,6 @@ char ISSArrayEvt::FindNID( double phi ){
 	
 	// Straight away return 0 if we don't hit the silicon
 	if( mod < 0 ) return -1;
-	
-	double phiinit = phi;
 	
 	// Strip geometry
 	double strip_pitch = 2.0;
@@ -444,8 +438,6 @@ char ISSArrayEvt::FindNID( double phi ){
 		
 	}
 	
-	std::cout << "initial phi of dropped event = " << phiinit << std::endl;
-
 	// everything else won't hit the silicon
 	return -1;
 	
