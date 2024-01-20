@@ -363,6 +363,8 @@ char ISSArrayEvt::FindPID( double z ){
 	// Straight away return 0 if we don't hit the silicon
 	if( row < 0 ) return -1;
 	
+	double zinit = z;
+	
 	// Physical silicon length and gaps
 	double wafer_length = 125.0;
 	double wafer_gap = 0.5;
@@ -384,6 +386,8 @@ char ISSArrayEvt::FindPID( double z ){
 			return i;
 		
 	}
+	
+	std::cout << "initial z of dropped event = " << zinit << std::endl;
 
 	// everything else won't hit the silicon
 	return -1;
@@ -400,13 +404,15 @@ char ISSArrayEvt::FindNID( double phi ){
 	// Straight away return 0 if we don't hit the silicon
 	if( mod < 0 ) return -1;
 	
+	double phiinit = phi;
+	
 	// Strip geometry
 	double strip_pitch = 2.0;
 	double det_radius = 54.0 / 2.0;
 
 	// Shift the phi to within a single module
-	phi += TMath::Pi() / 6.;
-	phi -= (double)mod * TMath::Pi() / 3.;
+	phi += TMath::TwoPi() / 6.;
+	phi -= (double)mod * TMath::TwoPi() / 3.;
 
 	// Then put us in the 0 -> 2π range
 	if( phi < 0.0 ) phi += TMath::TwoPi();
@@ -414,10 +420,10 @@ char ISSArrayEvt::FindNID( double phi ){
 	
 	// Check if we are on side A or B
 	bool sideB = false;
-	if( phi > TMath::Pi() / 6. ) {
+	if( phi > TMath::TwoPi() / 6. ) {
 	
 		sideB = true;
-		phi -= TMath::Pi() / 6.;
+		phi -= TMath::TwoPi() / 6.;
 		
 	}
 	
@@ -429,14 +435,16 @@ char ISSArrayEvt::FindNID( double phi ){
 		TVector2 vec_upp( det_radius, ( (double)i-4.5 ) * strip_pitch );
 
 		// Rotate by pi/6 to get it aligned with reference
-		vec_low.Rotate( TMath::Pi() / 6. );
-		vec_upp.Rotate( TMath::Pi() / 6. );
+		vec_low.Rotate( TMath::TwoPi() / 6. );
+		vec_upp.Rotate( TMath::TwoPi() / 6. );
 
 		// check if we are in the strip
 		if( phi > vec_low.Phi() && phi <= vec_upp.Phi() )
 			return i + 11 * sideB;
 		
 	}
+	
+	std::cout << "initial phi of dropped event = " << phiinit << std::endl;
 
 	// everything else won't hit the silicon
 	return -1;
