@@ -1553,6 +1553,10 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 	
 	// for now, we just point to the original, which is fine for everything except energy losses
 	std::shared_ptr<ISSReaction> pace4react = react;
+	
+	// Remember the ejectile
+	unsigned int Zp = pace4react->GetEjectile()->GetZ();
+	unsigned int Ap = pace4react->GetEjectile()->GetA();
 
 	// Default reaction stuff
 	double z0 = pace4react->GetArrayDistance();
@@ -1627,6 +1631,8 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 		// Randomise angle across the 0.1 degree precision
 		// and convert from degrees to radians
 		Ap_lab += rand.Rndm() * 8.0 - 4.0;
+		if( Ap_lab > 180.0 ) Ap_lab -= 2.0 * ( Ap_lab - 180.0 );
+		if( Ap_lab < 0.0 ) Ap_lab *= -1.0;
 		Ap_lab *= TMath::DegToRad();
 
 		// particle ID is decay_mode
@@ -1694,6 +1700,11 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 		}
 			
 	}
+
+	// Reset the ejectile before we finish
+	pace4react->GetEjectile()->SetZ(Zp);
+	pace4react->GetEjectile()->SetA(Ap);
+
 	
 	// Close file and return
 	pace4file.close();
