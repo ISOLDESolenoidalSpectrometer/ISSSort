@@ -921,9 +921,9 @@ void ISSConverter::ProcessCAENData(){
 	if( my_mod_id >= set->GetNumberOfCAENModules() ||
 		my_ch_id >= set->GetNumberOfCAENChannels() ) {
 		
-		std::cout << "Bad CAEN event with mod_id=" << my_mod_id;
-		std::cout << " ch_id=" << my_ch_id;
-		std::cout << " data_id=" << my_data_id << std::endl;
+		std::cout << "Bad CAEN event with mod_id=" << (int) my_mod_id;
+		std::cout << " ch_id=" << (int) my_ch_id;
+		std::cout << " data_id=" << (int) my_data_id << std::endl;
 		return;
 
 	}
