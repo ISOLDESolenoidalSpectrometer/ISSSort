@@ -25,8 +25,7 @@
 #include "TGraph.h"
 #include "Math/RootFinder.h"
 #include "Math/Functor.h"
-
-#include "TSpline.h" // BRJ - header for Splines 
+#include "TSpline.h"
 
 // Settings header
 #ifndef __SETTINGS_HH
