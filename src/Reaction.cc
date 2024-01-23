@@ -1,7 +1,7 @@
 #include "Reaction.hh"
 
 // Uncomment this below to switch to the Butler algorithm (currently in testing)
-//#define butler_algorithm
+#define butler_algorithm
 
 ClassImp( ISSParticle )
 ClassImp( ISSReaction )
