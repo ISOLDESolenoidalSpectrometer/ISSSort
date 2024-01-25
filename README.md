@@ -5,6 +5,7 @@ A code for sorting raw data from the ISOLDE Solendoidal Spectrometer in MIDAS fo
 ## Instructions and user guide
 
 For the full details of how to use ISSSort, please take a look at the Wiki here on GitHub: https://github.com/ISOLDESolenoidalSpectrometer/ISSSort/wiki
+
 Some basic intructions are included in the below README.
 
 ## Download
