@@ -761,21 +761,16 @@ double ISSReaction::GetNuclearEnergyLoss( double Ei, double range, std::unique_p
 	double dx = range/(double)Nmeshpoints;
 	double E = Ei;
 	double En = 0;
-	
-	
+
 	// Create splines for the provided TGraphs
-	TSpline3* splineTot = new TSpline3("splineTot", gtot.get(), "akima"); // Use akima spline to make energy loss graph smoother - BRJ
-	TSpline3* splineN = new TSpline3("splineN", gn.get(), "akima"); // Use akima spline to make energy loss graph smoother - BRJ
+	std::unique_ptr<TSpline3> splineTot = std::make_unique<TSpline3>("splineTot", gtot.get(), "akima"); // Use akima spline to make energy loss graph smoother - BRJ
+	std::unique_ptr<TSpline3> splineN   = std::make_unique<TSpline3>("splineN", gn.get(), "akima"); // Use akima spline to make energy loss graph smoother - BRJ
 	
-	for (unsigned int i = 0; i < Nmeshpoints; i++) {
-		if (E < 0.5) break; // when we fall below 0.5 keV we assume we're stopped
+	for( unsigned int i = 0; i < Nmeshpoints; i++ ) {
+		if( E < 0.5 ) break; // when we fall below 0.5 keV we assume we're stopped
 		E -= splineTot->Eval(E) * dx;
 		En += splineN->Eval(E) * dx;
 	}
-	
-	// Delete the spline objects to prevent memory leaks
-	delete splineTot;
-	delete splineN;
 	
 	return En;
 	
@@ -939,7 +934,7 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 	}
 	
 	// Draw the plot and save it somewhere
-	TCanvas *c = new TCanvas();
+	std::unique_ptr<TCanvas> c = std::make_unique<TCanvas>();
 	c->SetLogx();
 	g->Draw("A*");
 	std::string pdfname = srimfilename.substr( 0, srimfilename.find_last_of(".") );
@@ -952,7 +947,6 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 	pdfname = srimfilename.substr( 0, srimfilename.find_last_of(".") ) + "_range.pdf";
 	c->SaveAs( pdfname.c_str() );
 	
-	delete c;
 	input_file.close();
 	
 	// ROOT can be noisy again
@@ -1001,7 +995,7 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	gErrorIgnoreLevel = kWarning;
 	
 	// Read in the data to a temporary graph
-	TGraph *gRes = new TGraph();
+	std::unique_ptr<TGraph> gRes = std::make_unique<TGraph>();
 	
 	// Calculate the stopping
 	double E, Emax = 100e3;
@@ -1013,8 +1007,8 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	double Edet = 0.0;
 	
 	// Create splines for the TGraphs used in the calculation
-	TSpline3* splineRange = new TSpline3("splineRange", gRange[3].get(), "akima"); // // Use akima spline to make phc smoother - BRJ
-	TSpline3* splineStoppingPower = new TSpline3("splineStoppingPower", gStopping[3].get(), "akima"); //Use akima spline to make phc smoother - BRJ
+	std::unique_ptr<TSpline3> splineRange         = std::make_unique<TSpline3>("splineRange", gRange[3].get(), "akima"); // // Use akima spline to make phc smoother - BRJ
+	std::unique_ptr<TSpline3> splineStoppingPower = std::make_unique<TSpline3>("splineStoppingPower", gStopping[3].get(), "akima"); //Use akima spline to make phc smoother - BRJ
 	
 	
 	// Do the numerical integration
@@ -1054,7 +1048,7 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	}
 	
 	// Draw the plot and save it somewhere
-	TCanvas *c = new TCanvas();
+	std::unique_ptr<TCanvas> c = std::make_unique<TCanvas>();
 	//c->SetLogx();
 	//c->SetLogy();
 	gRes->Draw("AP");
@@ -1069,11 +1063,6 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	TFile *tfile = new TFile(tfilenameroot.c_str(),"recreate");
 	gRes->Write("gRes");
 	tfile->Close();
-	
-	delete c;
-	delete gRes;
-	delete splineRange;
-	delete splineStoppingPower;
 	
 	// ROOT can be noisy again
 	gErrorIgnoreLevel = kInfo;
