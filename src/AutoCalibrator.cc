@@ -1204,14 +1204,14 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 		
 		Residuals[i]  = DetectedEnergy[i] - calfit->GetParameter(0);
 		Residuals[i] -= centroids[i] * calfit->GetParameter(1);
-		ResErr[i] = errors[i] * calfit->GetParameter(1);
+		ResErr[i] = TMath::Sqrt( TMath::Power( errors[i] * calfit->GetParameter(1), 2 ) + TMath::Power( FF_alpha_peak_energy_error[i], 2 ) );
 
 	}
 	
 	// Graph the resdiuals
 	TGraphErrors* r = new TGraphErrors( NumberOfFoundAlphaPeaks,
-									   DetectedEnergy, Residuals,
-									   FF_alpha_peak_energy_error, ResErr );
+									   centroids.data(), Residuals,
+									   0, ResErr );
 	r->SetTitle( "Residuals Plot; ADC Value; Alpha Particle Energy Residuals [keV]" );
 	
 	// Draw the results
