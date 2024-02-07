@@ -24,67 +24,6 @@
 
 #include "iss_sort.hh"
 
-// Default parameters and name
-std::string output_name;
-std::string datadir_name;
-std::string name_set_file;
-std::string name_cal_file;
-std::string name_react_file;
-std::string name_autocal_file;
-std::vector<std::string> input_names;
-
-// a flag at the input to force or not the conversion
-bool flag_convert = false;
-bool flag_events = false;
-bool flag_source = false;
-bool flag_autocal = false;
-
-// select what steps of the analysis to be forced
-std::vector<bool> force_convert;
-bool force_sort = false;
-bool force_events = false;
-
-// Flag if we want to launch the GUI for sorting
-bool gui_flag = false;
-
-// Flag for somebody needing help on command line
-bool help_flag = false;
-
-// DataSpy
-bool flag_spy = false;
-int open_spy_data = -1;
-
-// Monitoring input file
-bool flag_monitor = false;
-int mon_time = -1; // update time in seconds
-
-// Settings file
-ISSSettings *myset;
-
-// Calibration file
-ISSCalibration *mycal;
-bool overwrite_cal = false;
-
-// Reaction file
-ISSReaction *myreact;
-
-// Struct for passing to the thread
-typedef struct thptr {
-	
-	ISSCalibration *mycal;
-	ISSSettings *myset;
-	ISSReaction *myreact;
-	
-} thread_data;
-
-// Server and controls for the GUI
-THttpServer *serv;
-int port_num = 8030;
-
-// Pointers to the thread events TODO: sort out inhereted class stuff
-std::shared_ptr<ISSConverter> conv_mon;
-std::shared_ptr<ISSEventBuilder> eb_mon;
-std::shared_ptr<ISSHistogrammer> hist_mon;
 
 void reset_conv_hists(){
 	conv_mon->ResetHists();
@@ -526,6 +465,132 @@ void do_hist(){
 	
 }
 
+void do_nptool(){
+	
+	//-----------------------//
+	// Physics event builder //
+	//-----------------------//
+	ISSEventBuilder eb( myset );
+	std::cout << "\n +++ ISS Analysis:: processing EventBuilder for NPTool data +++" << std::endl;
+	
+	TFile *rtest;
+	std::ifstream ftest;
+	std::string name_input_file;
+	std::string name_output_file;
+	
+	// Do event builder for each file individually
+	for( unsigned int i = 0; i < input_names.size(); i++ ){
+		
+		name_input_file = input_names.at(i).substr( input_names.at(i).find_last_of("/")+1,
+												   input_names.at(i).length() - input_names.at(i).find_last_of("/")-1 );
+		name_output_file = name_input_file.substr( 0,
+												  name_input_file.find_last_of(".") );
+		
+		name_output_file = datadir_name + "/" + name_output_file + "_events.root";
+		name_input_file = input_names.at(i);
+		
+		// Check if the input file exists
+		ftest.open( name_input_file.data() );
+		if( !ftest.is_open() ) {
+			
+			std::cerr << name_input_file << " does not exist" << std::endl;
+			continue;
+			
+		}
+		else {
+			
+			ftest.close();
+			
+		}
+		
+		// We need to do event builder if there is a specific
+		// request to do so with either the -e or -f flag
+		if( flag_convert || flag_events )
+			force_events = true;
+		
+		// If it doesn't exist, we have to sort it anyway
+		else {
+			
+			ftest.open( name_output_file.data() );
+			if( !ftest.is_open() ) force_events = true;
+			else {
+				
+				ftest.close();
+				rtest = new TFile( name_output_file.data() );
+				if( rtest->IsZombie() ) force_events = true;
+				if( !force_events )
+					std::cout << name_output_file << " already built" << std::endl;
+				rtest->Close();
+				
+			}
+			
+		}
+		
+		if( force_events ) {
+			
+			std::cout << name_input_file << " --> ";
+			std::cout << name_output_file << std::endl;
+			
+			eb.SetNPToolFile( name_input_file );
+			eb.SetOutput( name_output_file );
+			eb.BuildSimulatedEvents();
+			eb.CloseOutput();
+			
+			force_events = false;
+			
+		}
+		
+	}
+	
+	return;
+	
+}
+
+void do_pace4(){
+	
+	//-----------------------------------------------------//
+	// Make some histograms from the PACE4 simulation data //
+	//-----------------------------------------------------//
+	ISSHistogrammer hist( myreact, myset );
+	std::cout << "\n +++ ISS Analysis:: processing Histogrammer with PACE4 data +++" << std::endl;
+
+	std::ifstream ftest;
+	std::string name_input_file;
+	
+	std::vector<std::string> name_hist_files;
+	
+	// We are going to chain all the event files now
+	for( unsigned int i = 0; i < input_names.size(); i++ ){
+
+		name_input_file = input_names.at(i);
+
+		ftest.open( name_input_file.data() );
+		if( !ftest.is_open() ) {
+			
+			std::cerr << name_input_file << " does not exist" << std::endl;
+			continue;
+			
+		}
+		else ftest.close();
+
+		name_hist_files.push_back( name_input_file );
+		
+	}
+
+	// Only do something if there are valid files
+	if( name_hist_files.size() ) {
+		
+		hist.SetOutput( output_name );
+		hist.SetPace4File( name_hist_files );
+		hist.FillHists();
+		hist.CloseOutput();
+
+	}
+	
+	return;
+	
+}
+
 void do_autocal(){
 
 	//-----------------------------------//
@@ -603,11 +668,13 @@ int main( int argc, char *argv[] ){
 	interface->Add("-s", "Settings file", &name_set_file );
 	interface->Add("-c", "Calibration file", &name_cal_file );
 	interface->Add("-r", "Reaction file", &name_react_file );
-	interface->Add("-autocalfile", "Alpha source fit control file", &name_autocal_file );
+	interface->Add("-nptool", "Flag for NPTool simulation input", &flag_nptool );
+	interface->Add("-pace4", "Flag for PACE4 particle input", &flag_pace4 );
 	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
 	interface->Add("-e", "Flag to force new event builder (new calibration)", &flag_events );
 	interface->Add("-source", "Flag to define an source only run", &flag_source );
 	interface->Add("-autocal", "Flag to perform automatic calibration of alpha source data", &flag_autocal );
+	interface->Add("-autocalfile", "Alpha source fit control file", &name_autocal_file );
 	interface->Add("-spy", "Flag to run the DataSpy", &flag_spy );
 	interface->Add("-m", "Monitor input file every X seconds", &mon_time );
 	interface->Add("-p", "Port number for web server (default 8030)", &port_num );
@@ -637,24 +704,33 @@ int main( int argc, char *argv[] ){
 	// Check we have data files
 	if( !input_names.size() && !flag_spy ) {
 			
-			std::cout << "You have to provide at least one input file unless you are in DataSpy mode!" << std::endl;
+			std::cout << "You have to provide at least one input file (data or simulation) unless you are in DataSpy mode!" << std::endl;
 			return 1;
 			
 	}
 	
 	// Check if this is a source run
 	if( flag_autocal ){
+		
 		flag_source = true;
 		
 		if ( name_autocal_file.length() > 0 ){
+		
 			std::cout << "Autocal file: " << name_autocal_file << std::endl;
+		
 		}
+		
 		else{
+		
 			std::cout << "No autocal file provided. Using defaults." << std::endl;
 			name_autocal_file = "dummy";
+		
 		}
 		
 	}
+	
+	// Check if we have real data, i.e. not simulation
+	if( !flag_pace4 && !flag_nptool ) flag_data = true;
 	
 	
 	// Check if we should be monitoring the input
@@ -669,9 +745,20 @@ int main( int argc, char *argv[] ){
 	
 	else if( mon_time >= 0 && input_names.size() == 1 ) {
 		
-		flag_monitor = true;
-		std::cout << "Running sort in a loop every " << mon_time;
-		std::cout << " seconds\nMonitoring " << input_names.at(0) << std::endl;
+		if( flag_data ) {
+
+			flag_monitor = true;
+			std::cout << "Running sort in a loop every " << mon_time;
+			std::cout << " seconds\nMonitoring " << input_names.at(0) << std::endl;
+		
+		}
+		
+		else {
+			
+			flag_monitor = false;
+			std::cout << "Cannot monitor simulation input files, switching to normal mode" << std::endl;
+
+		}
 		
 	}
 	
@@ -823,9 +910,9 @@ int main( int argc, char *argv[] ){
 
 	}
 	
-	myset = new ISSSettings( name_set_file );
-	mycal = new ISSCalibration( name_cal_file, myset );
-	myreact = new ISSReaction( name_react_file, myset, flag_source );
+	myset = std::make_shared<ISSSettings>( name_set_file );
+	mycal = std::make_shared<ISSCalibration>( name_cal_file, myset );
+	myreact = std::make_shared<ISSReaction>( name_react_file, myset, flag_source );
 
 	
 	//-------------------//
@@ -864,14 +951,35 @@ int main( int argc, char *argv[] ){
 	//------------------//
 	// Run the analysis //
 	//------------------//
-	do_convert();
-	if( !flag_source && !flag_autocal ) {
-		if( do_build() )
-			do_hist();
+	if( flag_data ) {
+		
+		// Convert MIDAS file and time sort
+		do_convert();
+		
+		// If it's not a source run, do the event building
+		if( !flag_source && !flag_autocal ) {
+			
+			// Build events and if successful, do histogramming
+			if( do_build() ) do_hist();
+			
+		}
+		
+		// Autocal routine is run independently
+		else if( flag_autocal ) do_autocal();
+		
 	}
-	else if( flag_autocal ) {
-		do_autocal();
+	
+	// Simulation analysis - PACE4
+	else if( flag_pace4 ) do_pace4();
+	
+	// Simulation analysis - NPTool
+	else if( flag_nptool ) {
+		
+		do_nptool();
+		do_hist();
+		
 	}
+	
 	std::cout << "\n\nFinished!\n";
 
 	return 0;

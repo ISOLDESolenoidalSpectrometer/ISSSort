@@ -57,7 +57,7 @@ double walk_derivative( double *x, double *params ){
 /// \param[in] filename String containing the directory location of the input 
 /// calibration file
 /// \param[in] myset Pointer to the ISSSettings object
-ISSCalibration::ISSCalibration( std::string filename, ISSSettings *myset ) {
+ISSCalibration::ISSCalibration( std::string filename, std::shared_ptr<ISSSettings> myset ) {
 
 	SetFile( filename );
 	set = myset;
@@ -65,10 +65,9 @@ ISSCalibration::ISSCalibration( std::string filename, ISSSettings *myset ) {
 	fRand = new TRandom();
 	
 	// Root finder algorithm
-	fa = std::make_unique<TF1>( "walk_function", walk_function, -2e4, 2e4, 5 );
-	fb = std::make_unique<TF1>( "walk_derivative", walk_derivative, -2e4, 2e4, 5 );
+	fa = new TF1( "walk_function", walk_function, -2e4, 2e4, 5 );
+	fb = new TF1( "walk_derivative", walk_derivative, -2e4, 2e4, 5 );
 	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kBRENT );
-
 		
 }
 

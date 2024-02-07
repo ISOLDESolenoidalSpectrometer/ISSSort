@@ -1,10 +1,14 @@
-#ifdef __MAKECINT__
+#if defined (__MAKECINT__) || (__CLING__)
 #pragma link off all globals;
 #pragma link off all classes;
 #pragma link off all functions;
+#pragma link off all typedef;
+#pragma link C++ nestedclasses;
+#pragma link C++ nestedtypedefs;
+#pragma link C++ class TIssData;
 #pragma link C++ class ISSCalibration+;
 #pragma link C++ class ISSSettings+;
-//#pragma link C++ class CommandLineInterface+;
+//#pragma link C++ class CommandLineInterface;
 #pragma link C++ class ISSConverter+;
 #pragma link C++ class ISSEventBuilder+;
 #pragma link C++ class ISSEvts+;
@@ -21,6 +25,6 @@
 #pragma link C++ class ISSInfoData+;
 #pragma link C++ class ISSReaction+;
 #pragma link C++ class ISSParticle+;
-#pragma link C++ class ISSGUI+;
-#pragma link C++ class ISSDialog+;
+#pragma link C++ class ISSGUI;
+#pragma link C++ class ISSDialog;
 #endif

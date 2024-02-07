@@ -66,13 +66,14 @@ OBJECTS =  		$(SRC_DIR)/AutoCalibrator.o \
 				$(SRC_DIR)/Converter.o \
 				$(SRC_DIR)/DataPackets.o \
 				$(SRC_DIR)/DataSpy.o \
+				$(SRC_DIR)/EventBuilder.o \
 				$(SRC_DIR)/Histogrammer.o \
 				$(SRC_DIR)/ISSEvts.o \
 				$(SRC_DIR)/ISSGUI.o \
 				$(SRC_DIR)/Reaction.o \
 				$(SRC_DIR)/Settings.o \
-				$(SRC_DIR)/EventBuilder.o
- 
+				$(SRC_DIR)/TIssData.o
+
 # The header files.
 DEPENDENCIES =  $(INC_DIR)/AutoCalibrator.hh \
 				$(INC_DIR)/Calibration.hh \
@@ -80,13 +81,14 @@ DEPENDENCIES =  $(INC_DIR)/AutoCalibrator.hh \
 				$(INC_DIR)/Converter.hh \
 				$(INC_DIR)/DataPackets.hh \
 				$(INC_DIR)/DataSpy.hh \
+				$(INC_DIR)/EventBuilder.hh \
+				$(INC_DIR)/FitFunctions.hh \
 				$(INC_DIR)/Histogrammer.hh \
 				$(INC_DIR)/ISSEvts.hh \
 				$(INC_DIR)/ISSGUI.hh \
 				$(INC_DIR)/Reaction.hh \
 				$(INC_DIR)/Settings.hh \
-				$(INC_DIR)/EventBuilder.hh \
-				$(INC_DIR)/FitFunctions.hh
+				$(INC_DIR)/TIssData.hh
 
 all: $(BIN_DIR)/iss_sort $(LIB_DIR)/libiss_sort.so
  

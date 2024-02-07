@@ -5,7 +5,7 @@
 /// \param[in] myset Pointer to a relevant ISSSettings object for this data
 /// \param[in] myreact Pointer to a relevant ISSReaction object for this data
 /// \param[in] autocal_file A string containing the file name of the autocal file that changes the way this object processes alpha data
-ISSAutoCalibrator::ISSAutoCalibrator( ISSSettings *myset, ISSReaction *myreact, const std::string& autocal_file = "" ){
+ISSAutoCalibrator::ISSAutoCalibrator( std::shared_ptr<ISSSettings> myset, std::shared_ptr<ISSReaction> myreact, const std::string& autocal_file = "" ){
 	
 	// First store the settings and reaction objects, and deal with the autocal input file
 	set = myset;

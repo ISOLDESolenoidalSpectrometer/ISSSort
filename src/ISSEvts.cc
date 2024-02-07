@@ -266,6 +266,185 @@ TVector3 ISSArrayEvt::GetPosition(){
 	
 }
 
+char ISSArrayEvt::FindModule( unsigned short detNo ){
+	
+	/// Return the module number depending on the detector number from NPTool
+	if( detNo > 24 ) return -1;
+	return ( ( detNo - 1 ) % 8 ) / 2;
+	
+}
+
+char ISSArrayEvt::FindRow( unsigned short detNo ){
+	
+	/// Return the row number depending on the detector number from NPTool
+	if( detNo > 24 ) return -1;
+	else return 3 - ( detNo - 1 ) / 6;
+	
+}
+
+char ISSArrayEvt::FindAsicP( unsigned short detNo ){
+	
+	/// Return the p-side ASIC number depending on the detector number from NPTool
+	if( detNo > 24 ) return -1;
+
+	unsigned char row = FindRow( detNo );
+	unsigned char asic = row;
+	if( row > 0 ) asic++;
+	if( row > 3 ) asic++;
+
+	return asic;
+	
+}
+
+char ISSArrayEvt::FindAsicN( unsigned short detNo ){
+	
+	/// Return the n-side ASIC number depending on the detector number from NPTool
+	if( detNo > 24 ) return -1;
+
+	unsigned char row = FindRow( detNo );
+	unsigned char asic = 1;
+	if( row == 2 || row == 3 ) asic = 4;
+
+	return asic;
+	
+}
+
+char ISSArrayEvt::FindModule( double phi ){
+	
+	/// Return the module number depending on the phi angle
+	// First put us in the 0 -> 2π range
+	if( phi < 0.0 ) phi += TMath::TwoPi();
+	if( phi > TMath::TwoPi() ) phi -= TMath::TwoPi();
+
+	// module 0 combos
+	if( phi > 5. * TMath::Pi() / 3. ) return 0;
+	else if( phi <= TMath::Pi() / 3. ) return 0;
+	
+	// module 1 combos
+	else if( phi > TMath::Pi() / 3. && phi <= TMath::Pi() ) return 1;
+
+	// module 2 combos
+	else if( phi > TMath::Pi() && phi <= 5. * TMath::Pi() / 3. ) return 2;
+
+	// shouldn't be anything else left
+	else return -1;
+	
+}
+
+char ISSArrayEvt::FindRow( double z ){
+	
+	/// Return the row number depending on the z position
+	
+	// Physical silicon length and gaps
+	double wafer_length = 125.0;
+	double wafer_gap = 0.5;
+	
+	// Loop over each row
+	for( unsigned char i = 0; i < 4; i++ ){
+		
+		// z0 is defined to edge of first wafer, so we start from 0
+		if( z >  (double)(3-i) * wafer_length + (double)(3-i) * wafer_gap &&
+		    z <= (double)(4-i) * wafer_length + (double)(3-i) * wafer_gap )
+			return i;
+		
+	}
+
+	// everything else won't hit the silicon
+	return -1;
+	
+}
+
+char ISSArrayEvt::FindPID( double z ){
+	
+	/// Return the pid number depending on the z position and row number
+	
+	// First get the row number
+	char row = FindRow( z );
+	
+	// Straight away return 0 if we don't hit the silicon
+	if( row < 0 ) return -1;
+	
+	// Physical silicon length and gaps
+	double wafer_length = 125.0;
+	double wafer_gap = 0.5;
+	double wafer_guard = 1.508;
+	double strip_pitch = 0.953;
+
+	// Shift the z to within a single silicon
+	z -= (double)(3-row) * ( wafer_length + wafer_gap );
+
+	// Shift the z to edge of the first strip
+	z -= wafer_guard;
+
+	// Loop over each strip
+	for( unsigned char i = 0; i < 128; i++ ){
+		
+		// z0 is defined to edge of first wafer, so we start from 0
+		if( z >  (double)(127-i) * strip_pitch &&
+		    z <= (double)(128-i) * strip_pitch )
+			return i;
+		
+	}
+	
+	// everything else won't hit the silicon
+	return -1;
+	
+}
+
+char ISSArrayEvt::FindNID( double phi ){
+	
+	/// Return the nid number depending on the phi position
+	
+	// First get the module number
+	char mod = FindModule( phi );
+	
+	// Straight away return 0 if we don't hit the silicon
+	if( mod < 0 ) return -1;
+	
+	// Strip geometry
+	double strip_pitch = 2.0;
+	double det_radius = 54.0 / 2.0;
+
+	// Shift the phi to within a single module
+	phi += TMath::TwoPi() / 6.;
+	phi -= (double)mod * TMath::TwoPi() / 3.;
+
+	// Then put us in the 0 -> 2π range
+	if( phi < 0.0 ) phi += TMath::TwoPi();
+	if( phi > TMath::TwoPi() ) phi -= TMath::TwoPi();
+	
+	// Check if we are on side A or B
+	bool sideB = false;
+	if( phi > TMath::TwoPi() / 6. ) {
+	
+		sideB = true;
+		phi -= TMath::TwoPi() / 6.;
+		
+	}
+	
+	// Loop over each strip
+	for( unsigned char i = 0; i < 11; i++ ){
+		
+		// Vector for the strip edge
+		TVector2 vec_low( det_radius, ( (double)i-5.5 ) * strip_pitch );
+		TVector2 vec_upp( det_radius, ( (double)i-4.5 ) * strip_pitch );
+
+		// Rotate by pi/6 to get it aligned with reference
+		vec_low.Rotate( TMath::TwoPi() / 6. );
+		vec_upp.Rotate( TMath::TwoPi() / 6. );
+
+		// check if we are in the strip
+		if( phi > vec_low.Phi() && phi <= vec_upp.Phi() )
+			return i + 11 * sideB;
+		
+	}
+	
+	// everything else won't hit the silicon
+	return -1;
+	
+}
+
+
 // ------------------- //
 // Array p-side events //
 // ------------------- //

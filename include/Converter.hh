@@ -40,7 +40,7 @@ class ISSConverter {
 
 public:
 	
-	ISSConverter( ISSSettings *myset );
+	ISSConverter( std::shared_ptr<ISSSettings> myset );
 	virtual ~ISSConverter(){};
 	
 
@@ -84,7 +84,7 @@ public:
 	inline TTree* GetTree(){ return output_tree; };
 	inline TTree* GetSortedTree(){ return sorted_tree; };
 
-	inline void AddCalibration( ISSCalibration *mycal ){ cal = mycal; };
+	inline void AddCalibration( std::shared_ptr<ISSCalibration> mycal ){ cal = mycal; };
 	inline void SourceOnly(){ flag_source = true; };
 
 	inline void AddProgressBar( std::shared_ptr<TGProgressBar> myprog ){
@@ -259,10 +259,10 @@ private:
 	std::vector<TH1F*> hnside;
 	
 	// 	Settings file
-	ISSSettings *set;
+	std::shared_ptr<ISSSettings> set;
 
 	// 	Calibrator
-	ISSCalibration *cal;
+	std::shared_ptr<ISSCalibration> cal;
 
 	// Progress bar
 	bool _prog_;

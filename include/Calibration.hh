@@ -36,7 +36,7 @@ class ISSCalibration {
 
 public:
 
-	ISSCalibration( std::string filename, ISSSettings *myset );///< Constructor
+	ISSCalibration( std::string filename, std::shared_ptr<ISSSettings> myset );///< Constructor
 	/// Destructor
 	inline virtual ~ISSCalibration() {
 		delete fRand;
@@ -172,7 +172,7 @@ private:
 
 	std::string fInputFile;///< The location of the calibration input file
 	
-	ISSSettings *set;///< Pointer to the ISSSettings object
+	std::shared_ptr<ISSSettings> set;///< Pointer to the ISSSettings object
 	
 	TRandom *fRand;///< Used to eliminate binning issues
 
@@ -203,8 +203,8 @@ private:
 	
 	// Stuff for the time walk calculation
 	std::unique_ptr<ROOT::Math::RootFinder> rf;///< Root finding object for the time-walk function: walk_function( double *x, double *params )
-	std::unique_ptr<TF1> fa;///< TF1 for the time walk function: walk_function( double *x, double *params )
-	std::unique_ptr<TF1> fb;///< TF1 for the time walk function derivative: walk_derivative( double *x, double *params )
+	TF1 *fa;///< TF1 for the time walk function: walk_function( double *x, double *params )
+	TF1 *fb;///< TF1 for the time walk function derivative: walk_derivative( double *x, double *params )
 	double walk_params[nwalkpars+1];///< Parameters used to store time-walk parameters
 
 
