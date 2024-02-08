@@ -17,7 +17,7 @@ public:
 			  float e, double w );
 	~ISSAsicData();
 	
-	inline double				GetTime() { return (double)timestamp; };
+	inline double					GetTime() { return (double)timestamp; };
 	inline unsigned long long		GetTimeStamp() { return timestamp; };
 	inline unsigned short			GetAdcValue() { return adc_value; };
 	inline unsigned char			GetModule() { return mod; };
@@ -69,7 +69,7 @@ public:
 			  bool th );
 	~ISSCaenData();
 
-	inline double		GetTime() { return (double)timestamp + finetime; };
+	inline double			GetTime() { return (double)timestamp + finetime; };
 	inline unsigned long	GetTimeStamp() { return timestamp; };
 	inline float			GetFineTime() { return finetime; };
 	inline float			GetBaseline() { return baseline; };
@@ -128,7 +128,7 @@ public:
 	ISSInfoData( unsigned long long t, unsigned char c, unsigned char m );
 	~ISSInfoData();
 	
-	inline double	 		GetTime(){ return (double)timestamp; };
+	inline double	 			GetTime(){ return (double)timestamp; };
 	inline unsigned long long	GetTimeStamp(){ return timestamp; };
 	inline unsigned char 		GetCode(){ return code; };
 	inline unsigned char 		GetModule(){ return mod; };
@@ -168,9 +168,9 @@ public:
 	void SetData( std::shared_ptr<ISSInfoData> data );
 
 	// These methods are not very safe for access
-	inline std::shared_ptr<ISSAsicData> GetAsicData() { return std::make_shared<ISSAsicData>( asic_packets.at(0) ); };
-	inline std::shared_ptr<ISSCaenData> GetCaenData() { return std::make_shared<ISSCaenData>( caen_packets.at(0) ); };
-	inline std::shared_ptr<ISSInfoData> GetInfoData() { return std::make_shared<ISSInfoData>( info_packets.at(0) ); };
+	inline ISSAsicData* GetAsicData() { return &asic_packets.at(0); };
+	inline ISSCaenData* GetCaenData() { return &caen_packets.at(0); };
+	inline ISSInfoData* GetInfoData() { return &info_packets.at(0); };
 	
 	// Complicated way to get the time...
 	double GetTime();
