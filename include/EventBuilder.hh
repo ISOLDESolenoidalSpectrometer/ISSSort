@@ -141,9 +141,9 @@ private:
 	TTree *nptool_tree; ///< Pointer to the TTree in the simulation input file
 	ISSDataPackets *in_data = nullptr; ///< Pointer to the TBranch containing the data in the time-sorted input ROOT file
 	TIssData *sim_data = nullptr; ///< Pointer to the TBranch containing the data in the NPTool input file
-	ISSAsicData *asic_data; ///< Pointer to a given entry in the tree of some data from the ASICs
-	ISSCaenData *caen_data; ///< Pointer to a given entry in the tree of some data from the CAEN
-	ISSInfoData *info_data; ///< Pointer to a given entry in the tree of the "info" datatype
+	std::shared_ptr<ISSAsicData> asic_data; ///< Pointer to a given entry in the tree of some data from the ASICs
+	std::shared_ptr<ISSCaenData> caen_data; ///< Pointer to a given entry in the tree of some data from the CAEN
+	std::shared_ptr<ISSInfoData> info_data; ///< Pointer to a given entry in the tree of the "info" datatype
 
 	/// Event structures
 	std::shared_ptr<ISSArrayEvt> array_evt;

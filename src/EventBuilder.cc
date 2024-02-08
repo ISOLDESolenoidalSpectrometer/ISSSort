@@ -437,7 +437,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	// Apply time-walk correction, i.e. get new time ordering
 	//std::cout << " Event Building: applying time walk-correction to event ordering" << std::endl;
 	//input_tree->BuildIndex( "GetTimeWithWalk()" );
-	input_tree->BuildIndex( "GetTimeMSB()", "GetTimeLSB()" );
+	input_tree->BuildIndex( "GetTimeStamp()" );
 	TTreeIndex *att_index = (TTreeIndex*)input_tree->GetTreeIndex();
 
 	(void) att_index; // Avoid unused variable warning.
