@@ -163,9 +163,9 @@ public:
 	inline bool	IsCaen() { return caen_packets.size(); };
 	inline bool	IsInfo() { return info_packets.size(); };
 	
-	void SetData( std::shared_ptr<ISSAsicData> data );
-	void SetData( std::shared_ptr<ISSCaenData> data );
-	void SetData( std::shared_ptr<ISSInfoData> data );
+	void SetData( ISSAsicData *data );
+	void SetData( ISSCaenData *data );
+	void SetData( ISSInfoData *data );
 
 	// These methods are not very safe for access
 	inline ISSAsicData* GetAsicData() { return &asic_packets.at(0); };

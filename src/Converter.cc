@@ -849,7 +849,7 @@ void ISSConverter::ProcessASICData(){
 	// If it's a pulser trigger above an energy threshold, then count it
 	if( my_adc_data > set->GetArrayPulserThreshold() && pulser_trigger ) {
 		
-		data_packet->SetData( info_data );
+		data_packet->SetData( info_data.get() );
 		if( !flag_source ) output_tree->Fill();
 		info_data->Clear();
 		data_packet->ClearData();
@@ -882,7 +882,7 @@ void ISSConverter::ProcessASICData(){
 		else asic_data->SetThreshold( false );
 		
 		// Set this data and fill event to tree
-		data_packet->SetData( asic_data );
+		data_packet->SetData( asic_data.get() );
 		if( !flag_source ) output_tree->Fill();
 		asic_data->Clear();
 		data_packet->ClearData();
@@ -1143,7 +1143,7 @@ void ISSConverter::FinishCAENData(){
 				info_data->SetTimeStamp( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
 				info_data->SetModule( caen_data->GetModule() + set->GetNumberOfArrayModules() );
 				info_data->SetCode( my_info_code );
-				data_packet->SetData( info_data );
+				data_packet->SetData( info_data.get() );
 				if( !flag_source ) output_tree->Fill();
 				data_packet->ClearData();
 				
@@ -1167,7 +1167,7 @@ void ISSConverter::FinishCAENData(){
 			// Set this data and fill event to tree
 			// Also add the time offset when we do this
 			caen_data->SetTimeStamp( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
-			data_packet->SetData( caen_data );
+			data_packet->SetData( caen_data.get() );
 			if( !flag_source ) output_tree->Fill();
 			data_packet->ClearData();
 
@@ -1292,7 +1292,7 @@ void ISSConverter::ProcessInfoData(){
 		info_data->SetModule( my_mod_id );
 		info_data->SetTimeStamp( my_tm_stp );
 		info_data->SetCode( my_info_code );
-		data_packet->SetData( info_data );
+		data_packet->SetData( info_data.get() );
 		if( !flag_source ) output_tree->Fill();
 		info_data->Clear();
 		data_packet->ClearData();
