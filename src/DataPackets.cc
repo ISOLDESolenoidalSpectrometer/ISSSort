@@ -26,7 +26,7 @@ ISSInfoData::ISSInfoData( unsigned long long t, unsigned char c, unsigned char m
 					timestamp(t), code(c), mod(m) {}
 
 
-void ISSDataPackets::SetData( ISSAsicData *data ){
+void ISSDataPackets::SetData( std::shared_ptr<ISSAsicData> data ){
 	
 	// Reset the vector to size = 0
 	// We only want to have one element per Tree entry
@@ -48,7 +48,7 @@ void ISSDataPackets::SetData( ISSAsicData *data ){
 	
 }
 
-void ISSDataPackets::SetData( ISSCaenData *data ){
+void ISSDataPackets::SetData( std::shared_ptr<ISSCaenData> data ){
 	
 	// Reset the vector to size = 0
 	// We only want to have one element per Tree entry
@@ -75,7 +75,7 @@ void ISSDataPackets::SetData( ISSCaenData *data ){
 
 }
 
-void ISSDataPackets::SetData( ISSInfoData *data ){
+void ISSDataPackets::SetData( std::shared_ptr<ISSInfoData> data ){
 	
 	// Reset the vector to size = 0
 	// We only want to have one element per Tree entry
