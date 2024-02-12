@@ -16,33 +16,43 @@ void ISSHistogrammer::MakeHists() {
     std::string dirname;
    
     std::vector<double> zbins;
-   
-    for ( int row = 0; row < 4; row++ ){
- 
-        for ( int ch = 0; ch <= 128; ch++ ){
-
-            double d = 128 - ch;        // take the far end (low-edge) of the end strip
-            d *= 0.953;                 // p-side strip pitch = 0.953 mm
-            d += 1.508;                 // distance from wafer edge to active region
-            d += 125.5 * (3.0 - row);   // move to correct row (125.0 mm wafer length + 0.5 mm inter-wafer gap)
-            d *= -1.0;
-            d += react->GetArrayDistance();
-
-	    // Add a bin to the start and the end for space.
-            if ( ch == 0 && row == 0 ){ 
-                zbins.push_back( d - 10 );
-            }
-            
-            zbins.push_back(d);
-            
-            if ( ch == 128 && row == 3 ){
-                zbins.push_back( d + 10 );
-            }
- 
-        } // ch
- 
-    } // row
+	double d0 = react->GetArrayDistance();
+	double d;
 	
+	for ( int row = 0; row < 4; row++ ){
+		
+		for ( int ch = 0; ch < 128; ch++ ){
+			
+			// Get the info from the ISSEvt class
+			ISSArrayEvt tmp_evt;
+			tmp_evt.SetEvent( 0, 0, 127-ch, 0, 0, 0, 0, 0, 0, 3-row );
+			d = tmp_evt.GetZ();
+			d -= 0.953 / 2.0; // from centre of strip to the edge
+			
+			if( d0 < 0 ) zbins.push_back( d0 - d );
+			else zbins.push_back( d0 + d );
+			
+		} // ch
+		
+		// Add the upper edge of the wafer
+		if( d0 < 0 ) zbins.push_back( d0 - d - 0.953 );
+		else zbins.push_back( d0 + d + 0.953 );
+
+	} // row
+	
+	// Add a bin to the start and end for space
+	if( d0 < 0 ) {
+		zbins.push_back( d0 + 10. );
+		zbins.push_back( d0 - d - 10. );
+	}
+	else {
+		zbins.push_back( d0 - 10. );
+		zbins.push_back( d0 + d + 10. );
+	}
+	
+	// Order the bins
+	std::sort( zbins.begin(), zbins.end() );
+
 	// Array physics histograms
 	// Singles mode
 	dirname = "SinglesMode";
