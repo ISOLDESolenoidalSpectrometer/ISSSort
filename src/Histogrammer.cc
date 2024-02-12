@@ -25,29 +25,29 @@ void ISSHistogrammer::MakeHists() {
 			
 			// Get the info from the ISSEvt class
 			ISSArrayEvt tmp_evt;
-			tmp_evt.SetEvent( 0, 0, ch, 0, 0, 0, 0, 0, 0, row );
+			tmp_evt.SetEvent( 0, 0, 127-ch, 0, 0, 0, 0, 0, 0, 3-row );
 			d = tmp_evt.GetZ();
 			d -= 0.953 / 2.0; // from centre of strip to the edge
 			
-			if( d0 > 0 ) zbins.push_back( d0 + d );
-			else zbins.push_back( d0 - d );
+			if( d0 < 0 ) zbins.push_back( d0 - d );
+			else zbins.push_back( d0 + d );
 			
 		} // ch
 		
 		// Add the upper edge of the wafer
-		if( d0 > 0 ) zbins.push_back( d0 + d + 0.953 );
-		else zbins.push_back( d0 - d - 0.953 );
+		if( d0 < 0 ) zbins.push_back( d0 - d - 0.953 );
+		else zbins.push_back( d0 + d + 0.953 );
 
 	} // row
 	
 	// Add a bin to the start and end for space
-	if( d0 > 0 ) {
-		zbins.push_back( d0 - 10. );
-		zbins.push_back( d0 + d + 10. );
-	}
-	else {
+	if( d0 < 0 ) {
 		zbins.push_back( d0 + 10. );
 		zbins.push_back( d0 - d - 10. );
+	}
+	else {
+		zbins.push_back( d0 - 10. );
+		zbins.push_back( d0 + d + 10. );
 	}
 	
 	// Order the bins
