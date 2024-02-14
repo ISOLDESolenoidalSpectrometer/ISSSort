@@ -121,11 +121,11 @@ iss_sortDict$(DICTEXT): iss_sortDict.cc
 
 clean:
 	rm -vf $(BIN_DIR)/iss_sort $(SRC_DIR)/*.o $(SRC_DIR)/*~ $(INC_DIR)/*.gch *.o $(BIN_DIR)/*.pcm *.pcm $(BIN_DIR)/*Dict* *Dict* $(LIB_DIR)/*
-	
+
 doc:
 	mkdir -p $(DOC_DIR)
 	$(DOC) $(DOC_FILE)
 	ln -sf $(DOC_DIR)/index.html $(DOC_HTML)
-	
+
 doc-clean:
 	rm -rvf $(DOC_DIR)/* $(DOC_DIR)/.??* $(DOC_HTML) 
