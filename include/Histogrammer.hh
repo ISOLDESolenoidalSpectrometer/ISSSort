@@ -1,5 +1,5 @@
-#ifndef __HISTOGRAMMER_hh
-#define __HISTOGRAMMER_hh
+#ifndef __HISTOGRAMMER_HH
+#define __HISTOGRAMMER_HH
 
 #include <fstream>
 #include <iostream>

@@ -1,5 +1,5 @@
-#ifndef _AutoCalibrator_hh
-#define _AutoCalibrator_hh
+#ifndef __AUTOCALIBRATOR_HH
+#define __AUTOCALIBRATOR_HH
 
 #include <fstream>
 #include <iostream>

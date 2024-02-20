@@ -1,5 +1,5 @@
-#ifndef _Converter_hh
-#define _Converter_hh
+#ifndef __CONVERTER_HH
+#define __CONVERTER_HH
 
 #include <bitset>
 #include <fstream>
@@ -32,7 +32,7 @@
 #endif
 
 // Data packets header
-#ifndef __DATAPACKETS_hh
+#ifndef __DATAPACKETS_HH
 # include "DataPackets.hh"
 #endif
 

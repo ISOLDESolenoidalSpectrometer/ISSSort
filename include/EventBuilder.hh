@@ -1,5 +1,5 @@
-#ifndef _EventBuilder_hh
-#define _EventBuilder_hh
+#ifndef __EVENTBUILDER_HH
+#define __EVENTBUILDER_HH
 
 #include <fstream>
 #include <iostream>
@@ -34,7 +34,7 @@
 #endif
 
 // Data packets header
-#ifndef __DATAPACKETS_hh
+#ifndef __DATAPACKETS_HH
 # include "DataPackets.hh"
 #endif
 
@@ -51,11 +51,6 @@
 // Reaction header
 #ifndef __REACTION_HH
 # include "Reaction.hh"
-#endif
-
-// Histogram header
-#ifndef __HISTOGRAMMER_hh
-# include "Histogrammer.hh"
 #endif
 
 /*!
