@@ -1,5 +1,5 @@
-#ifndef __REACTION_HH__
-#define __REACTION_HH__
+#ifndef __REACTION_HH
+#define __REACTION_HH
 
 #include <iostream>
 #include <iomanip>
