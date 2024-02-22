@@ -26,9 +26,6 @@
 #include "Math/RootFinder.h"
 #include "Math/Functor.h"
 
-#include "TSpline.h" // BRJ - header for Splines 
-
-
 // Settings header
 #ifndef __SETTINGS_HH
 # include "Settings.hh"
@@ -46,7 +43,7 @@ const double p_mass  = 938272.08816;	///< mass of the proton in keV/c^2
 const double n_mass  = 939565.42052;	///< mass of the neutron in keV/c^2
 const double u_mass  = 931494.10242;	///< atomic mass unit in keV/c^2
 const double T_to_mm =   299.792458;	///< in units of 1/mm
-const double k_Si 	 =     2.80e-10;	///< k value - mm/e-h pair for PHD in silicon
+const double k_Si 	 =     2.88e-10;	///< k value - mm/e-h pair for PHD in silicon 
 const double e0_Si 	 =     3.67e-03;	///< epsilon_0 for silicon for PHD in keV
 
 // Element names

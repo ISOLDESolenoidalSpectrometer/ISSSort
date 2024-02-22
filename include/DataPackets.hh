@@ -17,7 +17,7 @@ public:
 			  float e, double w );
 	~ISSAsicData();
 	
-	inline double				GetTime() { return (double)timestamp; };
+	inline double					GetTime() { return (double)timestamp; };
 	inline unsigned long long		GetTimeStamp() { return timestamp; };
 	inline unsigned short			GetAdcValue() { return adc_value; };
 	inline unsigned char			GetModule() { return mod; };
@@ -69,7 +69,7 @@ public:
 			  bool th );
 	~ISSCaenData();
 
-	inline double		GetTime() { return (double)timestamp + finetime; };
+	inline double			GetTime() { return (double)timestamp + finetime; };
 	inline unsigned long	GetTimeStamp() { return timestamp; };
 	inline float			GetFineTime() { return finetime; };
 	inline float			GetBaseline() { return baseline; };
@@ -128,7 +128,7 @@ public:
 	ISSInfoData( unsigned long long t, unsigned char c, unsigned char m );
 	~ISSInfoData();
 	
-	inline double	 		GetTime(){ return (double)timestamp; };
+	inline double	 			GetTime(){ return (double)timestamp; };
 	inline unsigned long long	GetTimeStamp(){ return timestamp; };
 	inline unsigned char 		GetCode(){ return code; };
 	inline unsigned char 		GetModule(){ return mod; };

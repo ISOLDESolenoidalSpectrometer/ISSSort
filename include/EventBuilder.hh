@@ -119,8 +119,8 @@ public:
 		//input_tree->ResetBranchAddresses();
 		//nptool_tree->ResetBranchAddresses();
 		input_file->Close();
-		if( in_data != nullptr ) delete in_data;
-		if( sim_data != nullptr ) delete sim_data;
+		//if( in_data != nullptr ) delete in_data;
+		//if( sim_data != nullptr ) delete sim_data;
 		log_file.close(); //?? to close or not to close?
 	}; ///< Closes the output files from this class
 	inline void PurgeOutput(){ output_file->Purge(2); }
