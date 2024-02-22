@@ -268,9 +268,9 @@ TVector3 ISSArrayEvt::GetPosition(){
 
 char ISSArrayEvt::FindModule( unsigned short detNo ){
 	
-	/// Return the module number depending on the detector number from NPTool
+	/// Return the module number depending on the detector number from NPTool. 
 	if (detNo > 24) return -1;
-    return ((detNo - 1) % 6) / 2;
+    return ((detNo - 1) % 6) / 2; 
 	
 }
 
