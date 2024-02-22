@@ -266,6 +266,28 @@ public:
 	};///< Getter for array-recoil fill ratio (unused?)
 	
 	
+	// ELUM-recoil time difference
+	inline double GetElumRecoilPromptTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return elum_recoil_prompt[i];
+		else return 0;
+	};///< Getter for elum-recoil prompt time difference, used for defining coincidence windows
+	
+	inline double GetElumRecoilRandomTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return elum_recoil_random[i];
+		else return 0;
+	};///< Getter for elum-recoil random time difference, used for defining coincidence windows
+	
+	inline double GetElumRecoilTimeRatio(){
+		return ( elum_recoil_prompt[1] - elum_recoil_prompt[0] ) / ( elum_recoil_random[1] - elum_recoil_random[0] );
+	};///< Returns prompt window/random window
+	
+	inline double GetElumRecoilFillRatio(){
+		return elum_recoil_ratio;
+	};///< Getter for array-recoil fill ratio (unused?)
+	
+	
 	// Setters
 	inline void	SetField( double m ){ Mfield = m; };					///< Setter for the magnetic field strength
 	inline void	SetArrayDistance( double d ){ z0 = d; };				///< Setter for the distance between the target and first silicon wafer of the array
@@ -374,6 +396,9 @@ private:
 	double array_recoil_prompt[2]; ///< Prompt time windows between recoil and array event
 	double array_recoil_random[2]; ///< Prompt time window between recoil and array event
 	double array_recoil_ratio; // fill ratios
+	double elum_recoil_prompt[2]; ///< Prompt time windows between recoil and elum event
+	double elum_recoil_random[2]; ///< Prompt time window between recoil and elum event
+	double elum_recoil_ratio; // fill ratios
 
 	// Experimental info on the ejectile
 	double r_meas;		///< Measured radius of the ejectile when it interects the array

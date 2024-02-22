@@ -60,6 +60,12 @@
 #ArrayRecoil_RandomTime.Min: 600
 #ArrayRecoil_RandomTime.Max: 1200
 
+# ELUM-Recoil windows
+#ElumRecoil_PromptTime.Min: -300
+#ElumRecoil_PromptTime.Max: 300
+#ElumRecoil_RandomTime.Min: 600
+#ElumRecoil_RandomTime.Max: 1200
+
 ## Recoil cut files
 #RecoilCut_0.File: NULL	# ROOT file containing the 2D recoil energy cut for sector 0
 #RecoilCut_0.Name: CUTG	# name of the TCutG object inside the ROOT file for sector 0

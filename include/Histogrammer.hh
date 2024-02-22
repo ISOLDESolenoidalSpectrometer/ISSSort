@@ -89,8 +89,8 @@ public:
 	
 	// Recoil - elum coincidence
 	inline bool	PromptCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSElumEvt> e ){
-		if( r->GetTime() - e->GetTime() > -200 &&
-			r->GetTime() - e->GetTime() < 200 ) return true;
+		if( r->GetTime() - e->GetTime() > react->GetElumRecoilPromptTime(0) &&
+			r->GetTime() - e->GetTime() < react->GetElumRecoilPromptTime(1) ) return true;
 		else return false;
 	};
 	
@@ -101,8 +101,8 @@ public:
 	};
 	
 	inline bool	RandomCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSElumEvt> e ){
-		if( r->GetTime() - e->GetTime() > 1000 &&
-			r->GetTime() - e->GetTime() < 1400 ) return true;
+		if( r->GetTime() - e->GetTime() > react->GetElumRecoilRandomTime(0) &&
+			r->GetTime() - e->GetTime() < react->GetElumRecoilRandomTime(1) ) return true;
 		else return false;
 	};
 	inline bool	OnBeam( std::shared_ptr<ISSRecoilEvt> r ){
