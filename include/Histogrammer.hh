@@ -1,5 +1,5 @@
-#ifndef __HISTOGRAMMER_hh
-#define __HISTOGRAMMER_hh
+#ifndef __HISTOGRAMMER_HH
+#define __HISTOGRAMMER_HH
 
 #include <fstream>
 #include <iostream>
@@ -89,8 +89,8 @@ public:
 	
 	// Recoil - elum coincidence
 	inline bool	PromptCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSElumEvt> e ){
-		if( r->GetTime() - e->GetTime() > -200 &&
-			r->GetTime() - e->GetTime() < 200 ) return true;
+		if( r->GetTime() - e->GetTime() > react->GetElumRecoilPromptTime(0) &&
+			r->GetTime() - e->GetTime() < react->GetElumRecoilPromptTime(1) ) return true;
 		else return false;
 	};
 	
@@ -101,8 +101,8 @@ public:
 	};
 	
 	inline bool	RandomCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSElumEvt> e ){
-		if( r->GetTime() - e->GetTime() > 1000 &&
-			r->GetTime() - e->GetTime() < 1400 ) return true;
+		if( r->GetTime() - e->GetTime() > react->GetElumRecoilRandomTime(0) &&
+			r->GetTime() - e->GetTime() < react->GetElumRecoilRandomTime(1) ) return true;
 		else return false;
 	};
 	inline bool	OnBeam( std::shared_ptr<ISSRecoilEvt> r ){
@@ -232,15 +232,20 @@ private:
 	std::vector<TH2F*> E_vs_z_ebis_off_mod;
 	std::vector<TH2F*> E_vs_z_recoil_mod;
 	std::vector<TH2F*> E_vs_z_recoilT_mod;
+	std::vector<TH2F*> E_vs_z_recoil_random_mod;
+	std::vector<TH2F*> E_vs_z_recoilT_random_mod;
 	std::vector<TH2F*> E_vs_z_cut;
 	std::vector<TH2F*> E_vs_z_ebis_cut;
 	std::vector<TH2F*> E_vs_z_ebis_on_cut;
 	std::vector<TH2F*> E_vs_z_ebis_off_cut;
 	std::vector<TH2F*> E_vs_z_recoil_cut;
 	std::vector<TH2F*> E_vs_z_recoilT_cut;
+	std::vector<TH2F*> E_vs_z_recoil_random_cut;
+	std::vector<TH2F*> E_vs_z_recoilT_random_cut;
 	std::vector<TH2F*> E_vs_z_T1_cut;
 	TH2F *E_vs_z, *E_vs_z_ebis, *E_vs_z_ebis_on, *E_vs_z_ebis_off;
 	TH2F *E_vs_z_recoil, *E_vs_z_recoilT, *E_vs_z_T1;
+	TH2F *E_vs_z_recoil_random, *E_vs_z_recoilT_random;
 	
 	// Array - Ex vs. thetaCM
 	std::vector<TH2F*> Ex_vs_theta_mod;
@@ -249,15 +254,20 @@ private:
 	std::vector<TH2F*> Ex_vs_theta_ebis_off_mod;
 	std::vector<TH2F*> Ex_vs_theta_recoil_mod;
 	std::vector<TH2F*> Ex_vs_theta_recoilT_mod;
+	std::vector<TH2F*> Ex_vs_theta_recoil_random_mod;
+	std::vector<TH2F*> Ex_vs_theta_recoilT_random_mod;
 	std::vector<TH2F*> Ex_vs_theta_cut;
 	std::vector<TH2F*> Ex_vs_theta_ebis_cut;
 	std::vector<TH2F*> Ex_vs_theta_ebis_on_cut;
 	std::vector<TH2F*> Ex_vs_theta_ebis_off_cut;
 	std::vector<TH2F*> Ex_vs_theta_recoil_cut;
 	std::vector<TH2F*> Ex_vs_theta_recoilT_cut;
+	std::vector<TH2F*> Ex_vs_theta_recoil_random_cut;
+	std::vector<TH2F*> Ex_vs_theta_recoilT_random_cut;
 	std::vector<TH2F*> Ex_vs_theta_T1_cut;
 	TH2F *Ex_vs_theta, *Ex_vs_theta_ebis, *Ex_vs_theta_ebis_on, *Ex_vs_theta_ebis_off;
 	TH2F *Ex_vs_theta_recoil, *Ex_vs_theta_recoilT, *Ex_vs_theta_T1;
+	TH2F *Ex_vs_theta_recoil_random, *Ex_vs_theta_recoilT_random;
 		
 	// Array - Ex vs. z
 	std::vector<TH2F*> Ex_vs_z_mod;
@@ -266,15 +276,20 @@ private:
 	std::vector<TH2F*> Ex_vs_z_ebis_off_mod;
 	std::vector<TH2F*> Ex_vs_z_recoil_mod;
 	std::vector<TH2F*> Ex_vs_z_recoilT_mod;
+	std::vector<TH2F*> Ex_vs_z_recoil_random_mod;
+	std::vector<TH2F*> Ex_vs_z_recoilT_random_mod;
 	std::vector<TH2F*> Ex_vs_z_cut;
 	std::vector<TH2F*> Ex_vs_z_ebis_cut;
 	std::vector<TH2F*> Ex_vs_z_ebis_on_cut;
 	std::vector<TH2F*> Ex_vs_z_ebis_off_cut;
 	std::vector<TH2F*> Ex_vs_z_recoil_cut;
 	std::vector<TH2F*> Ex_vs_z_recoilT_cut;
+	std::vector<TH2F*> Ex_vs_z_recoil_random_cut;
+	std::vector<TH2F*> Ex_vs_z_recoilT_random_cut;
 	std::vector<TH2F*> Ex_vs_z_T1_cut;
 	TH2F *Ex_vs_z, *Ex_vs_z_ebis, *Ex_vs_z_ebis_on, *Ex_vs_z_ebis_off;
 	TH2F *Ex_vs_z_recoil, *Ex_vs_z_recoilT, *Ex_vs_z_T1;
+	TH2F *Ex_vs_z_recoil_random, *Ex_vs_z_recoilT_random;
 		
 	// Array - Ex
 	std::vector<TH1F*> Ex_mod;
@@ -283,16 +298,21 @@ private:
 	std::vector<TH1F*> Ex_ebis_off_mod;
 	std::vector<TH1F*> Ex_recoil_mod;
 	std::vector<TH1F*> Ex_recoilT_mod;
+	std::vector<TH1F*> Ex_recoil_random_mod;
+	std::vector<TH1F*> Ex_recoilT_random_mod;
 	std::vector<TH1F*> Ex_cut;
 	std::vector<TH1F*> Ex_ebis_cut;
 	std::vector<TH1F*> Ex_ebis_on_cut;
 	std::vector<TH1F*> Ex_ebis_off_cut;
 	std::vector<TH1F*> Ex_recoil_cut;
 	std::vector<TH1F*> Ex_recoilT_cut;
+	std::vector<TH1F*> Ex_recoil_random_cut;
+	std::vector<TH1F*> Ex_recoilT_random_cut;
 	std::vector<TH1F*> Ex_T1_cut;
 	std::vector<TH2F*> Ex_vs_T1_cut;
 	TH1F *Ex, *Ex_ebis, *Ex_ebis_on, *Ex_ebis_off;
 	TH1F *Ex_recoil, *Ex_recoilT, *Ex_T1;
+	TH1F *Ex_recoil_random, *Ex_recoilT_random;
 	TH2F *Ex_vs_T1;
 		
 	// ELUM
@@ -302,8 +322,11 @@ private:
 	std::vector<TH1F*> elum_ebis_off_sec;
 	std::vector<TH1F*> elum_recoil_sec;
 	std::vector<TH1F*> elum_recoilT_sec;
+	std::vector<TH1F*> elum_recoil_random_sec;
+	std::vector<TH1F*> elum_recoilT_random_sec;
 	TH1F *elum, *elum_ebis, *elum_ebis_on, *elum_ebis_off;
 	TH1F *elum_recoil, *elum_recoilT;
+	TH1F *elum_recoil_random, *elum_recoilT_random;
 	TH2F *elum_vs_T1;
 	
 };

@@ -11,17 +11,8 @@
 * should become more complete over time.
 */
 // ============================================================================================= //
-// My code include.
-#include "Settings.hh"
-#include "Calibration.hh"
-#include "Converter.hh"
-#include "EventBuilder.hh"
-#include "Reaction.hh"
-#include "Histogrammer.hh"
-#include "AutoCalibrator.hh"
-#include "ISSGUI.hh"
-#include "DataSpy.hh"
 
+// My code include.
 #include "iss_sort.hh"
 
 

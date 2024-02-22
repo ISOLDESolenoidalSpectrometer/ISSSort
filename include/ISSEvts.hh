@@ -1,5 +1,5 @@
-#ifndef __ISSEVTS_HH__
-#define __ISSEVTS_HH__
+#ifndef __ISSEVTS_HH
+#define __ISSEVTS_HH
 
 #include <iostream>
 #include <vector>
