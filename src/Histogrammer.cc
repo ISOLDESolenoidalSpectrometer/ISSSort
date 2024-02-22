@@ -8,6 +8,10 @@ ISSHistogrammer::ISSHistogrammer( std::shared_ptr<ISSReaction> myreact, std::sha
 	// No progress bar by default
 	_prog_ = false;
 	
+	// Make the histograms track the sum of the weights for correctly
+	// performing the error propagation when subtracting
+	TH1::SetDefaultSumw2();
+	
 }
 
 void ISSHistogrammer::MakeHists() {
