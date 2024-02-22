@@ -545,6 +545,15 @@ void ISSReaction::ReadReaction() {
 	// Array-Recoil fill ratios
 	array_recoil_ratio = config->GetValue( "ArrayRecoil_FillRatio", GetArrayRecoilTimeRatio() );
 	
+	// ELUM-Recoil time windows
+	elum_recoil_prompt[0] = config->GetValue( "ElumRecoil_PromptTime.Min", -300 );	// lower limit for array-recoil prompt time difference
+	elum_recoil_prompt[1] = config->GetValue( "ElumRecoil_PromptTime.Max", 300 );		// upper limit for array-recoil prompt time difference
+	elum_recoil_random[0] = config->GetValue( "ElumRecoil_RandomTime.Min", 600 );		// lower limit for array-recoil random time difference
+	elum_recoil_random[1] = config->GetValue( "ElumRecoil_RandomTime.Max", 1200 );	// upper limit for array-recoil random time difference
+	
+	// ELUM-Recoil fill ratios
+	elum_recoil_ratio = config->GetValue( "ElumRecoil_FillRatio", GetElumRecoilTimeRatio() );
+	
 	// Target thickness and offsets
 	target_thickness = config->GetValue( "TargetThickness", 0.200 ); // units of mg/cm^2
 	x_offset = config->GetValue( "TargetOffset.X", 0.0 );	// of course this should be 0.0 if you centre the beam! Units of mm, vertical

@@ -1,5 +1,5 @@
-#ifndef __COMMAND_LINE_INTERFACE
-#define __COMMAND_LINE_INTERFACE
+#ifndef __COMMAND_LINE_INTERFACE_HH
+#define __COMMAND_LINE_INTERFACE_HH
 
 #include <iostream>
 #include <iomanip>

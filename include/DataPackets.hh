@@ -1,5 +1,5 @@
-#ifndef __DATAPACKETS_hh
-#define __DATAPACKETS_hh
+#ifndef __DATAPACKETS_HH
+#define __DATAPACKETS_HH
 
 #include <memory>
 #include <iostream>

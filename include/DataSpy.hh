@@ -1,6 +1,6 @@
 // function declarations for data spy library
-#ifndef _DataSpy_hh
-#define _DataSpy_hh
+#ifndef __DATASPY_HH
+#define __DATASPY_HH
 
 #include <stdio.h>
 #include <stdlib.h>

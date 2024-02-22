@@ -28,13 +28,40 @@
 #include <RQ_OBJECT.h>
 
 // My code include.
-#include "Settings.hh"
-#include "Calibration.hh"
-#include "Converter.hh"
-#include "EventBuilder.hh"
-#include "Reaction.hh"
-#include "Histogrammer.hh"
-#include "AutoCalibrator.hh"
+// Settings header
+#ifndef __SETTINGS_HH
+# include "Settings.hh"
+#endif
+
+// Calibration header
+#ifndef __CALIBRATION_HH
+# include "Calibration.hh"
+#endif
+
+// Reaction header
+#ifndef __REACTION_HH
+# include "Reaction.hh"
+#endif
+
+// Converter header
+#ifndef __CONVERTER_HH
+# include "Converter.hh"
+#endif
+
+// EventBuilder header
+#ifndef __EVENTBUILDER_HH
+# include "EventBuilder.hh"
+#endif
+
+// Histogrammer header
+#ifndef __HISTOGRAMMER_HH
+# include "Histogrammer.hh"
+#endif
+
+// AutoCalibrator header
+#ifndef __AUTOCALIBRATOR_HH
+# include "AutoCalibrator.hh"
+#endif
 
 // C++ include.
 #include <string>
