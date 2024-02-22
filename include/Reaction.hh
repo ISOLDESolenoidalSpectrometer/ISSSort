@@ -26,6 +26,8 @@
 #include "Math/RootFinder.h"
 #include "Math/Functor.h"
 
+#include "TSpline.h" // BRJ - header for Splines 
+
 // Settings header
 #ifndef __SETTINGS_HH
 # include "Settings.hh"
