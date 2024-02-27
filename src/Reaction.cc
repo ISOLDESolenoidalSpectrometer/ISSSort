@@ -532,7 +532,7 @@ void ISSReaction::ReadReaction() {
 	EBIS_ratio = config->GetValue( "EBIS.FillRatio", GetEBISTimeRatio() );	// this is the measured ratio of EBIS On/off. Default is just the time window ratio
 	
 	// T1 time window
-	t1_min_time = config->GetValue( "T1.Min", 0 );		// default = 0
+	t1_min_time = config->GetValue( "T1.Min", 0.0 );    // default = 0
 	t1_max_time = config->GetValue( "T1.Max", 1.2e9 );	// default = 1.2 seconds
 	
 	
