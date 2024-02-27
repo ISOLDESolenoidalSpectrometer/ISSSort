@@ -1,5 +1,7 @@
 #include "Settings.hh"
 
+#include <iomanip>
+
 ISSSettings::ISSSettings( std::string filename ) {
 	
 	SetFile( filename );
@@ -489,3 +491,137 @@ char ISSSettings::GetScintArrayDetector( unsigned char mod, unsigned char ch ) {
 	
 }
 
+void ISSSettings::PrintSettings() {
+
+	std::cout << "=== Settings begin ===" << std::endl;
+
+#define PRINT_SETTING(x) do {					\
+	  std::cout << std::setw(25) << std::left << #x ":" <<	\
+	    " " << (x) << std::endl;				\
+	} while (0)
+
+#define PRINT_SETTING_INT(x) do {				\
+	  std::cout << std::setw(25) << std::left << #x ":" <<	\
+	    " " << ((int) (x)) << std::endl;			\
+	} while (0)
+
+#define PRINT_SETTING_VECT_INT(x) do {				\
+	    for (size_t i = 0; i < x.size(); i++) {		\
+	      std::cout << std::setw(25) << std::left <<	\
+		Form("%s[%d]:",#x, (int) i) <<			\
+		" " << ((int) (x[i])) << std::endl;		\
+	    }							\
+	  } while (0)
+
+#define PRINT_SETTING_VECT_VECT_INT(x) do {			\
+	    for (size_t i = 0; i < x.size(); i++) {		\
+	      for (size_t j = 0; j < x[i].size(); j++) {	\
+		std::cout << std::setw(25) << std::left <<	\
+		  Form("%s[%d][%d]:",#x, (int) i, (int) j) <<	\
+		  " " << ((int) (x[i][j])) << std::endl;	\
+	      }							\
+	    }							\
+	  } while (0)
+
+	// Array settings
+	PRINT_SETTING_INT(n_array_mod);
+	PRINT_SETTING_INT(n_array_asic);
+	PRINT_SETTING_INT(n_array_ch);
+
+	// Array geometry
+	PRINT_SETTING_INT(n_array_row);
+	PRINT_SETTING_INT(n_array_pstrip);
+	PRINT_SETTING_INT(n_array_nstrip);
+	PRINT_SETTING_INT(n_array_side);
+
+	// CAEN settings
+	PRINT_SETTING_INT(n_caen_mod);
+	PRINT_SETTING_INT(n_caen_ch);
+	PRINT_SETTING_VECT_INT(caen_model);
+	PRINT_SETTING_VECT_VECT_INT(caen_extras);
+
+	// Info code settings
+	PRINT_SETTING_INT(extt_code);
+	PRINT_SETTING_INT(sync_code);
+	PRINT_SETTING_INT(ext_item_code);
+	PRINT_SETTING_INT(thsb_code);
+	PRINT_SETTING_INT(pause_code);
+	PRINT_SETTING_INT(resume_code);
+	PRINT_SETTING_INT(asic_pulser_asic_0);
+	PRINT_SETTING_INT(asic_pulser_ch_0);
+	PRINT_SETTING_INT(asic_pulser_code_0);
+	PRINT_SETTING_INT(asic_pulser_asic_1);
+	PRINT_SETTING_INT(asic_pulser_ch_1);
+	PRINT_SETTING_INT(asic_pulser_code_1);
+	PRINT_SETTING_INT(asic_pulser_thres);
+	PRINT_SETTING_INT(caen_pulser_mod);
+	PRINT_SETTING_INT(caen_pulser_ch);
+	PRINT_SETTING_INT(caen_pulser_code);
+	PRINT_SETTING_INT(caen_ebis_mod);
+	PRINT_SETTING_INT(caen_ebis_ch);
+	PRINT_SETTING_INT(ebis_code);
+	PRINT_SETTING_INT(caen_t1_mod);
+	PRINT_SETTING_INT(caen_t1_ch);
+	PRINT_SETTING_INT(t1_code);
+	PRINT_SETTING_INT(caen_sc_mod);
+	PRINT_SETTING_INT(caen_sc_ch);
+	PRINT_SETTING_INT(sc_code);
+	PRINT_SETTING_INT(caen_laser_mod);
+	PRINT_SETTING_INT(caen_laser_ch);
+	PRINT_SETTING_INT(laser_code);
+
+	// Event builder
+	PRINT_SETTING(event_window);
+	PRINT_SETTING(recoil_hit_window);
+	PRINT_SETTING(array_pn_hit_window);
+	PRINT_SETTING(array_pp_hit_window);
+	PRINT_SETTING(array_nn_hit_window);
+	PRINT_SETTING(zd_hit_window);
+	PRINT_SETTING(gamma_hit_window);
+
+	// Data format
+	PRINT_SETTING_INT(block_size);
+	PRINT_SETTING_INT(flag_caen_only);
+	PRINT_SETTING_INT(flag_asic_only);
+
+	// Recoil detectors
+	PRINT_SETTING_INT(n_recoil_sector);
+	PRINT_SETTING_INT(n_recoil_layer);
+	PRINT_SETTING_INT(recoil_eloss_start);
+	PRINT_SETTING_INT(recoil_eloss_stop);
+	PRINT_SETTING_INT(recoil_erest_start);
+	PRINT_SETTING_INT(recoil_erest_stop);
+	PRINT_SETTING_INT(recoil_etot_start);
+	PRINT_SETTING_INT(recoil_etot_stop);
+	PRINT_SETTING_VECT_VECT_INT(recoil_mod);
+	PRINT_SETTING_VECT_VECT_INT(recoil_ch);
+	PRINT_SETTING_VECT_VECT_INT(recoil_sector);
+	PRINT_SETTING_VECT_VECT_INT(recoil_layer);
+
+	// MWPC
+	PRINT_SETTING_INT(n_mwpc_axes);
+	PRINT_SETTING_VECT_VECT_INT(mwpc_mod);
+	PRINT_SETTING_VECT_VECT_INT(mwpc_ch);
+	PRINT_SETTING_VECT_VECT_INT(mwpc_axis);
+	PRINT_SETTING_VECT_VECT_INT(mwpc_tac);
+
+	// ELUM detector
+	PRINT_SETTING_INT(n_elum_sector);
+	PRINT_SETTING_VECT_INT(elum_mod);
+	PRINT_SETTING_VECT_INT(elum_ch);
+	PRINT_SETTING_VECT_VECT_INT(elum_sector);
+
+	// ZeroDegree detector
+	PRINT_SETTING_INT(n_zd_layer);
+	PRINT_SETTING_VECT_INT(zd_mod);
+	PRINT_SETTING_VECT_INT(zd_ch);
+	PRINT_SETTING_VECT_VECT_INT(zd_layer);
+
+	// ELUM detector
+	PRINT_SETTING_INT(n_scint_detector);
+	PRINT_SETTING_VECT_INT(scint_mod);
+	PRINT_SETTING_VECT_INT(scint_ch);
+	PRINT_SETTING_VECT_VECT_INT(scint_detector);
+
+	std::cout << "==== Settings end ====" << std::endl;
+}
