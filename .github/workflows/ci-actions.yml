@@ -21,4 +21,4 @@ jobs:
       - name: make
         run: make
       - name: test
-        run: test/test_settings.sh
+        run: make test
