@@ -17,4 +17,4 @@ utils/*.d
 utils/*.so
 utils/*.pcm
 .vscode/*
-test/dump_*.txt
+tests/dump_*.txt
