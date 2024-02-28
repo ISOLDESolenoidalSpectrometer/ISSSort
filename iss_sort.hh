@@ -119,6 +119,7 @@ int mon_time = -1; // update time in seconds
 
 // Settings file
 std::shared_ptr<ISSSettings> myset;
+bool flag_print_settings = false;
 
 // Calibration file
 std::shared_ptr<ISSCalibration> mycal;
