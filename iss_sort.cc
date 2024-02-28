@@ -666,6 +666,7 @@ int main( int argc, char *argv[] ){
 	interface->Add("-source", "Flag to define an source only run", &flag_source );
 	interface->Add("-autocal", "Flag to perform automatic calibration of alpha source data", &flag_autocal );
 	interface->Add("-autocalfile", "Alpha source fit control file", &name_autocal_file );
+	interface->Add("-print-settings", "Print settings", &flag_print_settings );
 	interface->Add("-spy", "Flag to run the DataSpy", &flag_spy );
 	interface->Add("-m", "Monitor input file every X seconds", &mon_time );
 	interface->Add("-p", "Port number for web server (default 8030)", &port_num );
@@ -905,7 +906,9 @@ int main( int argc, char *argv[] ){
 	mycal = std::make_shared<ISSCalibration>( name_cal_file, myset );
 	myreact = std::make_shared<ISSReaction>( name_react_file, myset, flag_source );
 
-	
+	if (flag_print_settings)
+		myset->PrintSettings();
+
 	//-------------------//
 	// Online monitoring //
 	//-------------------//

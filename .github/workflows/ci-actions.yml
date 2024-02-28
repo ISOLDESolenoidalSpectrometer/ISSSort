@@ -20,4 +20,5 @@ jobs:
 #          bison build-essential flex pkg-config
       - name: make
         run: make
-
+      - name: test
+        run: make test
