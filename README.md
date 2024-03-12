@@ -1,6 +1,10 @@
 # ISSSort
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6366317.svg)](https://doi.org/10.5281/zenodo.6366317)
+
 A code for sorting raw data from the ISOLDE Solendoidal Spectrometer in MIDAS format.
+
+If you are using this code for any of your publications, please cite it using the DOI: 10.5281/zenodo.6366317
 
 ## Instructions and user guide
 
