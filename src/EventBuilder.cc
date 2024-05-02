@@ -1379,15 +1379,13 @@ void ISSEventBuilder::ArrayFinder() {
 			// p-p time
 			for( unsigned int k = 0; k < pindex.size(); ++k )
 				for( unsigned int l = k+1; l < pindex.size(); ++l )
-					if( ptd_list.at( pindex.at(k) ) != ptd_list.at( pindex.at(l) ) ||
-					   TMath::Abs( pid_list.at( pindex.at(k) ) - pid_list.at( pindex.at(l) ) ) > 1 )
+					if(TMath::Abs( pid_list.at( pindex.at(k) ) - pid_list.at( pindex.at(l) ))==1 )
 						pp_td[i][j]->Fill( pwalk_list.at( pindex.at(k) ) - pwalk_list.at( pindex.at(l) ) );
 			
 			// n-n time
 			for( unsigned int k = 0; k < nindex.size(); ++k )
 				for( unsigned int l = k+1; l < nindex.size(); ++l )
-					if( ntd_list.at( nindex.at(k) ) != ntd_list.at( nindex.at(l) ) ||
-					   TMath::Abs( nid_list.at( nindex.at(k) ) - nid_list.at( nindex.at(l) ) ) > 1 )
+					if(TMath::Abs( nid_list.at( nindex.at(k) ) - nid_list.at( nindex.at(l) ))==1 )
 						nn_td[i][j]->Fill( nwalk_list.at( nindex.at(k) ) - nwalk_list.at( nindex.at(l) ) );
 			
 			// p-n time
