@@ -177,6 +177,57 @@ void ISSCalibration::ReadCalibration() {
 		
 	}
 
+	// Get Time-walk graphs
+	tw_graph.resize( set->GetNumberOfArrayModules()  );
+	twgraphfile.resize( set->GetNumberOfArrayModules()  );
+	twgraphname.resize( set->GetNumberOfArrayModules()  );
+
+	for( unsigned int mod = 0; mod < set->GetNumberOfArrayModules(); mod++ ){
+
+		tw_graph[mod].resize( set->GetNumberOfArrayASICs() );
+		twgraphfile[mod].resize( set->GetNumberOfArrayASICs() );
+		twgraphname[mod].resize( set->GetNumberOfArrayASICs() );
+
+		for( unsigned int asic = 0; asic < set->GetNumberOfArrayASICs(); asic++ ){
+			
+			tw_graph[mod][asic].resize( HitN );
+			twgraphfile[mod][asic].resize( HitN );
+			twgraphname[mod][asic].resize( HitN );
+
+			for( unsigned int i = 0; i < HitN; i++ ) {
+
+				twgraphfile[mod][asic][i] = config->GetValue( Form( "asic_%d_%d.WalkFile.Hit%d", mod, asic, i ), "NULL" );
+				twgraphname[mod][asic][i] = config->GetValue( Form( "asic_%d_%d.WalkName.Hit%d", mod, asic, i ), "Graph" );
+				
+				// Check if it is given by the user
+				if( twgraphfile[mod][asic][i] != "NULL" ) {
+					
+					TFile *tw_file = new TFile( twgraphfile[mod][asic][i].data(), "READ" );
+					if( tw_file->IsZombie() )
+						std::cout << "Couldn't open " << twgraphfile[mod][asic][i] << " correctly" << std::endl;
+					
+					else {
+						
+						if( !tw_file->GetListOfKeys()->Contains( twgraphname[mod][asic][i].data() ) )
+							std::cout << "Couldn't find " << twgraphname[mod][asic][i] << " in " << twgraphfile[mod][asic][i] << std::endl;
+						else
+							tw_graph[mod][asic][i] = std::make_shared<TGraph>( *static_cast<TGraph*>( tw_file->Get( twgraphname[mod][asic][i].data() )->Clone() ) );
+						
+					}
+					
+					tw_file->Close();
+					
+				}
+
+				// Assign an empty graph file if none is given, so the code doesn't crash
+				if( !tw_graph[mod][asic][i] ) tw_graph[mod][asic][i] = std::make_shared<TGraph>();
+
+			} // hit-bit
+
+		} // asic
+		
+	} // mod
+	
 	delete config;
 	
 }
@@ -286,71 +337,102 @@ float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energ
 	if( mod < set->GetNumberOfArrayModules() &&
 	   asic < set->GetNumberOfArrayASICs() ) {
 		
-		// Check if all values are defaulted to zero - no walk correction
-		bool nowalk = true;
-		for( unsigned int i = 0; i < nwalkpars; i++ ) {
-			
-			if( ( TMath::Abs( fAsicWalkHit0[mod][asic][i] ) > 1.0e-6 && !hit ) ||
-			    ( TMath::Abs( fAsicWalkHit1[mod][asic][i] ) > 1.0e-6 &&  hit ) )
-				nowalk = false;
-			   
-		}
-			   
-		// If no walk correction, just return 0
-		if( nowalk ) return 0.0;
+		
+		if( fAsicWalkType[mod][asic] == 2 ) {
 
-		// else calculate the walk using the defined function
-		else {
-			
-			// Params for time walk function ROOT finder
-			for( unsigned int i = 0; i < nwalkpars; i++ ){
+			if( hit )walk = -tw_graph[mod][asic][1]->Eval(energy);
+			else walk = -tw_graph[mod][asic][0]->Eval(energy);
+
+		}
+
+		else{
+			// Check if all values are defaulted to zero - no walk correction
+			bool nowalk = true;
+			for( unsigned int i = 0; i < nwalkpars; i++ ) {
 				
-				if( hit ) walk_params[i] = fAsicWalkHit1[mod][asic][i];
-				else walk_params[i] = fAsicWalkHit0[mod][asic][i];
+				if( ( TMath::Abs( fAsicWalkHit0[mod][asic][i] ) > 1.0e-6 && !hit ) ||
+					( TMath::Abs( fAsicWalkHit1[mod][asic][i] ) > 1.0e-6 &&  hit ) )
+					nowalk = false;
 				
 			}
 				
-			// Last one is always the energy
-			walk_params[nwalkpars] = energy;
-			
-			// Annie Dolan's function
-			if( fAsicWalkType[mod][asic] == 0 ) {
+			// If no walk correction, just return 0
+			if( nowalk ) return 0.0;
+
+			// else calculate the walk using the defined function
+			else {
 				
-				// Set parameters
-				fa->SetParameters( walk_params );
-				fb->SetParameters( walk_params );
-				
-				// Build the function and derivative, then solve
-				gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
-				ROOT::Math::GradFunctor1D wf( *fa, *fb );
-				rf->SetFunction( wf, -2e4, 2e4 ); // limits
-				rf->Solve( 500, 1e-4, 1e-5 );
-				
-				// Check result
-				if( rf->Status() ){
-					walk = TMath::QuietNaN();
+				// Params for time walk function ROOT finder
+				for( unsigned int i = 0; i < nwalkpars; i++ ){
+					
+					if( hit ) walk_params[i] = fAsicWalkHit1[mod][asic][i];
+					else walk_params[i] = fAsicWalkHit0[mod][asic][i];
+					
 				}
-				else walk = rf->Root();
-				gErrorIgnoreLevel = kInfo; // print info and above again
+					
+				// Last one is always the energy
+				walk_params[nwalkpars] = energy;
+				
+				// Annie Dolan's function
+				if( fAsicWalkType[mod][asic] == 0 ) {
+					
+					// Set parameters
+					fa->SetParameters( walk_params );
+					fb->SetParameters( walk_params );
+					
+					// Build the function and derivative, then solve
+					gErrorIgnoreLevel = kBreak; // suppress warnings and errors, but not breaks
+					ROOT::Math::GradFunctor1D wf( *fa, *fb );
+					rf->SetFunction( wf, -2e4, 2e4 ); // limits
+					rf->Solve( 500, 1e-4, 1e-5 );
+					
+					// Check result
+					if( rf->Status() ){
+						walk = TMath::QuietNaN();
+					}
+					else walk = rf->Root();
+					gErrorIgnoreLevel = kInfo; // print info and above again
+					
+				}
+				
+				// Sam Reeve's function
+				if( fAsicWalkType[mod][asic] == 1 ) {
+				
+					// Functional form: y = a + b / (c*E)^d
+					// where y is time walk and E is energy
+					walk = walk_params[1];
+					walk /= TMath::Power( walk_params[2]*walk_params[4], walk_params[3] );
+					walk += walk_params[0];
+					
+					
+					// Find limit inside event window
+					// Solved for time walk = 3000 ns
+					// E = ( b / (y - a) )^(1/d) / c
+					double E_limit;
+					double dT_limit = 3000;
+					E_limit = walk_params[1];
+					E_limit /= dT_limit - walk_params[0];
+					E_limit = TMath::Power( E_limit, 1/walk_params[3] );
+					E_limit /= walk_params[2];
+					E_limit = TMath::Abs(E_limit);
+					
+					// Add minus as the correction is added to time in EventBuilder
+					if( walk_params[4] < E_limit ){
+						walk = -3000;
+					}
+					else{
+						walk = -walk;
+					}
+					
+				}
 				
 			}
-			
-			// Sam Reeve's function
-			if( fAsicWalkType[mod][asic] == 1 ) {
-			
-				// Functional form: E = a + b / ( c - d*x )
-				// Solved for x, where x is time walk and E is energy
-				// x = ( c + b / ( a - E ) ) / d
-				walk = walk_params[1];
-				walk /= walk_params[0] - walk_params[4];
-				walk += walk_params[2];
-				walk /= walk_params[3];
 
-			}
-			
 		}
-				
+
 	}
+
+
 	
 	return walk;
 	
