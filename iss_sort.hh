@@ -9,60 +9,9 @@
 
 // C++ include.
 #include <iostream>
-//#include <cstdio>
 #include <string>
 #include <vector>
 #include <sstream>
-
-// Settings header
-#ifndef __SETTINGS_HH
-# include "Settings.hh"
-#endif
-
-// Calibration header
-#ifndef __CALIBRATION_HH
-# include "Calibration.hh"
-#endif
-
-// Reaction header
-#ifndef __REACTION_HH
-# include "Reaction.hh"
-#endif
-
-// Converter header
-#ifndef __CONVERTER_HH
-# include "Converter.hh"
-#endif
-
-// EventBuilder header
-#ifndef __EVENTBUILDER_HH
-# include "EventBuilder.hh"
-#endif
-
-// Histogrammer header
-#ifndef __HISTOGRAMMER_HH
-# include "Histogrammer.hh"
-#endif
-
-// AutoCalibrator header
-#ifndef __AUTOCALIBRATOR_HH
-# include "AutoCalibrator.hh"
-#endif
-
-// DataSpy header
-#ifndef __DATASPY_HH
-# include "DataSpy.hh"
-#endif
-
-// ISSGUI header
-#ifndef __ISSGUI_HH
-# include "ISSGUI.hh"
-#endif
-
-// Command line interface
-#ifndef __COMMAND_LINE_INTERFACE_HH
-# include "CommandLineInterface.hh"
-#endif
 
 
 // Some compiler things
