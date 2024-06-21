@@ -13,6 +13,8 @@
 #include "TRandom.h"
 #include "TMath.h"
 #include "TF1.h"
+#include "TGraph.h"
+#include "TFile.h"
 #include "Math/RootFinder.h"
 #include "Math/Functor.h"
 
@@ -23,6 +25,9 @@
 
 // Number of time walk parameters
 const unsigned char nwalkpars = 4;
+
+// Hit-bit number for time walk graphs
+const unsigned char HitN = 2;
 
 /*!
 * \brief A class to read in the calibration file in ROOT's TConfig format.
@@ -206,6 +211,12 @@ private:
 	TF1 *fa;///< TF1 for the time walk function: walk_function( double *x, double *params )
 	TF1 *fb;///< TF1 for the time walk function derivative: walk_derivative( double *x, double *params )
 	double walk_params[nwalkpars+1];///< Parameters used to store time-walk parameters
+
+	// Time-walk Graphs
+	std::vector< std::vector< std::vector< std::string > > > twgraphfile;///< The location of the time walk graph files
+	std::vector< std::vector< std::vector< std::string > > > twgraphname;///< The names of the time walk graphs
+	std::vector< std::vector< std::vector< std::shared_ptr<TGraph> > > > tw_graph;///< Vector containing time walk graphs
+
 
 
 	//ClassDef(ISSCalibration, 1)
