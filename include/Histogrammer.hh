@@ -246,6 +246,28 @@ private:
 	TH2F *E_vs_z, *E_vs_z_ebis, *E_vs_z_ebis_on, *E_vs_z_ebis_off;
 	TH2F *E_vs_z_recoil, *E_vs_z_recoilT, *E_vs_z_T1;
 	TH2F *E_vs_z_recoil_random, *E_vs_z_recoilT_random;
+
+	// Array - E vs. thetaCM
+	std::vector<TH2F*> E_vs_theta_mod;
+	std::vector<TH2F*> E_vs_theta_ebis_mod;
+	std::vector<TH2F*> E_vs_theta_ebis_on_mod;
+	std::vector<TH2F*> E_vs_theta_ebis_off_mod;
+	std::vector<TH2F*> E_vs_theta_recoil_mod;
+	std::vector<TH2F*> E_vs_theta_recoilT_mod;
+	std::vector<TH2F*> E_vs_theta_recoil_random_mod;
+	std::vector<TH2F*> E_vs_theta_recoilT_random_mod;
+	std::vector<TH2F*> E_vs_theta_cut;
+	std::vector<TH2F*> E_vs_theta_ebis_cut;
+	std::vector<TH2F*> E_vs_theta_ebis_on_cut;
+	std::vector<TH2F*> E_vs_theta_ebis_off_cut;
+	std::vector<TH2F*> E_vs_theta_recoil_cut;
+	std::vector<TH2F*> E_vs_theta_recoilT_cut;
+	std::vector<TH2F*> E_vs_theta_recoil_random_cut;
+	std::vector<TH2F*> E_vs_theta_recoilT_random_cut;
+	std::vector<TH2F*> E_vs_theta_T1_cut;
+	TH2F *E_vs_theta, *E_vs_theta_ebis, *E_vs_theta_ebis_on, *E_vs_theta_ebis_off;
+	TH2F *E_vs_theta_recoil, *E_vs_theta_recoilT, *E_vs_theta_T1;
+	TH2F *E_vs_theta_recoil_random, *E_vs_theta_recoilT_random;
 	
 	// Array - Ex vs. thetaCM
 	std::vector<TH2F*> Ex_vs_theta_mod;
@@ -314,6 +336,29 @@ private:
 	TH1F *Ex_recoil, *Ex_recoilT, *Ex_T1;
 	TH1F *Ex_recoil_random, *Ex_recoilT_random;
 	TH2F *Ex_vs_T1;
+
+	// Array - thetaCM
+	std::vector<TH1F*> Theta_mod;
+	std::vector<TH1F*> Theta_ebis_mod;
+	std::vector<TH1F*> Theta_ebis_on_mod;
+	std::vector<TH1F*> Theta_ebis_off_mod;
+	std::vector<TH1F*> Theta_recoil_mod;
+	std::vector<TH1F*> Theta_recoilT_mod;
+	std::vector<TH1F*> Theta_recoil_random_mod;
+	std::vector<TH1F*> Theta_recoilT_random_mod;
+	std::vector<TH1F*> Theta_cut;
+	std::vector<TH1F*> Theta_ebis_cut;
+	std::vector<TH1F*> Theta_ebis_on_cut;
+	std::vector<TH1F*> Theta_ebis_off_cut;
+	std::vector<TH1F*> Theta_recoil_cut;
+	std::vector<TH1F*> Theta_recoilT_cut;
+	std::vector<TH1F*> Theta_recoil_random_cut;
+	std::vector<TH1F*> Theta_recoilT_random_cut;
+	std::vector<TH1F*> Theta_T1_cut;
+	TH1F *Theta, *Theta_ebis, *Theta_ebis_on, *Theta_ebis_off;
+	TH1F *Theta_recoil, *Theta_recoilT, *Theta_T1;
+	TH1F *Theta_recoil_random, *Theta_recoilT_random;
+	TH2F *Theta_vs_T1;
 		
 	// ELUM
 	std::vector<TH1F*> elum_sec;
