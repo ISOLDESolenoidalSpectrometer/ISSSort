@@ -1781,8 +1781,8 @@ unsigned long ISSHistogrammer::FillHists() {
 					E_vs_z_T1->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 					Theta_T1->Fill( react->GetThetaCM() * TMath::RadToDeg() );
 					Ex_T1->Fill( react->GetEx() );
-					E_vs_theta_T1->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-					Ex_vs_theta_T1->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+					E_vs_theta_T1->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+					Ex_vs_theta_T1->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
 					Ex_vs_z_T1->Fill( react->GetZmeasured(), react->GetEx() );
 				
 				} // T1
@@ -1795,10 +1795,10 @@ unsigned long ISSHistogrammer::FillHists() {
 						
 						E_vs_z_ebis_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 						E_vs_z_ebis_on_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-						Theta_ebis_cut[k]->Fill( react->GetEx() );
-						Theta_ebis_on_cut[k]->Fill( react->GetEx() );
-						Ex_ebis_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
-						Ex_ebis_on_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+						Theta_ebis_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+						Theta_ebis_on_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+						Ex_ebis_cut[k]->Fill( react->GetEx() );
+						Ex_ebis_on_cut[k]->Fill( react->GetEx() );
 						E_vs_theta_ebis_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
 						E_vs_theta_ebis_on_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
 						Ex_vs_theta_ebis_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
@@ -1860,10 +1860,10 @@ unsigned long ISSHistogrammer::FillHists() {
 						
 						E_vs_z_ebis_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy(), -1.0 * react->GetEBISFillRatio() );
 						E_vs_z_ebis_off_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-						Theta_ebis_cut[k]->Fill( react->GetEx(), -1.0 * react->GetEBISFillRatio() );
-						Theta_ebis_off_cut[k]->Fill( react->GetEx() );
-						Ex_ebis_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), -1.0 * react->GetEBISFillRatio() );
-						Ex_ebis_off_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+						Theta_ebis_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), -1.0 * react->GetEBISFillRatio() );
+						Theta_ebis_off_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+						Ex_ebis_cut[k]->Fill( react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+						Ex_ebis_off_cut[k]->Fill( react->GetEx() );
 						E_vs_theta_ebis_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy(), -1.0 * react->GetEBISFillRatio() );
 						E_vs_theta_ebis_off_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
 						Ex_vs_theta_ebis_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
