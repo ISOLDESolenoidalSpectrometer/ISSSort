@@ -219,6 +219,7 @@ private:
 	unsigned char		mymod;		///< module number
 	unsigned char		mych;		///< channel number
 	double			mytime;		///< absolute timestamp
+	double			myCFDtime;		///< absolute timestamp for cfd
 	float 				myenergy;	///< calibrated energy
 	int 				mywalk;		///< time walk correction
 	bool				mythres;	///< above threshold?

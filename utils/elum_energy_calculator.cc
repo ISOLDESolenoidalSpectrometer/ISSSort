@@ -7,8 +7,8 @@
 // root [1] .L utils/elum_energy_calculator.cc
 // root [2] elum_energy_calculator
 
-//#include "include/Settings.hh"
-//#include "include/Reaction.hh"
+#include "../include/Settings.hh"
+#include "../include/Reaction.hh"
 
 #include "TVector3.h"
 #include <iostream>

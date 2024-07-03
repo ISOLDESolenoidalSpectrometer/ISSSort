@@ -1,7 +1,7 @@
 #include "Reaction.hh"
 
 // Uncomment this below to switch to the Butler algorithm (currently in testing)
-#define butler_algorithm
+//#define butler_algorithm
 
 ClassImp( ISSParticle )
 ClassImp( ISSReaction )
@@ -772,8 +772,8 @@ double ISSReaction::GetNuclearEnergyLoss( double Ei, double range, std::unique_p
 	double En = 0;
 
 	// Create splines for the provided TGraphs
-	std::unique_ptr<TSpline3> splineTot = std::make_unique<TSpline3>("splineTot", gtot.get(), "akima"); // Use akima spline to make energy loss graph smoother - BRJ
-	std::unique_ptr<TSpline3> splineN   = std::make_unique<TSpline3>("splineN", gn.get(), "akima"); // Use akima spline to make energy loss graph smoother - BRJ
+	std::unique_ptr<TSpline3> splineTot = std::make_unique<TSpline3>("splineTot", gtot.get(), "akima"); // Use akima spline to make energy loss graph smoother 
+	std::unique_ptr<TSpline3> splineN   = std::make_unique<TSpline3>("splineN", gn.get(), "akima"); // Use akima spline to make energy loss graph smoother 
 	
 	for( unsigned int i = 0; i < Nmeshpoints; i++ ) {
 		if( E < 0.5 ) break; // when we fall below 0.5 keV we assume we're stopped
@@ -977,7 +977,7 @@ double ISSReaction::GetPulseHeightCorrection( double Ei, bool detected ) {
 	
 	if( detected ) return gPHC_inv->Eval(Ei); // get actual ion energy from PH (detected energy)
 	else return gPHC->Eval(Ei); // get PH for actual ion energy
-	
+		
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1016,8 +1016,8 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	double Edet = 0.0;
 	
 	// Create splines for the TGraphs used in the calculation
-	std::unique_ptr<TSpline3> splineRange         = std::make_unique<TSpline3>("splineRange", gRange[3].get(), "akima"); // // Use akima spline to make phc smoother - BRJ
-	std::unique_ptr<TSpline3> splineStoppingPower = std::make_unique<TSpline3>("splineStoppingPower", gStopping[3].get(), "akima"); //Use akima spline to make phc smoother - BRJ
+	std::unique_ptr<TSpline3> splineRange         = std::make_unique<TSpline3>("splineRange", gRange[3].get(), "akima"); // // Use akima spline to make phc smoother 
+	std::unique_ptr<TSpline3> splineStoppingPower = std::make_unique<TSpline3>("splineStoppingPower", gStopping[3].get(), "akima"); //Use akima spline to make phc smoother 
 	
 	
 	// Do the numerical integration
@@ -1034,7 +1034,7 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 		// NB: this is inefficient, but still only takes a couple of seconds
 		// ideally the integrated nuclear energy loss versus energy would be
 		// calculated only once and stored as a TGraph or something. Who cares?
-		dEdx_n = GetNuclearEnergyLoss( E, range, gStopping[4], gStopping[5] ); //BRJ
+		dEdx_n = GetNuclearEnergyLoss( E, range, gStopping[4], gStopping[5] );
 		
 		// From W. N. Lennard et al. NIM A248 (1986) 454
 		double PHC = e0_Si - k_Si * dEdx_e;
@@ -1066,7 +1066,7 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	std::string pdfname = std::string( SRIM_DIR ) + "/" + isotope + "_phc.pdf";
 	c->SaveAs( pdfname.c_str() );
 	
-	// BRJ - these lines make root files for PH residual and eloss for the isotope that is read in
+	// These lines make root files for PH residual and eloss for the isotope that is read in
 	
 	std::string tfilenameroot = std::string( SRIM_DIR ) + "/" + isotope + "_phc.root";
 	TFile *tfile = new TFile(tfilenameroot.c_str(),"recreate");
@@ -1111,21 +1111,21 @@ double ISSReaction::SimulateEmission( double en, double theta_lab, double phi_la
 	// Centre of mass angle
 	double theta_cm = TMath::ASin( v3_cm_perp / v3_cm );
 	Ejectile.SetThetaCM( theta_cm );
-	
+		
 	// cyclotron radius
 	double r_cyc = Ejectile.GetMomentumLab() * TMath::Sin( theta_lab );
 	r_cyc /= (double)Ejectile.GetZ() * GetField_corr();
 	
 	// measured z distance needs radius of detection
 	// TODO: this will depend on the phi emission angle
-	double r_det = 28.75; // for now just assume standard detector radius
+	double r_det = array_radius; // for now just assume standard detector radius
 	double omega = TMath::TwoPi() - 2.0 * TMath::ASin( 0.5 * r_det / r_cyc );
 	z_meas = z * omega / TMath::TwoPi();
 	
 	// Calculate the energy lost in the target
 	double dist = 0.5 * target_thickness / TMath::Abs( TMath::Sin( theta_lab ) );
 	double eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
-	Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
+		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
 	
 	// Calculate the energy loss in the deadlayer
 	if( detector == 0 )
@@ -1133,7 +1133,7 @@ double ISSReaction::SimulateEmission( double en, double theta_lab, double phi_la
 	else if( detector == 1 )
 		dist = elum_deadlayer / TMath::Abs( TMath::Sin( theta_lab - TMath::PiOver2() ) );
 	eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[2] );
-	Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
+		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
 	
 	return Ejectile.GetEnergyLab();
 	

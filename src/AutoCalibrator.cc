@@ -1164,7 +1164,7 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 	z += 125.5 * (3.0 - (float)row);	// move to correct row (125.0 mm wafer length + 0.5 mm inter-wafer gap)
 
 	// Assume it's in the centre of the side
-	TVector2 vec2( 27.0, 0.0 ); // 54.0 mm face-to-face
+	TVector2 vec2( array_radius, 0.0 ); // 54.0 mm face-to-face
 	vec2 = vec2.Rotate( -1.0 * TMath::Pi() / 6. );		// first face is at -30˚
 	vec2 = vec2.Rotate( side * 2. * TMath::Pi() / 6. );	// rotate 60˚ for each face
 
@@ -1173,13 +1173,13 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 	// Calculate the detected alpha energies
 	float DetectedEnergy[NumberOfFoundAlphaPeaks];
 	for( int i = 0; i < NumberOfFoundAlphaPeaks; ++i ){
-	
+		
 		// First calculate the energy loss through the dead layer
 		DetectedEnergy[i] = react->SimulateDecay( vec3, FF_alpha_peak_energy[i] );
-
+				
 		// Now correct for the pulse-height correction
 		DetectedEnergy[i] = react->GetPulseHeightCorrection( DetectedEnergy[i], false );
-		
+				
 	}
 	
 	// Now do a graph of the centroids against detected energy
