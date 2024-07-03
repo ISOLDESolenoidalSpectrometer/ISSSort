@@ -977,7 +977,7 @@ double ISSReaction::GetPulseHeightCorrection( double Ei, bool detected ) {
 	
 	if( detected ) return gPHC_inv->Eval(Ei); // get actual ion energy from PH (detected energy)
 	else return gPHC->Eval(Ei); // get PH for actual ion energy
-	
+		
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1111,21 +1111,21 @@ double ISSReaction::SimulateEmission( double en, double theta_lab, double phi_la
 	// Centre of mass angle
 	double theta_cm = TMath::ASin( v3_cm_perp / v3_cm );
 	Ejectile.SetThetaCM( theta_cm );
-	
+		
 	// cyclotron radius
 	double r_cyc = Ejectile.GetMomentumLab() * TMath::Sin( theta_lab );
 	r_cyc /= (double)Ejectile.GetZ() * GetField_corr();
 	
 	// measured z distance needs radius of detection
 	// TODO: this will depend on the phi emission angle
-	double r_det = 28.75; // for now just assume standard detector radius
+	double r_det = array_radius; // for now just assume standard detector radius
 	double omega = TMath::TwoPi() - 2.0 * TMath::ASin( 0.5 * r_det / r_cyc );
 	z_meas = z * omega / TMath::TwoPi();
 	
 	// Calculate the energy lost in the target
 	double dist = 0.5 * target_thickness / TMath::Abs( TMath::Sin( theta_lab ) );
 	double eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
-	Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
+		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
 	
 	// Calculate the energy loss in the deadlayer
 	if( detector == 0 )
@@ -1133,7 +1133,7 @@ double ISSReaction::SimulateEmission( double en, double theta_lab, double phi_la
 	else if( detector == 1 )
 		dist = elum_deadlayer / TMath::Abs( TMath::Sin( theta_lab - TMath::PiOver2() ) );
 	eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[2] );
-	Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
+		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
 	
 	return Ejectile.GetEnergyLab();
 	

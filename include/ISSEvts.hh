@@ -10,6 +10,12 @@
 #include "TVector3.h"
 #include "TObject.h"
 
+// Reaction header
+#ifndef __REACTION_HH
+# include "Reaction.hh"
+#endif
+
+
 class ISSArrayEvt : public TObject {
 
 public:

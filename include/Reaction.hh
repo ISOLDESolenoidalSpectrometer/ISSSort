@@ -25,9 +25,13 @@
 #include "TGraph.h"
 #include "Math/RootFinder.h"
 #include "Math/Functor.h"
+<<<<<<< HEAD
 #include "TSpline.h"
 
 #include "TSpline.h" // BRJ - header for Splines 
+=======
+#include "TSpline.h" 
+>>>>>>> 60a0355 (define array_radius in one place plus CFD time for simulation)
 
 // Settings header
 #ifndef __SETTINGS_HH
@@ -48,6 +52,7 @@ const double u_mass  = 931494.10242;	///< atomic mass unit in keV/c^2
 const double T_to_mm =   299.792458;	///< in units of 1/mm
 const double k_Si 	 =     2.88e-10;	///< k value - mm/e-h pair for PHD in silicon 
 const double e0_Si 	 =     3.67e-03;	///< epsilon_0 for silicon for PHD in keV
+const double array_radius = 27.0;		///< Radius of the array in mm
 
 // Element names
 const std::vector<std::string> gElName = {

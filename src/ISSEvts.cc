@@ -403,7 +403,7 @@ char ISSArrayEvt::FindNID( double phi ){
 	
 	// Strip geometry
 	double strip_pitch = 2.0;
-	double det_radius = 54.0 / 2.0;
+	double det_radius = array_radius;
 
 	// Shift the phi to within a single module
 	phi += TMath::TwoPi() / 6.;
