@@ -39,6 +39,11 @@ void ISSSettings::ReadSettings() {
 	
 	}
 	
+	// Mesytec initialisation
+	n_mesy_mod = config->GetValue( "NumberOfMesytecModules", 0 );
+	n_mesy_ch = config->GetValue( "NumberOfMesytecChannels", 32 );
+
+	
 	// Info code initialisation
 	extt_code = config->GetValue( "ExternalTriggerCode", 14 );
 	ext_item_code = config->GetValue( "ExtItemCode", 7 );

@@ -55,6 +55,18 @@ public:
 		else return 0;
 	};
 	
+	// Mesytec settings
+	inline unsigned char GetNumberOfMesytecModules(){ return n_mesy_mod; };
+	inline unsigned char GetNumberOfMesytecChannels(){ return n_mesy_ch; };
+	
+	// VME totals
+	inline unsigned int GetNumberOfVmeModules(){ return n_caen_mod + n_mesy_mod; };
+	inline unsigned int GetMaximumNumberOfVmeChannels(){
+		if( n_caen_ch > n_mesy_ch ) return n_caen_ch;
+		else return n_mesy_ch;
+	};
+
+	
 	// Info settings
 	inline unsigned char GetExternalTriggerCode(){ return extt_code; };
 	inline unsigned char GetSyncCode(){ return sync_code; };
@@ -169,7 +181,10 @@ private:
 	std::vector<unsigned int> caen_model;
 	std::vector<std::vector<unsigned char>> caen_extras;
 	
-	
+	// Mesytec settings
+	unsigned char n_mesy_mod;
+	unsigned char n_mesy_ch;
+
 	// Info code settings
 	unsigned char extt_code;			///< This is the info code for the external timestamp, 5 before 2019 and 14 after 2019 (This is ISS == 14)
 	unsigned char sync_code;			///< Medium significant bits of the timestamp are here
