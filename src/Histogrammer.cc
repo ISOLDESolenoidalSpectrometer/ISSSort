@@ -1690,6 +1690,10 @@ unsigned long ISSHistogrammer::FillHists() {
 		// Current event data
 		input_tree->GetEntry(i);
 		
+		// Check laser mode
+		if( react->GetLaserMode() == 0 && read_evts->GetLaserStatus() ) continue;
+		if( react->GetLaserMode() == 1 && !read_evts->GetLaserStatus() ) continue;
+
 		// tdiff variable
 		double tdiff;
 		
