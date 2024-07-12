@@ -54,6 +54,11 @@
 #T1.Min: 0			# for cutting on the proton impact time
 #T1.Max: 1.2e9		# (units of ns)
 
+# Laser mode ON/OFF
+#LaserMode: 2		# 0 = laser off only
+					# 1 = laser on only
+					# 2 = laser on OR off (default, i.e. all data)
+
 # Array-Recoil windows
 #ArrayRecoil_PromptTime.Min: -300
 #ArrayRecoil_PromptTime.Max: 300
