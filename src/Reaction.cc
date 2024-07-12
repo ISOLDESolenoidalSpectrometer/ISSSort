@@ -165,13 +165,19 @@ double theta_cm_derivative( double *x, double *params ){
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Parameterised constructor for the ISSReaction object. It reads in the mass 
-/// tables, assigns values to various pointers, reads the reaction file, and 
+/// Parameterised constructor for the ISSReaction object. It reads in the mass
+/// tables, assigns values to various pointers, reads the reaction file, and
 /// sets up the root-finding algorithm for finding the angle alpha.
 /// \param[in] filename A string holding the name of the reaction file
 /// \param[in] myset A pointer to the ISSSettings object
 /// \param[in] source A boolean to check if this run is a source run
 ISSReaction::ISSReaction( std::string filename, std::shared_ptr<ISSSettings> myset, bool source ){
+	
+	// Alpha energies from quadruple alpha source
+	alpha_energies.push_back( 3182.69 );
+	alpha_energies.push_back( 5148.31 );
+	alpha_energies.push_back( 5478.62 );
+	alpha_energies.push_back( 5795.04 );
 	
 	// Setup the ROOT finder algorithms
 #ifdef butler_algorithm
@@ -204,7 +210,7 @@ ISSReaction::ISSReaction( std::string filename, std::shared_ptr<ISSSettings> mys
 	set = myset;
 	SetFile( filename );
 	ReadReaction();
-	
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -319,7 +325,7 @@ void ISSReaction::AddBindingEnergy( short Ai, short Zi, TString ame_be_str ) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Stores the binding energies per nucleon for each nucleus from the AME 
+/// Stores the binding energies per nucleon for each nucleus from the AME
 /// 2020 file
 void ISSReaction::ReadMassTables() {
 	
@@ -388,8 +394,8 @@ void ISSReaction::ReadMassTables() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Reads the contents of the reaction file given via user input. Also calls 
-/// ReadStoppingPowers function for each of the nuclides going through the 
+/// Reads the contents of the reaction file given via user input. Also calls
+/// ReadStoppingPowers function for each of the nuclides going through the
 /// different materials for later corrections.
 void ISSReaction::ReadReaction() {
 	
@@ -639,7 +645,7 @@ void ISSReaction::ReadReaction() {
 	double theta_lab_inner, theta_lab_outer, theta_lab_centre;
 	double energy_inner,    energy_outer,    energy_centre;
 	double enloss_inner,    enloss_outer,    enloss_centre;
-	if( elum_z > 0 && !flag_source ) {
+	if( elum_z > 0 ) {
 		
 		// Remember the real ejectile information
 		int tmpA = Ejectile.GetA();
@@ -649,13 +655,18 @@ void ISSReaction::ReadReaction() {
 		int tmpZ2 = Recoil.GetZ();
 		double tmpBE2 = Recoil.GetBindingEnergy();
 		
-		// Then pretend we have elastic scattering
-		Ejectile.SetA( Target.GetA() );
-		Ejectile.SetZ( Target.GetZ() );
-		Ejectile.SetBindingEnergy( Target.GetBindingEnergy() );
-		Recoil.SetA( Beam.GetA() );
-		Recoil.SetZ( Beam.GetZ() );
-		Recoil.SetBindingEnergy( Beam.GetBindingEnergy() );
+		// Proper reaction (if source then already set above)
+		if( !flag_source ) {
+			
+			// Then pretend we have elastic scattering
+			Ejectile.SetA( Target.GetA() );
+			Ejectile.SetZ( Target.GetZ() );
+			Ejectile.SetBindingEnergy( Target.GetBindingEnergy() );
+			Recoil.SetA( Beam.GetA() );
+			Recoil.SetZ( Beam.GetZ() );
+			Recoil.SetBindingEnergy( Beam.GetBindingEnergy() );
+			
+		}
 		
 		//std::cout << std::endl << " +++  ";
 		//std::cout << Beam.GetIsotope() << "(" << Target.GetIsotope() << ",";
@@ -668,32 +679,69 @@ void ISSReaction::ReadReaction() {
 		TVector3 elum_outer_hit( elum_rout, 0.0, elum_z );
 		TVector3 elum_centre_hit( 0.5*(elum_rout+elum_rin), 0.0, elum_z );
 		
-		// Simulate the elastic scattering reaction - inner
-		SimulateReaction( elum_inner_hit );
-		theta_cm_inner  = Recoil.GetThetaCM();
-		theta_lab_inner = Ejectile.GetThetaLab();
-		energy_inner = Ejectile.GetEnergyLab();
-		enloss_inner = GetEnergyLoss( energy_inner,
-									 elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_inner ) ),
-									 gStopping[2] );
+		// If it's a reaction, do inner, centre and outer
+		if( !flag_source ) {
+			
+			// Simulate the elastic scattering reaction - inner
+			SimulateReaction( elum_inner_hit );
+			theta_cm_inner  = Recoil.GetThetaCM();
+			theta_lab_inner = Ejectile.GetThetaLab();
+			energy_inner = Ejectile.GetEnergyLab();
+			enloss_inner = GetEnergyLoss( energy_inner,
+										 elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_inner ) ),
+										 gStopping[2] );
+			
+			// Simulate the elastic scattering reaction - outer
+			SimulateReaction( elum_outer_hit );
+			theta_cm_outer  = Recoil.GetThetaCM();
+			theta_lab_outer = Ejectile.GetThetaLab();
+			energy_outer = Ejectile.GetEnergyLab();
+			enloss_outer = GetEnergyLoss( energy_outer,
+										 elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_outer ) ),
+										 gStopping[2] );
+			
+			// Simulate the elastic scattering reaction - centre
+			SimulateReaction( elum_centre_hit );
+			theta_cm_centre  = Recoil.GetThetaCM();
+			theta_lab_centre = Ejectile.GetThetaLab();
+			energy_centre = Ejectile.GetEnergyLab();
+			enloss_centre = GetEnergyLoss( energy_centre,
+										  elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_centre ) ),
+										  gStopping[2] );
+			
+			std::cout << std::setprecision(5);
+			std::cout << "ELUM found at " << elum_z << " mm" << std::endl;
+			std::cout << " θ_cm = " << theta_cm_centre * TMath::RadToDeg();
+			std::cout << " degrees; E_lab = " << energy_centre << " keV; E_det = ";
+			std::cout << energy_centre - enloss_centre << " keV" << std::endl;
+			std::cout << "\t" << theta_cm_inner * TMath::RadToDeg();
+			std::cout << " < θ_cm  < " << theta_cm_outer * TMath::RadToDeg();
+			std::cout << " degrees" << std::endl << "\t" << energy_inner;
+			std::cout << " < E_lab < " << energy_outer << " keV" << std::endl;
+			std::cout << "\t" << energy_inner - enloss_inner << " < E_det < ";
+			std::cout << energy_outer - enloss_outer << " keV " << std::endl;
+			
+		}
 		
-		// Simulate the elastic scattering reaction - outer
-		SimulateReaction( elum_outer_hit );
-		theta_cm_outer  = Recoil.GetThetaCM();
-		theta_lab_outer = Ejectile.GetThetaLab();
-		energy_outer = Ejectile.GetEnergyLab();
-		enloss_outer = GetEnergyLoss( energy_outer,
-									 elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_outer ) ),
-									 gStopping[2] );
-		
-		// Simulate the elastic scattering reaction - centre
-		SimulateReaction( elum_centre_hit );
-		theta_cm_centre  = Recoil.GetThetaCM();
-		theta_lab_centre = Ejectile.GetThetaLab();
-		energy_centre = Ejectile.GetEnergyLab();
-		enloss_centre = GetEnergyLoss( energy_centre,
-									  elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_centre ) ),
-									  gStopping[2] );
+		// Otherwise do each alpha in the centre
+		else {
+			
+			std::cout << std::setprecision(5);
+			std::cout << "ELUM found at " << elum_z << " mm" << std::endl;
+			std::cout << "Alpha\tTheta\tE_loss\tE_det" << std::endl;
+			for( unsigned int i = 0; i < alpha_energies.size(); i++ ){
+				
+				// Alpha decay - centre
+				double energy_alpha = SimulateDecay( elum_centre_hit, alpha_energies[i], 1 );
+				double theta_lab_alpha = Ejectile.GetThetaLab();
+				double enloss_alpha = alpha_energies[i] - energy_alpha;
+				std::cout << alpha_energies[i] << "\t" << theta_lab_alpha * TMath::RadToDeg() << "\t";
+				std::cout << enloss_alpha << "\t" << energy_alpha << std::endl;
+
+			}
+			std::cout << std::endl;
+			
+		}
 		
 		// Change ejectile and recoils back again
 		Ejectile.SetA( tmpA );
@@ -703,17 +751,6 @@ void ISSReaction::ReadReaction() {
 		Recoil.SetZ( tmpZ2 );
 		Recoil.SetBindingEnergy( tmpBE2 );
 		
-		std::cout << std::setprecision(5);
-		std::cout << "ELUM found at " << elum_z << " mm" << std::endl;
-		std::cout << " θ_cm = " << theta_cm_centre * TMath::RadToDeg();
-		std::cout << " degrees; E_lab = " << energy_centre << " keV; E_det = ";
-		std::cout << energy_centre - enloss_centre << " keV" << std::endl;
-		std::cout << "\t" << theta_cm_inner * TMath::RadToDeg();
-		std::cout << " < θ_cm  < " << theta_cm_outer * TMath::RadToDeg();
-		std::cout << " degrees" << std::endl << "\t" << energy_inner;
-		std::cout << " < E_lab < " << energy_outer << " keV" << std::endl;
-		std::cout << "\t" << energy_inner - enloss_inner << " < E_det < ";
-		std::cout << energy_outer - enloss_outer << " keV " << std::endl;
 		
 	}
 	
@@ -741,15 +778,15 @@ double ISSReaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGrap
 	// Use akima spline to make energy loss graph smoother
 	std::unique_ptr<TSpline3> spline = std::make_unique<TSpline3>("spline", g.get(), "akima");
 	for( unsigned int i = 0; i < Nmeshpoints; i++ ) {
-
+		
 		double eloss = spline->Eval(E) * dx;
 		if( eloss > E && eloss > 0 ) eloss = E; // incase we are "stopped"
-
+		
 		E -= eloss;
 		if( E < 100. && eloss > 0  ) break; // when we fall below 100 keV we assume maximum energy loss
-
+		
 	}
-
+	
 	return Ei - E;
 	
 }
@@ -770,7 +807,7 @@ double ISSReaction::GetNuclearEnergyLoss( double Ei, double range, std::unique_p
 	double dx = range/(double)Nmeshpoints;
 	double E = Ei;
 	double En = 0;
-
+	
 	// Create splines for the provided TGraphs
 	std::unique_ptr<TSpline3> splineTot = std::make_unique<TSpline3>("splineTot", gtot.get(), "akima"); // Use akima spline to make energy loss graph smoother - BRJ
 	std::unique_ptr<TSpline3> splineN   = std::make_unique<TSpline3>("splineN", gn.get(), "akima"); // Use akima spline to make energy loss graph smoother - BRJ
@@ -787,8 +824,8 @@ double ISSReaction::GetNuclearEnergyLoss( double Ei, double range, std::unique_p
 
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Reads the stopping powers from SRIM files located in the directories, and 
-/// makes a TGraph from the data within. Generates a pdf file of the reaction 
+/// Reads the stopping powers from SRIM files located in the directories, and
+/// makes a TGraph from the data within. Generates a pdf file of the reaction
 /// whenever it's called
 /// \param[in] isotope1 The beam species
 /// \param[in] isotope2 The target species
