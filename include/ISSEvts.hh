@@ -419,6 +419,8 @@ public:
 	inline double GetT1(){ return t1; };
 	inline double GetSC(){ return sc; };
 	inline bool GetLaserStatus(){ return laser; };
+	
+	double GetTime();
 
 	
 private:
@@ -437,7 +439,7 @@ private:
 	std::vector<ISSZeroDegreeEvt> zd_event;
 	std::vector<ISSGammaRayEvt> gamma_event;
 
-	ClassDef( ISSEvts, 6 )
+	ClassDef( ISSEvts, 7 )
 	
 };
 

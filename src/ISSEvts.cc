@@ -566,3 +566,78 @@ void ISSGammaRayEvt::SetEvent( float myenergy, unsigned char myid,
 	
 }
 
+
+// Get minimum time from any old event
+double ISSEvts::GetTime(){
+	
+	double min_time = -1;
+	
+	// Check minimum time from all array events
+	for( unsigned int i = 0; i < this->GetArrayMultiplicity(); ++i ){
+		
+		double cur_time = this->GetArrayEvt(i)->GetTime();
+		if( cur_time < min_time || min_time < 0 )
+			min_time = cur_time;
+		
+	}
+	
+	// Check minimum time from all array p-side events
+	for( unsigned int i = 0; i < this->GetArrayPMultiplicity(); ++i ){
+		
+		double cur_time = this->GetArrayPEvt(i)->GetTime();
+		if( cur_time < min_time || min_time < 0 )
+			min_time = cur_time;
+		
+	}
+	
+	// Check minimum time from all recoil events
+	for( unsigned int i = 0; i < this->GetRecoilMultiplicity(); ++i ){
+		
+		double cur_time = this->GetRecoilEvt(i)->GetTime();
+		if( cur_time < min_time || min_time < 0 )
+			min_time = cur_time;
+		
+	}
+	
+	// Check minimum time from all MWPC events
+	for( unsigned int i = 0; i < this->GetMwpcMultiplicity(); ++i ){
+		
+		double cur_time = this->GetMwpcEvt(i)->GetTime();
+		if( cur_time < min_time || min_time < 0 )
+			min_time = cur_time;
+		
+	}
+	
+	// Check minimum time from all ELUM events
+	for( unsigned int i = 0; i < this->GetElumMultiplicity(); ++i ){
+		
+		double cur_time = this->GetElumEvt(i)->GetTime();
+		if( cur_time < min_time || min_time < 0 )
+			min_time = cur_time;
+		
+	}
+	
+	// Check minimum time from all ZeroDegree events
+	for( unsigned int i = 0; i < this->GetZeroDegreeMultiplicity(); ++i ){
+		
+		double cur_time = this->GetZeroDegreeEvt(i)->GetTime();
+		if( cur_time < min_time || min_time < 0 )
+			min_time = cur_time;
+		
+	}
+	
+	// Check minimum time from all gamma-ray events
+	for( unsigned int i = 0; i < this->GetGammaRayMultiplicity(); ++i ){
+		
+		double cur_time = this->GetGammaRayEvt(i)->GetTime();
+		if( cur_time < min_time || min_time < 0 )
+			min_time = cur_time;
+		
+	}
+	
+	// if it's still not been set, make it zero
+	if( min_time < 0 ) min_time = 0;
+	
+	return min_time;
+	
+}
