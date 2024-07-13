@@ -536,7 +536,7 @@ void ISSReaction::ReadReaction() {
 	t1_max_time = config->GetValue( "T1.Max", 1.2e9 );	// default = 1.2 seconds
 	
 	// Laser mode: 0 = off, 1 = on, 2 = on/off (default)
-	laser_mode = config->GetValue( "LaserMode", 0 );
+	laser_mode = config->GetValue( "LaserMode", 2 );
 	
 	// Array-Recoil time windows
 	array_recoil_prompt[0] = config->GetValue( "ArrayRecoil_PromptTime.Min", -300 );	// lower limit for array-recoil prompt time difference
