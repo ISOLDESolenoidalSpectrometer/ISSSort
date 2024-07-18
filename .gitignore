@@ -10,6 +10,7 @@ src/.*o
 .DS_Store
 */.DS_Store
 srim/*.pdf
+srim/*.root
 doc/*
 *.html
 data/*.pdf
