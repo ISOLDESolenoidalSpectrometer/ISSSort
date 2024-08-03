@@ -1206,6 +1206,7 @@ void ISSHistogrammer::MakeHists() {
 
 	} // ELUM
 	
+	output_file->cd();
 }
 
 
@@ -1683,7 +1684,7 @@ unsigned long ISSHistogrammer::FillHists() {
 	}
 
         // Output tree for calculated reaction variables.
-        TTree tree("rxtree", "Reaction data tree");
+        auto tree = new TTree("rxtree", "Reaction data tree");
 
         // Mention all variables once, the redefine per-variable action.
 #define RX_LOOP \
@@ -1703,7 +1704,7 @@ unsigned long ISSHistogrammer::FillHists() {
 #undef RX_INST
 
         // Bind branches.
-#define RX_INST(name) tree.Branch(#name, &rx_##name);
+#define RX_INST(name) tree->Branch(#name, &rx_##name);
         RX_LOOP
 #undef RX_INST
 
@@ -1711,12 +1712,6 @@ unsigned long ISSHistogrammer::FillHists() {
 	// Main loop over TTree to find events
 	// ------------------------------------------------------------------------ //
 	for( unsigned int i = 0; i < n_entries; ++i ){
-
-                // Copy values.
-#define RX_INST(name) rx_##name = react->Get##name();
-                RX_LOOP
-#undef RX_INST
-                tree.Write();
 		
 		// Current event data
 		input_tree->GetEntry(i);
@@ -2253,10 +2248,16 @@ unsigned long ISSHistogrammer::FillHists() {
 			std::cout.flush();
 			
 		}
+
+                // Copy values.
+#define RX_INST(name) rx_##name = react->Get##name();
+                RX_LOOP
+#undef RX_INST
+                tree->Fill();
 		
 	} // all events
 
-        tree.Write();
+        tree->Write();
 	
 	output_file->Write();
 	
