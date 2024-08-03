@@ -1681,11 +1681,42 @@ unsigned long ISSHistogrammer::FillHists() {
 		std::cout << " ISSHistogrammer: Start filling histograms" << std::endl;
 		
 	}
-	
+
+        // Output tree for calculated reaction variables.
+        TTree tree("rxtree", "Reaction data tree");
+
+        // Mention all variables once, the redefine per-variable action.
+#define RX_LOOP \
+        RX_INST(ThetaCM) \
+        RX_INST(Distance) \
+        RX_INST(Ex) \
+        RX_INST(Zmeasured) \
+        RX_INST(Zprojected) \
+        RX_INST(Qvalue) \
+        RX_INST(EnergyTotCM) \
+        RX_INST(EnergyTotLab) \
+        RX_INST(Beta)
+
+        // Declare.
+#define RX_INST(name) auto rx_##name = react->Get##name();
+        RX_LOOP
+#undef RX_INST
+
+        // Bind branches.
+#define RX_INST(name) tree.Branch(#name, &rx_##name);
+        RX_LOOP
+#undef RX_INST
+
 	// ------------------------------------------------------------------------ //
 	// Main loop over TTree to find events
 	// ------------------------------------------------------------------------ //
 	for( unsigned int i = 0; i < n_entries; ++i ){
+
+                // Copy values.
+#define RX_INST(name) rx_##name = react->Get##name();
+                RX_LOOP
+#undef RX_INST
+                tree.Write();
 		
 		// Current event data
 		input_tree->GetEntry(i);
@@ -2224,6 +2255,8 @@ unsigned long ISSHistogrammer::FillHists() {
 		}
 		
 	} // all events
+
+        tree.Write();
 	
 	output_file->Write();
 	
