@@ -1691,22 +1691,45 @@ unsigned long ISSHistogrammer::FillHists() {
         RX_INST(ThetaCM) \
         RX_INST(Distance) \
         RX_INST(Ex) \
+	RX_INST(EBISOnTime) \
+	RX_INST(EBISOffTime) \
+	RX_INST(EBISTimeRatio) \
+	RX_INST(EBISFillRatio) \
+	RX_INST(T1MinTime) \
+	RX_INST(T1MaxTime) \
         RX_INST(Zmeasured) \
         RX_INST(Zprojected) \
         RX_INST(Qvalue) \
-        RX_INST(EnergyTotCM) \
         RX_INST(EnergyTotLab) \
-        RX_INST(Beta)
+        RX_INST(EnergyTotCM) \
+        RX_INST(Gamma) \
+        RX_INST(Beta) \
+	RX_INST(ArrayRecoilTimeRatio) \
+	RX_INST(ArrayRecoilFillRatio) \
+	RX_INST(ElumRecoilTimeRatio) \
+	RX_INST(ElumRecoilFillRatio)
+// These do not come from ISSReaction, but from within the loop below.
+#define RX2_LOOP \
+	RX2_INST(double, ebis_td) \
+	RX2_INST(int, ebis_on) \
+	RX2_INST(int, ebis_off) \
+	RX2_INST(double, t1_td)
 
         // Declare.
 #define RX_INST(name) auto rx_##name = react->Get##name();
         RX_LOOP
 #undef RX_INST
+#define RX2_INST(type, name) type rx2_##name;
+        RX2_LOOP
+#undef RX2_INST
 
         // Bind branches.
 #define RX_INST(name) tree->Branch(#name, &rx_##name);
         RX_LOOP
 #undef RX_INST
+#define RX2_INST(type, name) tree->Branch(#name, &rx2_##name);
+        RX2_LOOP
+#undef RX2_INST
 
 	// ------------------------------------------------------------------------ //
 	// Main loop over TTree to find events
@@ -2095,6 +2118,16 @@ unsigned long ISSHistogrammer::FillHists() {
 				} // energy cuts
 				
 			} // random
+
+			// Copy values.
+#define RX_INST(name) rx_##name = react->Get##name();
+			RX_LOOP
+#undef RX_INST
+			rx2_ebis_td = array_evt->GetTime() - read_evts->GetEBIS();
+			rx2_ebis_on = OnBeam(array_evt);
+			rx2_ebis_off = OffBeam(array_evt);
+			rx2_t1_td = array_evt->GetTime() - read_evts->GetT1();
+			tree->Fill();
 				
 		} // array
 		
@@ -2248,12 +2281,6 @@ unsigned long ISSHistogrammer::FillHists() {
 			std::cout.flush();
 			
 		}
-
-                // Copy values.
-#define RX_INST(name) rx_##name = react->Get##name();
-                RX_LOOP
-#undef RX_INST
-                tree->Fill();
 		
 	} // all events
 
