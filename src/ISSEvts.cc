@@ -7,6 +7,7 @@ ClassImp(ISSMwpcEvt)
 ClassImp(ISSElumEvt)
 ClassImp(ISSZeroDegreeEvt)
 ClassImp(ISSGammaRayEvt)
+ClassImp(ISSLumeEvt)
 ClassImp(ISSEvts)
 
 
@@ -25,6 +26,7 @@ void ISSEvts::ClearEvt() {
 	elum_event.clear();
 	zd_event.clear();
 	gamma_event.clear();
+	lume_event.clear();
 
 	std::vector<ISSArrayEvt>().swap(array_event);
 	std::vector<ISSArrayPEvt>().swap(arrayp_event);
@@ -33,7 +35,8 @@ void ISSEvts::ClearEvt() {
 	std::vector<ISSElumEvt>().swap(elum_event);
 	std::vector<ISSZeroDegreeEvt>().swap(zd_event);
 	std::vector<ISSGammaRayEvt>().swap(gamma_event);
-	
+	std::vector<ISSLumeEvt>().swap(lume_event);
+
 	ebis = -999;
 	t1 = -999;
 
@@ -143,6 +146,19 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSGammaRayEvt> event ) {
 	
 	gamma_event.push_back( fill_evt );
 	
+}
+
+void ISSEvts::AddEvt( std::shared_ptr<ISSLumeEvt> event ) {
+        // Make a copy of the event and push it back
+        ISSLumeEvt fill_evt;
+        fill_evt.SetEvent( event->GetEnergy(),
+			   event->GetID(),
+			   event->GetTime(),
+			   event->GetXN(),
+			   event->GetXF() );
+
+	lume_event.push_back( fill_evt );
+
 }
 
 // ------------ //
@@ -566,3 +582,22 @@ void ISSGammaRayEvt::SetEvent( float myenergy, unsigned char myid,
 	
 }
 
+// ---------------- //
+// LUME events      //
+// ---------------- //
+
+ISSLumeEvt::ISSLumeEvt(){}
+ISSLumeEvt::~ISSLumeEvt(){}
+
+void ISSLumeEvt::SetEvent( float myenergy, unsigned char myid,
+			   double mytime, float myn, float myf ) {
+        energy = myenergy;
+	id = myid;
+	time = mytime;
+	xn = myn;
+	xf = myf;
+	if (!std::isnan(xn) && !std::isnan(xf) )
+	  x = ( xn - xf ) / ( xn + xf );
+
+	return;
+}

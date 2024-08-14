@@ -168,6 +168,7 @@ void ISSEventBuilder::StartFile(){
 	elum_ctr	= 0;
 	zd_ctr		= 0;
 	gamma_ctr	= 0;
+	lume_ctr        = 0;
 
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 	
@@ -296,6 +297,7 @@ void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 	elum_evt	= std::make_shared<ISSElumEvt>();
 	zd_evt		= std::make_shared<ISSZeroDegreeEvt>();
 	gamma_evt	= std::make_shared<ISSGammaRayEvt>();
+	lume_evt        = std::make_shared<ISSLumeEvt>();
 
 	// ------------------------------------------------------------------------ //
 	// Create output file and create events tree
@@ -363,6 +365,16 @@ void ISSEventBuilder::Initialise(){
 	saen_list.clear();
 	satd_list.clear();
 	said_list.clear();
+
+	le_list.clear();
+	lxn_list.clear();
+	lxf_list.clear();
+	le_td_list.clear();
+	lxn_td_list.clear();
+	lxf_td_list.clear();
+	le_id_list.clear();
+	lxn_id_list.clear();
+	lxf_id_list.clear();
 	
 	// Now swap all these vectors with empty vectors to ensure they are fully cleared
 	std::vector<float>().swap(pen_list);
@@ -401,6 +413,16 @@ void ISSEventBuilder::Initialise(){
 	std::vector<float>().swap(saen_list);
 	std::vector<double>().swap(satd_list);
 	std::vector<char>().swap(said_list);
+
+	std::vector<float>().swap(le_list);
+	std::vector<float>().swap(lxn_list);
+	std::vector<float>().swap(lxf_list);
+	std::vector<double>().swap(le_td_list);
+	std::vector<double>().swap(lxn_td_list);
+	std::vector<double>().swap(lxf_td_list);
+	std::vector<char>().swap(le_id_list);
+	std::vector<char>().swap(lxn_id_list);
+	std::vector<char>().swap(lxf_id_list);
 
 	write_evts->ClearEvt();
 	
@@ -685,7 +707,38 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				hit_ctr++; // increase counter for bits of data included in this event
 
 			}
-			
+			// Is it a LUME?
+			else if( set->IsLUME( mymod, mych ) && mythres ) {
+
+			        // Get LUME signal type (0 = total energy, 1 = near side, 2 = far side)
+			        mytype = set->GetLUMEType( mymod, mych );
+
+				switch (mytype) {
+				case 0:
+				  myid = set->GetLUMEEDetector( mymod, mych );
+				  le_list.push_back( myenergy );
+				  le_td_list.push_back( mytime );
+				  le_id_list.push_back( myid );
+				  break;
+				case 1:
+				  myid = set->GetLUMEXNDetector( mymod, mych );
+				  lxn_list.push_back( myenergy );
+				  lxn_td_list.push_back( mytime );
+				  lxn_id_list.push_back( myid );
+				  break;
+				case 2:
+				  myid = set->GetLUMEXFDetector( mymod, mych );
+				  lxf_list.push_back( myenergy );
+				  lxf_td_list.push_back( mytime );
+				  lxf_id_list.push_back( myid );
+				  break;
+				default:
+				  break;
+				}
+
+				hit_ctr++; // increase counter for bits of data included in this event
+
+			}
 
 			// Is it the start event?
 			if( caen_time_start.at( mymod ) == 0 )
@@ -1002,6 +1055,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				ElumFinder();		// add an ElumEvt for each S1 event
 				ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
 				GammaRayFinder();	// add a GammaRay event for ScintArray/HPGe events
+				LumeFinder();           // add a LumeEvt for each LUME
 
 				// ------------------------------------
 				// Add timing and fill the ISSEvts tree
@@ -1021,7 +1075,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 					write_evts->GetMwpcMultiplicity() ||
 					write_evts->GetElumMultiplicity() ||
 					write_evts->GetZeroDegreeMultiplicity() ||
-					write_evts->GetGammaRayMultiplicity() )
+					write_evts->GetGammaRayMultiplicity()  ||
+				        write_evts->GetLumeMultiplicity() )
 					output_tree->Fill();
 
 				// Clean up if the next event is going to make the tree full
@@ -1095,6 +1150,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	ss_log << "   ELUM events = " << elum_ctr << std::endl;
 	ss_log << "   ZeroDegree events = " << zd_ctr << std::endl;
 	ss_log << "   Gamma-ray events = " << gamma_ctr << std::endl;
+	ss_log << "   LUME events = " << lume_ctr << std::endl;
 	ss_log << "   CAEN pulser = " << n_caen_pulser << std::endl;
 	ss_log << "   FPGA pulser" << std::endl;
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i )
@@ -2488,7 +2544,58 @@ void ISSEventBuilder::GammaRayFinder() {
 	
 }
 
+void ISSEventBuilder::LumeFinder() {
 
+  size_t n_index = 0;
+  size_t f_index = 0;
+
+  for (size_t t_index = 0; t_index < le_list.size(); ++t_index) {
+    double e_timestamp = le_td_list[t_index];
+    float e_energy = le_list[t_index];
+    char e_id = le_id_list[t_index];
+    double time_window = set->GetLumeHitWindow();
+
+
+    // Find the corresponding n signal
+    bool has_ln = false;
+    float xn_energy = 0;
+
+    for (; n_index < lxn_list.size(); ++n_index) {
+
+      if (lxn_id_list[n_index] != e_id) continue;
+
+      if (std::abs(lxn_td_list[n_index] - e_timestamp) <= time_window) {
+	xn_energy = lxn_list[n_index];
+	++n_index;
+	has_ln = true;
+	break;
+      }
+
+    }
+
+    // Find the corresponding f signal
+    bool has_lf = false;
+    float xf_energy = 0;
+
+    for (; f_index < lxf_list.size(); ++f_index) {
+
+      if (lxf_id_list[f_index] != e_id) continue;
+
+      if (std::abs(lxf_td_list[f_index] - e_timestamp) <= time_window) {
+	xf_energy = lxf_list[f_index];
+	++f_index;
+	has_lf = true;
+	break;
+      }
+    }
+
+    lume_evt->SetEvent(e_energy, e_id, e_timestamp, has_ln ? xn_energy : TMath::QuietNaN(), has_lf ? xf_energy : TMath::QuietNaN() );
+
+    write_evts->AddEvt( lume_evt );
+    lume_ctr++;
+  }
+  return;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 /// *This function doesn't fill any histograms*, but just creates them. Called by the ISSEventBuilder::SetOutput function
