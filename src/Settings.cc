@@ -22,6 +22,7 @@ void ISSSettings::ReadSettings() {
 	n_array_row = config->GetValue( "NumberOfArrayRows", 4 );
 	n_array_pstrip = config->GetValue( "NumberOfArrayPstrips", 128 );
 	n_array_nstrip = config->GetValue( "NumberOfArrayNstrips", 11 );
+	n_array_side = config->GetValue( "NumberOfArraySides", 2 );
 	
 	// CAEN initialisation
 	n_caen_mod = config->GetValue( "NumberOfCAENModules", 2 );

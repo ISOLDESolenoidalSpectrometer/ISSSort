@@ -4,7 +4,7 @@ n_array_ch:               128
 n_array_row:              4
 n_array_pstrip:           128
 n_array_nstrip:           11
-n_array_side:             0
+n_array_side:             2
 n_caen_mod:               2
 n_caen_ch:                16
 caen_model[0]:            1725
