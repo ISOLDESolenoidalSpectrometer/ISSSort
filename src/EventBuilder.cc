@@ -2975,7 +2975,29 @@ void ISSEventBuilder::MakeHists(){
 	htitle = "Gamma-gamma time difference;#Deltat [ns];Counts";
 	gamma_gamma_td = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
 
-	
+	// -------------------- //
+	// LUME histograms      //
+	// -------------------- //
+	dirname = "lume";
+	if( !output_file->GetDirectory( dirname.data() ) )
+		output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+
+	lume_E.resize( set->GetNumberOfLUMEDetectors() );
+	lume_E_vs_x.resize( set->GetNumberOfLUMEDetectors() );
+
+	// Loop over number of LUME detectors
+	for( unsigned int i = 0; i < set->GetNumberOfLUMEDetectors(); ++i ) {
+
+		hname = "lume_E_" + std::to_string(i);
+		htitle = "LUME energy spectrum;Energy [ch];Counts";
+		lume_E[i] = new TH1F( hname.data(), htitle.data(), 1000, -200, 8000);
+
+		hname = "lume_E_vs_x_" + std::to_string(i);
+		htitle = "LUME energy vs position spectrum;Position;Energy [ch]";
+		lume_E_vs_x[i] = new TH2F( hname.data(), htitle.data(), 100, -2., 2., 1000, -200, 8000 );
+	}
+
 	return;
 	
 }
@@ -3136,6 +3158,14 @@ void ISSEventBuilder::CleanHists() {
 	delete gamma_gamma_E;
 	delete gamma_gamma_td;
 
+	for( unsigned int i = 0; i < lume_E.size(); i++ )
+		delete (lume_E[i]);
+	lume_E.clear();
+
+	for( unsigned int i = 0; i < lume_E_vs_x.size(); i++ )
+		delete (lume_E_vs_x[i]);
+	lume_E_vs_x.clear();
+
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
 		delete (fpga_td[i]);
 		delete (asic_td[i]);
@@ -3278,6 +3308,12 @@ void ISSEventBuilder::ResetHists() {
 	gamma_E_vs_det->Reset("ICESM");
 	gamma_gamma_E->Reset("ICESM");
 	gamma_gamma_td->Reset("ICESM");
+
+	for( unsigned int i = 0; i < lume_E.size(); i++ )
+		lume_E[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < lume_E_vs_x.size(); i++ )
+		lume_E_vs_x[i]->Reset("ICESM");
 
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
 		fpga_td[i]->Reset("ICESM");
