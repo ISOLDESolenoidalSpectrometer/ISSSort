@@ -146,13 +146,13 @@ public:
 	char GetScintArrayDetector( unsigned char mod, unsigned char ch );
 	bool IsScintArray( unsigned char mod, unsigned char ch );
 
-        // LUME detectors
-        inline unsigned char GetNumberOfLUMEDetectors(){ return n_lume; };
-        char GetLUMEEDetector( unsigned char mod, unsigned char ch );
-        char GetLUMEXNDetector( unsigned char mod, unsigned char ch );
-        char GetLUMEXFDetector( unsigned char mod, unsigned char ch );
-        bool IsLUME( unsigned char mod, unsigned char ch );
-        char GetLUMEType( unsigned char mod, unsigned char ch );
+	// LUME detectors
+	inline unsigned char GetNumberOfLUMEDetectors(){ return n_lume; };
+	char GetLUMEEDetector( unsigned char mod, unsigned char ch );
+	char GetLUMEXNDetector( unsigned char mod, unsigned char ch );
+	char GetLUMEXFDetector( unsigned char mod, unsigned char ch );
+	bool IsLUME( unsigned char mod, unsigned char ch );
+	char GetLUMEType( unsigned char mod, unsigned char ch );
 
 
 private:
@@ -217,7 +217,7 @@ private:
 	double array_nn_hit_window;		///< Time window in ns for correlating n-n hits on the array
 	double zd_hit_window;			///< Time window in ns for correlating ZeroDegree E-dE hits
 	double gamma_hit_window;		///< Time window in ns for correlating Gamma-Gamma hits (addback?)
-        double lume_hit_window;                 ///< Time window in ns for correlating hits in LUME detectors (t, n, and f signals)
+	double lume_hit_window;                 ///< Time window in ns for correlating hits in LUME detectors (t, n, and f signals)
 
 	
 	// Data format
@@ -269,17 +269,17 @@ private:
 	std::vector<unsigned char> scint_ch;			///< A list of channel numbers for each ScintArray detectors
 	std::vector<std::vector<char>> scint_detector;	///< A channel map for the ScintArray detectors (-1 if not an ScintArray detector)
 
-        // LUME detectors, each of them has 3 outputs - total energy (read out from the back side), near (read out from one edge), and far (from the other edge), total energy gives energy information, near and far side give position of hit
-        unsigned char n_lume;                         ///< Number of LUME detectors, should be 4
-        std::vector<unsigned char> lume_e_mod;          ///< A list of module numbers (total energy - readout from the back-plane)
-        std::vector<unsigned char> lume_xn_mod;          ///< A list of module numbers (near side)
-        std::vector<unsigned char> lume_xf_mod;          ///< A list of module numbers (far side)
-        std::vector<unsigned char> lume_e_ch;           ///< A list of channel numbers (total energy)
-        std::vector<unsigned char> lume_xn_ch;           ///< A list of channel numbers (near side)
-        std::vector<unsigned char> lume_xf_ch;           ///< A list of channel numbers (far side)
-        std::vector<std::vector<char>> lume_e_detector; ///< A channel map for the LUME detectors
-        std::vector<std::vector<char>> lume_xn_detector; ///< A channel map for the LUME detectors
-        std::vector<std::vector<char>> lume_xf_detector; ///< A channel map for the LUME detectors
+	// LUME detectors, each of them has 3 outputs - total energy (read out from the back side), near (read out from one edge), and far (from the other edge), total energy gives energy information, near and far side give position of hit
+	unsigned char n_lume;								///< Number of LUME detectors, should be 4
+	std::vector<unsigned char> lume_e_mod;				///< A list of module numbers (total energy - readout from the back-plane)
+	std::vector<unsigned char> lume_xn_mod;				///< A list of module numbers (near side)
+	std::vector<unsigned char> lume_xf_mod;				///< A list of module numbers (far side)
+	std::vector<unsigned char> lume_e_ch;				///< A list of channel numbers (total energy)
+	std::vector<unsigned char> lume_xn_ch;				///< A list of channel numbers (near side)
+	std::vector<unsigned char> lume_xf_ch;				///< A list of channel numbers (far side)
+	std::vector<std::vector<char>> lume_e_detector;		///< A channel map for the LUME detectors
+	std::vector<std::vector<char>> lume_xn_detector;	///< A channel map for the LUME detectors
+	std::vector<std::vector<char>> lume_xf_detector;	///< A channel map for the LUME detectors
 
 };
 

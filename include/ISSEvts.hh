@@ -355,36 +355,36 @@ class ISSLumeEvt : public TObject {
 
 public:
 
-  // setup information
-  ISSLumeEvt();
-  ~ISSLumeEvt();
+	// setup information
+	ISSLumeEvt();
+	~ISSLumeEvt();
 
-  void SetEvent( float myenergy, unsigned char myid,
-		 double mytime, float myn, float myf );
+	void SetEvent( float myenergy, unsigned char myid,
+					double mytime, float myn, float myf );
 
-  inline void SetEnergy( float e ){ energy = e; }
-  inline void SetID( unsigned char i ){ id = i; };
-  inline void SetTime( double t ){ time = t; };
-  inline void SetXN( float nn ){ xn = nn; }
-  inline void SetXF( float ff ){ xf = ff; }
-  inline void SetX( float xx ){ x = xx; }
+	inline void SetEnergy( float e ){ energy = e; }
+	inline void SetID( unsigned char i ){ id = i; };
+	inline void SetTime( double t ){ time = t; };
+	inline void SetXN( float nn ){ xn = nn; }
+	inline void SetXF( float ff ){ xf = ff; }
+	inline void SetX( float xx ){ x = xx; }
 
-  inline float GetEnergy(){ return energy; };
-  inline unsigned char GetID(){ return id; };
-  inline double GetTime(){ return time; };
-  inline float GetXN(){ return xn; };
-  inline float GetXF(){ return xf; };
-  inline float GetX(){ return x; };
+	inline float			GetEnergy(){ return energy; };
+	inline unsigned char	GetID(){ return id; };
+	inline double			GetTime(){ return time; };
+	inline float			GetXN(){ return xn; };
+	inline float			GetXF(){ return xf; };
+	inline float			GetX(){ return x; };
 
 private:
-  float energy;     ///< Energy in the detector (from the back-plane)
-  unsigned char id; ///< Detector ID
-  double time;      ///< time stamp of the event
-  float xn;          ///< near-side energy
-  float xf;          ///< far-side energy
-  float x;          ///< position along the detector
+	float energy;		///< Energy in the detector (from the back-plane)
+	unsigned char id;	///< Detector ID
+	double time;		///< time stamp of the event
+	float xn;			///< near-side energy
+	float xf;			///< far-side energy
+	float x;			///< position along the detector
 
-  ClassDef( ISSLumeEvt, 1 );
+	ClassDef( ISSLumeEvt, 1 );
 
 };
 
@@ -404,7 +404,7 @@ public:
 	void AddEvt( std::shared_ptr<ISSElumEvt> event );
 	void AddEvt( std::shared_ptr<ISSZeroDegreeEvt> event );
 	void AddEvt( std::shared_ptr<ISSGammaRayEvt> event );
-        void AddEvt( std::shared_ptr<ISSLumeEvt> event );
+	void AddEvt( std::shared_ptr<ISSLumeEvt> event );
 
 	inline unsigned int GetArrayMultiplicity(){ return array_event.size(); };
 	inline unsigned int GetArrayPMultiplicity(){ return arrayp_event.size(); };
@@ -413,7 +413,7 @@ public:
 	inline unsigned int GetElumMultiplicity(){ return elum_event.size(); };
 	inline unsigned int GetZeroDegreeMultiplicity(){ return zd_event.size(); };
 	inline unsigned int GetGammaRayMultiplicity(){ return gamma_event.size(); };
-        inline unsigned int GetLumeMultiplicity(){ return lume_event.size(); };
+	inline unsigned int GetLumeMultiplicity(){ return lume_event.size(); };
 
 	inline std::shared_ptr<ISSArrayEvt> GetArrayEvt( unsigned int i ){
 		if( i < array_event.size() ) return std::make_shared<ISSArrayEvt>( array_event.at(i) );

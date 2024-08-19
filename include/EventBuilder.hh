@@ -103,7 +103,7 @@ public:
 	void ElumFinder(); ///< Processes all hits on the ELUM that fall within the build window
 	void ZeroDegreeFinder(); ///< Processes all hits on the zero-degree detector that fall within the build window
 	void GammaRayFinder(); ///< Processes hits in the ScintArray and maybe HPGe in the future
-        void LumeFinder(); ///< Processes all hits on the LUME that fall within the build window
+	void LumeFinder(); ///< Processes all hits on the LUME that fall within the build window
 		
 	inline TFile* GetFile(){ return output_file; }; ///< Getter for the output_file pointer
 	inline TTree* GetTree(){ return output_tree; }; ///< Getter for the output tree pointer
@@ -149,7 +149,7 @@ private:
 	std::shared_ptr<ISSElumEvt> elum_evt;
 	std::shared_ptr<ISSZeroDegreeEvt> zd_evt;
 	std::shared_ptr<ISSGammaRayEvt> gamma_evt;
-        std::shared_ptr<ISSLumeEvt> lume_evt;
+	std::shared_ptr<ISSLumeEvt> lume_evt;
 
 	/// Outputs
 	TFile *output_file; ///< Pointer to the output ROOT file containing events
@@ -236,7 +236,7 @@ private:
 	unsigned char		myid;		///< generic detector id
 	unsigned char		mysector;	///< 4 quadrants of the recoil, for example
 	unsigned char		mylayer;	///< 2 layers for the dE-E, for example
-        unsigned char           mytype;         ///< type of detector (for LUME: t, n, f) 
+	unsigned char		mytype;		///< type of detector (for LUME: t, n, f)
 
 
 	// Array variables
@@ -282,16 +282,16 @@ private:
 	std::vector<double>	satd_list;	///< list of ScintArray time differences for GammaFinder
 	std::vector<char>			said_list;	///< list of ScintArray detectors ids for GammaFinder
 
-        // LUME variables. Each LUME is a position-sensitive silicon detector and has 3 readout channels: the total energy output at the back face (denoted here as e), and two energy readouts at both edges of the front face of a detector (xn and xf)
-        std::vector<float>                      le_list;      ///< list of LUME energies (signal from the back face)
-        std::vector<float>                      lxn_list;       ///< list of LUME xn signals (
-        std::vector<float>                      lxf_list;       ///< list of LUME xf signals
-        std::vector<double>     le_td_list;      ///< list of LUME time differences
-        std::vector<double>     lxn_td_list;      ///< list of LUME time differences
-        std::vector<double>     lxf_td_list;      ///< list of LUME time differences
-        std::vector<char>                       le_id_list;      ///< list of LUME detectors
-        std::vector<char>                       lxn_id_list;      ///< list of LUME detectors
-        std::vector<char>                       lxf_id_list;      ///< list of LUME detectors
+	// LUME variables. Each LUME is a position-sensitive silicon detector and has 3 readout channels: the total energy output at the back face (denoted here as e), and two energy readouts at both edges of the front face of a detector (xn and xf)
+	std::vector<float>		le_list;		///< list of LUME energies (signal from the back face)
+	std::vector<float>		lxn_list;		///< list of LUME xn signals
+	std::vector<float>		lxf_list;		///< list of LUME xf signals
+	std::vector<double>		le_td_list;		///< list of LUME time differences
+	std::vector<double>		lxn_td_list;	///< list of LUME time differences
+	std::vector<double>		lxf_td_list;	///< list of LUME time differences
+	std::vector<char>		le_id_list;		///< list of LUME detectors
+ 	std::vector<char>		lxn_id_list;	///< list of LUME detectors
+	std::vector<char>		lxf_id_list;	///< list of LUME detectors
 
 	// Counters
 	unsigned int		hit_ctr;		///< Counts the number of hits that make up an event within a given file
@@ -302,7 +302,7 @@ private:
 	unsigned int		elum_ctr;		///< Counts the number of ELUM events within a given file
 	unsigned int		zd_ctr;			///< Counts the number of zero-degree detector events within a given file
 	unsigned int		gamma_ctr;		///< Counts the number of Gamma-Ray events within a given file
-        unsigned int            lume_ctr;              ///< Counts the number of LUME events within a given file
+	unsigned int		lume_ctr;		///< Counts the number of LUME events within a given file
 	unsigned long		n_asic_data;	///< Counter for the number of asic data packets in a file
 	unsigned long		n_caen_data;	///< Counter for number of caen data packets in a file
 	unsigned long		n_info_data; 	///< Counter for number of info data packets in a file
@@ -382,9 +382,9 @@ private:
 	TH2F *gamma_gamma_E;	///< Gamma-gamma matrix, no prompt time condition
 	TH1F *gamma_gamma_td;	///< Gamma-gamma time difference
 
-        // LUME histograms
-        std::vector<TH1F*> lume_E; ///< The LUME spectrum histogram
-        std::vector<TH2F*> lume_E_vs_x; ///< Energy vs hit position for LUME
+	// LUME histograms
+	std::vector<TH1F*> lume_E;		///< The LUME spectrum histogram
+	std::vector<TH2F*> lume_E_vs_x;	///< Energy vs hit position for LUME
 };
 
 #endif

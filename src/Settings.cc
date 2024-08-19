@@ -309,47 +309,44 @@ void ISSSettings::ReadSettings() {
 	lume_xf_detector.resize( n_caen_mod );
 
 	for( unsigned int i = 0; i < n_caen_mod; ++i )
-	  for( unsigned int j = 0; j < n_caen_ch; ++j ){
-	    lume_e_detector[i].push_back( -1 );
-	    lume_xn_detector[i].push_back( -1 );
-	    lume_xf_detector[i].push_back( -1 );
-	  }
+		for( unsigned int j = 0; j < n_caen_ch; ++j ){
+			lume_e_detector[i].push_back( -1 );
+			lume_xn_detector[i].push_back( -1 );
+			lume_xf_detector[i].push_back( -1 );
+		}
 
 	for( unsigned int i = 0; i < n_lume; ++i ){
 
-	  // Assuming they are all in the same module
-	  unsigned char mm = 10;
+	// Assuming they are all in the same module
+	unsigned char mm = 10;
 
-	  lume_e_mod[i] = config->GetValue( Form( "LUME_e_%d.Module", i ), (int) mm );
-	  lume_xn_mod[i] = config->GetValue( Form( "LUME_xn_%d.Module", i ), (int) mm );
-	  lume_xf_mod[i] = config->GetValue( Form( "LUME_xf_%d.Module", i ), (int) mm );
-	  lume_e_ch[i] = config->GetValue( Form( "LUME_e_%d.Channel", i ), (int) i );
-	  lume_xn_ch[i] = config->GetValue( Form( "LUME_xn_%d.Channel", i ), (int) i );
-	  lume_xf_ch[i] = config->GetValue( Form( "LUME_xf_%d.Channel", i ), (int) i );
+	lume_e_mod[i] = config->GetValue( Form( "LUME_e_%d.Module", i ), (int) mm );
+	lume_xn_mod[i] = config->GetValue( Form( "LUME_xn_%d.Module", i ), (int) mm );
+	lume_xf_mod[i] = config->GetValue( Form( "LUME_xf_%d.Module", i ), (int) mm );
+	lume_e_ch[i] = config->GetValue( Form( "LUME_e_%d.Channel", i ), (int) i );
+	lume_xn_ch[i] = config->GetValue( Form( "LUME_xn_%d.Channel", i ), (int) i );
+	lume_xf_ch[i] = config->GetValue( Form( "LUME_xf_%d.Channel", i ), (int) i );
 
-	  if( lume_e_mod[i] < n_caen_mod && lume_e_ch[i] < n_caen_ch )
-	    lume_e_detector[lume_e_mod[i]][lume_e_ch[i]] = i;
+	if( lume_e_mod[i] < n_caen_mod && lume_e_ch[i] < n_caen_ch )
+		lume_e_detector[lume_e_mod[i]][lume_e_ch[i]] = i;
+	else {
+		std::cerr << "Dodgy LUME settings: module = " << lume_e_mod[i];
+		std::cerr << " channel = " << lume_e_ch[i] << std::endl;
+	}
 
-	  else {
-	    std::cerr << "Dodgy LUME settings: module = " << lume_e_mod[i];
-	    std::cerr << " channel = " << lume_e_ch[i] << std::endl;
-	  }
+	if( lume_xn_mod[i] < n_caen_mod && lume_xn_ch[i] < n_caen_ch )
+		lume_xn_detector[lume_xn_mod[i]][lume_xn_ch[i]] = i;
+	else {
+		std::cerr << "Dodgy LUME settings: module = " << lume_xn_mod[i];
+		std::cerr << " channel = " << lume_xn_ch[i] << std::endl;
+	}
 
-	  if( lume_xn_mod[i] < n_caen_mod && lume_xn_ch[i] < n_caen_ch )
-	    lume_xn_detector[lume_xn_mod[i]][lume_xn_ch[i]] = i;
-
-	  else {
-	    std::cerr << "Dodgy LUME settings: module = " << lume_xn_mod[i];
-	    std::cerr << " channel = " << lume_xn_ch[i] << std::endl;
-	  }
-
-	  if( lume_xf_mod[i] < n_caen_mod && lume_xf_ch[i] < n_caen_ch )
-	    lume_xf_detector[lume_xf_mod[i]][lume_xf_ch[i]] = i;
-
-	  else {
-	    std::cerr << "Dodgy LUME settings: module = " << lume_xf_mod[i];
-	    std::cerr << " channel = " << lume_xf_ch[i] << std::endl;
-	  }
+	if( lume_xf_mod[i] < n_caen_mod && lume_xf_ch[i] < n_caen_ch )
+		lume_xf_detector[lume_xf_mod[i]][lume_xf_ch[i]] = i;
+	else {
+		std::cerr << "Dodgy LUME settings: module = " << lume_xf_mod[i];
+		std::cerr << " channel = " << lume_xf_ch[i] << std::endl;
+	}
 
 	}
 
@@ -553,66 +550,63 @@ bool ISSSettings::IsLUME( unsigned char mod, unsigned char ch ) {
 
 	/// Return true if this is an ScintArray event
 	if( lume_e_detector[(int)mod][(int)ch] >= 0 ||
-	    lume_xn_detector[(int)mod][(int)ch] >= 0 ||
-	    lume_xf_detector[(int)mod][(int)ch] >= 0 ) return true;
+		lume_xn_detector[(int)mod][(int)ch] >= 0 ||
+		lume_xf_detector[(int)mod][(int)ch] >= 0 ) return true;
 	else return false;
 
 }
 
 char ISSSettings::GetLUMEType(unsigned char mod, unsigned char ch ) {
 
-        if( lume_e_detector[(int)mod][(int)ch] >= 0 ) return 0;
-        else if( lume_xn_detector[(int)mod][(int)ch] >= 0 ) return 1;
-        else if(lume_xf_detector[(int)mod][(int)ch] >= 0 ) return 2;
-        else return -1;
+	if( lume_e_detector[(int)mod][(int)ch] >= 0 ) return 0;
+	else if( lume_xn_detector[(int)mod][(int)ch] >= 0 ) return 1;
+	else if(lume_xf_detector[(int)mod][(int)ch] >= 0 ) return 2;
+	else return -1;
 
 }
 
 char ISSSettings::GetLUMEEDetector( unsigned char mod, unsigned char ch ) {
 
-        /// Return ID of LUME t detector (total energy signal)
-        if( mod < n_caen_mod && ch < n_caen_ch )
-                return lume_e_detector[(int)mod][(int)ch];
+	/// Return ID of LUME t detector (total energy signal)
+	if( mod < n_caen_mod && ch < n_caen_ch )
+		return lume_e_detector[(int)mod][(int)ch];
+	else {
 
-        else {
+		std::cerr << "Bad LUME event: module = " << (int)mod;
+		std::cerr << " channel = " << (int)ch << std::endl;
+		return -1;
 
-                std::cerr << "Bad LUME event: module = " << (int)mod;
-                std::cerr << " channel = " << (int)ch << std::endl;
-                return -1;
-
-        }
+	}
 
 }
 
 char ISSSettings::GetLUMEXNDetector( unsigned char mod, unsigned char ch ) {
 
-        /// Return ID of LUME t detector (total energy signal)
-        if( mod < n_caen_mod && ch < n_caen_ch )
-                return lume_xn_detector[(int)mod][(int)ch];
+	/// Return ID of LUME t detector (total energy signal)
+	if( mod < n_caen_mod && ch < n_caen_ch )
+		return lume_xn_detector[(int)mod][(int)ch];
+	else {
 
-        else {
+		std::cerr << "Bad LUME event: module = " << (int)mod;
+		std::cerr << " channel = " << (int)ch << std::endl;
+		return -1;
 
-                std::cerr << "Bad LUME event: module = " << (int)mod;
-                std::cerr << " channel = " << (int)ch << std::endl;
-                return -1;
-
-        }
+	}
 
 }
 
 char ISSSettings::GetLUMEXFDetector( unsigned char mod, unsigned char ch ) {
 
-        /// Return ID of LUME t detector (total energy signal)
-        if( mod < n_caen_mod && ch < n_caen_ch )
-                return lume_xf_detector[(int)mod][(int)ch];
+	/// Return ID of LUME t detector (total energy signal)
+	if( mod < n_caen_mod && ch < n_caen_ch )
+		return lume_xf_detector[(int)mod][(int)ch];
+	else {
 
-        else {
+		std::cerr << "Bad LUME event: module = " << (int)mod;
+		std::cerr << " channel = " << (int)ch << std::endl;
+		return -1;
 
-                std::cerr << "Bad LUME event: module = " << (int)mod;
-                std::cerr << " channel = " << (int)ch << std::endl;
-                return -1;
-
-        }
+	}
 
 }
 

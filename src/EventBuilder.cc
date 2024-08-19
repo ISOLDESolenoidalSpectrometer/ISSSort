@@ -168,7 +168,7 @@ void ISSEventBuilder::StartFile(){
 	elum_ctr	= 0;
 	zd_ctr		= 0;
 	gamma_ctr	= 0;
-	lume_ctr        = 0;
+	lume_ctr	= 0;
 
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 	
@@ -297,7 +297,7 @@ void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 	elum_evt	= std::make_shared<ISSElumEvt>();
 	zd_evt		= std::make_shared<ISSZeroDegreeEvt>();
 	gamma_evt	= std::make_shared<ISSGammaRayEvt>();
-	lume_evt        = std::make_shared<ISSLumeEvt>();
+	lume_evt	= std::make_shared<ISSLumeEvt>();
 
 	// ------------------------------------------------------------------------ //
 	// Create output file and create events tree
@@ -710,30 +710,30 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// Is it a LUME?
 			else if( set->IsLUME( mymod, mych ) && mythres ) {
 
-			        // Get LUME signal type (0 = total energy, 1 = near side, 2 = far side)
-			        mytype = set->GetLUMEType( mymod, mych );
+				// Get LUME signal type (0 = total energy, 1 = near side, 2 = far side)
+				mytype = set->GetLUMEType( mymod, mych );
 
 				switch (mytype) {
 				case 0:
-				  myid = set->GetLUMEEDetector( mymod, mych );
-				  le_list.push_back( myenergy );
-				  le_td_list.push_back( mytime );
-				  le_id_list.push_back( myid );
-				  break;
+					myid = set->GetLUMEEDetector( mymod, mych );
+					le_list.push_back( myenergy );
+					le_td_list.push_back( mytime );
+					le_id_list.push_back( myid );
+					break;
 				case 1:
-				  myid = set->GetLUMEXNDetector( mymod, mych );
-				  lxn_list.push_back( myenergy );
-				  lxn_td_list.push_back( mytime );
-				  lxn_id_list.push_back( myid );
-				  break;
+					myid = set->GetLUMEXNDetector( mymod, mych );
+					lxn_list.push_back( myenergy );
+					lxn_td_list.push_back( mytime );
+					lxn_id_list.push_back( myid );
+					break;
 				case 2:
-				  myid = set->GetLUMEXFDetector( mymod, mych );
-				  lxf_list.push_back( myenergy );
-				  lxf_td_list.push_back( mytime );
-				  lxf_id_list.push_back( myid );
-				  break;
+					myid = set->GetLUMEXFDetector( mymod, mych );
+					lxf_list.push_back( myenergy );
+					lxf_td_list.push_back( mytime );
+					lxf_id_list.push_back( myid );
+					break;
 				default:
-				  break;
+					break;
 				}
 
 				hit_ctr++; // increase counter for bits of data included in this event
@@ -1076,7 +1076,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 					write_evts->GetElumMultiplicity() ||
 					write_evts->GetZeroDegreeMultiplicity() ||
 					write_evts->GetGammaRayMultiplicity()  ||
-				        write_evts->GetLumeMultiplicity() )
+					write_evts->GetLumeMultiplicity() )
 					output_tree->Fill();
 
 				// Clean up if the next event is going to make the tree full
@@ -2546,55 +2546,56 @@ void ISSEventBuilder::GammaRayFinder() {
 
 void ISSEventBuilder::LumeFinder() {
 
-  size_t n_index = 0;
-  size_t f_index = 0;
+	size_t n_index = 0;
+	size_t f_index = 0;
 
-  for (size_t t_index = 0; t_index < le_list.size(); ++t_index) {
-    double e_timestamp = le_td_list[t_index];
-    float e_energy = le_list[t_index];
-    char e_id = le_id_list[t_index];
-    double time_window = set->GetLumeHitWindow();
+	for (size_t t_index = 0; t_index < le_list.size(); ++t_index) {
+		double e_timestamp = le_td_list[t_index];
+		float e_energy = le_list[t_index];
+		char e_id = le_id_list[t_index];
+		double time_window = set->GetLumeHitWindow();
 
 
-    // Find the corresponding n signal
-    bool has_ln = false;
-    float xn_energy = 0;
+		// Find the corresponding n signal
+		bool has_ln = false;
+		float xn_energy = 0;
 
-    for (; n_index < lxn_list.size(); ++n_index) {
+		for (; n_index < lxn_list.size(); ++n_index) {
 
-      if (lxn_id_list[n_index] != e_id) continue;
+			if (lxn_id_list[n_index] != e_id) continue;
 
-      if (std::abs(lxn_td_list[n_index] - e_timestamp) <= time_window) {
-	xn_energy = lxn_list[n_index];
-	++n_index;
-	has_ln = true;
-	break;
-      }
+			if (std::abs(lxn_td_list[n_index] - e_timestamp) <= time_window) {
+				xn_energy = lxn_list[n_index];
+				++n_index;
+				has_ln = true;
+				break;
+			}
 
-    }
+			}
 
-    // Find the corresponding f signal
-    bool has_lf = false;
-    float xf_energy = 0;
+		// Find the corresponding f signal
+		bool has_lf = false;
+		float xf_energy = 0;
 
-    for (; f_index < lxf_list.size(); ++f_index) {
+		for (; f_index < lxf_list.size(); ++f_index) {
 
-      if (lxf_id_list[f_index] != e_id) continue;
+			if (lxf_id_list[f_index] != e_id) continue;
 
-      if (std::abs(lxf_td_list[f_index] - e_timestamp) <= time_window) {
-	xf_energy = lxf_list[f_index];
-	++f_index;
-	has_lf = true;
-	break;
-      }
-    }
+			if (std::abs(lxf_td_list[f_index] - e_timestamp) <= time_window) {
+				xf_energy = lxf_list[f_index];
+				++f_index;
+				has_lf = true;
+				break;
+			}
+		}
 
-    lume_evt->SetEvent(e_energy, e_id, e_timestamp, has_ln ? xn_energy : TMath::QuietNaN(), has_lf ? xf_energy : TMath::QuietNaN() );
+		lume_evt->SetEvent(e_energy, e_id, e_timestamp, has_ln ? xn_energy : TMath::QuietNaN(), has_lf ? xf_energy : TMath::QuietNaN() );
 
-    write_evts->AddEvt( lume_evt );
-    lume_ctr++;
-  }
-  return;
+		write_evts->AddEvt( lume_evt );
+		lume_ctr++;
+	}
+
+	return;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
