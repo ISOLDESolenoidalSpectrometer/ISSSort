@@ -2555,7 +2555,7 @@ void ISSEventBuilder::LumeFinder() {
 		char e_id = le_id_list[t_index];
 		double time_window = set->GetLumeHitWindow();
 
-
+		lume_E[e_id]->Fill(e_energy);
 		// Find the corresponding n signal
 		bool has_ln = false;
 		float xn_energy = 0;
@@ -2590,6 +2590,9 @@ void ISSEventBuilder::LumeFinder() {
 		}
 
 		lume_evt->SetEvent(e_energy, e_id, e_timestamp, has_ln ? xn_energy : TMath::QuietNaN(), has_lf ? xf_energy : TMath::QuietNaN() );
+
+		if (has_ln && has_lf)
+		  lume_E_vs_x[e_id]->Fill(( xn_energy - xf_energy ) / ( xn_energy + xf_energy ), e_energy);
 
 		write_evts->AddEvt( lume_evt );
 		lume_ctr++;
@@ -2991,11 +2994,11 @@ void ISSEventBuilder::MakeHists(){
 
 		hname = "lume_E_" + std::to_string(i);
 		htitle = "LUME energy spectrum;Energy [ch];Counts";
-		lume_E[i] = new TH1F( hname.data(), htitle.data(), 1000, -200, 8000);
+		lume_E[i] = new TH1F( hname.data(), htitle.data(), 1000, -200, 80000);
 
 		hname = "lume_E_vs_x_" + std::to_string(i);
 		htitle = "LUME energy vs position spectrum;Position;Energy [ch]";
-		lume_E_vs_x[i] = new TH2F( hname.data(), htitle.data(), 100, -2., 2., 1000, -200, 8000 );
+		lume_E_vs_x[i] = new TH2F( hname.data(), htitle.data(), 1000, -1.01, 1.01, 1000, -200, 80000 );
 	}
 
 	return;
