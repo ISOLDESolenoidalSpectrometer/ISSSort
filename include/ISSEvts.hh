@@ -391,7 +391,7 @@ private:
 	float x;			///< position along the detector
 	double time;		///< time stamp of the event
 
-	ClassDef( ISSLumeEvt, 1 );
+	ClassDef( ISSLumeEvt, 2 );
 
 };
 
