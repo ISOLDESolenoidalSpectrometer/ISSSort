@@ -236,7 +236,7 @@ private:
 	unsigned char		myid;		///< generic detector id
 	unsigned char		mysector;	///< 4 quadrants of the recoil, for example
 	unsigned char		mylayer;	///< 2 layers for the dE-E, for example
-	unsigned char		mytype;		///< type of detector (for LUME: t, n, f)
+	unsigned char		mytype;		///< type of detector (for LUME: be, ne, fe)
 
 
 	// Array variables
@@ -282,16 +282,16 @@ private:
 	std::vector<double>	satd_list;	///< list of ScintArray time differences for GammaFinder
 	std::vector<char>			said_list;	///< list of ScintArray detectors ids for GammaFinder
 
-	// LUME variables. Each LUME is a position-sensitive silicon detector and has 3 readout channels: the total energy output at the back face (denoted here as e), and two energy readouts at both edges of the front face of a detector (xn and xf)
-	std::vector<float>		le_list;		///< list of LUME energies (signal from the back face)
-	std::vector<float>		lxn_list;		///< list of LUME xn signals
-	std::vector<float>		lxf_list;		///< list of LUME xf signals
-	std::vector<double>		le_td_list;		///< list of LUME time differences
-	std::vector<double>		lxn_td_list;	///< list of LUME time differences
-	std::vector<double>		lxf_td_list;	///< list of LUME time differences
-	std::vector<char>		le_id_list;		///< list of LUME detectors
- 	std::vector<char>		lxn_id_list;	///< list of LUME detectors
-	std::vector<char>		lxf_id_list;	///< list of LUME detectors
+	// LUME variables. Each LUME is a position-sensitive silicon detector and has 3 readout channels: the total energy output at the back face (denoted here as be), and two energy readouts at both edges of the front face of a detector (ne and fe)
+	std::vector<float>		lbe_list;		///< list of LUME back energies (signal from the back face)
+	std::vector<float>		lne_list;		///< list of LUME ne signals
+	std::vector<float>		lfe_list;		///< list of LUME fe signals
+	std::vector<double>		lbe_td_list;		///< list of LUME time differences
+	std::vector<double>		lne_td_list;	///< list of LUME time differences
+	std::vector<double>		lfe_td_list;	///< list of LUME time differences
+	std::vector<char>		lbe_id_list;		///< list of LUME detectors
+	std::vector<char>		lne_id_list;	///< list of LUME detectors
+	std::vector<char>		lfe_id_list;	///< list of LUME detectors
 
 	// Counters
 	unsigned int		hit_ctr;		///< Counts the number of hits that make up an event within a given file

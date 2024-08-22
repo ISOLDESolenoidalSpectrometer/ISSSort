@@ -366,15 +366,15 @@ void ISSEventBuilder::Initialise(){
 	satd_list.clear();
 	said_list.clear();
 
-	le_list.clear();
-	lxn_list.clear();
-	lxf_list.clear();
-	le_td_list.clear();
-	lxn_td_list.clear();
-	lxf_td_list.clear();
-	le_id_list.clear();
-	lxn_id_list.clear();
-	lxf_id_list.clear();
+	lbe_list.clear();
+	lne_list.clear();
+	lfe_list.clear();
+	lbe_td_list.clear();
+	lne_td_list.clear();
+	lfe_td_list.clear();
+	lbe_id_list.clear();
+	lne_id_list.clear();
+	lfe_id_list.clear();
 	
 	// Now swap all these vectors with empty vectors to ensure they are fully cleared
 	std::vector<float>().swap(pen_list);
@@ -414,15 +414,15 @@ void ISSEventBuilder::Initialise(){
 	std::vector<double>().swap(satd_list);
 	std::vector<char>().swap(said_list);
 
-	std::vector<float>().swap(le_list);
-	std::vector<float>().swap(lxn_list);
-	std::vector<float>().swap(lxf_list);
-	std::vector<double>().swap(le_td_list);
-	std::vector<double>().swap(lxn_td_list);
-	std::vector<double>().swap(lxf_td_list);
-	std::vector<char>().swap(le_id_list);
-	std::vector<char>().swap(lxn_id_list);
-	std::vector<char>().swap(lxf_id_list);
+	std::vector<float>().swap(lbe_list);
+	std::vector<float>().swap(lne_list);
+	std::vector<float>().swap(lfe_list);
+	std::vector<double>().swap(lbe_td_list);
+	std::vector<double>().swap(lne_td_list);
+	std::vector<double>().swap(lfe_td_list);
+	std::vector<char>().swap(lbe_id_list);
+	std::vector<char>().swap(lne_id_list);
+	std::vector<char>().swap(lfe_id_list);
 
 	write_evts->ClearEvt();
 	
@@ -715,22 +715,22 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 				switch (mytype) {
 				case 0:
-					myid = set->GetLUMEEDetector( mymod, mych );
-					le_list.push_back( myenergy );
-					le_td_list.push_back( mytime );
-					le_id_list.push_back( myid );
+					myid = set->GetLUMEBEDetector( mymod, mych );
+					lbe_list.push_back( myenergy );
+					lbe_td_list.push_back( mytime );
+					lbe_id_list.push_back( myid );
 					break;
 				case 1:
-					myid = set->GetLUMEXNDetector( mymod, mych );
-					lxn_list.push_back( myenergy );
-					lxn_td_list.push_back( mytime );
-					lxn_id_list.push_back( myid );
+					myid = set->GetLUMENEDetector( mymod, mych );
+					lne_list.push_back( myenergy );
+					lne_td_list.push_back( mytime );
+					lne_id_list.push_back( myid );
 					break;
 				case 2:
-					myid = set->GetLUMEXFDetector( mymod, mych );
-					lxf_list.push_back( myenergy );
-					lxf_td_list.push_back( mytime );
-					lxf_id_list.push_back( myid );
+					myid = set->GetLUMEFEDetector( mymod, mych );
+					lfe_list.push_back( myenergy );
+					lfe_td_list.push_back( mytime );
+					lfe_id_list.push_back( myid );
 					break;
 				default:
 					break;
@@ -2549,23 +2549,23 @@ void ISSEventBuilder::LumeFinder() {
 	size_t n_index = 0;
 	size_t f_index = 0;
 
-	for (size_t t_index = 0; t_index < le_list.size(); ++t_index) {
-		double e_timestamp = le_td_list[t_index];
-		float e_energy = le_list[t_index];
-		char e_id = le_id_list[t_index];
+	for (size_t b_index = 0; b_index < lbe_list.size(); ++b_index) {
+		double be_timestamp = lbe_td_list[b_index];
+		float be_energy = lbe_list[b_index];
+		char be_id = lbe_id_list[b_index];
 		double time_window = set->GetLumeHitWindow();
 
-		lume_E[e_id]->Fill(e_energy);
+		lume_E[be_id]->Fill(be_energy);
 		// Find the corresponding n signal
 		bool has_ln = false;
-		float xn_energy = 0;
+		float ne_energy = 0;
 
-		for (; n_index < lxn_list.size(); ++n_index) {
+		for (; n_index < lne_list.size(); ++n_index) {
 
-			if (lxn_id_list[n_index] != e_id) continue;
+			if (lne_id_list[n_index] != be_id) continue;
 
-			if (std::abs(lxn_td_list[n_index] - e_timestamp) <= time_window) {
-				xn_energy = lxn_list[n_index];
+			if (std::abs(lne_td_list[n_index] - be_timestamp) <= time_window) {
+				ne_energy = lne_list[n_index];
 				++n_index;
 				has_ln = true;
 				break;
@@ -2575,24 +2575,24 @@ void ISSEventBuilder::LumeFinder() {
 
 		// Find the corresponding f signal
 		bool has_lf = false;
-		float xf_energy = 0;
+		float fe_energy = 0;
 
-		for (; f_index < lxf_list.size(); ++f_index) {
+		for (; f_index < lfe_list.size(); ++f_index) {
 
-			if (lxf_id_list[f_index] != e_id) continue;
+			if (lfe_id_list[f_index] != be_id) continue;
 
-			if (std::abs(lxf_td_list[f_index] - e_timestamp) <= time_window) {
-				xf_energy = lxf_list[f_index];
+			if (std::abs(lfe_td_list[f_index] - be_timestamp) <= time_window) {
+				fe_energy = lfe_list[f_index];
 				++f_index;
 				has_lf = true;
 				break;
 			}
 		}
 
-		lume_evt->SetEvent(e_energy, e_id, e_timestamp, has_ln ? xn_energy : TMath::QuietNaN(), has_lf ? xf_energy : TMath::QuietNaN() );
+		lume_evt->SetEvent(be_energy, be_id, be_timestamp, has_ln ? ne_energy : TMath::QuietNaN(), has_lf ? fe_energy : TMath::QuietNaN() );
 
 		if (has_ln && has_lf)
-		  lume_E_vs_x[e_id]->Fill(( xn_energy - xf_energy ) / ( xn_energy + xf_energy ), e_energy);
+		  lume_E_vs_x[be_id]->Fill(( ne_energy - fe_energy ) / ( ne_energy + fe_energy ), be_energy);
 
 		write_evts->AddEvt( lume_evt );
 		lume_ctr++;

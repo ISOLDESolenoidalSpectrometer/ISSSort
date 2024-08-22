@@ -362,27 +362,34 @@ public:
 	void SetEvent( float myenergy, unsigned char myid,
 					double mytime, float myn, float myf );
 
-	inline void SetEnergy( float e ){ energy = e; }
 	inline void SetID( unsigned char i ){ id = i; };
+
+	inline void SetBE( float e ){ be = e; }
+	inline void SetNE( float n ){ ne = n; }
+	inline void SetFE( float f ){ fe = f; }
+
 	inline void SetTime( double t ){ time = t; };
-	inline void SetXN( float nn ){ xn = nn; }
-	inline void SetXF( float ff ){ xf = ff; }
 	inline void SetX( float xx ){ x = xx; }
 
-	inline float			GetEnergy(){ return energy; };
 	inline unsigned char	GetID(){ return id; };
+
+	inline float			GetBE(){ return be; };
+	inline float			GetNE(){ return ne; };
+	inline float			GetFE(){ return fe; };
+
 	inline double			GetTime(){ return time; };
-	inline float			GetXN(){ return xn; };
-	inline float			GetXF(){ return xf; };
 	inline float			GetX(){ return x; };
 
 private:
-	float energy;		///< Energy in the detector (from the back-plane)
 	unsigned char id;	///< Detector ID
-	double time;		///< time stamp of the event
-	float xn;			///< near-side energy
-	float xf;			///< far-side energy
+
+	float be;			///< Energy in the detector (from the back-plane)
+	float ne;			///< near-side energy
+	float fe;			///< far-side energy
+
+
 	float x;			///< position along the detector
+	double time;		///< time stamp of the event
 
 	ClassDef( ISSLumeEvt, 1 );
 

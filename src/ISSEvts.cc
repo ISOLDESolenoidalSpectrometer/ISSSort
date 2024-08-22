@@ -151,11 +151,11 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSGammaRayEvt> event ) {
 void ISSEvts::AddEvt( std::shared_ptr<ISSLumeEvt> event ) {
 	// Make a copy of the event and push it back
 	ISSLumeEvt fill_evt;
-	fill_evt.SetEvent(	event->GetEnergy(),
+	fill_evt.SetEvent(	event->GetBE(),
 						event->GetID(),
 						event->GetTime(),
-						event->GetXN(),
-						event->GetXF() );
+						event->GetNE(),
+						event->GetFE() );
 
 	lume_event.push_back( fill_evt );
 
@@ -591,13 +591,13 @@ ISSLumeEvt::~ISSLumeEvt(){}
 
 void ISSLumeEvt::SetEvent( float myenergy, unsigned char myid,
 							double mytime, float myn, float myf ) {
-	energy = myenergy;
+	be = myenergy;
 	id = myid;
 	time = mytime;
-	xn = myn;
-	xf = myf;
-	if (!std::isnan(xn) && !std::isnan(xf) )
-		x = ( xn - xf ) / ( xn + xf );
+	ne = myn;
+	fe = myf;
+	if (!std::isnan(ne) && !std::isnan(fe) )
+		x = ( ne - fe ) / ( ne + fe );
 
 	return;
 }
