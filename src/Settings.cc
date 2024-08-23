@@ -532,7 +532,6 @@ void ISSSettings::PrintSettings() {
 	PRINT_SETTING_INT(n_array_row);
 	PRINT_SETTING_INT(n_array_pstrip);
 	PRINT_SETTING_INT(n_array_nstrip);
-	PRINT_SETTING_INT(n_array_side);
 
 	// CAEN settings
 	PRINT_SETTING_INT(n_caen_mod);
