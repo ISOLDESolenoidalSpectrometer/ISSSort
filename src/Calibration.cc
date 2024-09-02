@@ -196,7 +196,7 @@ void ISSCalibration::ReadCalibration() {
 	fMesyGainDefault = 1.0;
 	fMesyGainQuadrDefault = 0.0;
 	
-	// CAEN parameter read
+	// Mesytec parameter read
 	for( unsigned int mod = 0; mod < set->GetNumberOfMesytecModules(); mod++ ){
 		
 		fMesyOffset[mod].resize( set->GetNumberOfMesytecChannels() );
@@ -213,7 +213,7 @@ void ISSCalibration::ReadCalibration() {
 			fMesyGainQuadr[mod][chan] = config->GetValue( Form( "mesy_%d_%d.GainQuadr", mod, chan ), fMesyGainQuadrDefault );
 			fMesyThreshold[mod][chan] = config->GetValue( Form( "mesy_%d_%d.Threshold", mod, chan ), 0 );
 			fMesyTime[mod][chan] = config->GetValue( Form( "mesy_%d_%d.Time", mod,  chan ), 0.0 );
-			fMesyType[mod][chan] = config->GetValue( Form( "caen_%d_%d.Type", mod,  chan ), "Qlong" );
+			fMesyType[mod][chan] = config->GetValue( Form( "mesy_%d_%d.Type", mod,  chan ), "Qlong" );
 			if( fMesyType[mod][chan] != "Qlong" &&
 				fMesyType[mod][chan] != "Qshort" &&
 				fMesyType[mod][chan] != "Qdiff" ) {
