@@ -10,6 +10,14 @@
 #include "TVector3.h"
 #include "TObject.h"
 
+// Some physical detector geometry for array
+const double wafer_length = 125.0;	///< total length of silicon (mm)
+const double wafer_gap = 0.5;		///< gap between silicon wafers (mm)
+const double wafer_guard = 1.508;	///< width of the inactive region around edge of silicon (mm)
+const double pstrip_pitch = 0.953;	///< pitch of a single p-side strip (mm)
+const double nstrip_pitch = 2.0;	///< pitch of a single n-side strip (mm)
+const double array_radius = 27.0;	///< radius to top surface of silicon (mm)
+
 class ISSArrayEvt : public TObject {
 
 public:

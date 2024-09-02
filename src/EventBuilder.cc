@@ -1197,11 +1197,17 @@ unsigned long ISSEventBuilder::BuildSimulatedEvents() {
 			mystrip = 128 - sim_data->GetFront_StripNbr(j);
 			myenergy = sim_data->GetFront_Energy(j);
 			mytime = sim_data->GetFront_Time(j);
+			myCFDtime = sim_data->GetFront_TimeCFD(j);
 			myhitbit = 1;
 			
 			// If it's below zero in energy, consider it below threshold
+			if( myenergy < 0 ) continue;
+
 			// Only use if it is an event from a detector
-			if( myenergy < 0 || mystrip < 0 ) continue;
+			if( mystrip < 0 ) continue;
+			
+			// Only use if it is a single orbit event
+			if( myCFDtime > 80 || myCFDtime < 59 ) continue;
 			
 			pen_list.push_back( myenergy );
 			ptd_list.push_back( mytime );
@@ -1227,12 +1233,18 @@ unsigned long ISSEventBuilder::BuildSimulatedEvents() {
 			mystrip = 11 - sim_data->GetBack_StripNbr(j);
 			myenergy = sim_data->GetBack_Energy(j);
 			mytime = sim_data->GetBack_Time(j);
+			myCFDtime = sim_data->GetBack_TimeCFD(j);
 			myhitbit = 1;
 			
 			// If it's below zero in energy, consider it below threshold
-			// Only use if it is an event from a detector
-			if( myenergy < 0 || mystrip < 0 ) continue;
+			if( myenergy < 0 ) continue;
 			
+			// Only use if it is an event from a detector
+			if( mystrip < 0 ) continue;
+			
+			// Only use if it is a single orbit event
+			if( myCFDtime > 80 || myCFDtime < 59 ) continue;
+
 			nen_list.push_back( myenergy );
 			ntd_list.push_back( mytime );
 			nwalk_list.push_back( mytime );

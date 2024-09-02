@@ -221,10 +221,10 @@ float ISSArrayEvt::GetZ(){
 	/// y is positive in the horizontal direction towards XT03 (right)
 	/// phi is positive in the clockwise direction, looking from the origin to positive z (beam direction)
 
-	float d = 127.5 - (float)pid;		// take centre of the end strip
-	d *= 0.953;							// p-side strip pitch = 0.953 mm
-	d += 1.508;							// distance from wafer edge to active region 
-	d += 125.5 * (3.0 - (float)row);	// move to correct row (125.0 mm wafer length + 0.5 mm inter-wafer gap)
+	float d = 127.5 - (float)pid;	// take centre of the end strip
+	d *= pstrip_pitch;				// p-side strip pitch = 0.953 mm
+	d += wafer_guard;				// distance from wafer edge to active region
+	d += ( wafer_length + wafer_gap ) * (3.0 - (float)row);	// move to correct row
 
 	return d; // in mm
 	
@@ -241,9 +241,9 @@ TVector2 ISSArrayEvt::GetPhiXY(){
 	/// phi is positive in the clockwise direction, looking from the origin to positive z (beam direction)
 	
 	// Start with a flat wafer pointing to the sky
-	float x = 54.0 / 2.0; 	// diameter is 54.0 mm according to Chris Everett's CAD drawings
+	float x = array_radius; // diameter is 54.0 mm according to Chris Everett's CAD drawings
 	float y = nid%11 - 5.0;	// take strip relative to centre (11 strips per face: 22 strips per module)
-	y *= 2.0;				// n-side strip pitch = 2.0 mm
+	y *= nstrip_pitch;		// n-side strip pitch = 2.0 mm
 
 	// This vector can now be rotated to the correct position
 	TVector2 vec( x, y );
@@ -269,8 +269,8 @@ TVector3 ISSArrayEvt::GetPosition(){
 char ISSArrayEvt::FindModule( unsigned short detNo ){
 	
 	/// Return the module number depending on the detector number from NPTool. 
-	if (detNo > 24) return -1;
-    return ((detNo - 1) % 6) / 2; 
+	if( detNo > 24 ) return -1;
+    return ( (detNo - 1) % 6 ) / 2;
 	
 }
 
@@ -335,10 +335,6 @@ char ISSArrayEvt::FindRow( double z ){
 	
 	/// Return the row number depending on the z position
 	
-	// Physical silicon length and gaps
-	double wafer_length = 125.0;
-	double wafer_gap = 0.5;
-	
 	// Loop over each row
 	for( unsigned char i = 0; i < 4; i++ ){
 		
@@ -365,10 +361,6 @@ char ISSArrayEvt::FindPID( double z ){
 	if( row < 0 ) return -1;
 	
 	// Physical silicon length and gaps
-	double wafer_length = 125.0;
-	double wafer_gap = 0.5;
-	double wafer_guard = 1.508;
-	double strip_pitch = 0.953;
 
 	// Shift the z to within a single silicon
 	z -= (double)(3-row) * ( wafer_length + wafer_gap );
@@ -380,8 +372,8 @@ char ISSArrayEvt::FindPID( double z ){
 	for( unsigned char i = 0; i < 128; i++ ){
 		
 		// z0 is defined to edge of first wafer, so we start from 0
-		if( z >  (double)(127-i) * strip_pitch &&
-		    z <= (double)(128-i) * strip_pitch )
+		if( z >  (double)(127-i) * pstrip_pitch &&
+		    z <= (double)(128-i) * pstrip_pitch )
 			return i;
 		
 	}
@@ -401,10 +393,6 @@ char ISSArrayEvt::FindNID( double phi ){
 	// Straight away return 0 if we don't hit the silicon
 	if( mod < 0 ) return -1;
 	
-	// Strip geometry
-	double strip_pitch = 2.0;
-	double det_radius = 54.0 / 2.0;
-
 	// Shift the phi to within a single module
 	phi += TMath::TwoPi() / 6.;
 	phi -= (double)mod * TMath::TwoPi() / 3.;
@@ -426,8 +414,8 @@ char ISSArrayEvt::FindNID( double phi ){
 	for( unsigned char i = 0; i < 11; i++ ){
 		
 		// Vector for the strip edge
-		TVector2 vec_low( det_radius, ( (double)i-5.5 ) * strip_pitch );
-		TVector2 vec_upp( det_radius, ( (double)i-4.5 ) * strip_pitch );
+		TVector2 vec_low( array_radius, ( (double)i-5.5 ) * nstrip_pitch );
+		TVector2 vec_upp( array_radius, ( (double)i-4.5 ) * nstrip_pitch );
 
 		// Rotate by pi/6 to get it aligned with reference
 		vec_low.Rotate( TMath::TwoPi() / 6. );
