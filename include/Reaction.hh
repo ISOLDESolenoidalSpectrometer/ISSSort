@@ -220,6 +220,8 @@ public:
 	inline double GetT1MinTime(){ return t1_min_time; };///< Getter for the T1 time cut minimum
 	inline double GetT1MaxTime(){ return t1_max_time; };///< Getter for the T1 time cut maximum
 
+	inline unsigned char GetLaserMode(){ return laser_mode; }; ///< Getter for LaserMode value
+	
 	inline double GetZmeasured(){ return z_meas; };///< Getter for the measured z (where the particle lands on the array)
 	inline double GetZprojected(){ return z; };///< Getter for the projected z (where the particle would intersect with the beam axis)
 	
@@ -395,6 +397,12 @@ private:
 	// T1 time window
 	double t1_max_time;	///< T1 pulse max time
 	double t1_min_time;	///< T1 pulse min time
+	
+	// Laser mode
+	unsigned char laser_mode;	///< user can select which laser data to sort, with values:
+								///< 0 = laser off NOT on
+								///< 1 = laser on NOT off
+								///< 2 = laser on OR off (default)
 
 	// Coincidence windows
 	double array_recoil_prompt[2]; ///< Prompt time windows between recoil and array event

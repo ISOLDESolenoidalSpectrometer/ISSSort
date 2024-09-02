@@ -7,6 +7,7 @@ ClassImp(ISSMwpcEvt)
 ClassImp(ISSElumEvt)
 ClassImp(ISSZeroDegreeEvt)
 ClassImp(ISSGammaRayEvt)
+ClassImp(ISSLumeEvt)
 ClassImp(ISSEvts)
 
 
@@ -25,6 +26,7 @@ void ISSEvts::ClearEvt() {
 	elum_event.clear();
 	zd_event.clear();
 	gamma_event.clear();
+	lume_event.clear();
 
 	std::vector<ISSArrayEvt>().swap(array_event);
 	std::vector<ISSArrayPEvt>().swap(arrayp_event);
@@ -33,7 +35,8 @@ void ISSEvts::ClearEvt() {
 	std::vector<ISSElumEvt>().swap(elum_event);
 	std::vector<ISSZeroDegreeEvt>().swap(zd_event);
 	std::vector<ISSGammaRayEvt>().swap(gamma_event);
-	
+	std::vector<ISSLumeEvt>().swap(lume_event);
+
 	ebis = -999;
 	t1 = -999;
 
@@ -143,6 +146,20 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSGammaRayEvt> event ) {
 	
 	gamma_event.push_back( fill_evt );
 	
+}
+
+void ISSEvts::AddEvt( std::shared_ptr<ISSLumeEvt> event ) {
+
+	// Make a copy of the event and push it back
+	ISSLumeEvt fill_evt;
+	fill_evt.SetEvent(	event->GetBE(),
+						event->GetID(),
+						event->GetTime(),
+						event->GetNE(),
+						event->GetFE() );
+
+	lume_event.push_back( fill_evt );
+
 }
 
 // ------------ //
@@ -554,6 +571,26 @@ void ISSGammaRayEvt::SetEvent( float myenergy, unsigned char myid,
 	
 }
 
+// ---------------- //
+// LUME events      //
+// ---------------- //
+
+ISSLumeEvt::ISSLumeEvt(){}
+ISSLumeEvt::~ISSLumeEvt(){}
+
+void ISSLumeEvt::SetEvent( float myenergy, unsigned char myid,
+						  double mytime, float myn, float myf ) {
+	be = myenergy;
+	id = myid;
+	time = mytime;
+	ne = myn;
+	fe = myf;
+	if (!std::isnan(ne) && !std::isnan(fe) )
+		x = ( ne - fe ) / ( ne + fe );
+	
+	return;
+	
+}
 
 // Get minimum time from any old event
 double ISSEvts::GetTime(){
@@ -618,6 +655,15 @@ double ISSEvts::GetTime(){
 	for( unsigned int i = 0; i < this->GetGammaRayMultiplicity(); ++i ){
 		
 		double cur_time = this->GetGammaRayEvt(i)->GetTime();
+		if( cur_time < min_time || min_time < 0 )
+			min_time = cur_time;
+		
+	}
+	
+	// Check minimum time from all LUME events
+	for( unsigned int i = 0; i < this->GetLumeMultiplicity(); ++i ){
+		
+		double cur_time = this->GetLumeEvt(i)->GetTime();
 		if( cur_time < min_time || min_time < 0 )
 			min_time = cur_time;
 		

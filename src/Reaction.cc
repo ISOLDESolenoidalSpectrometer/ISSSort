@@ -541,6 +541,8 @@ void ISSReaction::ReadReaction() {
 	t1_min_time = config->GetValue( "T1.Min", 0.0 );    // default = 0
 	t1_max_time = config->GetValue( "T1.Max", 1.2e9 );	// default = 1.2 seconds
 	
+	// Laser mode: 0 = off, 1 = on, 2 = on/off (default)
+	laser_mode = config->GetValue( "LaserMode", 2 );
 	
 	// Array-Recoil time windows
 	array_recoil_prompt[0] = config->GetValue( "ArrayRecoil_PromptTime.Min", -300 );	// lower limit for array-recoil prompt time difference
@@ -645,7 +647,7 @@ void ISSReaction::ReadReaction() {
 	double theta_lab_inner, theta_lab_outer, theta_lab_centre;
 	double energy_inner,    energy_outer,    energy_centre;
 	double enloss_inner,    enloss_outer,    enloss_centre;
-	if( elum_z > 0 ) {
+	if( elum_z > 0 && !flag_source ) {
 		
 		// Remember the real ejectile information
 		int tmpA = Ejectile.GetA();
@@ -655,18 +657,13 @@ void ISSReaction::ReadReaction() {
 		int tmpZ2 = Recoil.GetZ();
 		double tmpBE2 = Recoil.GetBindingEnergy();
 		
-		// Proper reaction (if source then already set above)
-		if( !flag_source ) {
-			
-			// Then pretend we have elastic scattering
-			Ejectile.SetA( Target.GetA() );
-			Ejectile.SetZ( Target.GetZ() );
-			Ejectile.SetBindingEnergy( Target.GetBindingEnergy() );
-			Recoil.SetA( Beam.GetA() );
-			Recoil.SetZ( Beam.GetZ() );
-			Recoil.SetBindingEnergy( Beam.GetBindingEnergy() );
-			
-		}
+		// Then pretend we have elastic scattering
+		Ejectile.SetA( Target.GetA() );
+		Ejectile.SetZ( Target.GetZ() );
+		Ejectile.SetBindingEnergy( Target.GetBindingEnergy() );
+		Recoil.SetA( Beam.GetA() );
+		Recoil.SetZ( Beam.GetZ() );
+		Recoil.SetBindingEnergy( Beam.GetBindingEnergy() );
 		
 		//std::cout << std::endl << " +++  ";
 		//std::cout << Beam.GetIsotope() << "(" << Target.GetIsotope() << ",";
@@ -679,69 +676,32 @@ void ISSReaction::ReadReaction() {
 		TVector3 elum_outer_hit( elum_rout, 0.0, elum_z );
 		TVector3 elum_centre_hit( 0.5*(elum_rout+elum_rin), 0.0, elum_z );
 		
-		// If it's a reaction, do inner, centre and outer
-		if( !flag_source ) {
-			
-			// Simulate the elastic scattering reaction - inner
-			SimulateReaction( elum_inner_hit );
-			theta_cm_inner  = Recoil.GetThetaCM();
-			theta_lab_inner = Ejectile.GetThetaLab();
-			energy_inner = Ejectile.GetEnergyLab();
-			enloss_inner = GetEnergyLoss( energy_inner,
-										 elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_inner ) ),
-										 gStopping[2] );
-			
-			// Simulate the elastic scattering reaction - outer
-			SimulateReaction( elum_outer_hit );
-			theta_cm_outer  = Recoil.GetThetaCM();
-			theta_lab_outer = Ejectile.GetThetaLab();
-			energy_outer = Ejectile.GetEnergyLab();
-			enloss_outer = GetEnergyLoss( energy_outer,
-										 elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_outer ) ),
-										 gStopping[2] );
-			
-			// Simulate the elastic scattering reaction - centre
-			SimulateReaction( elum_centre_hit );
-			theta_cm_centre  = Recoil.GetThetaCM();
-			theta_lab_centre = Ejectile.GetThetaLab();
-			energy_centre = Ejectile.GetEnergyLab();
-			enloss_centre = GetEnergyLoss( energy_centre,
-										  elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_centre ) ),
-										  gStopping[2] );
-			
-			std::cout << std::setprecision(5);
-			std::cout << "ELUM found at " << elum_z << " mm" << std::endl;
-			std::cout << " θ_cm = " << theta_cm_centre * TMath::RadToDeg();
-			std::cout << " degrees; E_lab = " << energy_centre << " keV; E_det = ";
-			std::cout << energy_centre - enloss_centre << " keV" << std::endl;
-			std::cout << "\t" << theta_cm_inner * TMath::RadToDeg();
-			std::cout << " < θ_cm  < " << theta_cm_outer * TMath::RadToDeg();
-			std::cout << " degrees" << std::endl << "\t" << energy_inner;
-			std::cout << " < E_lab < " << energy_outer << " keV" << std::endl;
-			std::cout << "\t" << energy_inner - enloss_inner << " < E_det < ";
-			std::cout << energy_outer - enloss_outer << " keV " << std::endl;
-			
-		}
+		// Simulate the elastic scattering reaction - inner
+		SimulateReaction( elum_inner_hit );
+		theta_cm_inner  = Recoil.GetThetaCM();
+		theta_lab_inner = Ejectile.GetThetaLab();
+		energy_inner = Ejectile.GetEnergyLab();
+		enloss_inner = GetEnergyLoss( energy_inner,
+									 elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_inner ) ),
+									 gStopping[2] );
 		
-		// Otherwise do each alpha in the centre
-		else {
-			
-			std::cout << std::setprecision(5);
-			std::cout << "ELUM found at " << elum_z << " mm" << std::endl;
-			std::cout << "Alpha\tTheta\tE_loss\tE_det" << std::endl;
-			for( unsigned int i = 0; i < alpha_energies.size(); i++ ){
-				
-				// Alpha decay - centre
-				double energy_alpha = SimulateDecay( elum_centre_hit, alpha_energies[i], 1 );
-				double theta_lab_alpha = Ejectile.GetThetaLab();
-				double enloss_alpha = alpha_energies[i] - energy_alpha;
-				std::cout << alpha_energies[i] << "\t" << theta_lab_alpha * TMath::RadToDeg() << "\t";
-				std::cout << enloss_alpha << "\t" << energy_alpha << std::endl;
-
-			}
-			std::cout << std::endl;
-			
-		}
+		// Simulate the elastic scattering reaction - outer
+		SimulateReaction( elum_outer_hit );
+		theta_cm_outer  = Recoil.GetThetaCM();
+		theta_lab_outer = Ejectile.GetThetaLab();
+		energy_outer = Ejectile.GetEnergyLab();
+		enloss_outer = GetEnergyLoss( energy_outer,
+									 elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_outer ) ),
+									 gStopping[2] );
+		
+		// Simulate the elastic scattering reaction - centre
+		SimulateReaction( elum_centre_hit );
+		theta_cm_centre  = Recoil.GetThetaCM();
+		theta_lab_centre = Ejectile.GetThetaLab();
+		energy_centre = Ejectile.GetEnergyLab();
+		enloss_centre = GetEnergyLoss( energy_centre,
+									  elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_centre ) ),
+									  gStopping[2] );
 		
 		// Change ejectile and recoils back again
 		Ejectile.SetA( tmpA );
@@ -751,6 +711,17 @@ void ISSReaction::ReadReaction() {
 		Recoil.SetZ( tmpZ2 );
 		Recoil.SetBindingEnergy( tmpBE2 );
 		
+		std::cout << std::setprecision(5);
+		std::cout << "ELUM found at " << elum_z << " mm" << std::endl;
+		std::cout << " θ_cm = " << theta_cm_centre * TMath::RadToDeg();
+		std::cout << " degrees; E_lab = " << energy_centre << " keV; E_det = ";
+		std::cout << energy_centre - enloss_centre << " keV" << std::endl;
+		std::cout << "\t" << theta_cm_inner * TMath::RadToDeg();
+		std::cout << " < θ_cm  < " << theta_cm_outer * TMath::RadToDeg();
+		std::cout << " degrees" << std::endl << "\t" << energy_inner;
+		std::cout << " < E_lab < " << energy_outer << " keV" << std::endl;
+		std::cout << "\t" << energy_inner - enloss_inner << " < E_det < ";
+		std::cout << energy_outer - enloss_outer << " keV " << std::endl;
 		
 	}
 	
@@ -778,15 +749,15 @@ double ISSReaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGrap
 	// Use akima spline to make energy loss graph smoother
 	std::unique_ptr<TSpline3> spline = std::make_unique<TSpline3>("spline", g.get(), "akima");
 	for( unsigned int i = 0; i < Nmeshpoints; i++ ) {
-		
+
 		double eloss = spline->Eval(E) * dx;
 		if( eloss > E && eloss > 0 ) eloss = E; // incase we are "stopped"
-		
+
 		E -= eloss;
 		if( E < 100. && eloss > 0  ) break; // when we fall below 100 keV we assume maximum energy loss
-		
+
 	}
-	
+
 	return Ei - E;
 	
 }
@@ -807,10 +778,10 @@ double ISSReaction::GetNuclearEnergyLoss( double Ei, double range, std::unique_p
 	double dx = range/(double)Nmeshpoints;
 	double E = Ei;
 	double En = 0;
-	
+
 	// Create splines for the provided TGraphs
-	std::unique_ptr<TSpline3> splineTot = std::make_unique<TSpline3>("splineTot", gtot.get(), "akima"); // Use akima spline to make energy loss graph smoother
-	std::unique_ptr<TSpline3> splineN   = std::make_unique<TSpline3>("splineN", gn.get(), "akima"); // Use akima spline to make energy loss graph smoother
+	std::unique_ptr<TSpline3> splineTot = std::make_unique<TSpline3>("splineTot", gtot.get(), "akima"); // Use akima spline to make energy loss graph smoother - BRJ
+	std::unique_ptr<TSpline3> splineN   = std::make_unique<TSpline3>("splineN", gn.get(), "akima"); // Use akima spline to make energy loss graph smoother - BRJ
 	
 	for( unsigned int i = 0; i < Nmeshpoints; i++ ) {
 		if( E < 0.5 ) break; // when we fall below 0.5 keV we assume we're stopped
@@ -1103,7 +1074,7 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	std::string pdfname = std::string( SRIM_DIR ) + "/" + isotope + "_phc.pdf";
 	c->SaveAs( pdfname.c_str() );
 	
-	// Tthese lines make root files for PH residual and eloss for the isotope that is read in
+	// These lines make root files for PH residual and eloss for the isotope that is read in
 	
 	std::string tfilenameroot = std::string( SRIM_DIR ) + "/" + isotope + "_phc.root";
 	TFile *tfile = new TFile(tfilenameroot.c_str(),"recreate");

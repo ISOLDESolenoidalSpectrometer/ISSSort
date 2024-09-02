@@ -32,7 +32,7 @@ void ISSSettings::ReadSettings() {
 	// Mesytec initialisation
 	n_mesy_mod = config->GetValue( "NumberOfMesytecModules", 0 );
 	n_mesy_ch = config->GetValue( "NumberOfMesytecChannels", 32 );
-
+	
 	
 	// Info code initialisation
 	extt_code = config->GetValue( "ExternalTriggerCode", 14 );
@@ -83,7 +83,7 @@ void ISSSettings::ReadSettings() {
 	vme_laser_ch = config->GetValue( "LaserChannel", 11 );
 	vme_laser_ch = config->GetValue( "Laser.Channel", vme_laser_ch );
 	laser_code = 24;
-
+	
 	
 	// Event builder
 	event_window = config->GetValue( "EventWindow", 3e3 );
@@ -95,14 +95,15 @@ void ISSSettings::ReadSettings() {
 		array_pn_hit_window = config->GetValue( "ArrayHitWindow", 500 );
 	zd_hit_window = config->GetValue( "ZeroDegreeHitWindow", 500 );
 	gamma_hit_window = config->GetValue( "GammaRayHitWindow", 500 );
-
+	lume_hit_window = config->GetValue( "LumeHitWindow", 500 );
+	
 	
 	// Data things
 	block_size = config->GetValue( "DataBlockSize", 0x10000 );
 	flag_asic_only = config->GetValue( "ASICOnlyData", false );
 	flag_caen_only = config->GetValue( "CAENOnlyData", false );
 	flag_mesy_only = config->GetValue( "MesytecOnlyData", false );
-
+	
 	
 	// Recoil detector
 	n_recoil_sector = config->GetValue( "NumberOfRecoilSectors", 4 );
@@ -113,13 +114,13 @@ void ISSSettings::ReadSettings() {
 	recoil_erest_stop  = config->GetValue( "RecoilEnergyRestStop", 1 );
 	recoil_etot_start  = config->GetValue( "RecoilEnergyTotalStart", 0 );
 	recoil_etot_stop   = config->GetValue( "RecoilEnergyTotalStop", 1 );
-
+	
 	recoil_vme.resize( n_recoil_sector );
 	recoil_mod.resize( n_recoil_sector );
 	recoil_ch.resize( n_recoil_sector );
 	recoil_sector.resize( GetNumberOfVmeCrates() );
 	recoil_layer.resize( GetNumberOfVmeCrates() );
-
+	
 	for( unsigned int i = 0; i < GetNumberOfVmeCrates(); ++i ){
 		
 		recoil_sector[i].resize( GetMaximumNumberOfVmeModules() );
@@ -143,7 +144,7 @@ void ISSSettings::ReadSettings() {
 		recoil_vme[i].resize( n_recoil_layer );
 		recoil_mod[i].resize( n_recoil_layer );
 		recoil_ch[i].resize( n_recoil_layer );
-
+		
 		for( unsigned int j = 0; j < n_recoil_layer; ++j ){
 			
 			recoil_vme[i][j] = config->GetValue( Form( "Recoil_%d_%d.Crate", i, j ), 0 );
@@ -172,11 +173,11 @@ void ISSSettings::ReadSettings() {
 	
 	// MWPC
 	n_mwpc_axes = config->GetValue( "NumberOfMWPCAxes", 2 ); // x and y usually
-
+	
 	mwpc_vme.resize( n_mwpc_axes );
 	mwpc_mod.resize( n_mwpc_axes );
 	mwpc_ch.resize( n_mwpc_axes );
-
+	
 	mwpc_axis.resize( GetNumberOfVmeCrates() );
 	mwpc_tac.resize( GetNumberOfVmeCrates() );
 	
@@ -197,27 +198,27 @@ void ISSSettings::ReadSettings() {
 		}
 		
 	}
-		
+	
 	
 	for( unsigned int i = 0; i < n_mwpc_axes; ++i ){
-	
+		
 		mwpc_vme[i].resize( 2 );
 		mwpc_mod[i].resize( 2 );
 		mwpc_ch[i].resize( 2 );
-	
+		
 		for( unsigned int j = 0; j < 2; ++j ){ // two TACs per axis
-
+			
 			mwpc_vme[i][j] = config->GetValue( Form( "MWPC_%d_%d.Crate", i, j ), 0 );
 			mwpc_mod[i][j] = config->GetValue( Form( "MWPC_%d_%d.Module", i, j ), 1 );
 			mwpc_ch[i][j] = config->GetValue( Form( "MWPC_%d_%d.Channel", i, j ), 8+(int)i*2+(int)j );
-
+			
 			if( mwpc_mod[i][j] < n_caen_mod && mwpc_ch[i][j] < n_caen_ch ){
 				
 				mwpc_axis[mwpc_vme[i][j]][mwpc_mod[i][j]][mwpc_ch[i][j]] = i;
 				mwpc_tac[mwpc_vme[i][j]][mwpc_mod[i][j]][mwpc_ch[i][j]] = j;
-
+				
 			}
-
+			
 			else {
 				
 				std::cerr << "Dodgy MWPC settings:";
@@ -247,26 +248,26 @@ void ISSSettings::ReadSettings() {
 				elum_sector[i][j].push_back( -1 );
 		
 	}
-
+	
 	
 	for( unsigned int i = 0; i < n_elum_sector; ++i ){
-				
+		
 		elum_vme[i] = config->GetValue( Form( "ELUM_%d.Crate", i ), 0 );
 		elum_mod[i] = config->GetValue( Form( "ELUM_%d.Module", i ), 1 );
 		elum_ch[i] = config->GetValue( Form( "ELUM_%d.Channel", i ), (int)i );
 		
 		if( elum_mod[i] < n_caen_mod && elum_ch[i] < n_caen_ch )
 			elum_sector[elum_vme[i]][elum_mod[i]][elum_ch[i]] = i;
-
+		
 		else {
 			
 			std::cerr << "Dodgy ELUM settings:";
 			std::cerr << " crate = " << elum_vme[i];
 			std::cerr << " module = " << elum_mod[i];
 			std::cerr << " channel = " << elum_ch[i] << std::endl;
-
-		}
 			
+		}
+		
 	}
 	
 	// ZeroDegree detector
@@ -295,14 +296,14 @@ void ISSSettings::ReadSettings() {
 		
 		if( zd_mod[i] < n_caen_mod && zd_ch[i] < n_caen_ch )
 			zd_layer[zd_vme[i]][zd_mod[i]][zd_ch[i]] = i;
-
+		
 		else {
 			
 			std::cerr << "Dodgy ZeroDegree settings:";
 			std::cerr << " crate = " << zd_vme[i];
 			std::cerr << " module = " << zd_mod[i];
 			std::cerr << " channel = " << zd_ch[i] << std::endl;
-
+			
 		}
 		
 	}
@@ -314,7 +315,7 @@ void ISSSettings::ReadSettings() {
 	scint_mod.resize( n_scint_detector );
 	scint_ch.resize( n_scint_detector );
 	scint_detector.resize( GetNumberOfVmeCrates() );
-
+	
 	for( unsigned int i = 0; i < GetNumberOfVmeCrates(); ++i ) {
 		
 		scint_detector[i].resize( GetMaximumNumberOfVmeModules() );
@@ -326,7 +327,7 @@ void ISSSettings::ReadSettings() {
 	}
 	
 	for( unsigned int i = 0; i < n_scint_detector; ++i ){
-
+		
 		unsigned char v = 1;
 		unsigned char m = 0;
 		unsigned char c = i;
@@ -342,28 +343,85 @@ void ISSSettings::ReadSettings() {
 		scint_mod[i] = config->GetValue( Form( "ScintArray_%d.Module", i ), (int)m );
 		scint_ch[i] = config->GetValue( Form( "ScintArray_%d.Channel", i ), (int)c );
 		
-		if( scint_mod[i] < n_caen_mod && scint_ch[i] < n_caen_ch )
+		if( scint_vme[i] < GetNumberOfVmeCrates() &&
+		   scint_mod[i] < GetMaximumNumberOfVmeModules() &&
+		   scint_ch[i] < GetMaximumNumberOfVmeChannels() )
 			scint_detector[scint_vme[i]][scint_mod[i]][scint_ch[i]] = i;
-
+		
 		else {
 			
 			std::cerr << "Dodgy ScintArray settings:";
 			std::cerr << " crate = " << scint_vme[i];
 			std::cerr << " module = " << scint_mod[i];
 			std::cerr << " channel = " << scint_ch[i] << std::endl;
-
+			
+		}
+		
+	}
+	
+	// LUME
+	n_lume = config->GetValue( "NumberOfLUMEDetectors", 0);
+	lume_be_vme.resize( n_lume );
+	lume_ne_vme.resize( n_lume );
+	lume_fe_vme.resize( n_lume );
+	lume_be_mod.resize( n_lume );
+	lume_ne_mod.resize( n_lume );
+	lume_fe_mod.resize( n_lume );
+	lume_be_ch.resize( n_lume );
+	lume_ne_ch.resize( n_lume );
+	lume_fe_ch.resize( n_lume );
+	lume_be_detector.resize( GetNumberOfVmeCrates() );
+	lume_ne_detector.resize( GetNumberOfVmeCrates() );
+	lume_fe_detector.resize( GetNumberOfVmeCrates() );
+	
+	for( unsigned int i = 0; i < GetNumberOfVmeCrates(); ++i ) {
+		
+		lume_be_detector.resize( GetMaximumNumberOfVmeModules() );
+		lume_ne_detector.resize( GetMaximumNumberOfVmeModules() );
+		lume_fe_detector.resize( GetMaximumNumberOfVmeModules() );
+		
+		for( unsigned int j = 0; j < GetMaximumNumberOfVmeModules(); ++j ) {
+			for( unsigned int k = 0; k < GetMaximumNumberOfVmeChannels(); ++k ){
+				lume_be_detector[i][j].push_back( -1 );
+				lume_ne_detector[i][j].push_back( -1 );
+				lume_fe_detector[i][j].push_back( -1 );
+			}
+		}
+		
+	}
+	
+	for( unsigned int i = 0; i < n_lume; ++i ){
+		
+		// Assuming they are all in the same Mesytec module
+		unsigned char mm = 2;
+		
+		lume_be_vme[i] = config->GetValue( Form( "LUME_be_%d.Crate", i ), (int) 1 );
+		lume_ne_vme[i] = config->GetValue( Form( "LUME_ne_%d.Crate", i ), (int) 1 );
+		lume_fe_vme[i] = config->GetValue( Form( "LUME_fe_%d.Crate", i ), (int) 1 );
+		lume_be_mod[i] = config->GetValue( Form( "LUME_be_%d.Module", i ), (int) mm );
+		lume_ne_mod[i] = config->GetValue( Form( "LUME_ne_%d.Module", i ), (int) mm );
+		lume_fe_mod[i] = config->GetValue( Form( "LUME_fe_%d.Module", i ), (int) mm );
+		lume_be_ch[i] = config->GetValue( Form( "LUME_be_%d.Channel", i ), (int) i );
+		lume_ne_ch[i] = config->GetValue( Form( "LUME_ne_%d.Channel", i ), (int) i );
+		lume_fe_ch[i] = config->GetValue( Form( "LUME_fe_%d.Channel", i ), (int) i );
+		
+		if( lume_be_mod[i] < n_caen_mod && lume_be_ch[i] < n_caen_ch )
+			lume_be_detector[lume_be_mod[i]][lume_be_ch[i]] = i;
+		else {
+			std::cerr << "Dodgy LUME settings: module = " << lume_be_mod[i];
+			std::cerr << " channel = " << lume_be_ch[i] << std::endl;
 		}
 		
 	}
 	
 	
 	// Perform a couple of sanity checks
+	
 	if( n_caen_mod > 16 ) {
 		
 		n_caen_mod = 16;
 		std::cout << "Maximum number of CAEN modules is 16" << std::endl;
 		
-	}
 	
 	if( n_mesy_mod > 16 ) {
 		
@@ -613,6 +671,72 @@ char ISSSettings::GetScintArrayDetector( unsigned char vme, unsigned char mod, u
 	
 }
 
+bool ISSSettings::IsLUME( unsigned char vme, unsigned char mod, unsigned char ch ) {
+
+	/// Return true if this is an ScintArray event
+	if( lume_be_detector[(int)vme][(int)mod][(int)ch] >= 0 ||
+		lume_ne_detector[(int)vme][(int)mod][(int)ch] >= 0 ||
+		lume_fe_detector[(int)vme][(int)mod][(int)ch] >= 0 ) return true;
+	else return false;
+
+}
+
+char ISSSettings::GetLUMEType( unsigned char vme, unsigned char mod, unsigned char ch ) {
+
+	if( lume_be_detector[(int)vme][(int)mod][(int)ch] >= 0 ) return 0;
+	else if( lume_ne_detector[(int)vme][(int)mod][(int)ch] >= 0 ) return 1;
+	else if(lume_fe_detector[(int)vme][(int)mod][(int)ch] >= 0 ) return 2;
+	else return -1;
+
+}
+
+char ISSSettings::GetLUMEBEDetector( unsigned char vme, unsigned char mod, unsigned char ch ) {
+
+	/// Return ID of LUME t detector (total energy signal)
+	if( mod < n_caen_mod && ch < n_caen_ch )
+		return lume_be_detector[(int)vme][(int)mod][(int)ch];
+	else {
+
+		std::cerr << "Bad LUME event: module = " << (int)mod;
+		std::cerr << " channel = " << (int)ch << std::endl;
+		return -1;
+
+	}
+
+}
+
+char ISSSettings::GetLUMENEDetector( unsigned char vme, unsigned char mod, unsigned char ch ) {
+
+	/// Return ID of LUME t detector (total energy signal)
+	if( mod < n_caen_mod && ch < n_caen_ch )
+		return lume_ne_detector[(int)vme][(int)mod][(int)ch];
+	else {
+
+		std::cerr << "Bad LUME event: module = " << (int)mod;
+		std::cerr << " channel = " << (int)ch << std::endl;
+		return -1;
+
+	}
+
+}
+
+char ISSSettings::GetLUMEFEDetector( unsigned char vme, unsigned char mod, unsigned char ch ) {
+
+	/// Return ID of LUME t detector (total energy signal)
+	if( mod < n_caen_mod && ch < n_caen_ch )
+		return lume_fe_detector[(int)vme][(int)mod][(int)ch];
+	else {
+
+		std::cerr << "Bad LUME event: module = " << (int)mod;
+		std::cerr << " channel = " << (int)ch << std::endl;
+		return -1;
+
+	}
+
+}
+
+
+
 void ISSSettings::PrintSettings() {
 
 	std::cout << "=== Settings begin ===" << std::endl;
@@ -666,7 +790,6 @@ void ISSSettings::PrintSettings() {
 	PRINT_SETTING_INT(n_array_row);
 	PRINT_SETTING_INT(n_array_pstrip);
 	PRINT_SETTING_INT(n_array_nstrip);
-	PRINT_SETTING_INT(n_array_side);
 
 	// CAEN settings
 	PRINT_SETTING_INT(n_caen_mod);
@@ -720,6 +843,7 @@ void ISSSettings::PrintSettings() {
 	PRINT_SETTING(array_nn_hit_window);
 	PRINT_SETTING(zd_hit_window);
 	PRINT_SETTING(gamma_hit_window);
+	PRINT_SETTING(lume_hit_window);
 
 	// Data format
 	PRINT_SETTING_INT(block_size);
@@ -770,6 +894,18 @@ void ISSSettings::PrintSettings() {
 	PRINT_SETTING_VECT_INT(scint_mod);
 	PRINT_SETTING_VECT_INT(scint_ch);
 	PRINT_SETTING_VECT_VECT_VECT_INT(scint_detector);
+
+	// LUME detector
+	PRINT_SETTING_INT(n_lume);
+	PRINT_SETTING_VECT_INT(lume_be_mod);
+	PRINT_SETTING_VECT_INT(lume_ne_mod);
+	PRINT_SETTING_VECT_INT(lume_fe_mod);
+	PRINT_SETTING_VECT_INT(lume_be_ch);
+	PRINT_SETTING_VECT_INT(lume_ne_ch);
+	PRINT_SETTING_VECT_INT(lume_fe_ch);
+	PRINT_SETTING_VECT_VECT_INT(lume_be_detector);
+	PRINT_SETTING_VECT_VECT_INT(lume_ne_detector);
+	PRINT_SETTING_VECT_VECT_INT(lume_fe_detector);
 
 	std::cout << "==== Settings end ====" << std::endl;
 }
