@@ -605,7 +605,6 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				
 				// Increment event counter and set data type
 				n_mesy_data++;
-				//vme_data = static_cast<ISSVmeData>( in_data->GetMesyData() );
 				vme_data = in_data->GetMesyData();
 
 			}
@@ -614,7 +613,6 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			myvme = vme_data->GetCrate();
 			mymod = vme_data->GetModule();
 			mych = vme_data->GetChannel();
-
 			
 			// New calibration supplied
 			if( overwrite_cal ) {
