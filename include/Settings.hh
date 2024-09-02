@@ -38,7 +38,6 @@ public:
 	inline unsigned int GetNumberOfArrayRows(){ return n_array_row; };
 	inline unsigned int GetNumberOfArrayPstrips(){ return n_array_pstrip; };
 	inline unsigned int GetNumberOfArrayNstrips(){ return n_array_nstrip; };
-	inline unsigned int GetNumberOfArraySides(){ return n_array_side; };
 
 	
 	// CAEN settings
@@ -160,7 +159,6 @@ private:
 	unsigned char n_array_row;		///< 4x2 DSSSDs per module, but paired; dE-E for recoil, gas cathodes (13?)
 	unsigned char n_array_pstrip;	///< number of p-side strips in each DSSSD
 	unsigned char n_array_nstrip;	///< strip number of DSSSD
-	unsigned char n_array_side;		///< p-side and n-side
 
 
 	// CAEN settings
