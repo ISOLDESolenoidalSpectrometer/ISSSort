@@ -1180,6 +1180,7 @@ void ISSConverter::ProcessCAENData(){
 		
 		// Make a CaenData item, need to add Qlong, Qshort and traces
 		caen_data->SetTimeStamp( my_tm_stp );
+		caen_data->SetCrate(0); // CAEN crate is always 0
 		caen_data->SetModule( my_mod_id );
 		caen_data->SetChannel( my_ch_id );
 		
@@ -1199,6 +1200,7 @@ void ISSConverter::ProcessCAENData(){
 		
 		// Then set the info correctly for this event
 		caen_data->SetTimeStamp( my_tm_stp );
+		caen_data->SetCrate(0); // CAEN crate is always 0
 		caen_data->SetModule( my_mod_id );
 		caen_data->SetChannel( my_ch_id );
 		
@@ -1463,14 +1465,15 @@ void ISSConverter::ProcessMesytecData(){
 	my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  // 28 bits from 0
 	my_tm_stp = ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
 	
-	// Mesytec timestamps are 10 ns precision? TBD
-	my_tm_stp = my_tm_stp*10;
+	// Mesytec timestamps are 4 ns precision? TBD
+	my_tm_stp = my_tm_stp*4;
 	
 	// First of the data items
 	if( !flag_mesy_data0 && !flag_mesy_data1 && !flag_mesy_data2 && !flag_mesy_data3 ){
 		
 		// Make a MesyData item, need to add Qlong and traces
 		mesy_data->SetTimeStamp( my_tm_stp );
+		mesy_data->SetCrate(1); // Mesytec crate is always 1
 		mesy_data->SetModule( my_mod_id );
 		mesy_data->SetChannel( my_ch_id );
 		
@@ -1490,6 +1493,7 @@ void ISSConverter::ProcessMesytecData(){
 		
 		// Then set the info correctly for this event
 		mesy_data->SetTimeStamp( my_tm_stp );
+		mesy_data->SetCrate(1); // Mesytec crate is always 1
 		mesy_data->SetModule( my_mod_id );
 		mesy_data->SetChannel( my_ch_id );
 		
@@ -1525,7 +1529,7 @@ void ISSConverter::ProcessMesytecData(){
 		flag_mesy_data3 = true;
 		
 		// Mesy timestamps are 10 ns precision? TBD
-		mesy_data->SetFineTime( (float)my_adc_data * 10. / 1000. );
+		mesy_data->SetFineTime( (float)my_adc_data * 4. / 1000. );
 		
 	}
 	
@@ -1578,10 +1582,6 @@ void ISSConverter::FinishMesytecData(){
 		std::cout << " Qshort      = " << flag_mesy_data1 << std::endl;
 		std::cout << " fine timing = " << flag_mesy_data3 << std::endl;
 		std::cout << " trace data  = " << flag_mesy_trace << std::endl;
-		
-		std::cout << "my_tm_stp = " << my_tm_stp;
-		std::cout << ", mesy_data->GetTime() = " << (long long)mesy_data->GetTimeStamp();
-		std::cout << std::endl;
 		
 	}
 	
