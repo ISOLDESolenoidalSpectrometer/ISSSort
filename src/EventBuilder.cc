@@ -159,6 +159,7 @@ void ISSEventBuilder::StartFile(){
 
 	n_asic_data	= 0;
 	n_caen_data	= 0;
+	n_mesy_data	= 0;
 	n_info_data	= 0;
 
 	n_caen_pulser = 0;
