@@ -201,6 +201,7 @@ void ISSSettings::ReadSettings() {
 	
 	for( unsigned int i = 0; i < n_mwpc_axes; ++i ){
 	
+		mwpc_vme[i].resize( 2 );
 		mwpc_mod[i].resize( 2 );
 		mwpc_ch[i].resize( 2 );
 	
@@ -278,7 +279,7 @@ void ISSSettings::ReadSettings() {
 	
 	for( unsigned int i = 0; i < GetNumberOfVmeCrates(); ++i ) {
 		
-		zd_layer.resize( GetMaximumNumberOfVmeModules() );
+		zd_layer[i].resize( GetMaximumNumberOfVmeModules() );
 		
 		for( unsigned int j = 0; j < GetMaximumNumberOfVmeModules(); ++j )
 			for( unsigned int k = 0; k < GetMaximumNumberOfVmeChannels(); ++k )
