@@ -759,6 +759,7 @@ void ISSConverter::ProcessBlockHeader( unsigned long nblock ){
 	
 	// Flags for Mesytec data items
 	flag_mesy_data0 = false;
+	flag_mesy_data1 = false;
 	flag_mesy_data3 = false;
 	flag_mesy_trace = false;
 	
@@ -1412,7 +1413,7 @@ void ISSConverter::FinishCAENData(){
 	}
 	
 	// missing something
-	else if( (long long)my_tm_stp != (long long)caen_data->GetTime() ) {
+	else if( (long long)my_tm_stp != (long long)caen_data->GetTimeStamp() ) {
 		
 		std::cout << "Missing something in CAEN data and new event occured" << std::endl;
 		std::cout << " Qlong       = " << flag_caen_data0 << std::endl;
@@ -1479,10 +1480,10 @@ void ISSConverter::ProcessMesytecData(){
 	// already occured before we found traces. This means that there
 	// is not trace data. So set the flag to be true and finish the
 	// event with an empty trace.
-	else if( flag_mesy_data0 && flag_mesy_data1 && flag_caen_data3 ){
+	else if( flag_mesy_data0 && flag_mesy_data1 && flag_mesy_data3 ){
 		
 		// Fake trace flag, but with an empty trace
-		flag_caen_trace = true;
+		flag_mesy_trace = true;
 		
 		// Finish up the previous event
 		FinishMesytecData();
@@ -1501,7 +1502,7 @@ void ISSConverter::ProcessMesytecData(){
 		hmesy_qlong[my_mod_id][my_ch_id]->Fill( my_adc_data );
 		if( my_adc_data == 0xFFFF ) mesy_data->SetQlong( 0 );
 		else mesy_data->SetQlong( my_adc_data );
-		flag_caen_data0 = true;
+		flag_mesy_data0 = true;
 		
 	}
 	
@@ -1513,7 +1514,7 @@ void ISSConverter::ProcessMesytecData(){
 		hmesy_qshort[my_mod_id][my_ch_id]->Fill( my_adc_data );
 		if( my_adc_data == 0x7FFF ) mesy_data->SetQshort( 0 );
 		else mesy_data->SetQshort( my_adc_data );
-		flag_caen_data1 = true;
+		flag_mesy_data1 = true;
 		
 	}
 	
@@ -1541,16 +1542,16 @@ void ISSConverter::FinishMesytecData(){
 		hmesy_hit[mesy_data->GetModule()]->Fill( ctr_mesy_hit[mesy_data->GetModule()], mesy_data->GetTime(), 1 );
 
 		// Difference between Qlong and Qshort
-		int qdiff = (int)caen_data->GetQlong() - (int)caen_data->GetQshort();
-		hcaen_qdiff[caen_data->GetModule()][caen_data->GetChannel()]->Fill( qdiff );
+		int qdiff = (int)mesy_data->GetQlong() - (int)mesy_data->GetQshort();
+		hmesy_qdiff[mesy_data->GetModule()][mesy_data->GetChannel()]->Fill( qdiff );
 		
 		// Choose the energy we want to use
 		unsigned short adc_value = 0;
-		std::string entype = cal->CaenType( mesy_data->GetModule(), mesy_data->GetChannel() );
+		std::string entype = cal->MesytecType( mesy_data->GetModule(), mesy_data->GetChannel() );
 		if( entype == "Qlong" ) adc_value = mesy_data->GetQlong();
 		else if( entype == "Qshort" ) adc_value = mesy_data->GetQshort();
 		else if( entype == "Qdiff" ) adc_value = mesy_data->GetQdiff();
-		my_energy = cal->CaenEnergy( mesy_data->GetModule(), mesy_data->GetChannel(), adc_value );
+		my_energy = cal->MesytecEnergy( mesy_data->GetModule(), mesy_data->GetChannel(), adc_value );
 		mesy_data->SetEnergy( my_energy );
 		hmesy_cal[mesy_data->GetModule()][mesy_data->GetChannel()]->Fill( my_energy );
 		
@@ -1578,6 +1579,10 @@ void ISSConverter::FinishMesytecData(){
 		std::cout << " fine timing = " << flag_mesy_data3 << std::endl;
 		std::cout << " trace data  = " << flag_mesy_trace << std::endl;
 		
+		std::cout << "my_tm_stp = " << my_tm_stp;
+		std::cout << ", mesy_data->GetTime() = " << (long long)mesy_data->GetTimeStamp();
+		std::cout << std::endl;
+		
 	}
 	
 	// This is normal, just not finished yet
@@ -1588,6 +1593,7 @@ void ISSConverter::FinishMesytecData(){
 	
 	// Assuming it did finish, in a good way or bad, clean up.
 	flag_mesy_data0 = false;
+	flag_mesy_data1 = false;
 	flag_mesy_data3 = false;
 	flag_mesy_trace = false;
 	info_data->ClearData();
@@ -1615,11 +1621,11 @@ void ISSConverter::ProcessInfoData(){
 
 	}
 	
-	// MSB of timestamp in sync pulse or CAEN extended time stamp
+	// MSB of timestamp in sync pulse or VME extended time stamp
 	if( my_info_code == set->GetSyncCode() ) {
 		
-		// We don't know yet if it's from CAEN or ISS
-		// In CAEN this would be the extended timestamp
+		// We don't know yet if it's from VME or ISS
+		// In VME this would be the extended timestamp
 		// In ISS it is the Sync100 pulses
 		my_tm_stp_msb = my_info_field & 0x000FFFFF;
 		my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | ( my_tm_stp_lsb & 0x0FFFFFFF );
