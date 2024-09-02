@@ -185,12 +185,12 @@ void ISSCalibration::ReadCalibration() {
 	}
 	
 	// Mesytec initialisation
-	fMesyOffset.resize( set->GetNumberOfCAENModules() );
-	fMesyGain.resize( set->GetNumberOfCAENModules() );
-	fMesyGainQuadr.resize( set->GetNumberOfCAENModules() );
-	fMesyThreshold.resize( set->GetNumberOfCAENModules() );
-	fMesyTime.resize( set->GetNumberOfCAENModules() );
-	fMesyType.resize( set->GetNumberOfCAENModules() );
+	fMesyOffset.resize( set->GetNumberOfMesytecModules() );
+	fMesyGain.resize( set->GetNumberOfMesytecModules() );
+	fMesyGainQuadr.resize( set->GetNumberOfMesytecModules() );
+	fMesyThreshold.resize( set->GetNumberOfMesytecModules() );
+	fMesyTime.resize( set->GetNumberOfMesytecModules() );
+	fMesyType.resize( set->GetNumberOfMesytecModules() );
 
 	fMesyOffsetDefault = 0.0;
 	fMesyGainDefault = 1.0;

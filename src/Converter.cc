@@ -1479,7 +1479,7 @@ void ISSConverter::ProcessMesytecData(){
 	// already occured before we found traces. This means that there
 	// is not trace data. So set the flag to be true and finish the
 	// event with an empty trace.
-	else if( flag_mesy_data0 && flag_caen_data3 ){
+	else if( flag_mesy_data0 && flag_mesy_data1 && flag_caen_data3 ){
 		
 		// Fake trace flag, but with an empty trace
 		flag_caen_trace = true;
@@ -1535,7 +1535,7 @@ void ISSConverter::ProcessMesytecData(){
 void ISSConverter::FinishMesytecData(){
 	
 	// Got all items
-	if( ( flag_mesy_data0 && flag_mesy_data3 ) || flag_mesy_trace ){
+	if( ( flag_mesy_data0 && flag_mesy_data1 && flag_mesy_data3 ) || flag_mesy_trace ){
 		
 		// Fill histograms
 		hmesy_hit[mesy_data->GetModule()]->Fill( ctr_mesy_hit[mesy_data->GetModule()], mesy_data->GetTime(), 1 );
@@ -1570,10 +1570,11 @@ void ISSConverter::FinishMesytecData(){
 	}
 	
 	// missing something
-	else if( (long long)my_tm_stp != (long long)mesy_data->GetTime() ) {
+	else if( (long long)my_tm_stp != (long long)mesy_data->GetTimeStamp() ) {
 		
 		std::cout << "Missing something in Mesytec data and new event occured" << std::endl;
 		std::cout << " Qlong       = " << flag_mesy_data0 << std::endl;
+		std::cout << " Qshort      = " << flag_mesy_data1 << std::endl;
 		std::cout << " fine timing = " << flag_mesy_data3 << std::endl;
 		std::cout << " trace data  = " << flag_mesy_trace << std::endl;
 		
