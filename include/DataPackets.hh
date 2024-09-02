@@ -11,10 +11,6 @@ class ISSAsicData : public TObject {
 public:
 
 	ISSAsicData();
-	ISSAsicData( unsigned long long t, unsigned short adc,
-			  unsigned char m, unsigned char a,
-			  unsigned char c, bool h, bool th,
-			  float e, double w );
 	~ISSAsicData();
 	
 	inline double					GetTime() { return (double)timestamp; };
@@ -53,22 +49,17 @@ protected:
 	double					walk;
 
 	
-	ClassDef( ISSAsicData, 3 )
+	ClassDef( ISSAsicData, 4 )
 	
 };
 
-class ISSCaenData : public TObject {
+class ISSVmeData : public TObject {
 	
 public:
-
-	ISSCaenData();
-	ISSCaenData( unsigned long long t, float f, float b,
-			  std::vector<unsigned short> tr,
-			  unsigned short ql, unsigned short qs,
-			  unsigned char m, unsigned char c,
-			  bool th );
-	~ISSCaenData();
-
+	
+	ISSVmeData();
+	~ISSVmeData();
+	
 	inline double			GetTime() { return (double)timestamp + finetime; };
 	inline unsigned long	GetTimeStamp() { return timestamp; };
 	inline float			GetFineTime() { return finetime; };
@@ -79,6 +70,7 @@ public:
 		if( i >= trace.size() ) return 0;
 		return trace.at(i);
 	};
+	inline unsigned char	GetCrate() { return vme; };
 	inline unsigned char	GetModule() { return mod; };
 	inline unsigned char	GetChannel() { return ch; };
 	inline unsigned short	GetQlong() { return Qlong; };
@@ -86,7 +78,7 @@ public:
 	inline unsigned short	GetQdiff() { return (int)Qlong-(int)Qshort; };
 	inline float			GetEnergy() { return energy; };
 	inline bool				IsOverThreshold() { return thres; };
-
+	
 	inline void	SetTimeStamp( unsigned long long t ) { timestamp = t; };
 	inline void	SetFineTime( float t ) { finetime = t; };
 	inline void	SetBaseline( float b ) { baseline = b; };
@@ -94,14 +86,15 @@ public:
 	inline void AddSample( unsigned short s ) { trace.push_back(s); };
 	inline void	SetQlong( unsigned short q ) { Qlong = q; };
 	inline void	SetQshort( unsigned short q ) { Qshort = q; };
+	inline void	SetCrate( unsigned char v ) { vme = v; };
 	inline void	SetModule( unsigned char m ) { mod = m; };
 	inline void	SetChannel( unsigned char c ) { ch = c; };
 	inline void SetEnergy( float e ){ energy = e; };
 	inline void SetThreshold( bool t ){ thres = t; };
-
+	
 	inline void ClearTrace() { trace.clear(); };
 	void ClearData();
-
+	
 protected:
 	
 	unsigned long long			timestamp;
@@ -110,13 +103,39 @@ protected:
 	std::vector<unsigned short>	trace;
 	unsigned short				Qlong;
 	unsigned short				Qshort;
+	unsigned char				vme;
 	unsigned char				mod;
 	unsigned char				ch;
 	bool						thres;		///< is the energy over threshold?
 	float						energy;
 
 	
-	ClassDef( ISSCaenData, 6 )
+	ClassDef( ISSVmeData, 1 )
+
+};
+
+
+
+class ISSCaenData : public ISSVmeData {
+	
+public:
+	
+	ISSCaenData();
+	~ISSCaenData();
+
+	ClassDef( ISSCaenData, 7 )
+	
+};
+
+
+class ISSMesyData : public ISSVmeData {
+	
+public:
+	
+	ISSMesyData();
+	~ISSMesyData();
+
+	ClassDef( ISSMesyData, 1 )
 	
 };
 
@@ -160,16 +179,20 @@ class ISSDataPackets : public TObject {
 public:
 	
 	inline bool	IsAsic() { return asic_packets.size(); };
+	inline bool	IsVme() { return caen_packets.size() + mesy_packets.size(); };
 	inline bool	IsCaen() { return caen_packets.size(); };
+	inline bool	IsMesy() { return mesy_packets.size(); };
 	inline bool	IsInfo() { return info_packets.size(); };
 	
 	void SetData( std::shared_ptr<ISSAsicData> data );
 	void SetData( std::shared_ptr<ISSCaenData> data );
+	void SetData( std::shared_ptr<ISSMesyData> data );
 	void SetData( std::shared_ptr<ISSInfoData> data );
 
 	// These methods are not very safe for access
 	inline std::shared_ptr<ISSAsicData> GetAsicData() { return std::make_shared<ISSAsicData>( asic_packets.at(0) ); };
 	inline std::shared_ptr<ISSCaenData> GetCaenData() { return std::make_shared<ISSCaenData>( caen_packets.at(0) ); };
+	inline std::shared_ptr<ISSMesyData> GetMesyData() { return std::make_shared<ISSMesyData>( mesy_packets.at(0) ); };
 	inline std::shared_ptr<ISSInfoData> GetInfoData() { return std::make_shared<ISSInfoData>( info_packets.at(0) ); };
 	
 	// Complicated way to get the time...
@@ -185,9 +208,10 @@ protected:
 	
 	std::vector<ISSAsicData> asic_packets;
 	std::vector<ISSCaenData> caen_packets;
+	std::vector<ISSMesyData> mesy_packets;
 	std::vector<ISSInfoData> info_packets;
 
-	ClassDef( ISSDataPackets, 2 )
+	ClassDef( ISSDataPackets, 3 )
 
 };
 

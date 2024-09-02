@@ -21,10 +21,17 @@
 #-------------#
 # CAEN things #
 #-------------#
-#NumberOfCAENModules: 2
+#NumberOfCAENModules: 2 		# maximum 16
 #NumberOfCAENChannels: 16
 #CAEN_0.Model: 1725	# can be 1725 or 1730, maybe even 1720?
 #CAEN_1.Model: 1725	# I suppose we can also support others in future
+
+
+#----------------#
+# Mesytec things #
+#----------------#
+#NumberOfMesytecModules: 0 		# maximum 16
+#NumberOfMesytecChannels: 32
 
 
 #------------------------#
@@ -42,27 +49,35 @@
 #PulserThresholdArray: 1000
 #PulserModuleCAEN: 1
 #PulserChannelCAEN: 13
-#PulserCodeCAEN: 20
-#EBISModule: 1
-#EBISChannel: 14
-#EBISCode: 21
-#T1Module: 1
-#T1Channel: 15
-#T1Code: 22
-#SCModule: 1
-#SCChannel: 12
-#SCCode: 23
-#LaserModule: 1
-#LaserChannel: 11
-#LaserCode: 24
+#PulserCodeCAEN: 20			# cannot be changed, info only
+#PulserModuleMesytec: 0
+#PulserChannelMesytec: 15
+#PulserCodeMesytec: 25		# cannot be changed, info only
+#EBIS.Crate: 0				# 0 = CAEN VME crate, 1 = Mesytec VME crate
+#EBIS.Module: 1
+#EBIS.Channel: 14
+#EBIS.Code: 21 				# 21 from CAEN/Mesytec, 15 from array FPGA
+#T1.Crate: 0				# 0 = CAEN VME crate, 1 = Mesytec VME crate
+#T1.Module: 1
+#T1.Channel: 15
+#T1.Code: 22				# cannot be changed, info only
+#SC.Crate: 0				# 0 = CAEN VME crate, 1 = Mesytec VME crate
+#SC.Module: 1
+#SC.Channel: 12
+#SC.Code: 23				# cannot be changed, info only
+#Laser.Crate: 0				# 0 = CAEN VME crate, 1 = Mesytec VME crate
+#Laser.Module: 1
+#Laser.Channel: 11
+#Laser.Code: 24				# cannot be changed, info only
 
 
 #-------------#
 # Data things #
 #-------------#
-#DataBlockSize: 0x10000 # 64 kB for ISS/CAEN data or 128 kB (0x20000) for CAEN only data
-#ASICDataOnly: false	# normally we have a mix of data in the file
-#CAENDataOnly: false	# prior to June 2021 we need these switches
+#DataBlockSize: 0x10000 	# 64 kB for ISS/CAEN data or 128 kB (0x20000) for CAEN only data
+#ASICDataOnly: false		# normally we have a mix of data in the file
+#CAENDataOnly: false		# prior to June 2021 we need these switches
+#MesytecDataOnly: false		# useful for testing, keep it false for real data
 
 
 #---------------#

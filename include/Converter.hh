@@ -64,9 +64,11 @@ public:
 
 	void ProcessASICData();
 	void ProcessCAENData();
+	void ProcessMesytecData();
 	void ProcessInfoData();
 	void FinishCAENData();
-	void GetCAENChanID();
+	void FinishMesytecData();
+	void GetVMEChanID();
 
 	void SetOutput( std::string output_file_name );
 	
@@ -186,6 +188,11 @@ private:
 	bool flag_caen_data2;
 	bool flag_caen_data3;
 	bool flag_caen_trace;
+	bool flag_mesy_data0;
+	bool flag_mesy_data1;
+	bool flag_mesy_data2;
+	bool flag_mesy_data3;
+	bool flag_mesy_trace;
 	bool flag_caen_info;
 
 
@@ -208,6 +215,7 @@ private:
 	unsigned long my_info_code;
 	unsigned long my_type;
 	unsigned long my_adc_data;
+	unsigned char my_vme_id;	// 0= CAEN, 1= Mesytec
 	unsigned char my_mod_id;
 	unsigned char my_ch_id;
 	unsigned char my_asic_id;
@@ -222,6 +230,7 @@ private:
 	std::unique_ptr<ISSDataPackets> data_packet;
 	std::shared_ptr<ISSAsicData> asic_data;
 	std::shared_ptr<ISSCaenData> caen_data;
+	std::shared_ptr<ISSMesyData> mesy_data;
 	std::shared_ptr<ISSInfoData> info_data;
 	
 	// Output stuff
@@ -236,6 +245,8 @@ private:
 	std::vector<unsigned long> ctr_asic_resume;  	// resume acq for module
 	std::vector<unsigned long> ctr_caen_hit;		// hits on each CAEN module
 	std::vector<unsigned long> ctr_caen_ext;		// external (pulser) CAEN timestamps
+	std::vector<unsigned long> ctr_mesy_hit;		// hits on each Mesytec module
+	std::vector<unsigned long> ctr_mesy_ext;		// external (pulser) Mesytec timestamps
 
 	// Histograms
 	std::vector<TProfile*> hasic_hit;
@@ -244,7 +255,9 @@ private:
 	std::vector<TProfile*> hasic_resume;
 	std::vector<TProfile*> hcaen_hit;
 	std::vector<TProfile*> hcaen_ext;
-	
+	std::vector<TProfile*> hmesy_hit;
+	std::vector<TProfile*> hmesy_ext;
+
 	// ASIC pulser for timing
 	std::vector<std::vector<TH1F*>> asic_pulser_energy;
 
@@ -254,6 +267,10 @@ private:
 	std::vector<std::vector<TH1F*>> hcaen_qshort;
 	std::vector<std::vector<TH1F*>> hcaen_qdiff;
 	std::vector<std::vector<TH1F*>> hcaen_cal;
+	std::vector<std::vector<TH1F*>> hmesy_qlong;
+	std::vector<std::vector<TH1F*>> hmesy_qshort;
+	std::vector<std::vector<TH1F*>> hmesy_qdiff;
+	std::vector<std::vector<TH1F*>> hmesy_cal;
 
 	std::vector<TH1F*> hpside;
 	std::vector<TH1F*> hnside;
