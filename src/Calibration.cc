@@ -149,34 +149,83 @@ void ISSCalibration::ReadCalibration() {
 	fCaenThreshold.resize( set->GetNumberOfCAENModules() );
 	fCaenTime.resize( set->GetNumberOfCAENModules() );
 	fCaenType.resize( set->GetNumberOfCAENModules() );
-
+	
 	fCaenOffsetDefault = 0.0;
 	fCaenGainDefault = 1.0;
 	fCaenGainQuadrDefault = 0.0;
-
+	
 	// CAEN parameter read
 	for( unsigned int mod = 0; mod < set->GetNumberOfCAENModules(); mod++ ){
-
+		
 		fCaenOffset[mod].resize( set->GetNumberOfCAENChannels() );
 		fCaenGain[mod].resize( set->GetNumberOfCAENChannels() );
 		fCaenGainQuadr[mod].resize( set->GetNumberOfCAENChannels() );
 		fCaenThreshold[mod].resize( set->GetNumberOfCAENChannels() );
 		fCaenTime[mod].resize( set->GetNumberOfCAENChannels() );
 		fCaenType[mod].resize( set->GetNumberOfCAENChannels() );
-
+		
 		for( unsigned int chan = 0; chan < set->GetNumberOfCAENChannels(); chan++ ){
-
+			
 			fCaenOffset[mod][chan] = config->GetValue( Form( "caen_%d_%d.Offset", mod, chan ), fCaenOffsetDefault );
 			fCaenGain[mod][chan] = config->GetValue( Form( "caen_%d_%d.Gain", mod, chan ), fCaenGainDefault );
 			fCaenGainQuadr[mod][chan] = config->GetValue( Form( "caen_%d_%d.GainQuadr", mod, chan ), fCaenGainQuadrDefault );
 			fCaenThreshold[mod][chan] = config->GetValue( Form( "caen_%d_%d.Threshold", mod, chan ), 0 );
 			fCaenTime[mod][chan] = config->GetValue( Form( "caen_%d_%d.Time", mod,  chan ), 0.0 );
 			fCaenType[mod][chan] = config->GetValue( Form( "caen_%d_%d.Type", mod,  chan ), "Qlong" );
+			if( fCaenType[mod][chan] != "Qlong" &&
+			    fCaenType[mod][chan] != "Qshort" &&
+			    fCaenType[mod][chan] != "Qdiff" ) {
+				std::cerr << "Incorrect CAEN energy type, must be Qlong, Qshort or Qdiff. ";
+				std::cerr << "Defaulting to Qlong" << std::endl;
+				fCaenType[mod][chan] = "Qlong";
+			}
 
 		}
 		
 	}
+	
+	// Mesytec initialisation
+	fMesyOffset.resize( set->GetNumberOfMesytecModules() );
+	fMesyGain.resize( set->GetNumberOfMesytecModules() );
+	fMesyGainQuadr.resize( set->GetNumberOfMesytecModules() );
+	fMesyThreshold.resize( set->GetNumberOfMesytecModules() );
+	fMesyTime.resize( set->GetNumberOfMesytecModules() );
+	fMesyType.resize( set->GetNumberOfMesytecModules() );
 
+	fMesyOffsetDefault = 0.0;
+	fMesyGainDefault = 1.0;
+	fMesyGainQuadrDefault = 0.0;
+	
+	// Mesytec parameter read
+	for( unsigned int mod = 0; mod < set->GetNumberOfMesytecModules(); mod++ ){
+		
+		fMesyOffset[mod].resize( set->GetNumberOfMesytecChannels() );
+		fMesyGain[mod].resize( set->GetNumberOfMesytecChannels() );
+		fMesyGainQuadr[mod].resize( set->GetNumberOfMesytecChannels() );
+		fMesyThreshold[mod].resize( set->GetNumberOfMesytecChannels() );
+		fMesyTime[mod].resize( set->GetNumberOfMesytecChannels() );
+		fMesyType[mod].resize( set->GetNumberOfMesytecChannels() );
+
+		for( unsigned int chan = 0; chan < set->GetNumberOfMesytecChannels(); chan++ ){
+			
+			fMesyOffset[mod][chan] = config->GetValue( Form( "mesy_%d_%d.Offset", mod, chan ), fMesyOffsetDefault );
+			fMesyGain[mod][chan] = config->GetValue( Form( "mesy_%d_%d.Gain", mod, chan ), fMesyGainDefault );
+			fMesyGainQuadr[mod][chan] = config->GetValue( Form( "mesy_%d_%d.GainQuadr", mod, chan ), fMesyGainQuadrDefault );
+			fMesyThreshold[mod][chan] = config->GetValue( Form( "mesy_%d_%d.Threshold", mod, chan ), 0 );
+			fMesyTime[mod][chan] = config->GetValue( Form( "mesy_%d_%d.Time", mod,  chan ), 0.0 );
+			fMesyType[mod][chan] = config->GetValue( Form( "mesy_%d_%d.Type", mod,  chan ), "Qlong" );
+			if( fMesyType[mod][chan] != "Qlong" &&
+				fMesyType[mod][chan] != "Qshort" &&
+				fMesyType[mod][chan] != "Qdiff" ) {
+				std::cerr << "Incorrect Mesytec energy type, must be Qlong, Qshort or Qdiff. ";
+				std::cerr << "Defaulting to Qlong" << std::endl;
+				fMesyType[mod][chan] = "Qlong";
+			}
+
+		}
+		
+	}
+	
 	// Get Time-walk graphs
 	tw_graph.resize( set->GetNumberOfArrayModules()  );
 	twgraphfile.resize( set->GetNumberOfArrayModules()  );
@@ -527,6 +576,97 @@ std::string ISSCalibration::CaenType( unsigned int mod, unsigned int chan ){
 	return 0;
 	
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/// Calculates the energy on a particular Mesytec detector. Also adds a small random
+/// number to remove binning issues
+/// \param[in] mod The number of the Mesytec module
+/// \param[in] chan The channel number on the Mesytec module
+/// \param[in] raw The raw energy recorded on this detector
+/// \returns Calibrated energy (if parameters are set), the raw energy (if
+/// parameters are not set), or -1 (if the mod, asic, or channel are out of range)
+float ISSCalibration::MesytecEnergy( unsigned int mod, unsigned int chan, int raw ) {
+	
+	float energy, raw_rand;
+	
+	//std::cout << "mod=" << mod << "; chan=" << chan << std::endl;
+	
+	if( mod < set->GetNumberOfMesytecModules() &&
+	   chan < set->GetNumberOfMesytecChannels() ) {
+		
+		raw_rand = raw + 0.5 - fRand->Uniform();
+		
+		energy = 0;
+		energy =  fMesyGainQuadr[mod][chan] * raw_rand * raw_rand;
+		energy += fMesyGain[mod][chan] * raw_rand;
+		energy += fMesyOffset[mod][chan];
+		
+		// Check if we have defaults
+		if( TMath::Abs( fMesyGainQuadr[mod][chan] ) < 1e-6 &&
+		    TMath::Abs( fMesyGain[mod][chan] - 1.0 ) < 1e-6 &&
+		    TMath::Abs( fMesyOffset[mod][chan] ) < 1e-6 )
+			
+			return raw;
+		
+		else return energy;
+		
+	}
+	
+	return -1;
+	
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Getter for the Mesytec threshold
+/// \param[in] mod The number of the Mesytec module
+/// \param[in] chan The channel number of the detector
+unsigned int ISSCalibration::MesytecThreshold( unsigned int mod, unsigned int chan ) {
+	
+	if( mod < set->GetNumberOfMesytecModules() &&
+	   chan < set->GetNumberOfMesytecChannels() ) {
+		
+		return fMesyThreshold[mod][chan];
+		
+	}
+	
+	return -1;
+	
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Getter for the Mesytec time
+/// \param[in] mod The number of the Mesytec module
+/// \param[in] chan The channel number of the detector
+long double ISSCalibration::MesytecTime( unsigned int mod, unsigned int chan ){
+	
+	if( mod < set->GetNumberOfMesytecModules() &&
+	   chan < set->GetNumberOfMesytecChannels() ) {
+		
+		return fMesyTime[mod][chan];
+		
+	}
+	
+	return 0;
+	
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Getter for the Mesytec type = the type of
+/// \param[in] mod The number of the Mesytec module
+/// \param[in] chan The channel number of the detector
+std::string ISSCalibration::MesytecType( unsigned int mod, unsigned int chan ){
+	
+	if( mod < set->GetNumberOfMesytecModules() &&
+	   chan < set->GetNumberOfMesytecChannels() ) {
+		
+		return fMesyType[mod][chan];
+		
+	}
+	
+	return 0;
+	
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Prints the calibration to a specified output

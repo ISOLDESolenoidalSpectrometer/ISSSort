@@ -18,13 +18,20 @@
 #NumberOfArrayNstrips: 11
 
 
-#-------------#
-# CAEN things #
-#-------------#
-#NumberOfCAENModules: 2
+#------------------------#
+# CAEN things: Crate = 0 #
+#------------------------#
+#NumberOfCAENModules: 2 		# maximum 16
 #NumberOfCAENChannels: 16
 #CAEN_0.Model: 1725	# can be 1725 or 1730, maybe even 1720?
 #CAEN_1.Model: 1725	# I suppose we can also support others in future
+
+
+#---------------------------#
+# Mesytec things: Crate = 1 #
+#---------------------------#
+#NumberOfMesytecModules: 0 		# maximum 16
+#NumberOfMesytecChannels: 16
 
 
 #------------------------#
@@ -42,27 +49,35 @@
 #PulserThresholdArray: 1000
 #PulserModuleCAEN: 1
 #PulserChannelCAEN: 13
-#PulserCodeCAEN: 20
-#EBISModule: 1
-#EBISChannel: 14
-#EBISCode: 21
-#T1Module: 1
-#T1Channel: 15
-#T1Code: 22
-#SCModule: 1
-#SCChannel: 12
-#SCCode: 23
-#LaserModule: 1
-#LaserChannel: 11
-#LaserCode: 24
+#PulserCodeCAEN: 20			# cannot be changed, info only
+#PulserModuleMesytec: 0
+#PulserChannelMesytec: 15
+#PulserCodeMesytec: 25		# cannot be changed, info only
+#EBIS.Crate: 0				# 0 = CAEN VME crate, 1 = Mesytec VME crate
+#EBIS.Module: 1
+#EBIS.Channel: 14
+#EBIS.Code: 21 				# 21 from CAEN/Mesytec, 15 from array FPGA
+#T1.Crate: 0				# 0 = CAEN VME crate, 1 = Mesytec VME crate
+#T1.Module: 1
+#T1.Channel: 15
+#T1.Code: 22				# cannot be changed, info only
+#SC.Crate: 0				# 0 = CAEN VME crate, 1 = Mesytec VME crate
+#SC.Module: 1
+#SC.Channel: 12
+#SC.Code: 23				# cannot be changed, info only
+#Laser.Crate: 0				# 0 = CAEN VME crate, 1 = Mesytec VME crate
+#Laser.Module: 1
+#Laser.Channel: 11
+#Laser.Code: 24				# cannot be changed, info only
 
 
 #-------------#
 # Data things #
 #-------------#
-#DataBlockSize: 0x10000 # 64 kB for ISS/CAEN data or 128 kB (0x20000) for CAEN only data
-#ASICDataOnly: false	# normally we have a mix of data in the file
-#CAENDataOnly: false	# prior to June 2021 we need these switches
+#DataBlockSize: 0x10000 	# 64 kB for ISS/CAEN data or 128 kB (0x20000) for CAEN only data
+#ASICDataOnly: false		# normally we have a mix of data in the file
+#CAENDataOnly: false		# prior to June 2021 we need these switches
+#MesytecDataOnly: false		# useful for testing, keep it false for real data
 
 
 #---------------#
@@ -87,20 +102,28 @@
 #RecoilEnergyRestStop: 1	# Stop layer for integrating energy rest
 #RecoilEnergyTotalStart: 0	# Start layer for integrating energy total
 #RecoilEnergyTotalStop: 1	# Stop layer for integrating energy total
+#Recoil_0_0.Crate: 0	# R0-dE, sector 0, layer 0
 #Recoil_0_0.Module: 0	# R0-dE, sector 0, layer 0
 #Recoil_0_0.Channel: 0	# R0-dE, sector 0, layer 0
+#Recoil_0_1.Crate: 0	# R0-E, sector 0, layer 1
 #Recoil_0_1.Module: 0	# R0-E, sector 0, layer 1
 #Recoil_0_1.Channel: 1	# R0-E, sector 0, layer 1
+#Recoil_1_0.Crate: 0	# R1-dE, sector 1, layer 0
 #Recoil_1_0.Module: 0	# R1-dE, sector 1, layer 0
 #Recoil_1_0.Channel: 2	# R1-dE, sector 1, layer 0
+#Recoil_1_1.Crate: 0	# R1-E, sector 1, layer 1
 #Recoil_1_1.Module: 0	# R1-E, sector 1, layer 1
 #Recoil_1_1.Channel: 3	# R1-E, sector 1, layer 1
+#Recoil_2_0.Crate: 0	# R2-dE, sector 2, layer 0
 #Recoil_2_0.Module: 0	# R2-dE, sector 2, layer 0
 #Recoil_2_0.Channel: 4	# R2-dE, sector 2, layer 0
+#Recoil_2_1.Crate: 0	# R2-E, sector 2, layer 1
 #Recoil_2_1.Module: 0	# R2-E, sector 2, layer 1
 #Recoil_2_1.Channel: 5	# R2-E, sector 2, layer 1
+#Recoil_3_0.Crate: 0	# R3-dE, sector 3, layer 0
 #Recoil_3_0.Module: 0	# R3-dE, sector 3, layer 0
 #Recoil_3_0.Channel: 6	# R3-dE, sector 3, layer 0
+#Recoil_3_1.Crate: 0	# R3-E, sector 3, layer 1
 #Recoil_3_1.Module: 0	# R3-E, sector 3, layer 1
 #Recoil_3_1.Channel: 7	# R3-E, sector 3, layer 1
 
@@ -109,13 +132,17 @@
 # MWPC Detector #
 #---------------#
 #NumberOfMWPCAxes: 2	# x = 0 and y = 1
-#MWPC_0_0.Module: 1	# MWPC axis 0 TAC 0
+#MWPC_0_0.Crate: 0
+#MWPC_0_0.Module: 1		# MWPC axis 0 TAC 0
 #MWPC_0_0.Channel: 8	#
-#MWPC_0_1.Module: 1	# MWPC axis 0 TAC 1
+#MWPC_0_1.Crate: 0
+#MWPC_0_1.Module: 1		# MWPC axis 0 TAC 1
 #MWPC_0_1.Channel: 9	#
-#MWPC_1_0.Module: 1	# MWPC axis 1 TAC 0
+#MWPC_1_0.Crate: 0
+#MWPC_1_0.Module: 1		# MWPC axis 1 TAC 0
 #MWPC_1_0.Channel: 10	#
-#MWPC_1_1.Module: 1	# MWPC axis 1 TAC 1
+#MWPC_1_1.Crate: 0
+#MWPC_1_1.Module: 1		# MWPC axis 1 TAC 1
 #MWPC_1_1.Channel: 11	#
 
 
@@ -123,12 +150,16 @@
 # ELUM Detector #
 #---------------#
 #NumberOfELUMSectors: 4	# 4 quadrants for S1 ELUM with Jim's FlexPCB (might be 6 in the future)
+#ELUM_0.Crate: 0	# ELUM0, sector/quadrant 0 of the S1
 #ELUM_0.Module: 1	# ELUM0, sector/quadrant 0 of the S1
 #ELUM_0.Channel: 0	# ELUM0, sector/quadrant 0 of the S1
+#ELUM_1.Crate: 0	# ELUM1, sector/quadrant 1 of the S1
 #ELUM_1.Module: 1	# ELUM1, sector/quadrant 1 of the S1
 #ELUM_1.Channel: 1	# ELUM1, sector/quadrant 1 of the S1
+#ELUM_2.Crate: 0	# ELUM2, sector/quadrant 2 of the S1
 #ELUM_2.Module: 1	# ELUM2, sector/quadrant 2 of the S1
 #ELUM_2.Channel: 2	# ELUM2, sector/quadrant 2 of the S1
+#ELUM_3.Crate: 0	# ELUM3, sector/quadrant 3 of the S1
 #ELUM_3.Module: 1	# ELUM3, sector/quadrant 3 of the S1
 #ELUM_3.Channel: 3	# ELUM3, sector/quadrant 3 of the S1
 
@@ -137,9 +168,11 @@
 # ZeroDegree Detector #
 #---------------------#
 #NumberOfZDLayers: 2	# This should always be 2, because it's a silicon dE-E
-#ZD_0.Module: 1		# ZeroDegree dE
+#ZD_0.Crate: 0			# ZeroDegree dE
+#ZD_0.Module: 1			# ZeroDegree dE
 #ZD_0.Channel: 6		# ZeroDegree dE
-#ZD_1.Module: 1		# ZeroDegree E
+#ZD_1.Crate: 0			# ZeroDegree E
+#ZD_1.Module: 1			# ZeroDegree E
 #ZD_1.Channel: 7		# ZeroDegree E
 
 
@@ -147,7 +180,22 @@
 # ScintArray Detectors #
 #----------------------#
 #NumberOfScintArrayDetectors: 0	# This is default 0, but can be 33 or more!
-#ScintArray_0.Module: 2		# List of detectors
-#ScintArray_0.Channel: 0	# and their mapping
+#ScintArray_0.Crate: 0		# List of detectors
+#ScintArray_0.Module: 2		# and their mapping
+#ScintArray_0.Channel: 0	#
 
+
+#----------------#
+# LUME Detectors #
+#----------------#
+#NumberOfLUMEDetectors: 0	# This is default 0, but can be a few
+#LUME_0_be.Crate: 1			# List of detectors
+#LUME_0_be.Module: 2		# and their mapping
+#LUME_0_be.Channel: 0		# for each signal type
+#LUME_0_ne.Crate: 1			# 3 signals: be, ne, fe
+#LUME_0_ne.Module: 2		#
+#LUME_0_ne.Channel: 1		#
+#LUME_0_fe.Crate: 1			#
+#LUME_0_fe.Module: 2		#
+#LUME_0_fe.Channel: 2		#
 

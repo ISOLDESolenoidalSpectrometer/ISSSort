@@ -16,10 +16,10 @@ ISSHistogrammer::ISSHistogrammer( std::shared_ptr<ISSReaction> myreact, std::sha
 
 void ISSHistogrammer::MakeHists() {
 	
-	std::string hname, htitle;
-	std::string dirname;
+    std::string hname, htitle;
+    std::string dirname;
    
-	std::vector<double> zbins;
+    std::vector<double> zbins;
 	double d0 = react->GetArrayDistance();
 	double d;
 	

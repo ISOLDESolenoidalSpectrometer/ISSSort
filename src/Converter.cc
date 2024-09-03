@@ -15,6 +15,8 @@ ISSConverter::ISSConverter( std::shared_ptr<ISSSettings> myset ) {
 	ctr_asic_resume.resize( set->GetNumberOfArrayModules() );
 	ctr_caen_hit.resize( set->GetNumberOfCAENModules() );
 	ctr_caen_ext.resize( set->GetNumberOfCAENModules() );
+	ctr_mesy_hit.resize( set->GetNumberOfMesytecModules() );
+	ctr_mesy_ext.resize( set->GetNumberOfMesytecModules() );
 
 	// Start counters at zero
 	StartFile();
@@ -40,10 +42,17 @@ void ISSConverter::StartFile(){
 	}
 	
 	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
-				
+		
 		ctr_caen_hit[i] = 0;	// hits on each module
 		ctr_caen_ext[i] = 0;	// external timestamps
-
+		
+	}
+	
+	for( unsigned int i = 0; i < set->GetNumberOfMesytecModules(); ++i ) {
+		
+		ctr_mesy_hit[i] = 0;	// hits on each module
+		ctr_mesy_ext[i] = 0;	// external timestamps
+		
 	}
 	
 	return;
@@ -81,10 +90,12 @@ void ISSConverter::MakeTree() {
 
 	asic_data = std::make_shared<ISSAsicData>();
 	caen_data = std::make_shared<ISSCaenData>();
+	mesy_data = std::make_shared<ISSMesyData>();
 	info_data = std::make_shared<ISSInfoData>();
 
 	asic_data->ClearData();
 	caen_data->ClearData();
+	mesy_data->ClearData();
 	info_data->ClearData();
 	
 	return;
@@ -216,7 +227,7 @@ void ISSConverter::MakeHists() {
 	hcaen_qshort.resize( set->GetNumberOfCAENModules() );
 	hcaen_qdiff.resize( set->GetNumberOfCAENModules() );
 	hcaen_cal.resize( set->GetNumberOfCAENModules() );
-
+	
 	// Loop over CAEN modules
 	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
 		
@@ -229,7 +240,7 @@ void ISSConverter::MakeHists() {
 		if( !output_file->GetDirectory( dirname.data() ) )
 			output_file->mkdir( dirname.data() );
 		output_file->cd( dirname.data() );
-
+		
 		// Loop over channels of each CAEN module
 		for( unsigned int j = 0; j < set->GetNumberOfCAENChannels(); ++j ) {
 			
@@ -249,10 +260,10 @@ void ISSConverter::MakeHists() {
 			else {
 				
 				hcaen_qlong[i][j] = new TH1F( hname.data(), htitle.data(),
-										   65536, -0.5, 65535.5 );
-			
+											 65536, -0.5, 65535.5 );
+				
 				hcaen_qlong[i][j]->SetDirectory(
-						output_file->GetDirectory( dirname.data() ) );
+												output_file->GetDirectory( dirname.data() ) );
 				
 			}
 			
@@ -272,14 +283,14 @@ void ISSConverter::MakeHists() {
 			else {
 				
 				hcaen_qshort[i][j] = new TH1F( hname.data(), htitle.data(),
-										   32768, -0.5, 32767.5 );
-			
+											  32768, -0.5, 32767.5 );
+				
 				hcaen_qshort[i][j]->SetDirectory(
-						output_file->GetDirectory( dirname.data() ) );
+												 output_file->GetDirectory( dirname.data() ) );
 				
 			}
 			
-			// Uncalibrated - Qshort
+			// Uncalibrated - Qdiff
 			hname = "caen_" + std::to_string(i);
 			hname += "_" + std::to_string(j);
 			hname += "_qdiff";
@@ -295,10 +306,10 @@ void ISSConverter::MakeHists() {
 			else {
 				
 				hcaen_qdiff[i][j] = new TH1F( hname.data(), htitle.data(),
-										   65536, -0.5, 65535.5 );
-			
+											 65536, -0.5, 65535.5 );
+				
 				hcaen_qdiff[i][j]->SetDirectory(
-						output_file->GetDirectory( dirname.data() ) );
+												output_file->GetDirectory( dirname.data() ) );
 				
 			}
 			
@@ -319,15 +330,137 @@ void ISSConverter::MakeHists() {
 				
 				hcaen_cal[i][j] = new TH1F( hname.data(), htitle.data(),
 										   4000, -5, 39995 );
-			
+				
 				hcaen_cal[i][j]->SetDirectory(
-						output_file->GetDirectory( dirname.data() ) );
+											  output_file->GetDirectory( dirname.data() ) );
 				
 			}
-
+			
 			
 		}
-					
+		
+	}
+	
+	// Make directories
+	maindirname = "mesy_hists";
+	
+	// Resive vectors
+	hmesy_qlong.resize( set->GetNumberOfMesytecModules() );
+	hmesy_qshort.resize( set->GetNumberOfMesytecModules() );
+	hmesy_qdiff.resize( set->GetNumberOfMesytecModules() );
+	hmesy_cal.resize( set->GetNumberOfMesytecModules() );
+	
+	// Loop over CAEN modules
+	for( unsigned int i = 0; i < set->GetNumberOfMesytecModules(); ++i ) {
+		
+		hmesy_qlong[i].resize( set->GetNumberOfMesytecChannels() );
+		hmesy_qshort[i].resize( set->GetNumberOfMesytecChannels() );
+		hmesy_qdiff[i].resize( set->GetNumberOfMesytecChannels() );
+		hmesy_cal[i].resize( set->GetNumberOfMesytecChannels() );
+		dirname = maindirname + "/module_" + std::to_string(i);
+		
+		if( !output_file->GetDirectory( dirname.data() ) )
+			output_file->mkdir( dirname.data() );
+		output_file->cd( dirname.data() );
+		
+		// Loop over channels of each CAEN module
+		for( unsigned int j = 0; j < set->GetNumberOfMesytecChannels(); ++j ) {
+			
+			// Uncalibrated - Qlong
+			hname = "mesy_" + std::to_string(i);
+			hname += "_" + std::to_string(j);
+			hname += "_qlong";
+			
+			htitle = "Raw Mesytec spectra for module " + std::to_string(i);
+			htitle += ", channel " + std::to_string(j);
+			
+			htitle += ";Qlong;Counts";
+			
+			if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+				hmesy_qlong[i][j] = (TH1F*)output_file->Get( hname.data() );
+			
+			else {
+				
+				hmesy_qlong[i][j] = new TH1F( hname.data(), htitle.data(),
+											 65536, -0.5, 65535.5 );
+				
+				hmesy_qlong[i][j]->SetDirectory(
+												output_file->GetDirectory( dirname.data() ) );
+				
+			}
+			
+			// Uncalibrated - Qshort
+			hname = "mesy_" + std::to_string(i);
+			hname += "_" + std::to_string(j);
+			hname += "_qshort";
+			
+			htitle = "Raw Mesytec spectra for module " + std::to_string(i);
+			htitle += ", channel " + std::to_string(j);
+			
+			htitle += ";Qshort;Counts";
+			
+			if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+				hmesy_qshort[i][j] = (TH1F*)output_file->Get( hname.data() );
+			
+			else {
+				
+				hmesy_qshort[i][j] = new TH1F( hname.data(), htitle.data(),
+											  32768, -0.5, 32767.5 );
+				
+				hmesy_qshort[i][j]->SetDirectory(
+												output_file->GetDirectory( dirname.data() ) );
+				
+			}
+			
+			// Uncalibrated - Qdiff
+			hname = "mesy_" + std::to_string(i);
+			hname += "_" + std::to_string(j);
+			hname += "_qdiff";
+			
+			htitle = "Raw Mesytec spectra for module " + std::to_string(i);
+			htitle += ", channel " + std::to_string(j);
+			
+			htitle += ";Qdiff;Counts";
+			
+			if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+				hmesy_qdiff[i][j] = (TH1F*)output_file->Get( hname.data() );
+			
+			else {
+				
+				hmesy_qdiff[i][j] = new TH1F( hname.data(), htitle.data(),
+											 65536, -0.5, 65535.5 );
+				
+				hmesy_qdiff[i][j]->SetDirectory(
+												output_file->GetDirectory( dirname.data() ) );
+				
+			}
+			
+			// Calibrated
+			hname = "mesy_" + std::to_string(i);
+			hname += "_" + std::to_string(j);
+			hname += "_cal";
+			
+			htitle = "Calibrated Mesytec spectra for module " + std::to_string(i);
+			htitle += ", channel " + std::to_string(j);
+			
+			htitle += ";Energy (keV);Counts per 10 keV";
+			
+			if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+				hmesy_cal[i][j] = (TH1F*)output_file->Get( hname.data() );
+			
+			else {
+				
+				hmesy_cal[i][j] = new TH1F( hname.data(), htitle.data(),
+										   4000, -5, 39995 );
+				
+				hmesy_cal[i][j]->SetDirectory(
+											  output_file->GetDirectory( dirname.data() ) );
+				
+			}
+			
+			
+		}
+		
 	}
 	
 	// Make directories
@@ -350,7 +483,9 @@ void ISSConverter::MakeHists() {
 	hasic_resume.resize( set->GetNumberOfArrayModules() );
 	hcaen_hit.resize( set->GetNumberOfCAENModules() );
 	hcaen_ext.resize( set->GetNumberOfCAENModules() );
-	
+	hmesy_hit.resize( set->GetNumberOfMesytecModules() );
+	hmesy_ext.resize( set->GetNumberOfMesytecModules() );
+
 	// Loop over ISS modules
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 		
@@ -446,33 +581,67 @@ void ISSConverter::MakeHists() {
 		
 		hname = "hcaen_hit" + std::to_string(i);
 		htitle = "Profile of ts versus hit_id in CAEN module " + std::to_string(i);
-
+		
 		if( output_file->GetListOfKeys()->Contains( hname.data() ) )
 			hcaen_hit[i] = (TProfile*)output_file->Get( hname.data() );
-
+		
 		else {
-
+			
 			hcaen_hit[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 1080000. );
 			hcaen_hit[i]->SetDirectory(
-					output_file->GetDirectory( dirname.data() ) );
-
+									   output_file->GetDirectory( dirname.data() ) );
+			
 		}
-
-	
+		
+		
 		hname = "hcaen_ext" + std::to_string(i);
 		htitle = "Profile of external trigger ts versus hit_id in CAEN module " + std::to_string(i);
-
+		
 		if( output_file->GetListOfKeys()->Contains( hname.data() ) )
 			hcaen_ext[i] = (TProfile*)output_file->Get( hname.data() );
-
+		
 		else {
-
+			
 			hcaen_ext[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 108000. );
 			hcaen_ext[i]->SetDirectory(
-					output_file->GetDirectory( dirname.data() ) );
-
+									   output_file->GetDirectory( dirname.data() ) );
+			
 		}
-
+		
+	}
+	
+	// Loop over Mesytec modules
+	for( unsigned int i = 0; i < set->GetNumberOfMesytecModules(); ++i ) {
+		
+		hname = "hmesy_hit" + std::to_string(i);
+		htitle = "Profile of ts versus hit_id in Mesytec module " + std::to_string(i);
+		
+		if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+			hmesy_hit[i] = (TProfile*)output_file->Get( hname.data() );
+		
+		else {
+			
+			hmesy_hit[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 1080000. );
+			hmesy_hit[i]->SetDirectory(
+									   output_file->GetDirectory( dirname.data() ) );
+			
+		}
+		
+		
+		hname = "hmesy_ext" + std::to_string(i);
+		htitle = "Profile of external trigger ts versus hit_id in Mesytec module " + std::to_string(i);
+		
+		if( output_file->GetListOfKeys()->Contains( hname.data() ) )
+			hmesy_ext[i] = (TProfile*)output_file->Get( hname.data() );
+		
+		else {
+			
+			hmesy_ext[i] = new TProfile( hname.data(), htitle.data(), 10800, 0., 108000. );
+			hmesy_ext[i]->SetDirectory(
+									   output_file->GetDirectory( dirname.data() ) );
+			
+		}
+		
 	}
 	
 	return;
@@ -497,9 +666,15 @@ void ISSConverter::ResetHists() {
 	
 	for( unsigned int i = 0; i < hcaen_hit.size(); ++i )
 		hcaen_hit[i]->Reset("ICESM");
-
+	
 	for( unsigned int i = 0; i < hcaen_ext.size(); ++i )
 		hcaen_ext[i]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hmesy_hit.size(); ++i )
+		hmesy_hit[i]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hmesy_ext.size(); ++i )
+		hmesy_ext[i]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < asic_pulser_energy.size(); ++i )
 		for( unsigned int j = 0; j < asic_pulser_energy[i].size(); ++j )
@@ -528,6 +703,22 @@ void ISSConverter::ResetHists() {
 	for( unsigned int i = 0; i < hcaen_cal.size(); ++i )
 		for( unsigned int j = 0; j < hcaen_cal[i].size(); ++j )
 			hcaen_cal[i][j]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hmesy_qlong.size(); ++i )
+		for( unsigned int j = 0; j < hmesy_qlong[i].size(); ++j )
+			hmesy_qlong[i][j]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hmesy_qshort.size(); ++i )
+		for( unsigned int j = 0; j < hmesy_qshort[i].size(); ++j )
+			hmesy_qshort[i][j]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hmesy_qdiff.size(); ++i )
+		for( unsigned int j = 0; j < hmesy_qdiff[i].size(); ++j )
+			hmesy_qdiff[i][j]->Reset("ICESM");
+	
+	for( unsigned int i = 0; i < hmesy_cal.size(); ++i )
+		for( unsigned int j = 0; j < hmesy_cal[i].size(); ++j )
+			hmesy_cal[i][j]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < hpside.size(); ++i )
 		hpside[i]->Reset("ICESM");
@@ -565,7 +756,13 @@ void ISSConverter::ProcessBlockHeader( unsigned long nblock ){
 	flag_caen_data2 = false;
 	flag_caen_data3 = false;
 	flag_caen_trace = false;
-
+	
+	// Flags for Mesytec data items
+	flag_mesy_data0 = false;
+	flag_mesy_data1 = false;
+	flag_mesy_data3 = false;
+	flag_mesy_trace = false;
+	
 	// Flag when we find the end of the data
 	flag_terminator = false;
 
@@ -692,10 +889,27 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 				
 			}
 			
+			// Otherwise it's from the VME crates
 			else {
 				
-				ProcessCAENData();
-				FinishCAENData();
+				// Check channel ID and VME crate ID
+				GetVMEChanID();
+				
+				// We've got something from the CAEN DAQ
+				if( my_vme_id == 0 ) {
+					
+					ProcessCAENData();
+					FinishCAENData();
+
+				}
+				
+				// or we've got something from the Mesytec DAQ
+				else if( my_vme_id == 1 ) {
+					
+					ProcessMesytecData();
+					FinishMesytecData();
+					
+				}
 
 			}
 
@@ -712,9 +926,10 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 		else if( my_type == 0x1 ){
 			
 			// Get channel ID
-			GetCAENChanID();
-			caen_data->SetModule( my_mod_id );
-			caen_data->SetChannel( my_ch_id );
+			GetVMEChanID();
+			
+			// make a vector to store the samples
+			std::vector<unsigned short> samples;
 
 			// contains the sample length
 			nsamples = word_0 & 0xFFFF; // 16 bits from 0
@@ -725,7 +940,7 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 			caen_data->SetTimeStamp( my_tm_stp );
 			
 			// Get the samples from the trace
-			for( UInt_t j = 0; j < nsamples/4; j++ ){
+			for( unsigned int j = 0; j < nsamples/4; j++ ){
 				
 				// get next word
 				ULong64_t sample_packet = GetWord(i++);
@@ -737,10 +952,10 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 				if( block_test != 0x5E5E5E5E ){
 				
 					// Pairs need to be swapped
-					caen_data->AddSample( ( sample_packet >> 32 ) & 0x0000000000003FFF );
-					caen_data->AddSample( ( sample_packet >> 48 ) & 0x0000000000003FFF );
-					caen_data->AddSample( sample_packet & 0x0000000000003FFF );
-					caen_data->AddSample( ( sample_packet >> 16 ) & 0x0000000000003FFF );
+					samples.push_back( ( sample_packet >> 32 ) & 0x0000000000003FFF );
+					samples.push_back( ( sample_packet >> 48 ) & 0x0000000000003FFF );
+					samples.push_back( sample_packet & 0x0000000000003FFF );
+					samples.push_back( ( sample_packet >> 16 ) & 0x0000000000003FFF );
 					
 				}
 				
@@ -754,12 +969,35 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 					//break;
 					
 				}
+				
+			}
+			
+			// Add to the CAEN packet
+			if( my_vme_id == 0 ){
+				
+				caen_data->SetModule( my_mod_id );
+				caen_data->SetChannel( my_ch_id );
+				for( unsigned int k = 0; k < samples.size(); k++ )
+					caen_data->AddSample( samples.at(k) );
+				
+				flag_caen_trace = true;
+				FinishCAENData();
 
 			}
 			
-			flag_caen_trace = true;
-			FinishCAENData();
+			// Add to the Mesytec packet
+			else if( my_vme_id == 1 ){
+				
+				mesy_data->SetModule( my_mod_id );
+				mesy_data->SetChannel( my_ch_id );
+				for( unsigned int k = 0; k < samples.size(); k++ )
+					mesy_data->AddSample( samples.at(k) );
 
+				flag_mesy_trace = true;
+				FinishMesytecData();
+
+			}
+				
 		}
 		
 		else {
@@ -897,35 +1135,35 @@ void ISSConverter::ProcessASICData(){
 	
 }
 
-void ISSConverter::GetCAENChanID(){
+void ISSConverter::GetVMEChanID(){
 	
 	// ADCchannelIdent are bits 28:16
-	// mod_id= bit 12:8, data_id= bit 7:6, ch_id= bit 5:0
+	// vme_id= bit 12, mod_id= bit 11:8, data_id= bit 7:6, ch_id= bit 5:0
 	// data_id: Qlong = 0; Qshort = 1; baseline = 2; fine timing = 3
 	unsigned int ADCchanIdent = (word_0 >> 16) & 0x1FFF; // 13 bits from 16
-	my_mod_id = (ADCchanIdent >> 8) & 0x001F; // 5 bits from 8
+	my_vme_id = (ADCchanIdent >> 12) & 0x0001; // 1 bits from 12
+	my_mod_id = (ADCchanIdent >> 8) & 0x000F; // 4 bits from 8
 	my_data_id = (ADCchanIdent >> 6 ) & 0x0003; // 2 bits from 6
 	my_ch_id = ADCchanIdent & 0x003F; // 6 bits from 0
-
+	
 	return;
 	
 }
 
 void ISSConverter::ProcessCAENData(){
-
+	
 	// CAEN data format
 	my_adc_data = word_0 & 0xFFFF; // 16 bits from 0
-	GetCAENChanID();
 	
 	// Check things make sense
 	if( my_mod_id >= set->GetNumberOfCAENModules() ||
-		my_ch_id >= set->GetNumberOfCAENChannels() ) {
+	   my_ch_id >= set->GetNumberOfCAENChannels() ) {
 		
 		std::cout << "Bad CAEN event with mod_id=" << (int) my_mod_id;
 		std::cout << " ch_id=" << (int) my_ch_id;
 		std::cout << " data_id=" << (int) my_data_id << std::endl;
 		return;
-
+		
 	}
 	
 	// reconstruct time stamp= MSB+LSB
@@ -942,9 +1180,10 @@ void ISSConverter::ProcessCAENData(){
 		
 		// Make a CaenData item, need to add Qlong, Qshort and traces
 		caen_data->SetTimeStamp( my_tm_stp );
+		caen_data->SetCrate(0); // CAEN crate is always 0
 		caen_data->SetModule( my_mod_id );
 		caen_data->SetChannel( my_ch_id );
-
+		
 	}
 	
 	// If we already have all the data items, then the next event has
@@ -958,14 +1197,15 @@ void ISSConverter::ProcessCAENData(){
 		
 		// Finish up the previous event
 		FinishCAENData();
-
+		
 		// Then set the info correctly for this event
 		caen_data->SetTimeStamp( my_tm_stp );
+		caen_data->SetCrate(0); // CAEN crate is always 0
 		caen_data->SetModule( my_mod_id );
 		caen_data->SetChannel( my_ch_id );
 		
 	}
-
+	
 	// Qlong
 	if( my_data_id == 0 ) {
 		
@@ -974,7 +1214,7 @@ void ISSConverter::ProcessCAENData(){
 		if( my_adc_data == 0xFFFF ) caen_data->SetQlong( 0 );
 		else caen_data->SetQlong( my_adc_data );
 		flag_caen_data0 = true;
-
+		
 	}
 	
 	// Qshort
@@ -985,9 +1225,9 @@ void ISSConverter::ProcessCAENData(){
 		if( my_adc_data == 0x7FFF ) caen_data->SetQshort( 0 );
 		else caen_data->SetQshort( my_adc_data );
 		flag_caen_data1 = true;
-
+		
 	}
-
+	
 	// Extra word items
 	// Do these have to be defined in the settings file?
 	//  set->GetCAENExtras( my_mod_id, my_ch_id ) == 0 or 1
@@ -1019,7 +1259,7 @@ void ISSConverter::ProcessCAENData(){
 	//	}
 	//
 	//}
-
+	
 	
 	// But MIDAS says my_data_id == 2 or 3
 	//  2: basline
@@ -1031,10 +1271,10 @@ void ISSConverter::ProcessCAENData(){
 		
 		my_adc_data = my_adc_data & 0xFFFF; // 16 bits from 0
 		flag_caen_data2 = true;
-
+		
 		caen_data->SetFineTime( 0.0 );
 		caen_data->SetBaseline( (float)my_adc_data / 4. );
-
+		
 	}
 	
 	// Fine timing
@@ -1042,65 +1282,61 @@ void ISSConverter::ProcessCAENData(){
 		
 		my_adc_data = my_adc_data & 0x03FF; // 10 bits from 0
 		flag_caen_data3 = true;
-
+		
 		// CAEN timestamps are 4 ns precision for V1725 and 2 ns for V1730
 		if( set->GetCAENModel( my_mod_id ) == 1730 )
 			caen_data->SetFineTime( (float)my_adc_data * 2. / 1000. );
 		else if( set->GetCAENModel( my_mod_id ) == 1725 )
 			caen_data->SetFineTime( (float)my_adc_data * 4. / 1000. );
 		caen_data->SetBaseline( 0.0 );
-
+		
 	}
 	
 	return;
-
+	
 }
 
 void ISSConverter::FinishCAENData(){
 	
 	// Got all items
 	if( ( flag_caen_data0 && flag_caen_data1 && ( flag_caen_data2 || flag_caen_data3 ) ) || flag_caen_trace ){
-
+		
 		// Fill histograms
 		hcaen_hit[caen_data->GetModule()]->Fill( ctr_caen_hit[caen_data->GetModule()], caen_data->GetTime(), 1 );
-
+		
 		// Difference between Qlong and Qshort
 		int qdiff = (int)caen_data->GetQlong() - (int)caen_data->GetQshort();
 		hcaen_qdiff[caen_data->GetModule()][caen_data->GetChannel()]->Fill( qdiff );
-
+		
 		// Choose the energy we want to use
 		unsigned short adc_value = 0;
 		std::string entype = cal->CaenType( caen_data->GetModule(), caen_data->GetChannel() );
 		if( entype == "Qlong" ) adc_value = caen_data->GetQlong();
 		else if( entype == "Qshort" ) adc_value = caen_data->GetQshort();
 		else if( entype == "Qdiff" ) adc_value = caen_data->GetQdiff();
-		else {
-			std::cerr << "Incorrect CAEN energy type must be Qlong, Qshort or Qdiff" << std::endl;
-			adc_value = caen_data->GetQlong();
-		}
 		my_energy = cal->CaenEnergy( caen_data->GetModule(), caen_data->GetChannel(), adc_value );
 		caen_data->SetEnergy( my_energy );
 		hcaen_cal[caen_data->GetModule()][caen_data->GetChannel()]->Fill( my_energy );
-
+		
 		// Check if it's over threshold
 		if( adc_value > cal->CaenThreshold( caen_data->GetModule(), caen_data->GetChannel() ) )
 			caen_data->SetThreshold( true );
 		else caen_data->SetThreshold( false );
-
-
+		
+		
 		// Check if this is actually just a timestamp
 		flag_caen_info = false;
 		if( caen_data->GetModule() == set->GetCAENPulserModule() &&
-		    caen_data->GetChannel() == set->GetCAENPulserChannel() ){
+		   caen_data->GetChannel() == set->GetCAENPulserChannel() ){
 			
 			flag_caen_info = true;
 			//my_info_code = set->GetCAENPulserCode();
 			my_info_code = 20; // CAEN pulser is always 20 (defined here)
-
+			
 		}
 		
 		else if( caen_data->GetModule() == set->GetEBISModule() &&
-		    caen_data->GetChannel() == set->GetEBISChannel() ){
+				caen_data->GetChannel() == set->GetEBISChannel() ){
 			
 			flag_caen_info = true;
 			//my_info_code = set->GetEBISCode();
@@ -1109,36 +1345,36 @@ void ISSConverter::FinishCAENData(){
 		}
 		
 		else if( caen_data->GetModule() == set->GetT1Module() &&
-		    caen_data->GetChannel() == set->GetT1Channel() ){
+				caen_data->GetChannel() == set->GetT1Channel() ){
 			
 			flag_caen_info = true;
 			//my_info_code = set->GetT1Code();
 			my_info_code = 22; // CAEN T1 is always 22 (defined here)
 			
 		}
-
+		
 		else if( caen_data->GetModule() == set->GetSCModule() &&
-		    caen_data->GetChannel() == set->GetSCChannel() ){
+				caen_data->GetChannel() == set->GetSCChannel() ){
 			
 			flag_caen_info = true;
 			my_info_code = 23; // CAEN SC is always 23 (defined here)
 			
 		}
-
+		
 		else if( caen_data->GetModule() == set->GetLaserModule() &&
-		    caen_data->GetChannel() == set->GetLaserChannel() ){
+				caen_data->GetChannel() == set->GetLaserChannel() ){
 			
 			flag_caen_info = true;
 			my_info_code = 24; // CAEN Laser status is always 24 (defined here)
 			
 		}
-
+		
 		// If this is a timestamp, fill an info event
 		if( flag_caen_info ) {
-				
+			
 			// Check it's over threshold and not just noise
 			if( caen_data->IsOverThreshold() ) {
-			
+				
 				// Add the time offset to this channel
 				info_data->SetTimeStamp( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
 				info_data->SetModule( caen_data->GetModule() + set->GetNumberOfArrayModules() );
@@ -1148,38 +1384,38 @@ void ISSConverter::FinishCAENData(){
 				data_packet->ClearData();
 				
 			}
-
+			
 			// Fill histograms for external trigger
 			if( my_info_code == 20 ) {
 				
 				hcaen_ext[caen_data->GetModule()]->Fill( ctr_caen_ext[caen_data->GetModule()], caen_data->GetTime(), 1 );
-
+				
 				// Count external trigger event
 				ctr_caen_ext[caen_data->GetModule()]++;
-					
+				
 			}
-
+			
 		}
-
+		
 		// Otherwise it is real data, so fill a caen event
 		else {
-	
+			
 			// Set this data and fill event to tree
 			// Also add the time offset when we do this
 			caen_data->SetTimeStamp( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
 			data_packet->SetData( caen_data );
 			if( !flag_source ) output_tree->Fill();
 			data_packet->ClearData();
-
+			
 			//std::cout << "Complete CAEN event" << std::endl;
 			//std::cout << "Trace length = " << caen_data->GetTraceLength() << std::endl;
-
+			
 		}
-
+		
 	}
 	
 	// missing something
-	else if( (long long)my_tm_stp != (long long)caen_data->GetTime() ) {
+	else if( (long long)my_tm_stp != (long long)caen_data->GetTimeStamp() ) {
 		
 		std::cout << "Missing something in CAEN data and new event occured" << std::endl;
 		std::cout << " Qlong       = " << flag_caen_data0 << std::endl;
@@ -1187,12 +1423,12 @@ void ISSConverter::FinishCAENData(){
 		std::cout << " baseline    = " << flag_caen_data2 << std::endl;
 		std::cout << " fine timing = " << flag_caen_data3 << std::endl;
 		std::cout << " trace data  = " << flag_caen_trace << std::endl;
-
+		
 	}
-
+	
 	// This is normal, just not finished yet
 	else return;
-
+	
 	// Count the hit, even if it's bad
 	ctr_caen_hit[caen_data->GetModule()]++;
 	
@@ -1206,8 +1442,168 @@ void ISSConverter::FinishCAENData(){
 	caen_data->ClearData();
 	
 	return;
-
+	
 }
+
+void ISSConverter::ProcessMesytecData(){
+	
+	// Mesytec data format
+	my_adc_data = word_0 & 0xFFFF; // 16 bits from 0
+	
+	// Check things make sense
+	if( my_mod_id >= set->GetNumberOfMesytecModules() ||
+		my_ch_id >= set->GetNumberOfMesytecChannels() ) {
+		
+		std::cout << "Bad Mesytec event with mod_id=" << (int) my_mod_id;
+		std::cout << " ch_id=" << (int) my_ch_id;
+		std::cout << " data_id=" << (int) my_data_id << std::endl;
+		return;
+		
+	}
+	
+	// reconstruct time stamp= MSB+LSB
+	my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  // 28 bits from 0
+	my_tm_stp = ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
+	
+	// Mesytec timestamps are 4 ns precision? TBD
+	my_tm_stp = my_tm_stp*4;
+	
+	// First of the data items
+	if( !flag_mesy_data0 && !flag_mesy_data1 && !flag_mesy_data2 && !flag_mesy_data3 ){
+		
+		// Make a MesyData item, need to add Qlong and traces
+		mesy_data->SetTimeStamp( my_tm_stp );
+		mesy_data->SetCrate(1); // Mesytec crate is always 1
+		mesy_data->SetModule( my_mod_id );
+		mesy_data->SetChannel( my_ch_id );
+		
+	}
+	
+	// If we already have all the data items, then the next event has
+	// already occured before we found traces. This means that there
+	// is not trace data. So set the flag to be true and finish the
+	// event with an empty trace.
+	else if( flag_mesy_data0 && flag_mesy_data1 && flag_mesy_data3 ){
+		
+		// Fake trace flag, but with an empty trace
+		flag_mesy_trace = true;
+		
+		// Finish up the previous event
+		FinishMesytecData();
+		
+		// Then set the info correctly for this event
+		mesy_data->SetTimeStamp( my_tm_stp );
+		mesy_data->SetCrate(1); // Mesytec crate is always 1
+		mesy_data->SetModule( my_mod_id );
+		mesy_data->SetChannel( my_ch_id );
+		
+	}
+	
+	// Qlong
+	if( my_data_id == 0 ) {
+		
+		// Fill histograms
+		hmesy_qlong[my_mod_id][my_ch_id]->Fill( my_adc_data );
+		if( my_adc_data == 0xFFFF ) mesy_data->SetQlong( 0 );
+		else mesy_data->SetQlong( my_adc_data );
+		flag_mesy_data0 = true;
+		
+	}
+	
+	// Qshort
+	if( my_data_id == 1 ) {
+		
+		// Fill histograms
+		my_adc_data = my_adc_data & 0x7FFF; // 15 bits from 0
+		hmesy_qshort[my_mod_id][my_ch_id]->Fill( my_adc_data );
+		if( my_adc_data == 0x7FFF ) mesy_data->SetQshort( 0 );
+		else mesy_data->SetQshort( my_adc_data );
+		flag_mesy_data1 = true;
+		
+	}
+	
+	// Fine timing
+	if( my_data_id == 3 ) {
+		
+		my_adc_data = my_adc_data & 0x03FF; // 10 bits from 0
+		flag_mesy_data3 = true;
+		
+		// Mesy timestamps are 10 ns precision? TBD
+		mesy_data->SetFineTime( (float)my_adc_data * 4. / 1000. );
+		
+	}
+	
+	return;
+	
+}
+
+void ISSConverter::FinishMesytecData(){
+	
+	// Got all items
+	if( ( flag_mesy_data0 && flag_mesy_data1 && flag_mesy_data3 ) || flag_mesy_trace ){
+		
+		// Fill histograms
+		hmesy_hit[mesy_data->GetModule()]->Fill( ctr_mesy_hit[mesy_data->GetModule()], mesy_data->GetTime(), 1 );
+
+		// Difference between Qlong and Qshort
+		int qdiff = (int)mesy_data->GetQlong() - (int)mesy_data->GetQshort();
+		hmesy_qdiff[mesy_data->GetModule()][mesy_data->GetChannel()]->Fill( qdiff );
+		
+		// Choose the energy we want to use
+		unsigned short adc_value = 0;
+		std::string entype = cal->MesytecType( mesy_data->GetModule(), mesy_data->GetChannel() );
+		if( entype == "Qlong" ) adc_value = mesy_data->GetQlong();
+		else if( entype == "Qshort" ) adc_value = mesy_data->GetQshort();
+		else if( entype == "Qdiff" ) adc_value = mesy_data->GetQdiff();
+		my_energy = cal->MesytecEnergy( mesy_data->GetModule(), mesy_data->GetChannel(), adc_value );
+		mesy_data->SetEnergy( my_energy );
+		hmesy_cal[mesy_data->GetModule()][mesy_data->GetChannel()]->Fill( my_energy );
+		
+		// Check if it's over threshold
+		if( adc_value > cal->MesytecThreshold( mesy_data->GetModule(), mesy_data->GetChannel() ) )
+			mesy_data->SetThreshold( true );
+		else mesy_data->SetThreshold( false );
+		
+		
+		// Set this data and fill event to tree
+		// Also add the time offset when we do this
+		mesy_data->SetTimeStamp( mesy_data->GetTime() + cal->MesytecTime( mesy_data->GetModule(), mesy_data->GetChannel() ) );
+		data_packet->SetData( mesy_data );
+		if( !flag_source ) output_tree->Fill();
+		data_packet->ClearData();
+		
+	}
+	
+	// missing something
+	else if( (long long)my_tm_stp != (long long)mesy_data->GetTimeStamp() ) {
+		
+		std::cout << "Missing something in Mesytec data and new event occured" << std::endl;
+		std::cout << " Qlong       = " << flag_mesy_data0 << std::endl;
+		std::cout << " Qshort      = " << flag_mesy_data1 << std::endl;
+		std::cout << " fine timing = " << flag_mesy_data3 << std::endl;
+		std::cout << " trace data  = " << flag_mesy_trace << std::endl;
+		
+	}
+	
+	// This is normal, just not finished yet
+	else return;
+	
+	// Count the hit, even if it's bad
+	ctr_mesy_hit[mesy_data->GetModule()]++;
+	
+	// Assuming it did finish, in a good way or bad, clean up.
+	flag_mesy_data0 = false;
+	flag_mesy_data1 = false;
+	flag_mesy_data3 = false;
+	flag_mesy_trace = false;
+	info_data->ClearData();
+	mesy_data->ClearData();
+	
+	return;
+	
+}
+
+
 
 void ISSConverter::ProcessInfoData(){
 
@@ -1225,11 +1621,11 @@ void ISSConverter::ProcessInfoData(){
 
 	}
 	
-	// MSB of timestamp in sync pulse or CAEN extended time stamp
+	// MSB of timestamp in sync pulse or VME extended time stamp
 	if( my_info_code == set->GetSyncCode() ) {
 		
-		// We don't know yet if it's from CAEN or ISS
-		// In CAEN this would be the extended timestamp
+		// We don't know yet if it's from VME or ISS
+		// In VME this would be the extended timestamp
 		// In ISS it is the Sync100 pulses
 		my_tm_stp_msb = my_info_field & 0x000FFFFF;
 		my_tm_stp = ( my_tm_stp_hsb << 48 ) | ( my_tm_stp_msb << 28 ) | ( my_tm_stp_lsb & 0x0FFFFFFF );

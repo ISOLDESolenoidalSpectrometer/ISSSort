@@ -22,7 +22,9 @@
 #pragma link C++ class ISSLumeEvt+;
 #pragma link C++ class ISSDataPackets+;
 #pragma link C++ class ISSAsicData+;
+#pragma link C++ class ISSVmeData+;
 #pragma link C++ class ISSCaenData+;
+#pragma link C++ class ISSMesyData+;
 #pragma link C++ class ISSInfoData+;
 #pragma link C++ class ISSReaction+;
 #pragma link C++ class ISSParticle+;

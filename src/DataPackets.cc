@@ -1,29 +1,26 @@
 #include "DataPackets.hh"
 
 ClassImp(ISSAsicData)
+ClassImp(ISSVmeData)
 ClassImp(ISSCaenData)
+ClassImp(ISSMesyData)
 ClassImp(ISSInfoData)
 ClassImp(ISSDataPackets)
 
 ISSAsicData::ISSAsicData(){}
 ISSAsicData::~ISSAsicData(){}
-ISSAsicData::ISSAsicData( unsigned long long t, unsigned short adc, unsigned char m,
-					unsigned char a, unsigned char c, bool h, bool th, float e, double w ) :
-					timestamp(t), adc_value(adc), mod(m), asic(a), ch(c), hit_bit(h), thres(th), energy(e), walk(w) {}
+
+ISSVmeData::ISSVmeData(){}
+ISSVmeData::~ISSVmeData(){}
 
 ISSCaenData::ISSCaenData(){}
 ISSCaenData::~ISSCaenData(){}
-ISSCaenData::ISSCaenData( unsigned long long t, float f, float b,
-				    std::vector<unsigned short> tr,
-					unsigned short ql, unsigned short qs,
-					unsigned char m, unsigned char c,
-				    bool th ) :
-					timestamp(t), finetime(f), baseline(b), trace(tr), Qlong(ql), Qshort(qs), mod(m), ch(c), thres(th) {}
+
+ISSMesyData::ISSMesyData(){}
+ISSMesyData::~ISSMesyData(){}
 
 ISSInfoData::ISSInfoData(){}
 ISSInfoData::~ISSInfoData(){}
-ISSInfoData::ISSInfoData( unsigned long long t, unsigned char c, unsigned char m ) :
-					timestamp(t), code(c), mod(m) {}
 
 
 void ISSDataPackets::SetData( std::shared_ptr<ISSAsicData> data ){
@@ -59,20 +56,43 @@ void ISSDataPackets::SetData( std::shared_ptr<ISSCaenData> data ){
 	
 	fill_data.SetTimeStamp( data->GetTimeStamp() );
 	fill_data.SetFineTime( data->GetFineTime() );
+	fill_data.SetBaseline( data->GetBaseline() );
 	fill_data.SetTrace( data->GetTrace() );
 	fill_data.SetQlong( data->GetQlong() );
 	fill_data.SetQshort( data->GetQshort() );
+	fill_data.SetCrate( data->GetCrate() );
 	fill_data.SetModule( data->GetModule() );
 	fill_data.SetChannel( data->GetChannel() );
 	fill_data.SetEnergy( data->GetEnergy() );
 	fill_data.SetThreshold( data->IsOverThreshold() );
 	
-	//std::cout << fill_data.GetTimeStamp() << "\t" << fill_data.GetFineTime() << std::endl;
-
 	caen_packets.push_back( fill_data );
+	
+}
 
-	//std::cout << caen_packets[0].GetTimeStamp() << "\t" << caen_packets[0].GetFineTime() << std::endl;
-
+void ISSDataPackets::SetData( std::shared_ptr<ISSMesyData> data ){
+	
+	// Reset the vector to size = 0
+	// We only want to have one element per Tree entry
+	ClearData();
+	
+	// Make a copy of the input data and push it back
+	ISSMesyData fill_data;
+	
+	fill_data.SetTimeStamp( data->GetTimeStamp() );
+	fill_data.SetFineTime( data->GetFineTime() );
+	fill_data.SetBaseline( data->GetBaseline() );
+	fill_data.SetTrace( data->GetTrace() );
+	fill_data.SetQlong( data->GetQlong() );
+	fill_data.SetQshort( data->GetQshort() );
+	fill_data.SetCrate( data->GetCrate() );
+	fill_data.SetModule( data->GetModule() );
+	fill_data.SetChannel( data->GetChannel() );
+	fill_data.SetEnergy( data->GetEnergy() );
+	fill_data.SetThreshold( data->IsOverThreshold() );
+	
+	mesy_packets.push_back( fill_data );
+	
 }
 
 void ISSDataPackets::SetData( std::shared_ptr<ISSInfoData> data ){
@@ -96,10 +116,12 @@ void ISSDataPackets::ClearData(){
 	
 	asic_packets.clear();
 	caen_packets.clear();
+	mesy_packets.clear();
 	info_packets.clear();
 	
 	std::vector<ISSAsicData>().swap(asic_packets);
 	std::vector<ISSCaenData>().swap(caen_packets);
+	std::vector<ISSMesyData>().swap(mesy_packets);
 	std::vector<ISSInfoData>().swap(info_packets);
 
 	return;
@@ -110,6 +132,7 @@ double ISSDataPackets::GetTime(){
 		
 	if( IsAsic() ) return GetAsicData()->GetTime();
 	if( IsCaen() ) return GetCaenData()->GetTime();
+	if( IsMesy() ) return GetMesyData()->GetTime();
 	if( IsInfo() ) return GetInfoData()->GetTime();
 
 	return 0;
@@ -120,6 +143,7 @@ double ISSDataPackets::GetTimeWithWalk(){
 		
 	if( IsAsic() ) return GetAsicData()->GetTime() + GetAsicData()->GetWalk();
 	if( IsCaen() ) return GetCaenData()->GetTime();
+	if( IsMesy() ) return GetMesyData()->GetTime();
 	if( IsInfo() ) return GetInfoData()->GetTime();
 
 	return 0;
@@ -130,6 +154,7 @@ unsigned long long ISSDataPackets::GetTimeStamp(){
 		
 	if( IsAsic() ) return GetAsicData()->GetTimeStamp();
 	if( IsCaen() ) return GetCaenData()->GetTimeStamp();
+	if( IsMesy() ) return GetMesyData()->GetTimeStamp();
 	if( IsInfo() ) return GetInfoData()->GetTimeStamp();
 
 	return 0;
@@ -148,23 +173,6 @@ UInt_t ISSDataPackets::GetTimeLSB(){
 	
 }
 
-void ISSCaenData::ClearData(){
-	
-	timestamp = 0.0;
-	finetime = 0.0;
-	baseline = 0.0;
-	trace.clear();
-	Qlong = 0;
-	Qshort = 0;
-	mod = 255;
-	ch = 255;
-	energy = -999.;
-	thres = true;
-
-	return;
-	
-}
-
 void ISSAsicData::ClearData(){
 	
 	timestamp = 0.0;
@@ -180,6 +188,26 @@ void ISSAsicData::ClearData(){
 	return;
 	
 }
+
+void ISSVmeData::ClearData(){
+	
+	timestamp = 0.0;
+	finetime = 0.0;
+	baseline = 0.0;
+	trace.clear();
+	Qlong = 0;
+	Qshort = 0;
+	vme = 255;
+	mod = 255;
+	ch = 255;
+	energy = -999.;
+	thres = true;
+	
+	return;
+	
+}
+
+
 
 void ISSInfoData::ClearData(){
 	

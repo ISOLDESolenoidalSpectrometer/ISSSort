@@ -165,13 +165,19 @@ double theta_cm_derivative( double *x, double *params ){
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Parameterised constructor for the ISSReaction object. It reads in the mass 
-/// tables, assigns values to various pointers, reads the reaction file, and 
+/// Parameterised constructor for the ISSReaction object. It reads in the mass
+/// tables, assigns values to various pointers, reads the reaction file, and
 /// sets up the root-finding algorithm for finding the angle alpha.
 /// \param[in] filename A string holding the name of the reaction file
 /// \param[in] myset A pointer to the ISSSettings object
 /// \param[in] source A boolean to check if this run is a source run
 ISSReaction::ISSReaction( std::string filename, std::shared_ptr<ISSSettings> myset, bool source ){
+	
+	// Alpha energies from quadruple alpha source
+	alpha_energies.push_back( 3182.69 );
+	alpha_energies.push_back( 5148.31 );
+	alpha_energies.push_back( 5478.62 );
+	alpha_energies.push_back( 5795.04 );
 	
 	// Setup the ROOT finder algorithms
 #ifdef butler_algorithm
@@ -204,7 +210,7 @@ ISSReaction::ISSReaction( std::string filename, std::shared_ptr<ISSSettings> mys
 	set = myset;
 	SetFile( filename );
 	ReadReaction();
-	
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -319,7 +325,7 @@ void ISSReaction::AddBindingEnergy( short Ai, short Zi, TString ame_be_str ) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Stores the binding energies per nucleon for each nucleus from the AME 
+/// Stores the binding energies per nucleon for each nucleus from the AME
 /// 2020 file
 void ISSReaction::ReadMassTables() {
 	
@@ -388,8 +394,8 @@ void ISSReaction::ReadMassTables() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Reads the contents of the reaction file given via user input. Also calls 
-/// ReadStoppingPowers function for each of the nuclides going through the 
+/// Reads the contents of the reaction file given via user input. Also calls
+/// ReadStoppingPowers function for each of the nuclides going through the
 /// different materials for later corrections.
 void ISSReaction::ReadReaction() {
 	
@@ -789,8 +795,8 @@ double ISSReaction::GetNuclearEnergyLoss( double Ei, double range, std::unique_p
 
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Reads the stopping powers from SRIM files located in the directories, and 
-/// makes a TGraph from the data within. Generates a pdf file of the reaction 
+/// Reads the stopping powers from SRIM files located in the directories, and
+/// makes a TGraph from the data within. Generates a pdf file of the reaction
 /// whenever it's called
 /// \param[in] isotope1 The beam species
 /// \param[in] isotope2 The target species
@@ -1018,8 +1024,8 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	double Edet = 0.0;
 	
 	// Create splines for the TGraphs used in the calculation
-	std::unique_ptr<TSpline3> splineRange         = std::make_unique<TSpline3>("splineRange", gRange[3].get(), "akima"); // // Use akima spline to make phc smoother - BRJ
-	std::unique_ptr<TSpline3> splineStoppingPower = std::make_unique<TSpline3>("splineStoppingPower", gStopping[3].get(), "akima"); //Use akima spline to make phc smoother - BRJ
+	std::unique_ptr<TSpline3> splineRange         = std::make_unique<TSpline3>("splineRange", gRange[3].get(), "akima"); // // Use akima spline to make phc smoother
+	std::unique_ptr<TSpline3> splineStoppingPower = std::make_unique<TSpline3>("splineStoppingPower", gStopping[3].get(), "akima"); //Use akima spline to make phc smoother
 	
 	
 	// Do the numerical integration
@@ -1036,7 +1042,7 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 		// NB: this is inefficient, but still only takes a couple of seconds
 		// ideally the integrated nuclear energy loss versus energy would be
 		// calculated only once and stored as a TGraph or something. Who cares?
-		dEdx_n = GetNuclearEnergyLoss( E, range, gStopping[4], gStopping[5] ); //BRJ
+		dEdx_n = GetNuclearEnergyLoss( E, range, gStopping[4], gStopping[5] );
 		
 		// From W. N. Lennard et al. NIM A248 (1986) 454
 		double PHC = e0_Si - k_Si * dEdx_e;
@@ -1068,7 +1074,7 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	std::string pdfname = std::string( SRIM_DIR ) + "/" + isotope + "_phc.pdf";
 	c->SaveAs( pdfname.c_str() );
 	
-	// BRJ - these lines make root files for PH residual and eloss for the isotope that is read in
+	// These lines make root files for PH residual and eloss for the isotope that is read in
 	
 	std::string tfilenameroot = std::string( SRIM_DIR ) + "/" + isotope + "_phc.root";
 	TFile *tfile = new TFile(tfilenameroot.c_str(),"recreate");
@@ -1120,7 +1126,7 @@ double ISSReaction::SimulateEmission( double en, double theta_lab, double phi_la
 	
 	// measured z distance needs radius of detection
 	// TODO: this will depend on the phi emission angle
-	double r_det = 28.75; // for now just assume standard detector radius
+	double r_det = array_radius; // for now just assume standard detector radius
 	double omega = TMath::TwoPi() - 2.0 * TMath::ASin( 0.5 * r_det / r_cyc );
 	z_meas = z * omega / TMath::TwoPi();
 	

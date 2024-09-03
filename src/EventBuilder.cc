@@ -37,9 +37,16 @@ ISSEventBuilder::ISSEventBuilder( std::shared_ptr<ISSSettings> myset ){
 	asic_prev.resize( set->GetNumberOfArrayModules() );
 	fpga_time.resize( set->GetNumberOfArrayModules() );
 	fpga_prev.resize( set->GetNumberOfArrayModules() );
-	caen_time_start.resize( set->GetNumberOfCAENModules() );
-	caen_time_stop.resize( set->GetNumberOfCAENModules() );
-
+	vme_time_start.resize( set->GetNumberOfVmeCrates() );
+	vme_time_stop.resize( set->GetNumberOfVmeCrates() );
+	
+	for( unsigned int i = 0; i < set->GetNumberOfVmeCrates(); ++i ){
+		
+		vme_time_start[i].resize( set->GetMaximumNumberOfVmeModules() );
+		vme_time_stop[i].resize( set->GetMaximumNumberOfVmeModules() );
+		
+	}
+	
 	// p-side = 0; n-side = 1;
 	asic_side.push_back(0); // asic 0 = p-side
 	asic_side.push_back(1); // asic 1 = n-side
@@ -152,6 +159,7 @@ void ISSEventBuilder::StartFile(){
 
 	n_asic_data	= 0;
 	n_caen_data	= 0;
+	n_mesy_data	= 0;
 	n_info_data	= 0;
 
 	n_caen_pulser = 0;
@@ -190,10 +198,14 @@ void ISSEventBuilder::StartFile(){
 
 	}
 	
-	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
-
-		caen_time_start[i] = 0;
-		caen_time_stop[i] = 0;
+	for( unsigned int i = 0; i < set->GetNumberOfVmeCrates(); ++i ) {
+		
+		for( unsigned int j = 0; j < set->GetMaximumNumberOfVmeModules(); ++j ) {
+			
+			vme_time_start[i][j] = 0;
+			vme_time_stop[i][j] = 0;
+			
+		}
 
 	}
 	
@@ -599,42 +611,51 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			
 		}
 
-		// ------------------------------------------ //
-		// Find recoils and other things
-		// ------------------------------------------ //
-		else if( in_data->IsCaen() ) {
+		// -------------------------------------------- //
+		// Find recoils and other things in VME systems //
+		// -------------------------------------------- //
+		else if( in_data->IsVme() ) {
 			
-			// Increment event counter
-			n_caen_data++;
-			
-			caen_data = in_data->GetCaenData();
-			mymod = caen_data->GetModule();
-			mych = caen_data->GetChannel();
+			// Check if it is Meystec or CAEN
+			if( in_data->IsCaen() ) {
+				
+				// Increment event counter and set data type
+				n_caen_data++;
+				vme_data = in_data->GetCaenData();
+				
+			}
+			else if( in_data->IsMesy() ){
+				
+				// Increment event counter and set data type
+				n_mesy_data++;
+				vme_data = in_data->GetMesyData();
 
-			//std::cout << i << "\t" << caen_data->GetTimeStamp() << "\t" << caen_data->GetFineTime() << std::endl;
+			}
+
+			// Get channel ID
+			myvme = vme_data->GetCrate();
+			mymod = vme_data->GetModule();
+			mych = vme_data->GetChannel();
 			
+			// New calibration supplied
 			if( overwrite_cal ) {
 				
-				std::string entype = cal->CaenType( mymod, mych );
+				std::string entype = cal->VmeType( myvme, mymod, mych );
 				unsigned short adc_value = 0;
-				if( entype == "Qlong" ) adc_value = caen_data->GetQlong();
-				else if( entype == "Qshort" ) adc_value = caen_data->GetQshort();
-				else if( entype == "Qdiff" ) adc_value = caen_data->GetQdiff();
-				else {
-					std::cerr << "Incorrect CAEN energy type must be Qlong, Qshort or Qdiff" << std::endl;
-					adc_value = caen_data->GetQlong();
-				}
-				myenergy = cal->CaenEnergy( mymod, mych, adc_value );
+				if( entype == "Qlong" ) adc_value = vme_data->GetQlong();
+				else if( entype == "Qshort" ) adc_value = vme_data->GetQshort();
+				else if( entype == "Qdiff" ) adc_value = vme_data->GetQdiff();
+				myenergy = cal->VmeEnergy( myvme, mymod, mych, adc_value );
 				
-				if( adc_value < cal->CaenThreshold( mymod, mych ) )
+				if( adc_value < cal->VmeThreshold( myvme, mymod, mych ) )
 					mythres = false;
 
 			}
 			
 			else {
 				
-				myenergy = caen_data->GetEnergy();
-				mythres = caen_data->IsOverThreshold();
+				myenergy = vme_data->GetEnergy();
+				mythres = vme_data->IsOverThreshold();
 
 			}
 			
@@ -643,10 +664,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 			// DETERMINE WHICH TYPE OF CAEN EVENT THIS IS
 			// Is it a recoil?
-			if( set->IsRecoil( mymod, mych ) && mythres ) {
+			if( set->IsRecoil( myvme, mymod, mych ) && mythres ) {
 				
-				mysector = set->GetRecoilSector( mymod, mych );
-				mylayer = set->GetRecoilLayer( mymod, mych );
+				mysector = set->GetRecoilSector( myvme, mymod, mych );
+				mylayer = set->GetRecoilLayer( myvme, mymod, mych );
 				
 				ren_list.push_back( myenergy );
 				rtd_list.push_back( mytime );
@@ -658,21 +679,21 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			}
 			
 			// Is it an MWPC?
-			else if( set->IsMWPC( mymod, mych ) && mythres ) {
+			else if( set->IsMWPC( myvme, mymod, mych ) && mythres ) {
 				
 				mwpctac_list.push_back( myenergy );
 				mwpctd_list.push_back( mytime );
-				mwpcaxis_list.push_back( set->GetMWPCAxis( mymod, mych ) );
-				mwpcid_list.push_back( set->GetMWPCID( mymod, mych ) );
+				mwpcaxis_list.push_back( set->GetMWPCAxis( myvme, mymod, mych ) );
+				mwpcid_list.push_back( set->GetMWPCID( myvme, mymod, mych ) );
 
 				hit_ctr++; // increase counter for bits of data included in this event
 
 			}
 			
 			// Is it an ELUM?
-			else if( set->IsELUM( mymod, mych ) && mythres ) {
+			else if( set->IsELUM( myvme, mymod, mych ) && mythres ) {
 				
-				mysector = set->GetELUMSector( mymod, mych );
+				mysector = set->GetELUMSector( myvme, mymod, mych );
 				
 				een_list.push_back( myenergy );
 				etd_list.push_back( mytime );
@@ -683,9 +704,9 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			}
 
 			// Is it a ZeroDegree?
-			else if( set->IsZD( mymod, mych ) && mythres ) {
+			else if( set->IsZD( myvme, mymod, mych ) && mythres ) {
 				
-				mylayer = set->GetZDLayer( mymod, mych );
+				mylayer = set->GetZDLayer( myvme, mymod, mych );
 				
 				zen_list.push_back( myenergy );
 				ztd_list.push_back( mytime );
@@ -696,9 +717,9 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			}
 			
 			// Is it a ScintArray?
-			else if( set->IsScintArray( mymod, mych ) && mythres ) {
+			else if( set->IsScintArray( myvme, mymod, mych ) && mythres ) {
 			
-				myid = set->GetScintArrayDetector( mymod, mych );
+				myid = set->GetScintArrayDetector( myvme, mymod, mych );
 				
 				saen_list.push_back( myenergy );
 				satd_list.push_back( mytime );
@@ -708,26 +729,24 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 			}
 			// Is it a LUME?
-			else if( set->IsLUME( mymod, mych ) && mythres ) {
+			else if( set->IsLUME( myvme, mymod, mych ) && mythres ) {
 
 				// Get LUME signal type (0 = total energy, 1 = near side, 2 = far side)
-				mytype = set->GetLUMEType( mymod, mych );
+				mytype = set->GetLUMEType( myvme, mymod, mych );
+				myid = set->GetLUMEDetector( myvme, mymod, mych );
 
 				switch (mytype) {
 				case 0:
-					myid = set->GetLUMEBEDetector( mymod, mych );
 					lbe_list.push_back( myenergy );
 					lbe_td_list.push_back( mytime );
 					lbe_id_list.push_back( myid );
 					break;
 				case 1:
-					myid = set->GetLUMENEDetector( mymod, mych );
 					lne_list.push_back( myenergy );
 					lne_td_list.push_back( mytime );
 					lne_id_list.push_back( myid );
 					break;
 				case 2:
-					myid = set->GetLUMEFEDetector( mymod, mych );
 					lfe_list.push_back( myenergy );
 					lfe_td_list.push_back( mytime );
 					lfe_id_list.push_back( myid );
@@ -741,11 +760,11 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			}
 
 			// Is it the start event?
-			if( caen_time_start.at( mymod ) == 0 )
-				caen_time_start.at( mymod ) = mytime;
+			if( vme_time_start.at( myvme ).at( mymod ) == 0 )
+				vme_time_start.at( myvme ).at( mymod ) = mytime;
 			
 			// or is it the end event (we don't know so keep updating)
-			caen_time_stop.at( mymod ) = mytime;
+			vme_time_stop.at( myvme ).at( mymod ) = mytime;
 
 		}
 		
@@ -1136,11 +1155,18 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		ss_log << "        dead time = " << asic_dead_time[i]/1e9 << " s" << std::endl;
 		ss_log << "        live time = " << (asic_time_stop[i]-asic_time_start[i])/1e9 << " s" << std::endl;
 	}
-	ss_log << "  CAEN data packets = " << n_caen_data << std::endl;
-	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
-		ss_log << "   Module " << i << " live time = ";
-		ss_log << (caen_time_stop[i]-caen_time_start[i])/1e9;
-		ss_log << " s" << std::endl;
+	for( unsigned int i = 0; i < set->GetNumberOfVmeCrates(); ++i ) {
+		unsigned int nmods = set->GetNumberOfCAENModules();
+		if( i == 0 ) ss_log << "  CAEN data packets = " << n_caen_data << std::endl;
+		else {
+			ss_log << "  Mesytec data packets = " << n_mesy_data << std::endl;
+			nmods = set->GetNumberOfMesytecModules();
+		}
+		for( unsigned int j = 0; j < nmods; ++j ) {
+			ss_log << "   Module " << j << " live time = ";
+			ss_log << (vme_time_stop[i][j]-vme_time_start[i][j])/1e9;
+			ss_log << " s" << std::endl;
+		}
 	}
 	ss_log << "  Info data packets = " << n_info_data << std::endl;
 	ss_log << "   Array p/n-side correlated events = " << array_ctr << std::endl;
@@ -1225,11 +1251,17 @@ unsigned long ISSEventBuilder::BuildSimulatedEvents() {
 			mystrip = 128 - sim_data->GetFront_StripNbr(j);
 			myenergy = sim_data->GetFront_Energy(j);
 			mytime = sim_data->GetFront_Time(j);
+			myCFDtime = sim_data->GetFront_TimeCFD(j);
 			myhitbit = 1;
 			
 			// If it's below zero in energy, consider it below threshold
+			if( myenergy < 0 ) continue;
+
 			// Only use if it is an event from a detector
-			if( myenergy < 0 || mystrip < 0 ) continue;
+			if( mystrip < 0 ) continue;
+			
+			// Only use if it is a single orbit event
+			if( myCFDtime > 80 || myCFDtime < 59 ) continue;
 			
 			pen_list.push_back( myenergy );
 			ptd_list.push_back( mytime );
@@ -1255,12 +1287,18 @@ unsigned long ISSEventBuilder::BuildSimulatedEvents() {
 			mystrip = 11 - sim_data->GetBack_StripNbr(j);
 			myenergy = sim_data->GetBack_Energy(j);
 			mytime = sim_data->GetBack_Time(j);
+			myCFDtime = sim_data->GetBack_TimeCFD(j);
 			myhitbit = 1;
 			
 			// If it's below zero in energy, consider it below threshold
-			// Only use if it is an event from a detector
-			if( myenergy < 0 || mystrip < 0 ) continue;
+			if( myenergy < 0 ) continue;
 			
+			// Only use if it is an event from a detector
+			if( mystrip < 0 ) continue;
+			
+			// Only use if it is a single orbit event
+			if( myCFDtime > 80 || myCFDtime < 59 ) continue;
+
 			nen_list.push_back( myenergy );
 			ntd_list.push_back( mytime );
 			nwalk_list.push_back( mytime );
@@ -2999,6 +3037,7 @@ void ISSEventBuilder::MakeHists(){
 		hname = "lume_E_vs_x_" + std::to_string(i);
 		htitle = "LUME energy vs position spectrum;Position;Energy [ch]";
 		lume_E_vs_x[i] = new TH2F( hname.data(), htitle.data(), 1000, -1.01, 1.01, 1000, -200, 80000 );
+
 	}
 
 	return;

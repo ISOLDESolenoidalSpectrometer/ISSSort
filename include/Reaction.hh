@@ -25,12 +25,16 @@
 #include "TGraph.h"
 #include "Math/RootFinder.h"
 #include "Math/Functor.h"
-
-#include "TSpline.h" // BRJ - header for Splines 
+#include "TSpline.h"
 
 // Settings header
 #ifndef __SETTINGS_HH
 # include "Settings.hh"
+#endif
+
+// ISSEvts header
+#ifndef __ISSEVTS_HH
+# include "ISSEvts.hh"
 #endif
 
 // Make sure that the data and srim file are defined
@@ -443,6 +447,7 @@ private:
 	std::unique_ptr<TGraph> gPHC_inv;				///< Flipped axes of gPHC
 	bool stopping;									///< Flag to indicate whether calculation of stopping powers has worked or not
 	bool phcurves;									///< Flag to indicate whether pulse height correction data was read successfully
+	std::vector<double> alpha_energies;				///< Energies of the alphas for calibration in a source run
 
 	
 	// Flag in case it's an alpha source
