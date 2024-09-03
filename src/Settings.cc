@@ -385,8 +385,8 @@ void ISSSettings::ReadSettings() {
 	
 	for( unsigned int i = 0; i < GetNumberOfVmeCrates(); ++i ) {
 		
-		lume_detector.resize( GetMaximumNumberOfVmeModules() );
-		lume_type.resize( GetMaximumNumberOfVmeModules() );
+		lume_detector[i].resize( GetMaximumNumberOfVmeModules() );
+		lume_type[i].resize( GetMaximumNumberOfVmeModules() );
 		
 		for( unsigned int j = 0; j < GetMaximumNumberOfVmeModules(); ++j ) {
 			for( unsigned int k = 0; k < GetMaximumNumberOfVmeChannels(); ++k ){
@@ -900,6 +900,7 @@ void ISSSettings::PrintSettings() {
 
 	// LUME detector
 	PRINT_SETTING_INT(n_lume);
+	PRINT_SETTING_VECT_VECT_INT(lume_vme);
 	PRINT_SETTING_VECT_VECT_INT(lume_mod);
 	PRINT_SETTING_VECT_VECT_INT(lume_ch);
 	PRINT_SETTING_VECT_VECT_VECT_INT(lume_detector);
