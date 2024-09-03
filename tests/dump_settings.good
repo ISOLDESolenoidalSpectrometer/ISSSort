@@ -6,10 +6,10 @@ n_array_pstrip:           128
 n_array_nstrip:           11
 n_caen_mod:               2
 n_caen_ch:                16
-n_mesy_mod:               0
-n_mesy_ch:                16
 caen_model[0]:            1725
 caen_model[1]:            1725
+n_mesy_mod:               0
+n_mesy_ch:                16
 extt_code:                14
 sync_code:                4
 ext_item_code:            7
@@ -34,7 +34,7 @@ vme_t1_crate:             0
 vme_t1_mod:               1
 vme_t1_ch:                15
 t1_code:                  22
-vme_t1_crate:             0
+vme_sc_crate:             0
 vme_sc_mod:               1
 vme_sc_ch:                12
 sc_code:                  23
