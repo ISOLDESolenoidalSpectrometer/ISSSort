@@ -62,7 +62,7 @@ void ISSSettings::ReadSettings() {
 	mesy_pulser_mod = config->GetValue( "PulserModuleMesytec", 1 );
 	mesy_pulser_ch = config->GetValue( "PulserChannelMesytec", 13 );
 	mesy_pulser_code = 25;
-	vme_ebis_crate = config->GetValue( "EBISCrate", 1 );
+	vme_ebis_crate = config->GetValue( "EBISCrate", 0 );
 	vme_ebis_crate = config->GetValue( "EBIS.Crate", vme_ebis_crate );
 	vme_ebis_mod = config->GetValue( "EBISModule", 1 );
 	vme_ebis_mod = config->GetValue( "EBIS.Module", vme_ebis_mod );
@@ -70,14 +70,14 @@ void ISSSettings::ReadSettings() {
 	vme_ebis_ch = config->GetValue( "EBIS.Channel", vme_ebis_ch );
 	ebis_code = config->GetValue( "EBISCode", 21 );
 	ebis_code = config->GetValue( "EBIS.Code", ebis_code );
-	vme_t1_crate = config->GetValue( "T1Crate", 1 );
+	vme_t1_crate = config->GetValue( "T1Crate", 0 );
 	vme_t1_crate = config->GetValue( "T1.Crate", vme_t1_crate );
 	vme_t1_mod = config->GetValue( "T1Module", 1 );
 	vme_t1_mod = config->GetValue( "T1.Module", vme_t1_mod );
 	vme_t1_ch = config->GetValue( "T1Channel", 15 );
 	vme_t1_ch = config->GetValue( "T1.Channel", vme_t1_ch );
 	t1_code = 22;
-	vme_sc_crate = config->GetValue( "SCCrate", 1 );
+	vme_sc_crate = config->GetValue( "SCCrate", 0 );
 	vme_sc_crate = config->GetValue( "SC.Crate", vme_sc_crate );
 	vme_sc_mod = config->GetValue( "SCModule", 1 );
 	vme_sc_mod = config->GetValue( "SC.Module", vme_sc_mod );
