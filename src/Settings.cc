@@ -802,7 +802,6 @@ void ISSSettings::PrintSettings() {
 	// Mesytec settings
 	PRINT_SETTING_INT(n_mesy_mod);
 	PRINT_SETTING_INT(n_mesy_ch);
-	PRINT_SETTING_VECT_INT(caen_model);
 	
 	// Info code settings
 	PRINT_SETTING_INT(extt_code);
