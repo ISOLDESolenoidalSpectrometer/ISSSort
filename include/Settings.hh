@@ -170,11 +170,9 @@ public:
 
 	// LUME detectors
 	inline unsigned char GetNumberOfLUMEDetectors(){ return n_lume; };
-	char GetLUMEBEDetector( unsigned vme, unsigned char mod, unsigned char ch );
-	char GetLUMENEDetector( unsigned vme, unsigned char mod, unsigned char ch );
-	char GetLUMEFEDetector( unsigned vme, unsigned char mod, unsigned char ch );
-	bool IsLUME( unsigned char mod, unsigned char ch );
-	char GetLUMEType( unsigned char mod, unsigned char ch );
+	char GetLUMEDetector( unsigned char vme, unsigned char mod, unsigned char ch );
+	char GetLUMEType( unsigned char vme, unsigned char mod, unsigned char ch );
+	bool IsLUME( unsigned char vme, unsigned char mod, unsigned char ch );
 
 
 private:
@@ -305,18 +303,16 @@ private:
 	std::vector<unsigned char> scint_ch;						///< A list of channel numbers for each ScintArray detectors
 	std::vector<std::vector<std::vector<char>>> scint_detector;	///< A channel map for the ScintArray detectors (-1 if not an ScintArray detector)
 
+	
 	// LUME detectors, each of them has 3 outputs - total energy (read out from the back side), near (read out from one edge), and far (from the other edge), total energy gives energy information, near and far side give position of hit
-	unsigned char n_lume;											///< Number of LUME detectors, should be 4
-	std::vector<unsigned char> lume_be_mod;							///< A list of module numbers (total energy - readout from the back-plane)
-	std::vector<unsigned char> lume_ne_mod;							///< A list of module numbers (near side)
-	std::vector<unsigned char> lume_fe_mod;							///< A list of module numbers (far side)
-	std::vector<unsigned char> lume_be_ch;							///< A list of channel numbers (total energy)
-	std::vector<unsigned char> lume_ne_ch;							///< A list of channel numbers (near side)
-	std::vector<unsigned char> lume_fe_ch;							///< A list of channel numbers (far side)
-	std::vector<std::vector<std::vector<char>>> lume_be_detector;	///< A channel map for the LUME detectors
-	std::vector<std::vector<std::vector<char>>> lume_ne_detector;	///< A channel map for the LUME detectors
-	std::vector<std::vector<std::vector<char>>> lume_fe_detector;	///< A channel map for the LUME detectors
-
+	unsigned char n_lume;										///< Number of LUME detectors, should be 4
+	std::vector<std::vector<unsigned char>> lume_vme;			///< A list of VME crate numbers for the LUME detector and type
+	std::vector<std::vector<unsigned char>> lume_mod;			///< A list of module numbers for the LUME detector and type
+	std::vector<std::vector<unsigned char>> lume_ch;			///< A list of channel numbers for the LUME detector and type
+	std::vector<std::vector<std::vector<char>>> lume_detector;	///< A channel map for the LUME detector IDs
+	std::vector<std::vector<std::vector<char>>> lume_type;		///< A channel map for the LUME detector types (0= be, 1= ne, 2= fe)
+	std::vector<std::string> lume_type_list;					///< A list of string types for the LUME signals
+	
 };
 
 #endif

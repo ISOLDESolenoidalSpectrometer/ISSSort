@@ -733,22 +733,20 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 				// Get LUME signal type (0 = total energy, 1 = near side, 2 = far side)
 				mytype = set->GetLUMEType( myvme, mymod, mych );
+				myid = set->GetLUMEDetector( myvme, mymod, mych );
 
 				switch (mytype) {
 				case 0:
-					myid = set->GetLUMEBEDetector( myvme, mymod, mych );
 					lbe_list.push_back( myenergy );
 					lbe_td_list.push_back( mytime );
 					lbe_id_list.push_back( myid );
 					break;
 				case 1:
-					myid = set->GetLUMENEDetector( myvme, mymod, mych );
 					lne_list.push_back( myenergy );
 					lne_td_list.push_back( mytime );
 					lne_id_list.push_back( myid );
 					break;
 				case 2:
-					myid = set->GetLUMEFEDetector( myvme, mymod, mych );
 					lfe_list.push_back( myenergy );
 					lfe_td_list.push_back( mytime );
 					lfe_id_list.push_back( myid );

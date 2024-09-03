@@ -288,10 +288,10 @@ private:
 	std::vector<float>		lbe_list;		///< list of LUME back energies (signal from the back face)
 	std::vector<float>		lne_list;		///< list of LUME ne signals
 	std::vector<float>		lfe_list;		///< list of LUME fe signals
-	std::vector<double>		lbe_td_list;		///< list of LUME time differences
+	std::vector<double>		lbe_td_list;	///< list of LUME time differences
 	std::vector<double>		lne_td_list;	///< list of LUME time differences
 	std::vector<double>		lfe_td_list;	///< list of LUME time differences
-	std::vector<char>		lbe_id_list;		///< list of LUME detectors
+	std::vector<char>		lbe_id_list;	///< list of LUME detectors
 	std::vector<char>		lne_id_list;	///< list of LUME detectors
 	std::vector<char>		lfe_id_list;	///< list of LUME detectors
 
