@@ -399,14 +399,18 @@ void ISSSettings::ReadSettings() {
 	
 	// Loop over all LUME detectors
 	for( unsigned int i = 0; i < n_lume; ++i ){
-		
+
+		lume_vme[i].resize(lume_type_list.size());
+		lume_mod[i].resize(lume_type_list.size());
+		lume_ch[i].resize(lume_type_list.size());
+
 		// And there are three types of signals for each
 		for( unsigned int j = 0; j < lume_type_list.size(); ++j ){
 			
 			// Assuming they are all in the same Mesytec module
 			unsigned char mm = 2;
 			unsigned char cc = i * lume_type_list.size() + j;
-			
+
 			lume_vme[i][j] = config->GetValue( Form( "LUME_%d_%s.Crate", i, lume_type_list[j].data() ), (int) 1 );
 			lume_mod[i][j] = config->GetValue( Form( "LUME_%d_%s.Module", i, lume_type_list[j].data() ), (int) mm );
 			lume_ch[i][j] = config->GetValue( Form( "LUME_%d_%s.Channel", i, lume_type_list[j].data() ), (int) cc );
