@@ -323,7 +323,7 @@ ISSGUI::ISSGUI() {
 	//-----------------//
 
 	// Set a name to the main frame
-	main_frame->SetWindowName( "mb_sort" );
+	main_frame->SetWindowName( "iss_sort" );
 	
 	// Map all sub windows
 	main_frame->MapSubwindows();
