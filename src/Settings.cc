@@ -105,6 +105,8 @@ void ISSSettings::ReadSettings() {
 	zd_hit_window = config->GetValue( "ZeroDegreeHitWindow", 500 );
 	gamma_hit_window = config->GetValue( "GammaRayHitWindow", 500 );
 	lume_hit_window = config->GetValue( "LumeHitWindow", 500 );
+	cd_rs_hit_window = config->GetValue( "CDHitWindow.RS", 500 );
+	cd_dd_hit_window = config->GetValue( "CDHitWindow.DD", 500 );
 	
 	
 	// Data things
@@ -437,6 +439,104 @@ void ISSSettings::ReadSettings() {
 		}
 		
 	}
+
+	// CD
+	n_cd_sector = config->GetValue( "NumberOfCDSectors", 4 );
+	n_cd_layer  = config->GetValue( "NumberOfCDLayers", 2 );
+	n_cd_ring  = config->GetValue( "NumberOfCDRings", 2 );
+
+	cd_sector_vme.resize( n_cd_layer );
+	cd_ring_vme.resize( n_cd_layer );
+	cd_sector_mod.resize( n_cd_layer );
+	cd_ring_mod.resize( n_cd_layer );
+	cd_sector_ch.resize( n_recoil_layer );
+	cd_ring_ch.resize( n_recoil_layer );
+	cd_sector.resize( GetNumberOfVmeCrates() );
+	cd_layer.resize( GetNumberOfVmeCrates() );
+	cd_ring.resize( GetNumberOfVmeCrates() );
+		
+	for( unsigned int i = 0; i < GetNumberOfVmeCrates(); ++i ){
+		
+	        cd_sector[i].resize( GetMaximumNumberOfVmeModules() );
+		cd_layer[i].resize( GetMaximumNumberOfVmeModules() );
+		cd_ring[i].resize( GetMaximumNumberOfVmeModules() );
+		
+		for( unsigned int j = 0; j < GetMaximumNumberOfVmeModules(); ++j ){
+			
+			for( unsigned int k = 0; k < GetMaximumNumberOfVmeChannels(); ++k ){
+				
+				cd_sector[i][j].push_back( -1 );
+				cd_layer[i][j].push_back( -1 );
+				cd_ring[i][j].push_back( -1 );
+				
+			}
+			
+		}
+		
+	}
+
+	for( unsigned int i = 0; i < n_cd_layer; ++i ){
+		
+	        cd_ring_vme[i].resize( n_cd_ring );
+		cd_sector_vme[i].resize( n_cd_sector );
+	        cd_ring_mod[i].resize( n_cd_ring );
+		cd_sector_mod[i].resize( n_cd_sector );
+		cd_ring_ch[i].resize( n_cd_ring );
+		cd_sector_ch[i].resize( n_cd_sector );
+		
+		for( unsigned int j = 0; j < n_cd_ring; ++j ){
+			
+			cd_ring_vme[i][j] = config->GetValue( Form( "CD_Ring_%d_%d.Crate", j, i ), 0 );
+			cd_ring_mod[i][j] = config->GetValue( Form( "CD_Ring_%d_%d.Module", j, i ), 0 );
+			cd_ring_ch[i][j] = config->GetValue( Form( "CD_Ring_%d_%d.Channel", j, i ), 2*(int)j+(int)i );
+			
+			if( cd_ring_vme[i][j] < GetNumberOfVmeCrates() &&
+			    cd_ring_mod[i][j] < GetMaximumNumberOfVmeModules() &&
+			    cd_ring_ch[i][j] < GetMaximumNumberOfVmeChannels() ) {
+
+			        cd_ring[cd_ring_vme[i][j]][cd_ring_mod[i][j]][cd_ring_ch[i][j]] = j;
+			        cd_layer[cd_ring_vme[i][j]][cd_ring_mod[i][j]][cd_ring_ch[i][j]]  = i;
+				
+			}
+			
+			else {
+				
+				std::cerr << "Dodgy CD settings:";
+				std::cerr << " crate = " << cd_ring_vme[i][j];
+				std::cerr << " module = " << cd_ring_mod[i][j];
+				std::cerr << " channel = " << cd_ring_ch[i][j] << std::endl;
+				
+			}
+			
+		}
+
+		for( unsigned int j = 0; j < n_cd_sector; ++j ){
+			
+			cd_sector_vme[i][j] = config->GetValue( Form( "CD_Sector_%d_%d.Crate", j, i ), 0 );
+			cd_sector_mod[i][j] = config->GetValue( Form( "CD_Sector_%d_%d.Module", j, i ), 0 );
+			cd_sector_ch[i][j] = config->GetValue( Form( "CD_Sector_%d_%d.Channel", j, i ), 2*(int)j+(int)i );
+			
+			if( cd_sector_vme[i][j] < GetNumberOfVmeCrates() &&
+			    cd_sector_mod[i][j] < GetMaximumNumberOfVmeModules() &&
+			    cd_sector_ch[i][j] < GetMaximumNumberOfVmeChannels() ) {
+
+			        cd_sector[cd_sector_vme[i][j]][cd_sector_mod[i][j]][cd_sector_ch[i][j]] = j;
+			        cd_layer[cd_sector_vme[i][j]][cd_sector_mod[i][j]][cd_sector_ch[i][j]]  = i;
+				
+			}
+			
+			else {
+				
+				std::cerr << "Dodgy CD settings:";
+				std::cerr << " crate = " << cd_sector_vme[i][j];
+				std::cerr << " module = " << cd_sector_mod[i][j];
+				std::cerr << " channel = " << cd_sector_ch[i][j] << std::endl;
+				
+			}
+			
+		}
+		
+	}
 	
 	
 	// Perform a couple of sanity checks
@@ -743,7 +843,70 @@ char ISSSettings::GetLUMEDetector( unsigned char vme, unsigned char mod, unsigne
 
 }
 
+char ISSSettings::GetCDLayer( unsigned char vme, unsigned char mod, unsigned char ch ) {
+  /// Return the layer of a CD event by module and channel number
+  if( vme < GetNumberOfVmeCrates() &&
+      mod < GetMaximumNumberOfVmeModules() &&
+      ch < GetMaximumNumberOfVmeChannels() )
+    return cd_layer[(int)vme][(int)mod][(int)ch];
+	
+  else {
+		
+    std::cerr << "Bad CD event:";
+    std::cerr << " crate = " << (int)vme;
+    std::cerr << " module = " << (int)mod;
+    std::cerr << " channel = " << (int)ch << std::endl;
+    return -1;
+		
+  }
+	
+}
 
+char ISSSettings::GetCDSector( unsigned char vme, unsigned char mod, unsigned char ch ) {
+  /// Return the layer of a CD event by module and channel number
+  if( vme < GetNumberOfVmeCrates() &&
+      mod < GetMaximumNumberOfVmeModules() &&
+      ch < GetMaximumNumberOfVmeChannels() )
+    return cd_sector[(int)vme][(int)mod][(int)ch];
+	
+  else {
+		
+    std::cerr << "Bad CD event:";
+    std::cerr << " crate = " << (int)vme;
+    std::cerr << " module = " << (int)mod;
+    std::cerr << " channel = " << (int)ch << std::endl;
+    return -1;
+		
+  }
+	
+}
+
+char ISSSettings::GetCDRing( unsigned char vme, unsigned char mod, unsigned char ch ) {
+  /// Return the layer of a CD event by module and channel number
+  if( vme < GetNumberOfVmeCrates() &&
+      mod < GetMaximumNumberOfVmeModules() &&
+      ch < GetMaximumNumberOfVmeChannels() )
+    return cd_ring[(int)vme][(int)mod][(int)ch];
+	
+  else {
+		
+    std::cerr << "Bad CD event:";
+    std::cerr << " crate = " << (int)vme;
+    std::cerr << " module = " << (int)mod;
+    std::cerr << " channel = " << (int)ch << std::endl;
+    return -1;
+		
+  }
+	
+}
+
+bool ISSSettings::IsCD( unsigned char vme, unsigned char mod, unsigned char ch ) {
+	
+	/// Return true if this is a CD event
+	if( cd_sector[(int)vme][(int)mod][(int)ch] >= 0 || cd_layer[(int)vme][(int)mod][(int)ch] >= 0 ) return true;
+	else return false;
+	
+}
 
 void ISSSettings::PrintSettings() {
 
@@ -909,6 +1072,21 @@ void ISSSettings::PrintSettings() {
 	PRINT_SETTING_VECT_VECT_INT(lume_ch);
 	PRINT_SETTING_VECT_VECT_VECT_INT(lume_detector);
 	PRINT_SETTING_VECT_VECT_VECT_INT(lume_type);
+
+	// CD detector
+	PRINT_SETTING_INT(n_cd_layer);
+	PRINT_SETTING_INT(n_cd_sector);
+	PRINT_SETTING_INT(n_cd_ring);
+	PRINT_SETTING_VECT_VECT_INT(cd_ring_vme);
+	PRINT_SETTING_VECT_VECT_INT(cd_sector_vme);
+	PRINT_SETTING_VECT_VECT_INT(cd_ring_mod);
+	PRINT_SETTING_VECT_VECT_INT(cd_sector_mod);
+	PRINT_SETTING_VECT_VECT_INT(cd_ring_ch);
+	PRINT_SETTING_VECT_VECT_INT(cd_sector_ch);
+	PRINT_SETTING_VECT_VECT_VECT_INT(cd_layer);
+	PRINT_SETTING_VECT_VECT_VECT_INT(cd_sector);
+	PRINT_SETTING_VECT_VECT_VECT_INT(cd_ring);
+	
 
 	std::cout << "==== Settings end ====" << std::endl;
 }

@@ -121,6 +121,8 @@ public:
 	inline double GetZeroDegreeHitWindow(){ return zd_hit_window; }
 	inline double GetGammaRayHitWindow(){ return gamma_hit_window; }
         inline double GetLumeHitWindow(){ return lume_hit_window; }
+  inline double GetCDRSHitWindow(){ return cd_rs_hit_window; }
+  inline double GetCDDDHitWindow(){ return cd_dd_hit_window; }
 
 
 	// Data settings
@@ -174,7 +176,15 @@ public:
 	char GetLUMEType( unsigned char vme, unsigned char mod, unsigned char ch );
 	bool IsLUME( unsigned char vme, unsigned char mod, unsigned char ch );
 
-
+  // CD detectors
+  inline unsigned char GetNumberOfCDLayers(){ return n_cd_layer; };
+  inline unsigned char GetNumberOfCDSectors(){ return n_cd_sector; };
+  inline unsigned char GetNumberOfCDRings(){ return n_cd_ring; };
+  char GetCDLayer( unsigned char vme, unsigned char mod, unsigned char ch );
+  char GetCDSector( unsigned char vme, unsigned char mod, unsigned char ch );
+  char GetCDRing( unsigned char vme, unsigned char mod, unsigned char ch );
+  bool IsCD( unsigned char vme, unsigned char mod, unsigned char ch );
+  
 private:
 
 	std::string fInputFile;
@@ -246,6 +256,8 @@ private:
 	double zd_hit_window;			///< Time window in ns for correlating ZeroDegree E-dE hits
 	double gamma_hit_window;		///< Time window in ns for correlating Gamma-Gamma hits (addback?)
 	double lume_hit_window;			///< Time window in ns for correlating hits in LUME detectors (be, ne, and fe signals)
+  double cd_rs_hit_window;		///< Time window in ns for correlating CD hits in rings and sectors of one detector
+  double cd_dd_hit_window;		///< Time window in ns for correlating CD dE-E hits
 
 	
 	// Data format
@@ -292,7 +304,7 @@ private:
 	unsigned char n_zd_layer;									///< Number of ZeroDegree detector layers; always 2, because it's silicon dE-E
 	std::vector<unsigned char> zd_vme;							///< A list of VME crate numbers for each ZeroDegree detector layer
 	std::vector<unsigned char> zd_mod;							///< A list of module numbers for each ZeroDegree detector layer
-	std::vector<unsigned char> zd_ch;							///< A list of channel numbers for each ZeroDegree detector layor
+	std::vector<unsigned char> zd_ch;							///< A list of channel numbers for each ZeroDegree detector layer
 	std::vector<std::vector<std::vector<char>>> zd_layer;		///< A channel map for the ZeroDegree layers (-1 if not a ZeroDegree)
 
 	
@@ -312,7 +324,21 @@ private:
 	std::vector<std::vector<std::vector<char>>> lume_detector;	///< A channel map for the LUME detector IDs
 	std::vector<std::vector<std::vector<char>>> lume_type;		///< A channel map for the LUME detector types (0= be, 1= ne, 2= fe)
 	std::vector<std::string> lume_type_list;					///< A list of string types for the LUME signals
-	
+
+  // CD detectors
+  unsigned char n_cd_layer; ///< Number of CD detector layers (layer 0 is dE, layer 1 is E)
+  unsigned char n_cd_sector;								///< Number of CD detector sectors for each detector
+  unsigned char n_cd_ring;								///< Number of CD detector rings for each detector
+  std::vector<std::vector<unsigned char>> cd_ring_vme; ///< A list of VME crate numbers for each CD detector layer and each ring
+  std::vector<std::vector<unsigned char>> cd_sector_vme; ///< A list of VME crate numbers for each CD detector layer and each sector
+  std::vector<std::vector<unsigned char>> cd_ring_mod;							///< A list of module numbers for each CD detector layer and each ring
+  std::vector<std::vector<unsigned char>> cd_sector_mod;							///< A list of module numbers for each CD detector layer and each sector
+  std::vector<std::vector<unsigned char>> cd_ring_ch;							///< A list of channel numbers for each CD detector layer and each ring
+  std::vector<std::vector<unsigned char>> cd_sector_ch;							///< A list of channel numbers for each CD detector layer and each sector
+  std::vector<std::vector<std::vector<char>>> cd_layer;		///< A channel map for the CD layers (-1 if not a CD)
+  std::vector<std::vector<std::vector<char>>> cd_sector; ///< A channel map for the CD sectors (-1 if not a CD)
+  std::vector<std::vector<std::vector<char>>> cd_ring; ///< A channel map for the CD rings (-1 if not a CD)
+  
 };
 
 #endif
