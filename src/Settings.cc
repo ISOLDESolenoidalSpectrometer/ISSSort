@@ -444,6 +444,12 @@ void ISSSettings::ReadSettings() {
 	n_cd_sector = config->GetValue( "NumberOfCDSectors", 4 );
 	n_cd_layer  = config->GetValue( "NumberOfCDLayers", 2 );
 	n_cd_ring  = config->GetValue( "NumberOfCDRings", 2 );
+	cd_eloss_start = config->GetValue( "RecoilEnergyLossStart", 0 );
+	cd_eloss_stop  = config->GetValue( "RecoilEnergyLossStop", 0 );
+	cd_erest_start = config->GetValue( "RecoilEnergyRestStart", 1 );
+	cd_erest_stop  = config->GetValue( "RecoilEnergyRestStop", 1 );
+	cd_etot_start  = config->GetValue( "RecoilEnergyTotalStart", 0 );
+	cd_etot_stop   = config->GetValue( "RecoilEnergyTotalStop", 1 );
 
 	cd_sector_vme.resize( n_cd_layer );
 	cd_ring_vme.resize( n_cd_layer );

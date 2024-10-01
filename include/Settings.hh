@@ -329,6 +329,12 @@ private:
   unsigned char n_cd_layer; ///< Number of CD detector layers (layer 0 is dE, layer 1 is E)
   unsigned char n_cd_sector;								///< Number of CD detector sectors for each detector
   unsigned char n_cd_ring;								///< Number of CD detector rings for each detector
+  unsigned char cd_eloss_start;							///< Start layer for integrating energy loss, 0 for Silicon, about 1 for gas.
+  unsigned char cd_eloss_stop;							///< Stop layer for integrating energy loss, 0 for Silicon, about 1 for gas.
+  unsigned char cd_erest_start;							///< Start layer for integrating energy rest, 1 for Silicon, about 5 for gas.
+  unsigned char cd_erest_stop;							///< Stop layer for integrating energy rest, 1 for Silicon, about 5 for gas.
+  unsigned char cd_etot_start;							///< Start layer for integrating energy total, 0 for Silicon, 0 for gas.
+  unsigned char cd_etot_stop;								///< Stop layer for integrating energy total, 1 for Silicon, about 8 for gas.
   std::vector<std::vector<unsigned char>> cd_ring_vme; ///< A list of VME crate numbers for each CD detector layer and each ring
   std::vector<std::vector<unsigned char>> cd_sector_vme; ///< A list of VME crate numbers for each CD detector layer and each sector
   std::vector<std::vector<unsigned char>> cd_ring_mod;							///< A list of module numbers for each CD detector layer and each ring

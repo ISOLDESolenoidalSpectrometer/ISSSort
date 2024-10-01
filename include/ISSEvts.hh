@@ -403,6 +403,90 @@ private:
 	
 };
 
+class ISSCDEvt : public TObject {
+
+public:
+  ISSCDEvt();
+  ~ISSCDEvt();
+
+  void SetEvent( std::vector<float> myenergy, std::vector<unsigned char> myid,
+		 unsigned char mysec, unsigned char myring,
+		 double mydetime, double myetime );
+
+  void ClearEvent();
+
+  inline void AddFragment( float myenergy, unsigned char myid ){
+		energy.push_back( myenergy );
+		id.push_back( myid );
+	};
+
+  inline void SetSector( unsigned char s ){ sec = s; };
+  inline void SetRing( unsigned char s ){ ring = s; };
+  inline void SetdETime( double t ){ detime = t; };
+  inline void SetETime( double t ){ etime = t; };
+
+  inline unsigned char	GetDepth(){ return energy.size(); };
+  inline unsigned char	GetSector(){ return sec; };
+  inline unsigned char	GetRing(){ return ring; };
+  inline double		GetTime(){ return detime; };
+  inline double		GetdETime(){ return detime; };
+  inline double		GetETime(){ return etime; };
+
+  inline std::vector<float>			GetEnergies(){ return energy; };
+  inline std::vector<unsigned char>	GetIDs(){ return id; };
+
+
+  inline float GetEnergy( unsigned char i ){
+    if( i < energy.size() ) return energy.at(i);
+    else return 0;
+  };
+
+  inline float GetEnergyLoss( unsigned char start = 0, unsigned char stop = 0 ){
+    float total = 0;
+    for( unsigned int j = 0; j < energy.size(); ++j )
+      if( GetID(j) >= start && GetID(j) <= stop )
+	total += energy.at(j);
+    return total;
+  };
+
+  inline float GetEnergyRest( unsigned char start = 1, unsigned char stop = 1 ){
+    float total = 0;
+    for( unsigned int j = 0; j < energy.size(); ++j )
+      if( GetID(j) >= start && GetID(j) <= stop )
+	total += energy.at(j);
+    return total;
+  };
+
+  inline float GetEnergyTotal( unsigned char start = 0, unsigned char stop = 1 ){
+    float total = 0;
+    for( unsigned int j = 0; j < energy.size(); ++j )
+      if( GetID(j) >= start && GetID(j) <= stop )
+	total += energy.at(j);
+    return total;
+  };
+
+  inline unsigned char GetID( unsigned char i ){
+		if( i < id.size() ) return id.at(i);
+		else return -1;
+	};
+
+
+private:
+
+  // variables for CD events
+  std::vector<float>			energy;	///< differential energy list, i.e. Silicon dE-E length = 2
+  std::vector<unsigned char>	id;		///< differential id list, i.e. dE = 0, E = 1, for example
+  unsigned char				sec;	///< sector of the CD detector
+  unsigned char				ring;	///< ring of the CD detector
+  double					detime;	///< time stamp of dE event
+  double					etime;	///< time stamp of E event
+
+  ClassDef( ISSCDEvt, 1 );
+
+};
+
+
+
 class ISSEvts : public TObject {
 	//class ISSEvts {
 	
@@ -420,7 +504,8 @@ public:
 	void AddEvt( std::shared_ptr<ISSZeroDegreeEvt> event );
 	void AddEvt( std::shared_ptr<ISSGammaRayEvt> event );
 	void AddEvt( std::shared_ptr<ISSLumeEvt> event );
-	
+	void AddEvt( std::shared_ptr<ISSCDEvt> event );
+
 	inline unsigned int GetArrayMultiplicity(){ return array_event.size(); };
 	inline unsigned int GetArrayPMultiplicity(){ return arrayp_event.size(); };
 	inline unsigned int GetRecoilMultiplicity(){ return recoil_event.size(); };
@@ -429,7 +514,8 @@ public:
 	inline unsigned int GetZeroDegreeMultiplicity(){ return zd_event.size(); };
 	inline unsigned int GetGammaRayMultiplicity(){ return gamma_event.size(); };
 	inline unsigned int GetLumeMultiplicity(){ return lume_event.size(); };
-	
+	inline unsigned int GetCDMultiplicity(){ return cd_event.size(); };
+
 	inline std::shared_ptr<ISSArrayEvt> GetArrayEvt( unsigned int i ){
 		if( i < array_event.size() ) return std::make_shared<ISSArrayEvt>( array_event.at(i) );
 		else return nullptr;
@@ -462,7 +548,11 @@ public:
 		if( i < lume_event.size() ) return std::make_shared<ISSLumeEvt>( lume_event.at(i) );
 		else return nullptr;
 	};
-	
+	inline std::shared_ptr<ISSCDEvt> GetCDEvt( unsigned int i ){
+		if( i < cd_event.size() ) return std::make_shared<ISSCDEvt>( cd_event.at(i) );
+		else return nullptr;
+	};
+
 	void ClearEvt();
 	
 	// ISOLDE timestamping
@@ -494,9 +584,10 @@ private:
 	std::vector<ISSElumEvt> elum_event;
 	std::vector<ISSZeroDegreeEvt> zd_event;
 	std::vector<ISSGammaRayEvt> gamma_event;
-	std::vector<ISSLumeEvt> lume_event;
-	
-	ClassDef( ISSEvts, 8 )
+        std::vector<ISSLumeEvt> lume_event;
+	std::vector<ISSCDEvt> cd_event;
+
+	ClassDef( ISSEvts, 9 )
 	
 };
 

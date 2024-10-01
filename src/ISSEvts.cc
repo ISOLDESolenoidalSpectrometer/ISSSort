@@ -27,7 +27,8 @@ void ISSEvts::ClearEvt() {
 	zd_event.clear();
 	gamma_event.clear();
 	lume_event.clear();
-	
+        cd_event.clear();
+
 	std::vector<ISSArrayEvt>().swap(array_event);
 	std::vector<ISSArrayPEvt>().swap(arrayp_event);
 	std::vector<ISSRecoilEvt>().swap(recoil_event);
@@ -36,7 +37,8 @@ void ISSEvts::ClearEvt() {
 	std::vector<ISSZeroDegreeEvt>().swap(zd_event);
 	std::vector<ISSGammaRayEvt>().swap(gamma_event);
 	std::vector<ISSLumeEvt>().swap(lume_event);
-	
+	std::vector<ISSCDEvt>().swap(cd_event);
+
 	ebis = -999;
 	t1 = -999;
 	
@@ -160,6 +162,21 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSLumeEvt> event ) {
 	
 	lume_event.push_back( fill_evt );
 	
+}
+
+void ISSEvts::AddEvt( std::shared_ptr<ISSCDEvt> event ) {
+
+	// Make a copy of the event and push it back
+	ISSCDEvt fill_evt;
+	fill_evt.SetEvent(	event->GetEnergies(),
+						event->GetIDs(),
+						event->GetSector(),
+				event->GetRing(),
+				event->GetdETime(),
+				event->GetETime() );
+
+	cd_event.push_back( fill_evt );
+
 }
 
 // ------------ //
@@ -591,6 +608,38 @@ void ISSLumeEvt::SetEvent( float myenergy, unsigned char myid,
 	return;
 	
 }
+
+// ---------------- //
+// CD events        //
+// ---------------- //
+
+ISSCDEvt::ISSCDEvt(){}
+ISSCDEvt::~ISSCDEvt(){}
+
+void ISSCDEvt::SetEvent( std::vector<float> myenergy, std::vector<unsigned char> myid,
+			 unsigned char mysec, unsigned char myring,
+			 double mydetime, double myetime ) {
+
+	energy = myenergy;
+	id = myid;
+	sec = mysec;
+	ring = myring;
+	detime = mydetime;
+	etime = myetime;
+
+	return;
+
+}
+
+void ISSCDEvt::ClearEvent(){
+
+	energy.clear();
+	id.clear();
+	std::vector<float>().swap(energy);
+	std::vector<unsigned char>().swap(id);
+
+}
+
 
 // Get minimum time from any old event
 double ISSEvts::GetTime(){
