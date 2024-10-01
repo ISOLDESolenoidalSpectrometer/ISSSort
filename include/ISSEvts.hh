@@ -68,7 +68,7 @@ public:
 	static int	FindAsicN( unsigned short detNo );
 	
 	
-private:
+protected:
 	
 	// variables for particle event
 	bool			phit;	///< hit bit value for p-side event
@@ -95,8 +95,7 @@ public:
 	ISSArrayPEvt();
 	~ISSArrayPEvt();
 	
-private:
-	
+protected:
 	
 	ClassDef( ISSArrayPEvt, 1 )
 	
