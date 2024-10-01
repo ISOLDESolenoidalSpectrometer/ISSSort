@@ -29,7 +29,8 @@ void ISSEvts::ClearEvt() {
 	zd_event.clear();
 	gamma_event.clear();
 	lume_event.clear();
-	
+	cd_event.clear();
+
 	std::vector<ISSArrayEvt>().swap(array_event);
 	std::vector<ISSArrayPEvt>().swap(arrayp_event);
 	std::vector<ISSRecoilEvt>().swap(recoil_event);
@@ -38,7 +39,8 @@ void ISSEvts::ClearEvt() {
 	std::vector<ISSZeroDegreeEvt>().swap(zd_event);
 	std::vector<ISSGammaRayEvt>().swap(gamma_event);
 	std::vector<ISSLumeEvt>().swap(lume_event);
-	
+	std::vector<ISSCDEvt>().swap(cd_event);
+
 	ebis = -999;
 	t1 = -999;
 	
@@ -163,6 +165,22 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSLumeEvt> event ) {
 	
 	lume_event.push_back( fill_evt );
 	
+}
+
+void ISSEvts::AddEvt( std::shared_ptr<ISSCDEvt> event ) {
+
+	// Make a copy of the event and push it back
+	ISSCDEvt fill_evt;
+	fill_evt.SetEvent( event->GetEnergies(),	// Energies
+					  event->GetIDs(),			// IDs
+					  event->GetSector(),		// Sector
+					  event->GetRing(),			// Ring
+					  event->GetdETime(),		// dE time
+					  event->GetETime() );		// E time
+
+
+	cd_event.push_back( fill_evt );
+
 }
 
 // ----------------------- //
@@ -588,6 +606,39 @@ void ISSLumeEvt::SetEvent( float myenergy, unsigned char myid,
 	
 }
 
+// ---------------- //
+// CD events        //
+// ---------------- //
+
+ISSCDEvt::ISSCDEvt(){}
+ISSCDEvt::~ISSCDEvt(){}
+
+void ISSCDEvt::SetEvent( std::vector<float> myenergy,
+			 std::vector<unsigned char> myid,
+			 unsigned char mysec, unsigned char myring,
+			 double mydetime, double myetime ) {
+
+
+	if( myenergy.size() != myid.size() ) {
+
+		std::cerr << __PRETTY_FUNCTION__;
+		std::cerr << " error: The vectors for energy and id must have the same size!";
+		std::cerr << std::endl;
+		return;
+
+	}
+
+	energy = myenergy;
+	id = myid;
+	sec = mysec;
+	ring = myring;
+	detime = mydetime;
+	etime = myetime;
+
+	return;
+
+}
+
 // Get minimum time from any old event
 double ISSEvts::GetTime(){
 	
@@ -665,6 +716,15 @@ double ISSEvts::GetTime(){
 		
 	}
 	
+	// Check minimum time from all CD events
+	for( unsigned int i = 0; i < this->GetCDMultiplicity(); ++i ){
+
+		double cur_time = this->GetCDEvt(i)->GetTime();
+		if( cur_time < min_time || min_time < 0 )
+			min_time = cur_time;
+
+	}
+
 	// if it's still not been set, make it zero
 	if( min_time < 0 ) min_time = 0;
 	
