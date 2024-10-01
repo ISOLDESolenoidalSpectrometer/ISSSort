@@ -143,6 +143,7 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSGammaRayEvt> event ) {
 	ISSGammaRayEvt fill_evt;
 	fill_evt.SetEvent( event->GetEnergy(),
 					  event->GetID(),
+					  event->GetSector(),
 					  event->GetType(),
 					  event->GetTime() );
 	
@@ -154,7 +155,7 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSLumeEvt> event ) {
 	
 	// Make a copy of the event and push it back
 	ISSLumeEvt fill_evt;
-	fill_evt.SetEvent(	event->GetBE(),
+	fill_evt.SetEvent( event->GetBE(),
 					  event->GetID(),
 					  event->GetTime(),
 					  event->GetNE(),
@@ -513,28 +514,6 @@ ISSArrayPEvt::~ISSArrayPEvt(){}
 ISSRecoilEvt::ISSRecoilEvt(){}
 ISSRecoilEvt::~ISSRecoilEvt(){}
 
-void ISSRecoilEvt::SetEvent( std::vector<float> myenergy,
-							std::vector<unsigned char> myid, unsigned char mysec,
-							double mydetime, double myetime ) {
-	
-	energy = myenergy;
-	id = myid;
-	sec = mysec;
-	detime = mydetime;
-	etime = myetime;
-	
-	return;
-	
-}
-
-void ISSRecoilEvt::ClearEvent(){
-	
-	energy.clear();
-	id.clear();
-	std::vector<float>().swap(energy);
-	std::vector<unsigned char>().swap(id);
-	
-}
 
 // ----------- //
 // MWPC events //
@@ -560,47 +539,12 @@ void ISSMwpcEvt::SetEvent( int mytacdiff, unsigned char myaxis,
 ISSElumEvt::ISSElumEvt(){}
 ISSElumEvt::~ISSElumEvt(){}
 
-void ISSElumEvt::SetEvent( float myenergy, unsigned char myid,
-						  unsigned char mysec, double mytime ) {
-	
-	energy = myenergy;
-	id = myid;
-	sec = mysec;
-	time = mytime;
-	
-	return;
-	
-}
-
 
 // ----------------- //
 // ZeroDegree events //
 // ----------------- //
 ISSZeroDegreeEvt::ISSZeroDegreeEvt(){}
 ISSZeroDegreeEvt::~ISSZeroDegreeEvt(){}
-
-void ISSZeroDegreeEvt::SetEvent( std::vector<float> myenergy,
-								std::vector<unsigned char> myid, unsigned char mysec,
-								double mydetime, double myetime ) {
-	
-	energy = myenergy;
-	id = myid;
-	sec = mysec;
-	detime = mydetime;
-	etime = myetime;
-	
-	return;
-	
-}
-
-void ISSZeroDegreeEvt::ClearEvent(){
-	
-	energy.clear();
-	id.clear();
-	std::vector<float>().swap(energy);
-	std::vector<unsigned char>().swap(id);
-	
-}
 
 
 // ---------------- //
@@ -610,10 +554,12 @@ ISSGammaRayEvt::ISSGammaRayEvt(){}
 ISSGammaRayEvt::~ISSGammaRayEvt(){}
 
 void ISSGammaRayEvt::SetEvent( float myenergy, unsigned char myid,
-							  unsigned char mytype, double mytime ) {
+							  unsigned char mysec, unsigned char mytype,
+							  double mytime ) {
 	
 	energy = myenergy;
 	id = myid;
+	sec = mysec;
 	type = mytype;
 	time = mytime;
 	

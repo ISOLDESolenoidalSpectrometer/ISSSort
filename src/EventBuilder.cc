@@ -2299,7 +2299,7 @@ void ISSEventBuilder::RecoilFinder() {
 			recoil_evt->ClearEvent();
 			recoil_evt->SetdETime( rtd_list[i] );
 			recoil_evt->SetSector( rsec_list[i] );
-			recoil_evt->AddRecoil( ren_list[i], rid_list[i] );
+			recoil_evt->AddFragment( ren_list[i], rid_list[i] );
 			
 			index.push_back(i);
 			layers.push_back(rid_list[i]);
@@ -2331,7 +2331,7 @@ void ISSEventBuilder::RecoilFinder() {
 						
 						index.push_back(j);
 						layers.push_back(rid_list[j]);
-						recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
+						recoil_evt->AddFragment( ren_list[j], rid_list[j] );
 						
 						if( rid_list[j] == (int)set->GetRecoilEnergyRestStart() )
 							recoil_evt->SetETime( rtd_list[j] );
@@ -2485,7 +2485,7 @@ void ISSEventBuilder::ZeroDegreeFinder() {
 			zd_evt->ClearEvent();
 			zd_evt->SetdETime( ztd_list[i] );
 			zd_evt->SetSector( 0 ); // always 0 ZeroDegree
-			zd_evt->AddZeroDegree( zen_list[i], 0 );
+			zd_evt->AddFragment( zen_list[i], 0 );
 
 			// Look for matching dE events
 			for( unsigned int j = 0; j < zen_list.size(); ++j ) {
@@ -2501,7 +2501,7 @@ void ISSEventBuilder::ZeroDegreeFinder() {
 				  TMath::Abs( ztd_list[i] - ztd_list[j] ) < set->GetZeroDegreeHitWindow() ){
 					
 					index.push_back(j);
-					zd_evt->AddZeroDegree( zen_list[j], zid_list[j] );
+					zd_evt->AddFragment( zen_list[j], zid_list[j] );
 					if( zid_list[j] == 1 ) zd_evt->SetETime( ztd_list[i] );
 					
 					// Histogram the ZeroDegree
@@ -2559,7 +2559,7 @@ void ISSEventBuilder::GammaRayFinder() {
 		
 		// Set the GammaRay event (nice and easy, ScintArray type = 0)
 		gamma_evt->SetEvent( saen_list[i], said_list[i],
-							 0, satd_list[i] );
+							0, 0, satd_list[i] );
 
 		// Write event to tree
 		write_evts->AddEvt( gamma_evt );
