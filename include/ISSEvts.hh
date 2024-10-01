@@ -40,8 +40,8 @@ public:
 	inline float 			GetEnergy(){ return pen; };
 	inline float 			GetPEnergy(){ return pen; };
 	inline float 			GetNEnergy(){ return nen; };
-	inline unsigned char 	GetPID(){ return pid; };
-	inline unsigned char 	GetNID(){ return nid; };
+	inline unsigned char	GetPID(){ return pid; };
+	inline unsigned char	GetNID(){ return nid; };
 	inline double			GetTime(){ return ptime; };
 	inline double			GetTimeDouble(){ return ptime; };
 	inline double			GetPTime(){ return ptime; };
