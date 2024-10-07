@@ -1856,6 +1856,19 @@ unsigned long ISSHistogrammer::FillHists() {
 				Ex_vs_z_ebis_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
 				Ex_vs_z_ebis_off_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 				
+				// Check for events in the user-defined T1 window
+				Ex_vs_T1->Fill( array_evt->GetTime() - read_evts->GetT1(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+				if( T1Cut( array_evt ) ) {
+					
+					E_vs_z_T1->Fill( react->GetZmeasured(), array_evt->GetEnergy(), -1.0 * react->GetEBISFillRatio() );
+					Theta_T1->Fill( react->GetThetaCM() * TMath::RadToDeg(), -1.0 * react->GetEBISFillRatio() );
+					Ex_T1->Fill( react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+					E_vs_theta_T1->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy(), -1.0 * react->GetEBISFillRatio() );
+					Ex_vs_theta_T1->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+					Ex_vs_z_T1->Fill( react->GetZmeasured(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+					
+				} // T1
+
 				// Check the E vs z cuts from the user
 				for( unsigned int k = 0; k < react->GetNumberOfEvsZCuts(); ++k ){
 					
@@ -1875,6 +1888,19 @@ unsigned long ISSHistogrammer::FillHists() {
 						Ex_vs_z_ebis_cut[k]->Fill( react->GetZmeasured(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
 						Ex_vs_z_ebis_off_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
 						
+						// Check for events in the user-defined T1 window
+						Ex_vs_T1_cut[k]->Fill( array_evt->GetTime() - read_evts->GetT1(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+						if( T1Cut( array_evt ) ) {
+							
+							E_vs_z_T1_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy(), -1.0 * react->GetEBISFillRatio() );
+							Theta_T1_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), -1.0 * react->GetEBISFillRatio() );
+							Ex_T1_cut[k]->Fill( react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+							E_vs_theta_T1_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy(), -1.0 * react->GetEBISFillRatio() );
+							Ex_vs_theta_T1_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+							Ex_vs_z_T1_cut[k]->Fill( react->GetZmeasured(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+							
+						} // T1
+
 					} // inside cut
 					
 				} // loop over cuts
