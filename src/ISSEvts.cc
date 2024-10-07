@@ -27,7 +27,7 @@ void ISSEvts::ClearEvt() {
 	zd_event.clear();
 	gamma_event.clear();
 	lume_event.clear();
-
+	
 	std::vector<ISSArrayEvt>().swap(array_event);
 	std::vector<ISSArrayPEvt>().swap(arrayp_event);
 	std::vector<ISSRecoilEvt>().swap(recoil_event);
@@ -36,12 +36,12 @@ void ISSEvts::ClearEvt() {
 	std::vector<ISSZeroDegreeEvt>().swap(zd_event);
 	std::vector<ISSGammaRayEvt>().swap(gamma_event);
 	std::vector<ISSLumeEvt>().swap(lume_event);
-
+	
 	ebis = -999;
 	t1 = -999;
-
+	
 	return;
-
+	
 }
 
 void ISSEvts::AddEvt( std::shared_ptr<ISSArrayEvt> event ) {
@@ -49,15 +49,15 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSArrayEvt> event ) {
 	// Make a copy of the event and push it back
 	ISSArrayEvt fill_evt;
 	fill_evt.SetEvent( event->GetPEnergy(),
-					   event->GetNEnergy(),
-					   event->GetPID(),
-					   event->GetNID(),
-					   event->GetPTime(),
-					   event->GetNTime(),
-					   event->GetPHit(),
-					   event->GetNHit(),
-					   event->GetModule(),
-					   event->GetRow() );
+					  event->GetNEnergy(),
+					  event->GetPID(),
+					  event->GetNID(),
+					  event->GetPTime(),
+					  event->GetNTime(),
+					  event->GetPHit(),
+					  event->GetNHit(),
+					  event->GetModule(),
+					  event->GetRow() );
 	
 	array_event.push_back( fill_evt );
 	
@@ -68,16 +68,16 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSArrayPEvt> event ) {
 	// Make a copy of the event and push it back
 	ISSArrayPEvt fill_evt;
 	fill_evt.SetEvent( event->GetPEnergy(),
-					   event->GetNEnergy(),
-					   event->GetPID(),
-					   event->GetNID(),
-					   event->GetPTime(),
-					   event->GetNTime(),
-					   event->GetPHit(),
-					   event->GetNHit(),
-					   event->GetModule(),
-					   event->GetRow() );
-
+					  event->GetNEnergy(),
+					  event->GetPID(),
+					  event->GetNID(),
+					  event->GetPTime(),
+					  event->GetNTime(),
+					  event->GetPHit(),
+					  event->GetNHit(),
+					  event->GetModule(),
+					  event->GetRow() );
+	
 	arrayp_event.push_back( fill_evt );
 	
 }
@@ -87,11 +87,11 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSRecoilEvt> event ) {
 	// Make a copy of the event and push it back
 	ISSRecoilEvt fill_evt;
 	fill_evt.SetEvent( event->GetEnergies(),
-					   event->GetIDs(),
-					   event->GetSector(),
-					   event->GetdETime(),
-					   event->GetETime() );
-
+					  event->GetIDs(),
+					  event->GetSector(),
+					  event->GetdETime(),
+					  event->GetETime() );
+	
 	recoil_event.push_back( fill_evt );
 	
 }
@@ -101,8 +101,8 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSMwpcEvt> event ) {
 	// Make a copy of the event and push it back
 	ISSMwpcEvt fill_evt;
 	fill_evt.SetEvent( event->GetTacDiff(),
-					   event->GetAxis(),
-					   event->GetTime() );
+					  event->GetAxis(),
+					  event->GetTime() );
 	
 	mwpc_event.push_back( fill_evt );
 	
@@ -113,9 +113,9 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSElumEvt> event ) {
 	// Make a copy of the event and push it back
 	ISSElumEvt fill_evt;
 	fill_evt.SetEvent( event->GetEnergy(),
-					   event->GetID(),
-					   event->GetSector(),
-					   event->GetTime() );
+					  event->GetID(),
+					  event->GetSector(),
+					  event->GetTime() );
 	
 	elum_event.push_back( fill_evt );
 	
@@ -126,11 +126,11 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSZeroDegreeEvt> event ) {
 	// Make a copy of the event and push it back
 	ISSZeroDegreeEvt fill_evt;
 	fill_evt.SetEvent( event->GetEnergies(),
-					   event->GetIDs(),
-					   event->GetSector(),
-					   event->GetdETime(),
-					   event->GetETime() );
-
+					  event->GetIDs(),
+					  event->GetSector(),
+					  event->GetdETime(),
+					  event->GetETime() );
+	
 	zd_event.push_back( fill_evt );
 	
 }
@@ -140,26 +140,26 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSGammaRayEvt> event ) {
 	// Make a copy of the event and push it back
 	ISSGammaRayEvt fill_evt;
 	fill_evt.SetEvent( event->GetEnergy(),
-					   event->GetID(),
-					   event->GetType(),
-					   event->GetTime() );
+					  event->GetID(),
+					  event->GetType(),
+					  event->GetTime() );
 	
 	gamma_event.push_back( fill_evt );
 	
 }
 
 void ISSEvts::AddEvt( std::shared_ptr<ISSLumeEvt> event ) {
-
+	
 	// Make a copy of the event and push it back
 	ISSLumeEvt fill_evt;
 	fill_evt.SetEvent(	event->GetBE(),
-						event->GetID(),
-						event->GetTime(),
-						event->GetNE(),
-						event->GetFE() );
-
+					  event->GetID(),
+					  event->GetTime(),
+					  event->GetNE(),
+					  event->GetFE() );
+	
 	lume_event.push_back( fill_evt );
-
+	
 }
 
 // ------------ //
@@ -169,24 +169,24 @@ ISSArrayEvt::ISSArrayEvt(){}
 ISSArrayEvt::~ISSArrayEvt(){}
 
 void ISSArrayEvt::SetEvent( float mypen, float mynen,
-						 unsigned char mypid, unsigned char mynid,
-						 double myptime, double myntime,
-						 bool myphit, bool mynhit,
-						 unsigned char mymod, unsigned char myrow ) {
+						   unsigned char mypid, unsigned char mynid,
+						   double myptime, double myntime,
+						   bool myphit, bool mynhit,
+						   unsigned char mymod, unsigned char myrow ) {
 	
 	pen = mypen;
 	ptime = myptime;
 	pid = mypid;
 	phit = myphit;
-
+	
 	nen = mynen;
 	ntime = myntime;
 	nid = mynid;
 	nhit = mynhit;
-
+	
 	mod = mymod;
 	row = myrow;
-
+	
 	return;
 	
 }
@@ -197,15 +197,15 @@ void ISSArrayEvt::CopyEvent( std::shared_ptr<ISSArrayEvt> in ){
 	ptime	= in->GetPTime();
 	pid		= in->GetPID();
 	phit	= in->GetPHit();
-
+	
 	nen		= in->GetNEnergy();
 	ntime	= in->GetNTime();
 	nid		= in->GetNID();
 	nhit	= in->GetNHit();
-
+	
 	mod		= in->GetModule();
 	row		= in->GetRow();
-
+	
 	return;
 	
 }
@@ -213,19 +213,19 @@ void ISSArrayEvt::CopyEvent( std::shared_ptr<ISSArrayEvt> in ){
 float ISSArrayEvt::GetX(){
 	
 	return GetPhiXY().X();
-
+	
 }
 
 float ISSArrayEvt::GetY(){
 	
 	return GetPhiXY().Y();
-
+	
 }
 
 float ISSArrayEvt::GetPhi(){
 	
 	return GetPhiXY().Phi();
-
+	
 }
 
 float ISSArrayEvt::GetZ(){
@@ -237,12 +237,12 @@ float ISSArrayEvt::GetZ(){
 	/// x is positive in the vertical direction towards the sky
 	/// y is positive in the horizontal direction towards XT03 (right)
 	/// phi is positive in the clockwise direction, looking from the origin to positive z (beam direction)
-
+	
 	float d = 127.5 - (float)pid;	// take centre of the end strip
 	d *= pstrip_pitch;				// p-side strip pitch = 0.953 mm
 	d += wafer_guard;				// distance from wafer edge to active region
 	d += ( wafer_length + wafer_gap ) * (3.0 - (float)row);	// move to correct row
-
+	
 	return d; // in mm
 	
 }
@@ -261,7 +261,7 @@ TVector2 ISSArrayEvt::GetPhiXY(){
 	float x = array_radius; // diameter is 54.0 mm according to Chris Everett's CAD drawings
 	float y = nid%11 - 5.0;	// take strip relative to centre (11 strips per face: 22 strips per module)
 	y *= nstrip_pitch;		// n-side strip pitch = 2.0 mm
-
+	
 	// This vector can now be rotated to the correct position
 	TVector2 vec( x, y );
 	
@@ -271,7 +271,7 @@ TVector2 ISSArrayEvt::GetPhiXY(){
 		vec = vec.Rotate(  2. * TMath::Pi() / 6. );	// rotate 60˚ for each face
 	
 	return vec;
-
+	
 }
 
 
@@ -287,7 +287,7 @@ char ISSArrayEvt::FindModule( unsigned short detNo ){
 	
 	/// Return the module number depending on the detector number from NPTool. 
 	if( detNo > 24 ) return -1;
-    return ( (detNo - 1) % 6 ) / 2;
+	return ( (detNo - 1) % 6 ) / 2;
 	
 }
 
@@ -303,12 +303,12 @@ char ISSArrayEvt::FindAsicP( unsigned short detNo ){
 	
 	/// Return the p-side ASIC number depending on the detector number from NPTool
 	if( detNo > 24 ) return -1;
-
+	
 	unsigned char row = FindRow( detNo );
 	unsigned char asic = row;
 	if( row > 0 ) asic++;
 	if( row > 3 ) asic++;
-
+	
 	return asic;
 	
 }
@@ -317,11 +317,11 @@ char ISSArrayEvt::FindAsicN( unsigned short detNo ){
 	
 	/// Return the n-side ASIC number depending on the detector number from NPTool
 	if( detNo > 24 ) return -1;
-
+	
 	unsigned char row = FindRow( detNo );
 	unsigned char asic = 1;
 	if( row == 2 || row == 3 ) asic = 4;
-
+	
 	return asic;
 	
 }
@@ -332,17 +332,17 @@ char ISSArrayEvt::FindModule( double phi ){
 	// First put us in the 0 -> 2π range
 	if( phi < 0.0 ) phi += TMath::TwoPi();
 	if( phi > TMath::TwoPi() ) phi -= TMath::TwoPi();
-
+	
 	// module 0 combos
 	if( phi > 5. * TMath::Pi() / 3. ) return 0;
 	else if( phi <= TMath::Pi() / 3. ) return 0;
 	
 	// module 1 combos
 	else if( phi > TMath::Pi() / 3. && phi <= TMath::Pi() ) return 1;
-
+	
 	// module 2 combos
 	else if( phi > TMath::Pi() && phi <= 5. * TMath::Pi() / 3. ) return 2;
-
+	
 	// shouldn't be anything else left
 	else return -1;
 	
@@ -357,11 +357,11 @@ char ISSArrayEvt::FindRow( double z ){
 		
 		// z0 is defined to edge of first wafer, so we start from 0
 		if( z >  (double)(3-i) * wafer_length + (double)(3-i) * wafer_gap &&
-		    z <= (double)(4-i) * wafer_length + (double)(3-i) * wafer_gap )
+		   z <= (double)(4-i) * wafer_length + (double)(3-i) * wafer_gap )
 			return i;
 		
 	}
-
+	
 	// everything else won't hit the silicon
 	return -1;
 	
@@ -378,19 +378,19 @@ char ISSArrayEvt::FindPID( double z ){
 	if( row < 0 ) return -1;
 	
 	// Physical silicon length and gaps
-
+	
 	// Shift the z to within a single silicon
 	z -= (double)(3-row) * ( wafer_length + wafer_gap );
-
+	
 	// Shift the z to edge of the first strip
 	z -= wafer_guard;
-
+	
 	// Loop over each strip
 	for( unsigned char i = 0; i < 128; i++ ){
 		
 		// z0 is defined to edge of first wafer, so we start from 0
 		if( z >  (double)(127-i) * pstrip_pitch &&
-		    z <= (double)(128-i) * pstrip_pitch )
+		   z <= (double)(128-i) * pstrip_pitch )
 			return i;
 		
 	}
@@ -413,7 +413,7 @@ char ISSArrayEvt::FindNID( double phi ){
 	// Shift the phi to within a single module
 	phi += TMath::TwoPi() / 6.;
 	phi -= (double)mod * TMath::TwoPi() / 3.;
-
+	
 	// Then put us in the 0 -> 2π range
 	if( phi < 0.0 ) phi += TMath::TwoPi();
 	if( phi > TMath::TwoPi() ) phi -= TMath::TwoPi();
@@ -421,7 +421,7 @@ char ISSArrayEvt::FindNID( double phi ){
 	// Check if we are on side A or B
 	bool sideB = false;
 	if( phi > TMath::TwoPi() / 6. ) {
-	
+		
 		sideB = true;
 		phi -= TMath::TwoPi() / 6.;
 		
@@ -433,11 +433,11 @@ char ISSArrayEvt::FindNID( double phi ){
 		// Vector for the strip edge
 		TVector2 vec_low( array_radius, ( (double)i-5.5 ) * nstrip_pitch );
 		TVector2 vec_upp( array_radius, ( (double)i-4.5 ) * nstrip_pitch );
-
+		
 		// Rotate by pi/6 to get it aligned with reference
 		vec_low.Rotate( TMath::TwoPi() / 6. );
 		vec_upp.Rotate( TMath::TwoPi() / 6. );
-
+		
 		// check if we are in the strip
 		if( phi > vec_low.Phi() && phi <= vec_upp.Phi() )
 			return i + 11 * sideB;
@@ -464,15 +464,15 @@ ISSRecoilEvt::ISSRecoilEvt(){}
 ISSRecoilEvt::~ISSRecoilEvt(){}
 
 void ISSRecoilEvt::SetEvent( std::vector<float> myenergy,
-						  std::vector<unsigned char> myid, unsigned char mysec,
-						  double mydetime, double myetime ) {
+							std::vector<unsigned char> myid, unsigned char mysec,
+							double mydetime, double myetime ) {
 	
 	energy = myenergy;
 	id = myid;
 	sec = mysec;
 	detime = mydetime;
 	etime = myetime;
-
+	
 	return;
 	
 }
@@ -483,7 +483,7 @@ void ISSRecoilEvt::ClearEvent(){
 	id.clear();
 	std::vector<float>().swap(energy);
 	std::vector<unsigned char>().swap(id);
-
+	
 }
 
 // ----------- //
@@ -493,7 +493,7 @@ ISSMwpcEvt::ISSMwpcEvt(){}
 ISSMwpcEvt::~ISSMwpcEvt(){}
 
 void ISSMwpcEvt::SetEvent( int mytacdiff, unsigned char myaxis,
-						double mytime ) {
+						  double mytime ) {
 	
 	tacdiff = mytacdiff;
 	axis = myaxis;
@@ -511,7 +511,7 @@ ISSElumEvt::ISSElumEvt(){}
 ISSElumEvt::~ISSElumEvt(){}
 
 void ISSElumEvt::SetEvent( float myenergy, unsigned char myid,
-						unsigned char mysec, double mytime ) {
+						  unsigned char mysec, double mytime ) {
 	
 	energy = myenergy;
 	id = myid;
@@ -530,15 +530,15 @@ ISSZeroDegreeEvt::ISSZeroDegreeEvt(){}
 ISSZeroDegreeEvt::~ISSZeroDegreeEvt(){}
 
 void ISSZeroDegreeEvt::SetEvent( std::vector<float> myenergy,
-							  std::vector<unsigned char> myid, unsigned char mysec,
-							  double mydetime, double myetime ) {
+								std::vector<unsigned char> myid, unsigned char mysec,
+								double mydetime, double myetime ) {
 	
 	energy = myenergy;
 	id = myid;
 	sec = mysec;
 	detime = mydetime;
 	etime = myetime;
-
+	
 	return;
 	
 }
@@ -549,7 +549,7 @@ void ISSZeroDegreeEvt::ClearEvent(){
 	id.clear();
 	std::vector<float>().swap(energy);
 	std::vector<unsigned char>().swap(id);
-
+	
 }
 
 

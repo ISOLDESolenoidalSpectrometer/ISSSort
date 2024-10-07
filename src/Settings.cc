@@ -43,6 +43,7 @@ void ISSSettings::ReadSettings() {
 	
 	
 	// Info code initialisation
+	unsigned char tmp_val_uchar;
 	extt_code = config->GetValue( "ExternalTriggerCode", 14 );
 	ext_item_code = config->GetValue( "ExtItemCode", 7 );
 	sync_code = config->GetValue( "SyncCode", 4 );
@@ -62,34 +63,34 @@ void ISSSettings::ReadSettings() {
 	mesy_pulser_mod = config->GetValue( "PulserModuleMesytec", 1 );
 	mesy_pulser_ch = config->GetValue( "PulserChannelMesytec", 13 );
 	mesy_pulser_code = 25;
-	vme_ebis_crate = config->GetValue( "EBISCrate", 0 );
-	vme_ebis_crate = config->GetValue( "EBIS.Crate", vme_ebis_crate );
-	vme_ebis_mod = config->GetValue( "EBISModule", 1 );
-	vme_ebis_mod = config->GetValue( "EBIS.Module", vme_ebis_mod );
-	vme_ebis_ch = config->GetValue( "EBISChannel", 14 );
-	vme_ebis_ch = config->GetValue( "EBIS.Channel", vme_ebis_ch );
-	ebis_code = config->GetValue( "EBISCode", 21 );
-	ebis_code = config->GetValue( "EBIS.Code", ebis_code );
-	vme_t1_crate = config->GetValue( "T1Crate", 0 );
-	vme_t1_crate = config->GetValue( "T1.Crate", vme_t1_crate );
-	vme_t1_mod = config->GetValue( "T1Module", 1 );
-	vme_t1_mod = config->GetValue( "T1.Module", vme_t1_mod );
-	vme_t1_ch = config->GetValue( "T1Channel", 15 );
-	vme_t1_ch = config->GetValue( "T1.Channel", vme_t1_ch );
+	tmp_val_uchar = config->GetValue( "EBISCrate", 0 );
+	vme_ebis_crate = config->GetValue( "EBIS.Crate", tmp_val_uchar );
+	tmp_val_uchar = config->GetValue( "EBISModule", 1 );
+	vme_ebis_mod = config->GetValue( "EBIS.Module", tmp_val_uchar );
+	tmp_val_uchar = config->GetValue( "EBISChannel", 14 );
+	vme_ebis_ch = config->GetValue( "EBIS.Channel", tmp_val_uchar );
+	tmp_val_uchar = config->GetValue( "EBISCode", 21 );
+	ebis_code = config->GetValue( "EBIS.Code", tmp_val_uchar );
+	tmp_val_uchar = config->GetValue( "T1Crate", 0 );
+	vme_t1_crate = config->GetValue( "T1.Crate", tmp_val_uchar );
+	tmp_val_uchar = config->GetValue( "T1Module", 1 );
+	vme_t1_mod = config->GetValue( "T1.Module", tmp_val_uchar );
+	tmp_val_uchar = config->GetValue( "T1Channel", 15 );
+	vme_t1_ch = config->GetValue( "T1.Channel", tmp_val_uchar );
 	t1_code = 22;
-	vme_sc_crate = config->GetValue( "SCCrate", 0 );
-	vme_sc_crate = config->GetValue( "SC.Crate", vme_sc_crate );
-	vme_sc_mod = config->GetValue( "SCModule", 1 );
-	vme_sc_mod = config->GetValue( "SC.Module", vme_sc_mod );
-	vme_sc_ch = config->GetValue( "SCChannel", 12 );
-	vme_sc_ch = config->GetValue( "SC.Channel", vme_sc_ch );
+	tmp_val_uchar = config->GetValue( "SCCrate", 0 );
+	vme_sc_crate = config->GetValue( "SC.Crate", tmp_val_uchar );
+	tmp_val_uchar = config->GetValue( "SCModule", 1 );
+	vme_sc_mod = config->GetValue( "SC.Module", tmp_val_uchar );
+	tmp_val_uchar = config->GetValue( "SCChannel", 12 );
+	vme_sc_ch = config->GetValue( "SC.Channel", tmp_val_uchar );
 	sc_code = 23;
-	vme_laser_crate = config->GetValue( "LaserCrate", 0 );
-	vme_laser_crate = config->GetValue( "Laser.Crate", vme_laser_crate );
-	vme_laser_mod = config->GetValue( "LaserModule", 1 );
-	vme_laser_mod = config->GetValue( "Laser.Module", vme_laser_mod );
-	vme_laser_ch = config->GetValue( "LaserChannel", 11 );
-	vme_laser_ch = config->GetValue( "Laser.Channel", vme_laser_ch );
+	tmp_val_uchar = config->GetValue( "LaserCrate", 0 );
+	vme_laser_crate = config->GetValue( "Laser.Crate", tmp_val_uchar );
+	tmp_val_uchar = config->GetValue( "LaserModule", 1 );
+	vme_laser_mod = config->GetValue( "Laser.Module", tmp_val_uchar );
+	tmp_val_uchar = config->GetValue( "LaserChannel", 11 );
+	vme_laser_ch = config->GetValue( "Laser.Channel", tmp_val_uchar );
 	laser_code = 24;
 	
 	

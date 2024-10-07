@@ -348,12 +348,12 @@ void ISSHistogrammer::MakeHists() {
 		
 		hname = "Ex_vs_theta_ebis_on_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
-		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		htitle += " gated on EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
 		Ex_vs_theta_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_theta_ebis_off_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
-		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		htitle += " gated off EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
 		Ex_vs_theta_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_ebis_cut" + std::to_string(j);
@@ -363,12 +363,12 @@ void ISSHistogrammer::MakeHists() {
 		
 		hname = "Ex_vs_z_ebis_on_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for user cut " + std::to_string(j);
-		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		htitle += " gated on EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
 		Ex_vs_z_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_ebis_off_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for user cut " + std::to_string(j);
-		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		htitle += " gated off EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
 		Ex_vs_z_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 	}
@@ -465,12 +465,12 @@ void ISSHistogrammer::MakeHists() {
 		
 		hname = "Ex_vs_theta_ebis_on_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
-		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		htitle += " gated on EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
 		Ex_vs_theta_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_theta_ebis_off_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
-		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		htitle += " gated off EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
 		Ex_vs_theta_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_ebis_mod" + std::to_string(j);
@@ -480,12 +480,12 @@ void ISSHistogrammer::MakeHists() {
 		
 		hname = "Ex_vs_z_ebis_on_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for module " + std::to_string(j);
-		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		htitle += " gated on EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
 		Ex_vs_z_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 		hname = "Ex_vs_z_ebis_off_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for module " + std::to_string(j);
-		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		htitle += " gated off EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
 		Ex_vs_z_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
 		
 	}
@@ -1856,6 +1856,19 @@ unsigned long ISSHistogrammer::FillHists() {
 				Ex_vs_z_ebis_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
 				Ex_vs_z_ebis_off_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 				
+				// Check for events in the user-defined T1 window
+				Ex_vs_T1->Fill( array_evt->GetTime() - read_evts->GetT1(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+				if( T1Cut( array_evt ) ) {
+					
+					E_vs_z_T1->Fill( react->GetZmeasured(), array_evt->GetEnergy(), -1.0 * react->GetEBISFillRatio() );
+					Theta_T1->Fill( react->GetThetaCM() * TMath::RadToDeg(), -1.0 * react->GetEBISFillRatio() );
+					Ex_T1->Fill( react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+					E_vs_theta_T1->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy(), -1.0 * react->GetEBISFillRatio() );
+					Ex_vs_theta_T1->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+					Ex_vs_z_T1->Fill( react->GetZmeasured(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+					
+				} // T1
+
 				// Check the E vs z cuts from the user
 				for( unsigned int k = 0; k < react->GetNumberOfEvsZCuts(); ++k ){
 					
@@ -1875,6 +1888,19 @@ unsigned long ISSHistogrammer::FillHists() {
 						Ex_vs_z_ebis_cut[k]->Fill( react->GetZmeasured(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
 						Ex_vs_z_ebis_off_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
 						
+						// Check for events in the user-defined T1 window
+						Ex_vs_T1_cut[k]->Fill( array_evt->GetTime() - read_evts->GetT1(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+						if( T1Cut( array_evt ) ) {
+							
+							E_vs_z_T1_cut[k]->Fill( react->GetZmeasured(), array_evt->GetEnergy(), -1.0 * react->GetEBISFillRatio() );
+							Theta_T1_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), -1.0 * react->GetEBISFillRatio() );
+							Ex_T1_cut[k]->Fill( react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+							E_vs_theta_T1_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy(), -1.0 * react->GetEBISFillRatio() );
+							Ex_vs_theta_T1_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+							Ex_vs_z_T1_cut[k]->Fill( react->GetZmeasured(), react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+							
+						} // T1
+
 					} // inside cut
 					
 				} // loop over cuts
