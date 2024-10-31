@@ -1175,8 +1175,12 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 	for( int i = 0; i < NumberOfFoundAlphaPeaks; ++i ){
 	
 		// First calculate the energy loss through the dead layer
-		DetectedEnergy[i] = react->SimulateDecay( vec3, FF_alpha_peak_energy[i] );
-
+		if(my_missing_peak_is_last[mod][asic][chan] == true && NumberOfFoundAlphaPeaks < 4)
+		    DetectedEnergy[i] = react->SimulateDecay( vec3, FF_alpha_peak_energy[i] ); // Read the first 3 alpha peak energies
+		else if(my_missing_peak_is_last[mod][asic][chan] == false && NumberOfFoundAlphaPeaks < 4)
+			DetectedEnergy[i] = react->SimulateDecay( vec3, FF_alpha_peak_energy[i+1] ); // Read the last 3 alpha peak energies
+        else
+            DetectedEnergy[i] = react->SimulateDecay( vec3, FF_alpha_peak_energy[i] );  // Read all 4 alpha peak energies
 		// Now correct for the pulse-height correction
 		DetectedEnergy[i] = react->GetPulseHeightCorrection( DetectedEnergy[i], false );
 		
