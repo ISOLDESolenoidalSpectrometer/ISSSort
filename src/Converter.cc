@@ -1034,9 +1034,9 @@ void ISSConverter::ProcessASICData(){
 		my_asic_id >= set->GetNumberOfArrayASICs() ||
 		my_ch_id >= set->GetNumberOfArrayChannels() ) {
 		
-		std::cout << "Bad ASIC event with mod_id=" << my_mod_id;
-		std::cout << " asic_id=" << my_asic_id;
-		std::cout << " ch_id=" << my_ch_id << std::endl;
+		std::cout << "Bad ASIC event with mod_id=" << (unsigned long) my_mod_id;
+		std::cout << " asic_id=" << (unsigned long) my_asic_id;
+		std::cout << " ch_id=" << (unsigned long) my_ch_id << std::endl;
 		
 		return;
 		
