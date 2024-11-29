@@ -74,7 +74,7 @@
 #-------------#
 # Data things #
 #-------------#
-#DataBlockSize: 0x10000 	# 64 kB for ISS/CAEN data or 128 kB (0x20000) for CAEN only data
+#DataBlockSize: 65536		# 64 kB for ISS/CAEN data or 128 kB (0x20000) for CAEN only data
 #ASICDataOnly: false		# normally we have a mix of data in the file
 #CAENDataOnly: false		# prior to June 2021 we need these switches
 #MesytecDataOnly: false		# useful for testing, keep it false for real data
