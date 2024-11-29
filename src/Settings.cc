@@ -158,7 +158,7 @@ void ISSSettings::ReadSettings() {
 			
 			recoil_vme[i][j] = config->GetValue( Form( "Recoil_%d_%d.Crate", i, j ), 0 );
 			recoil_mod[i][j] = config->GetValue( Form( "Recoil_%d_%d.Module", i, j ), 0 );
-			recoil_ch[i][j] = config->GetValue( Form( "Recoil_%d_%d.Channel", i, j ), 2*(int)j+(int)i );
+			recoil_ch[i][j] = config->GetValue( Form( "Recoil_%d_%d.Channel", i, j ), 2*(int)i+(int)j );
 			
 			if( recoil_vme[i][j] < GetNumberOfVmeCrates() &&
 			    recoil_mod[i][j] < GetMaximumNumberOfVmeModules() &&
