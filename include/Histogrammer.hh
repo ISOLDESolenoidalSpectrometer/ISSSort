@@ -46,6 +46,7 @@ public:
 	virtual ~ISSHistogrammer(){};
 	
 	void MakeHists();
+	void MakeTree();
 	void ResetHists();
 	unsigned long FillHists();
 	
@@ -57,10 +58,7 @@ public:
 	void SetPace4File( std::string input_file_name );
 	void ReadPace4File( std::string input_file_name );
 
-	inline void SetOutput( std::string output_file_name ){
-		output_file = new TFile( output_file_name.data(), "recreate" );
-		MakeHists();
-	};
+	void SetOutput( std::string output_file_name );
 	inline void CloseOutput(){
 		PurgeOutput();
 		output_file->Close();
@@ -187,8 +185,12 @@ private:
 	std::shared_ptr<ISSElumEvt> elum_evt;
 	std::shared_ptr<ISSZeroDegreeEvt> zd_evt;
 	
-	/// Output file
+	/// Output file and tree
 	TFile *output_file;
+	TTree *output_tree;
+	std::unique_ptr<ISSRxEvent> rx_evts; ///< Container for event-by-event reaction data
+	std::unique_ptr<ISSRxInfo> rx_info; ///< Container for reaction info (doesn't change for each event)
+
 	
 	// Progress bar
 	bool _prog_;

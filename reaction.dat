@@ -88,5 +88,6 @@
 #EvsZCut_0.Name: CUTG		# name of the TCutG object inside the ROOT file
 
 
-# Histogramming options
-Hists.ArrayMode: 0			# 0 - demand p/n coincidences, 1 - p-side only
+## Histogramming options
+#Hists.ArrayMode: 0			# 0 - demand p/n coincidences, 1 - p-side only
+#Hists.OutputTree: 0			# 0 - off, 1 - reaction data output to tree

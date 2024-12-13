@@ -28,6 +28,8 @@
 #pragma link C++ class ISSInfoData+;
 #pragma link C++ class ISSReaction+;
 #pragma link C++ class ISSParticle+;
+#pragma link C++ class ISSRxEvent+;
+#pragma link C++ class ISSRxInfo+;
 #pragma link C++ class ISSGUI;
 #pragma link C++ class ISSDialog;
 #endif

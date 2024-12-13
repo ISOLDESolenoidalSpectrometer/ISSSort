@@ -311,9 +311,9 @@ void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 	gamma_evt	= std::make_shared<ISSGammaRayEvt>();
 	lume_evt	= std::make_shared<ISSLumeEvt>();
 
-	// ------------------------------------------------------------------------ //
+	// --------------------------------------------------------- //
 	// Create output file and create events tree
-	// ------------------------------------------------------------------------ //
+	// --------------------------------------------------------- //
 	output_file = new TFile( output_file_name.data(), "recreate" );
 	output_tree = new TTree( "evt_tree", "evt_tree" );
 	output_tree->Branch( "ISSEvts", "ISSEvts", write_evts.get() );
@@ -324,7 +324,7 @@ void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 	log_file_name += ".log";
 	log_file.open( log_file_name.data(), std::ios::app );
 	
-	// Hisograms in separate function
+	// Histograms in separate function
 	MakeHists();
 	
 }
