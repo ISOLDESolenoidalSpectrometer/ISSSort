@@ -222,6 +222,8 @@ public:
 
 	inline unsigned char GetLaserMode(){ return laser_mode; }; ///< Getter for LaserMode value
 	
+	inline bool GetArrayHistMode(){ return array_hist_mode; }; ///< array mode, p-side only data or demand p/n coincidences
+	
 	inline double GetZmeasured(){ return z_meas; };///< Getter for the measured z (where the particle lands on the array)
 	inline double GetZprojected(){ return z; };///< Getter for the projected z (where the particle would intersect with the beam axis)
 	
@@ -404,6 +406,9 @@ private:
 								///< 1 = laser on NOT off
 								///< 2 = laser on OR off (default)
 
+	// Array mode - p-side only or demand p/n coincidence
+	bool array_hist_mode;
+	
 	// Coincidence windows
 	double array_recoil_prompt[2]; ///< Prompt time windows between recoil and array event
 	double array_recoil_random[2]; ///< Prompt time window between recoil and array event

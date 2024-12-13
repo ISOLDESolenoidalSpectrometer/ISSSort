@@ -1697,21 +1697,18 @@ unsigned long ISSHistogrammer::FillHists() {
 		// tdiff variable
 		double tdiff;
 		
+		// Check the array mode, if we have p-side only or not
+		bool psideonly = react->GetArrayHistMode();
+		unsigned int array_mult = read_evts->GetArrayMultiplicity();
+		if( psideonly ) array_mult = read_evts->GetArrayPMultiplicity();
+		
 		// Loop over array events
-#ifdef pside_only
-		// if you want the p-side only events, use GetArrayPMultiplicity
-		for( unsigned int j = 0; j < read_evts->GetArrayPMultiplicity(); ++j ){
+		for( unsigned int j = 0; j < array_mult; ++j ){
+
+			// Get array event - GetArrayEvt is "normal" mode, GetArrayPEvt is p-side only
+			if( psideonly ) array_evt = read_evts->GetArrayPEvt(j);
+			else array_evt = read_evts->GetArrayEvt(j);
 			
-			// Get array event - GetArrayPEvt is p-side only events
-			array_evt = read_evts->GetArrayPEvt(j);
-#else
-		// if you want the "normal" mode using p/n-coincidences, use GetArrayMultiplicity
-		for( unsigned int j = 0; j < read_evts->GetArrayMultiplicity(); ++j ){
-
-			// Get array event - GetArrayEvt is "normal" mode
-			array_evt = read_evts->GetArrayEvt(j);
-#endif
-
 			// Do the reaction
 			react->MakeReaction( array_evt->GetPosition(), array_evt->GetEnergy() );
 			
