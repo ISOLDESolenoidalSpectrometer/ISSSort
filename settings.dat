@@ -1,15 +1,15 @@
-##########################################################
-# This file contains all the settings for the DAQ        #
-# including the geometry mapping for each detector       #
-# Parameters that are commented are the defaults values  #
-# If you want to change them, uncomment or make a copy   #
-#                                                        #
-# You pass this file to iss_sort with the -s if needed   #
-##########################################################
+###########################################################
+## This file contains all the settings for the DAQ        #
+## including the geometry mapping for each detector       #
+## Parameters that are commented are the defaults values  #
+## If you want to change them, uncomment or make a copy   #
+##                                                        #
+## You pass this file to iss_sort with the -s if needed   #
+###########################################################
 
-#--------------#
-# Array things #
-#--------------#
+##--------------#
+## Array things #
+##--------------#
 #NumberOfArrayModules: 3
 #NumberOfArrayASICs: 6
 #NumberOfArrayChannels: 128
@@ -18,25 +18,25 @@
 #NumberOfArrayNstrips: 11
 
 
-#------------------------#
-# CAEN things: Crate = 0 #
-#------------------------#
+##------------------------#
+## CAEN things: Crate = 0 #
+##------------------------#
 #NumberOfCAENModules: 2 		# maximum 16
 #NumberOfCAENChannels: 16
 #CAEN_0.Model: 1725	# can be 1725 or 1730, maybe even 1720?
 #CAEN_1.Model: 1725	# I suppose we can also support others in future
 
 
-#---------------------------#
-# Mesytec things: Crate = 1 #
-#---------------------------#
+##---------------------------#
+## Mesytec things: Crate = 1 #
+##---------------------------#
 #NumberOfMesytecModules: 0 		# maximum 16
 #NumberOfMesytecChannels: 16
 
 
-#------------------------#
-# Triggers, pulsers, etc #
-#------------------------#
+##------------------------#
+## Triggers, pulsers, etc #
+##------------------------#
 #ExternalTriggerCode: 14 
 #SyncCode: 4 
 #TimestampCode: 5
@@ -71,18 +71,18 @@
 #Laser.Code: 24				# cannot be changed, info only
 
 
-#-------------#
-# Data things #
-#-------------#
+##-------------#
+## Data things #
+##-------------#
 #DataBlockSize: 65536		# 64 kB for ISS/CAEN data or 128 kB (0x20000) for CAEN only data
 #ASICDataOnly: false		# normally we have a mix of data in the file
 #CAENDataOnly: false		# prior to June 2021 we need these switches
 #MesytecDataOnly: false		# useful for testing, keep it false for real data
 
 
-#---------------#
-# Event builder #
-#---------------#
+##---------------#
+## Event builder #
+##---------------#
 #EventWindow: 3e3 # in ns. Default is 3 µs
 #RecoilHitWindow: 500 # in ns. Default is 500 ns
 #ArrayHitWindow.PN: 500 # in ns. Default is 500 ns
@@ -91,9 +91,9 @@
 #ZeroDegreeHitWindow: 500 # in ns. Default is 500 ns
 #GammaRayHitWindow: 500 # in ns. Default is 500 ns
 
-#-----------------#
-# Recoil Detector #
-#-----------------#
+##-----------------#
+## Recoil Detector #
+##-----------------#
 #NumberOfRecoilSectors: 4 # 4 quadrants for Si dE-E, or just 1 for the ionisation chamber
 #NumberOfRecoilLayers: 2 # 2 layers of Si in the dE-E, or 13 anodes for the ionisation chamber
 #RecoilEnergyLossStart: 0	# Start layer for integrating energy loss
@@ -128,9 +128,9 @@
 #Recoil_3_1.Channel: 7	# R3-E, sector 3, layer 1
 
 
-#---------------#
-# MWPC Detector #
-#---------------#
+##---------------#
+## MWPC Detector #
+##---------------#
 #NumberOfMWPCAxes: 2	# x = 0 and y = 1
 #MWPC_0_0.Crate: 0
 #MWPC_0_0.Module: 1		# MWPC axis 0 TAC 0
@@ -146,9 +146,9 @@
 #MWPC_1_1.Channel: 11	#
 
 
-#---------------#
-# ELUM Detector #
-#---------------#
+##---------------#
+## ELUM Detector #
+##---------------#
 #NumberOfELUMSectors: 4	# 4 quadrants for S1 ELUM with Jim's FlexPCB (might be 6 in the future)
 #ELUM_0.Crate: 0	# ELUM0, sector/quadrant 0 of the S1
 #ELUM_0.Module: 1	# ELUM0, sector/quadrant 0 of the S1
@@ -164,9 +164,9 @@
 #ELUM_3.Channel: 3	# ELUM3, sector/quadrant 3 of the S1
 
 
-#---------------------#
-# ZeroDegree Detector #
-#---------------------#
+##---------------------#
+## ZeroDegree Detector #
+##---------------------#
 #NumberOfZDLayers: 2	# This should always be 2, because it's a silicon dE-E
 #ZD_0.Crate: 0			# ZeroDegree dE
 #ZD_0.Module: 1			# ZeroDegree dE
@@ -176,18 +176,18 @@
 #ZD_1.Channel: 7		# ZeroDegree E
 
 
-#----------------------#
-# ScintArray Detectors #
-#----------------------#
+##----------------------#
+## ScintArray Detectors #
+##----------------------#
 #NumberOfScintArrayDetectors: 0	# This is default 0, but can be 33 or more!
 #ScintArray_0.Crate: 0		# List of detectors
 #ScintArray_0.Module: 2		# and their mapping
 #ScintArray_0.Channel: 0	#
 
 
-#----------------#
-# LUME Detectors #
-#----------------#
+##----------------#
+## LUME Detectors #
+##----------------#
 #NumberOfLUMEDetectors: 0	# This is default 0, but can be a few
 #LUME_0_be.Crate: 1			# List of detectors
 #LUME_0_be.Module: 2		# and their mapping
