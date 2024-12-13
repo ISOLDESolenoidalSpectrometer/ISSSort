@@ -316,7 +316,7 @@ void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 	// --------------------------------------------------------- //
 	output_file = new TFile( output_file_name.data(), "recreate" );
 	output_tree = new TTree( "evt_tree", "evt_tree" );
-	output_tree->Branch( "ISSEvts", "ISSEvts", write_evts.get() );
+	output_tree->Branch( "ISSEvts", write_evts.get() );
 	output_tree->SetAutoFlush();
 
 	// Create log file.

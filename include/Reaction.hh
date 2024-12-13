@@ -479,7 +479,7 @@ public:
 	~ISSRxEvent() {}; ///< Destructor
 	
 	// Set function
-	inline void SetRxEvent( std::shared_ptr<ISSReaction> react, double ebistime, double t1time, bool laserflag ){
+	inline void SetRxEvent( std::shared_ptr<ISSReaction> react, double E, double ebistime, double t1time, bool laserflag ){
 		theta_cm = react->GetThetaLab();
 		theta_lab = react->GetThetaCM();
 		z = react->GetDistance();
@@ -487,6 +487,7 @@ public:
 		phi = react->GetPhi();
 		phi_meas = react->GetPhiMeasured();
 		r_meas = react->GetRadiusMeasured();
+		Edet = E;
 		Ex = react->GetEx();
 		Qvalue = react->GetQvalue();
 		gamma_ejectile = react->GetEjectile()->GetGamma();
@@ -501,7 +502,7 @@ private:
 	// Members of the class
 	double theta_cm, theta_lab;
 	double z_meas, z, phi_meas, phi, r_meas;
-	double Ex, Qvalue;
+	double Edet, Ex, Qvalue;
 	double gamma_ejectile, beta_ejectile;
 	double ebis_td, t1_td;
 	bool laser;

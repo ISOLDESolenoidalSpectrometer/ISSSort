@@ -25,8 +25,8 @@ void ISSHistogrammer::SetOutput( std::string output_file_name ){
 	// --------------------------------------------------------- //
 	output_file = new TFile( output_file_name.data(), "recreate" );
 	output_tree = new TTree( "rxtree", "Reaction data tree" );
-	output_tree->Branch( "ISSRxEvent", "Reaction event", rx_evts.get() );
-	output_tree->Branch( "ISSRxInfo", "Reaction information", rx_info.get() );
+	output_tree->Branch( "RxEvent", rx_evts.get() );
+	output_tree->Branch( "RxInfo", rx_info.get() );
 	output_tree->SetAutoFlush();
 
 	// Setup the reaction info
@@ -1740,7 +1740,8 @@ unsigned long ISSHistogrammer::FillHists() {
 			if( react->RxTreeEnabled() ) {
 				
 				// This is an array event after the reaction is calculated
-				rx_evts->SetRxEvent( react, array_evt->GetTime() - read_evts->GetEBIS(),
+				rx_evts->SetRxEvent( react, array_evt->GetEnergy(),
+									array_evt->GetTime() - read_evts->GetEBIS(),
 									array_evt->GetTime() - read_evts->GetT1(),
 									read_evts->GetLaserStatus() );
 				
