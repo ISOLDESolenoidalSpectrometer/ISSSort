@@ -5,6 +5,8 @@
 
 ClassImp( ISSParticle )
 ClassImp( ISSReaction )
+ClassImp( ISSRxEvent )
+ClassImp( ISSRxInfo )
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Minimisation function used for solving for angle alpha
@@ -543,6 +545,11 @@ void ISSReaction::ReadReaction() {
 	
 	// Laser mode: 0 = off, 1 = on, 2 = on/off (default)
 	laser_mode = config->GetValue( "LaserMode", 2 );
+	
+	// Histogramming options
+	array_hist_mode = config->GetValue( "Hists.ArrayMode", 0 ); // default = 0 (require n-side), others: 1 (p-side only)
+	rxtree_flag = config->GetValue( "Hists.OutputTree", 0 ); // default = 0 (off); 1 or true to enable the output tree
+
 	
 	// Array-Recoil time windows
 	array_recoil_prompt[0] = config->GetValue( "ArrayRecoil_PromptTime.Min", -300 );	// lower limit for array-recoil prompt time difference
@@ -1169,6 +1176,7 @@ double ISSReaction::SimulateDecay( TVector3 vec, double en, int detector ){
 	z_meas = vec.Z();					// measured z in mm
 	if( z0 < 0 ) z_meas = z0 - z_meas;	// upstream
 	else z_meas += z0;					// downstream
+	phi_meas = vec.Phi();
 	
 	//------------------------//
 	// Kinematics calculation //
@@ -1202,6 +1210,10 @@ double ISSReaction::SimulateDecay( TVector3 vec, double en, int detector ){
 	alpha *= z / Ejectile.GetMomentumLab();				// * z/p
 	alpha  = TMath::ASin( alpha );
 	Ejectile.SetThetaLab( TMath::PiOver2() + alpha );
+	
+	// Phi
+	phi = phi_meas * z / z_meas + TMath::Pi();
+	if( phi > TMath::TwoPi() ) phi -= TMath::TwoPi();
 	
 	// Calculate the energy loss
 	// Distance is postive because energy is lost
@@ -1317,7 +1329,8 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	r_meas = vec.Perp();				// measured radius
 	if( z0 < 0 ) z_meas = z0 - z_meas;	// upstream
 	else z_meas += z0;					// downstream
-	
+	phi_meas = vec.Phi();
+
 	// Pulse height conversion to proton energy using RDP
 	en = GetPulseHeightCorrection( en, true );
 	Ejectile.SetEnergyLab(en);
@@ -1448,7 +1461,10 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 		Recoil.SetEx( Ex );
 		Ejectile.SetEx( 0.0 );
 		
-		
+		// Phi
+		phi = phi_meas * z / z_meas + TMath::Pi();
+		if( phi > TMath::TwoPi() ) phi -= TMath::TwoPi();
+
 		
 		// Debug output
 		if( z > 0 || z < 0 ){

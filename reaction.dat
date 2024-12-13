@@ -1,17 +1,17 @@
-# Reaction file for ISSSort
-#
-# pass this file to iss_sort with the -r flag
-#
-# Liam Gaffney - July 2021
-# liam.gaffney@liverpool.ac.uk
-#
-# Below are the default parameters that can be changed by uncommenting
-# and passing this file to iss_sort during the histogramming stage.
-#
-# This file is not required to run iss_sort, but if you want meaningfull
-# physics histograms at the end, then you should change the parameters
-# here to match your experiment. One can have multiple versions of this
-# file to sort different runs or apply different recoil gates, etc.
+## Reaction file for ISSSort
+##
+## pass this file to iss_sort with the -r flag
+##
+## Liam Gaffney - July 2021
+## liam.gaffney@liverpool.ac.uk
+##
+## Below are the default parameters that can be changed by uncommenting
+## and passing this file to iss_sort during the histogramming stage.
+##
+## This file is not required to run iss_sort, but if you want meaningfull
+## physics histograms at the end, then you should change the parameters
+## here to match your experiment. One can have multiple versions of this
+## file to sort different runs or apply different recoil gates, etc.
 
 
 ## Reaction definition
@@ -38,34 +38,34 @@
 #TargetOffset.Y: 0.0	# Beam spot offset with respect to the horizontal in mm (positive is right wrt beam direction)
 
 
-# ELUM geometry
+## ELUM geometry
 #ELUM.Distance: -1.0		# Negative number means it doesn't exist by default (in mm)
 #ELUM.OuterRadius: 48.0		# outer radius of the ELUM detector (default for S1, in mm)
 #ELUM.InnerRadius: 24.0		# inner radius of the ELUM detector (default for S1, in mm)
 #ELUM.Deadlayer: 0.0004		# Dead layer on surface of the ELUM in mm of Al (0.4 µm from data sheets)
 
 
-# EBIS windows
+## EBIS windows
 #EBIS.On: 1.20e6		# slow extraction is about 1.2 ms
 #EBIS.Off: 2.52e7		# Off window is 20 times the On window
 #EBIS.FillRatio: 20		# Fill ratio for EBIS, default is ratio of time windows
 
-# T1 cut
+## T1 cut
 #T1.Min: 0			# for cutting on the proton impact time
 #T1.Max: 1.2e9		# (units of ns)
 
-# Laser mode ON/OFF
+## Laser mode ON/OFF
 #LaserMode: 2		# 0 = laser off only
 					# 1 = laser on only
 					# 2 = laser on OR off (default, i.e. all data)
 
-# Array-Recoil windows
+## Array-Recoil windows
 #ArrayRecoil_PromptTime.Min: -300
 #ArrayRecoil_PromptTime.Max: 300
 #ArrayRecoil_RandomTime.Min: 600
 #ArrayRecoil_RandomTime.Max: 1200
 
-# ELUM-Recoil windows
+## ELUM-Recoil windows
 #ElumRecoil_PromptTime.Min: -300
 #ElumRecoil_PromptTime.Max: 300
 #ElumRecoil_RandomTime.Min: 600
@@ -86,3 +86,8 @@
 #NumberOfEvsZCuts: 1		# default is 1, but you can have as many as your RAM will handle
 #EvsZCut_0.File: NULL		# ROOT file containing the a 2D E vs Z cut
 #EvsZCut_0.Name: CUTG		# name of the TCutG object inside the ROOT file
+
+
+## Histogramming options
+#Hists.ArrayMode: 0			# 0 - demand p/n coincidences, 1 - p-side only
+#Hists.OutputTree: 0			# 0 - off, 1 - reaction data output to tree

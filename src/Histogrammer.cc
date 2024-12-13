@@ -14,6 +14,29 @@ ISSHistogrammer::ISSHistogrammer( std::shared_ptr<ISSReaction> myreact, std::sha
 	
 }
 
+void ISSHistogrammer::SetOutput( std::string output_file_name ){
+	
+	// These are the branches we need
+	rx_evts	= std::make_unique<ISSRxEvent>();
+	rx_info	= std::make_unique<ISSRxInfo>();
+
+	// --------------------------------------------------------- //
+	// Create output file and create reaction tree
+	// --------------------------------------------------------- //
+	output_file = new TFile( output_file_name.data(), "recreate" );
+	output_tree = new TTree( "rxtree", "Reaction data tree" );
+	output_tree->Branch( "RxEvent", rx_evts.get() );
+	output_tree->Branch( "RxInfo", rx_info.get() );
+	output_tree->SetAutoFlush();
+
+	// Setup the reaction info
+	rx_info->SetRxInfo( react );
+	
+	// Histograms in separate function
+	MakeHists();
+	
+}
+
 void ISSHistogrammer::MakeHists() {
 	
     std::string hname, htitle;
@@ -23,9 +46,9 @@ void ISSHistogrammer::MakeHists() {
 	double d0 = react->GetArrayDistance();
 	double d;
 	
-	for ( int row = 0; row < 4; row++ ){
+	for( int row = 0; row < 4; row++ ){
 		
-		for ( int ch = 0; ch < 128; ch++ ){
+		for( int ch = 0; ch < 128; ch++ ){
 			
 			// Get the info from the ISSEvt class
 			ISSArrayEvt tmp_evt;
@@ -1202,9 +1225,10 @@ void ISSHistogrammer::MakeHists() {
 		htitle = "ELUM singles for sector " + std::to_string(j);
 		htitle += " with a random time gate on all recoils;Energy [keV];Counts 5 keV";
 		elum_recoilT_random_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
-		
 
 	} // ELUM
+	
+	output_file->cd();
 	
 }
 
@@ -1697,24 +1721,40 @@ unsigned long ISSHistogrammer::FillHists() {
 		// tdiff variable
 		double tdiff;
 		
+		// Check the array mode, if we have p-side only or not
+		bool psideonly = react->GetArrayHistMode();
+		unsigned int array_mult = read_evts->GetArrayMultiplicity();
+		if( psideonly ) array_mult = read_evts->GetArrayPMultiplicity();
+		
 		// Loop over array events
-#ifdef pside_only
-		// if you want the p-side only events, use GetArrayPMultiplicity
-		for( unsigned int j = 0; j < read_evts->GetArrayPMultiplicity(); ++j ){
+		for( unsigned int j = 0; j < array_mult; ++j ){
 			
-			// Get array event - GetArrayPEvt is p-side only events
-			array_evt = read_evts->GetArrayPEvt(j);
-#else
-		// if you want the "normal" mode using p/n-coincidences, use GetArrayMultiplicity
-		for( unsigned int j = 0; j < read_evts->GetArrayMultiplicity(); ++j ){
-
-			// Get array event - GetArrayEvt is "normal" mode
-			array_evt = read_evts->GetArrayEvt(j);
-#endif
-
+			// Get array event - GetArrayEvt is "normal" mode, GetArrayPEvt is p-side only
+			if( psideonly ) array_evt = read_evts->GetArrayPEvt(j);
+			else array_evt = read_evts->GetArrayEvt(j);
+			
 			// Do the reaction
 			react->MakeReaction( array_evt->GetPosition(), array_evt->GetEnergy() );
 			
+			// Setup the output tree if user wants it
+			if( react->RxTreeEnabled() ) {
+				
+				// This is an array event after the reaction is calculated
+				rx_evts->SetRxEvent( react, array_evt->GetEnergy(),
+									array_evt->GetTime() - read_evts->GetEBIS(),
+									array_evt->GetTime() - read_evts->GetT1(),
+									read_evts->GetLaserStatus() );
+				
+				// Then fill the tree
+				output_tree->Fill();
+				
+				// Clean up if the next event is going to make the tree full
+				if( output_tree->MemoryFull(30e6) )
+					output_tree->DropBaskets();
+				
+			}
+
+
 			// Singles
 			E_vs_z->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 			E_vs_z_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
@@ -2248,10 +2288,12 @@ unsigned long ISSHistogrammer::FillHists() {
 			std::cout.flush();
 			
 		}
-		
+
 	} // all events
 	
-	output_file->Write();
+	// Force the rest of the events in the buffer to disk
+	output_tree->FlushBaskets();
+	output_file->Write( 0, TObject::kWriteDelete );
 	
 	return n_entries;
 	

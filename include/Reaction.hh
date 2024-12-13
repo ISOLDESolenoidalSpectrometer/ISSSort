@@ -206,7 +206,12 @@ public:
 	inline double GetELUMOuterRadius(){ return elum_rout; };	///< Getter for the ELUM outer radius
 	inline double GetELUMDeadlayer(){ return elum_deadlayer; };	///< Getter for the ELUM dead layer
 	inline double GetThetaCM(){ return Recoil.GetThetaCM(); };///< Getter for the CM angle of the recoil/ejectile
-	inline double GetDistance(){ return z; };///< Getter for the interaction point
+	inline double GetThetaLab(){ return Ejectile.GetThetaLab(); };///< Getter for the lab angle of the ejectile
+	inline double GetDistance(){ return z; };///< Getter for the z distance as ejectile returns to axis
+	inline double GetDistanceMeasured(){ return z_meas; };///< Getter for the z distance as the ejectile intercepts the detector
+	inline double GetPhi(){ return phi; };///< Getter for the phi angle as ejectile is emitted from the target
+	inline double GetPhiMeasured(){ return phi_meas; };///< Getter for the phi angle of the ejectile as it intercepts the detector
+	inline double GetRadiusMeasured(){ return r_meas; };///< Getter for the phi angle of the ejectile as it intercepts the detector
 	inline double GetEx(){ return Recoil.GetEx(); };///< Getter for the excitation energy
 
 	inline double GetOffsetX(){ return x_offset; };
@@ -222,6 +227,9 @@ public:
 
 	inline unsigned char GetLaserMode(){ return laser_mode; }; ///< Getter for LaserMode value
 	
+	inline bool GetArrayHistMode(){ return array_hist_mode; }; ///< array mode, p-side only data or demand p/n coincidences
+	inline bool RxTreeEnabled(){ return rxtree_flag; }; ///< if the user output tree is enabled
+
 	inline double GetZmeasured(){ return z_meas; };///< Getter for the measured z (where the particle lands on the array)
 	inline double GetZprojected(){ return z; };///< Getter for the projected z (where the particle would intersect with the beam axis)
 	
@@ -404,6 +412,12 @@ private:
 								///< 1 = laser on NOT off
 								///< 2 = laser on OR off (default)
 
+	// Array mode - p-side only or demand p/n coincidence
+	bool array_hist_mode;
+	
+	// Flag for enabling the output tree
+	bool rxtree_flag;
+	
 	// Coincidence windows
 	double array_recoil_prompt[2]; ///< Prompt time windows between recoil and array event
 	double array_recoil_random[2]; ///< Prompt time window between recoil and array event
@@ -416,6 +430,8 @@ private:
 	double r_meas;		///< Measured radius of the ejectile when it interects the array
 	double z_meas;		///< Measured z distance from target that ejectile interesect the silicon detector
 	double z;			///< Projected z distance from target that ejectile interesect the beam axis
+	double phi_meas;	///< Measured phi angle that ejectile interesect the silicon detector
+	double phi;			///< Projected phi angle of the ejectile emitted from the target
 
 	// Target thickness and offsets
 	double target_thickness;	///< Target thickness in units of mg/cm^2
@@ -454,5 +470,74 @@ private:
 	bool flag_source;	///< Flag in case it's an alpha source run
 
 };
+
+class ISSRxEvent : public TObject {
+	
+public:
+	
+	ISSRxEvent() {}; ///< Constructor
+	~ISSRxEvent() {}; ///< Destructor
+	
+	// Set function
+	inline void SetRxEvent( std::shared_ptr<ISSReaction> react, double E, double ebistime, double t1time, bool laserflag ){
+		theta_cm = react->GetThetaLab();
+		theta_lab = react->GetThetaCM();
+		z = react->GetDistance();
+		z_meas = react->GetDistanceMeasured();
+		phi = react->GetPhi();
+		phi_meas = react->GetPhiMeasured();
+		r_meas = react->GetRadiusMeasured();
+		Edet = E;
+		Ex = react->GetEx();
+		Qvalue = react->GetQvalue();
+		gamma_ejectile = react->GetEjectile()->GetGamma();
+		beta_ejectile = react->GetEjectile()->GetBeta();
+		ebis_td = ebistime;
+		t1_td = t1time;
+		laser = laserflag;
+	};
+	
+private:
+	
+	// Members of the class
+	double theta_cm, theta_lab;
+	double z_meas, z, phi_meas, phi, r_meas;
+	double Edet, Ex, Qvalue;
+	double gamma_ejectile, beta_ejectile;
+	double ebis_td, t1_td;
+	bool laser;
+	
+	ClassDef( ISSRxEvent, 1 )
+	
+};
+
+
+class ISSRxInfo : public TObject {
+	
+public:
+	
+	ISSRxInfo() {}; ///< Constructor
+	~ISSRxInfo() {}; ///< Destructor
+	
+	// Set function
+	inline void SetRxInfo( std::shared_ptr<ISSReaction> react ){
+		Mfield = react->GetField();
+		Etot_lab = react->GetEnergyTotLab();
+		Etot_cm = react->GetEnergyTotCM();
+		gamma = react->GetGamma();
+		beta = react->GetBeta();
+	};
+	
+private:
+	
+	// Members of the class
+	double Mfield;
+	double Etot_lab, Etot_cm;
+	double gamma, beta;
+	
+	ClassDef( ISSRxInfo, 1 )
+	
+};
+
 
 #endif
