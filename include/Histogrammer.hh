@@ -46,7 +46,6 @@ public:
 	virtual ~ISSHistogrammer(){};
 	
 	void MakeHists();
-	void MakeTree();
 	void ResetHists();
 	unsigned long FillHists();
 	
