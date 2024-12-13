@@ -726,7 +726,9 @@ void do_autocal(){
 	// Check each file
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 			
-		name_input_file = datadir_name + "/" + input_names.at(i) + "_source.root";
+	  // name of the input file as created in do_convert
+	  name_input_file = input_names.at(i).substr( input_names.at(i).find_last_of("/")+1);
+	  name_input_file = datadir_name + "/" + name_input_file + "_source.root";
 
 		// Add to list if the converted file exists
 		ftest.open( name_input_file.data() );
