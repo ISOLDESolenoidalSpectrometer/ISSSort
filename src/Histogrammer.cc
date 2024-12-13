@@ -25,8 +25,8 @@ void ISSHistogrammer::SetOutput( std::string output_file_name ){
 	// --------------------------------------------------------- //
 	output_file = new TFile( output_file_name.data(), "recreate" );
 	output_tree = new TTree( "rxtree", "Reaction data tree" );
-	output_tree->Branch( "RxEvent", "Reaction event", rx_evts.get() );
-	output_tree->Branch( "RxInfo", "Reaction information", rx_info.get() );
+	output_tree->Branch( "ISSRxEvent", "Reaction event", rx_evts.get() );
+	output_tree->Branch( "ISSRxInfo", "Reaction information", rx_info.get() );
 	output_tree->SetAutoFlush();
 
 	// Setup the reaction info
