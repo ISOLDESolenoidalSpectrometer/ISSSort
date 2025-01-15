@@ -444,36 +444,33 @@ void ISSSettings::ReadSettings() {
 	n_cd_sector = config->GetValue( "NumberOfCDSectors", 4 );
 	n_cd_layer  = config->GetValue( "NumberOfCDLayers", 2 );
 	n_cd_ring  = config->GetValue( "NumberOfCDRings", 2 );
-	cd_eloss_start = config->GetValue( "RecoilEnergyLossStart", 0 );
-	cd_eloss_stop  = config->GetValue( "RecoilEnergyLossStop", 0 );
-	cd_erest_start = config->GetValue( "RecoilEnergyRestStart", 1 );
-	cd_erest_stop  = config->GetValue( "RecoilEnergyRestStop", 1 );
-	cd_etot_start  = config->GetValue( "RecoilEnergyTotalStart", 0 );
-	cd_etot_stop   = config->GetValue( "RecoilEnergyTotalStop", 1 );
+	cd_eloss_start = config->GetValue( "CDEnergyLossStart", 0 );
+	cd_eloss_stop  = config->GetValue( "CDEnergyLossStop", 0 );
+	cd_erest_start = config->GetValue( "CDEnergyRestStart", 1 );
+	cd_erest_stop  = config->GetValue( "CDEnergyRestStop", 1 );
+	cd_etot_start  = config->GetValue( "CDEnergyTotalStart", 0 );
+	cd_etot_stop   = config->GetValue( "CDEnergyTotalStop", 1 );
 
-	cd_sector_vme.resize( n_cd_layer );
-	cd_ring_vme.resize( n_cd_layer );
-	cd_sector_mod.resize( n_cd_layer );
-	cd_ring_mod.resize( n_cd_layer );
-	cd_sector_ch.resize( n_recoil_layer );
-	cd_ring_ch.resize( n_recoil_layer );
-	cd_sector.resize( GetNumberOfVmeCrates() );
+	cd_vme.resize( n_cd_layer );
+	cd_mod.resize( n_cd_layer );
+	cd_ch.resize( n_cd_layer );
 	cd_layer.resize( GetNumberOfVmeCrates() );
 	cd_ring.resize( GetNumberOfVmeCrates() );
+	cd_sector.resize( GetNumberOfVmeCrates() );
 		
 	for( unsigned int i = 0; i < GetNumberOfVmeCrates(); ++i ){
 		
-	        cd_sector[i].resize( GetMaximumNumberOfVmeModules() );
 		cd_layer[i].resize( GetMaximumNumberOfVmeModules() );
 		cd_ring[i].resize( GetMaximumNumberOfVmeModules() );
+	        cd_sector[i].resize( GetMaximumNumberOfVmeModules() );
 		
 		for( unsigned int j = 0; j < GetMaximumNumberOfVmeModules(); ++j ){
 			
 			for( unsigned int k = 0; k < GetMaximumNumberOfVmeChannels(); ++k ){
 				
-				cd_sector[i][j].push_back( -1 );
 				cd_layer[i][j].push_back( -1 );
 				cd_ring[i][j].push_back( -1 );
+				cd_sector[i][j].push_back( -1 );
 				
 			}
 			
@@ -483,65 +480,45 @@ void ISSSettings::ReadSettings() {
 
 	for( unsigned int i = 0; i < n_cd_layer; ++i ){
 		
-	        cd_ring_vme[i].resize( n_cd_ring );
-		cd_sector_vme[i].resize( n_cd_sector );
-	        cd_ring_mod[i].resize( n_cd_ring );
-		cd_sector_mod[i].resize( n_cd_sector );
-		cd_ring_ch[i].resize( n_cd_ring );
-		cd_sector_ch[i].resize( n_cd_sector );
+	        cd_vme[i].resize( n_cd_ring );
+	        cd_mod[i].resize( n_cd_ring );
+		cd_ch[i].resize( n_cd_ring );
 		
 		for( unsigned int j = 0; j < n_cd_ring; ++j ){
-			
-			cd_ring_vme[i][j] = config->GetValue( Form( "CD_Ring_%d_%d.Crate", j, i ), 0 );
-			cd_ring_mod[i][j] = config->GetValue( Form( "CD_Ring_%d_%d.Module", j, i ), 0 );
-			cd_ring_ch[i][j] = config->GetValue( Form( "CD_Ring_%d_%d.Channel", j, i ), 2*(int)j+(int)i );
-			
-			if( cd_ring_vme[i][j] < GetNumberOfVmeCrates() &&
-			    cd_ring_mod[i][j] < GetMaximumNumberOfVmeModules() &&
-			    cd_ring_ch[i][j] < GetMaximumNumberOfVmeChannels() ) {
 
-			        cd_ring[cd_ring_vme[i][j]][cd_ring_mod[i][j]][cd_ring_ch[i][j]] = j;
-			        cd_layer[cd_ring_vme[i][j]][cd_ring_mod[i][j]][cd_ring_ch[i][j]]  = i;
-				
-			}
+			cd_vme[i][j].resize( n_cd_sector );
+			cd_mod[i][j].resize( n_cd_sector );
+			cd_ch[i][j].resize( n_cd_sector );
+
+			for( unsigned int k = 0; k < n_cd_sector; ++k ){
 			
-			else {
+				cd_vme[i][j][k] = config->GetValue( Form( "CD_%d_%d_%d.Crate", i, j, k ), 0 ); // layer, ring, sector
+				cd_mod[i][j][k] = config->GetValue( Form( "CD_%d_%d_%d.Module", i, j, k ), 0 );
+				cd_ch[i][j][k] = config->GetValue( Form( "CD_%d_%d_%d.Channel", i, j, k ), 0 );
+			
+				if( cd_vme[i][j][k] < GetNumberOfVmeCrates() &&
+					cd_mod[i][j][k] < GetMaximumNumberOfVmeModules() &&
+					cd_ch[i][j][k] < GetMaximumNumberOfVmeChannels() ) {
+
+					cd_ring[cd_vme[i][j][k]][cd_mod[i][j][k]][cd_ch[i][j][k]] = j;
+					cd_layer[cd_vme[i][j][k]][cd_mod[i][j][k]][cd_ch[i][j][k]]  = i;
+					cd_sector[cd_vme[i][j][k]][cd_mod[i][j][k]][cd_ch[i][j][k]] = k;
 				
-				std::cerr << "Dodgy CD settings:";
-				std::cerr << " crate = " << cd_ring_vme[i][j];
-				std::cerr << " module = " << cd_ring_mod[i][j];
-				std::cerr << " channel = " << cd_ring_ch[i][j] << std::endl;
+				}
+			
+				else {
 				
+					std::cerr << "Dodgy CD settings:";
+					std::cerr << " crate = " << cd_vme[i][j][k];
+					std::cerr << " module = " << cd_mod[i][j][k];
+					std::cerr << " channel = " << cd_ch[i][j][k] << std::endl;
+				
+				}
+
 			}
 			
 		}
 
-		for( unsigned int j = 0; j < n_cd_sector; ++j ){
-			
-			cd_sector_vme[i][j] = config->GetValue( Form( "CD_Sector_%d_%d.Crate", j, i ), 0 );
-			cd_sector_mod[i][j] = config->GetValue( Form( "CD_Sector_%d_%d.Module", j, i ), 0 );
-			cd_sector_ch[i][j] = config->GetValue( Form( "CD_Sector_%d_%d.Channel", j, i ), 2*(int)j+(int)i );
-			
-			if( cd_sector_vme[i][j] < GetNumberOfVmeCrates() &&
-			    cd_sector_mod[i][j] < GetMaximumNumberOfVmeModules() &&
-			    cd_sector_ch[i][j] < GetMaximumNumberOfVmeChannels() ) {
-
-			        cd_sector[cd_sector_vme[i][j]][cd_sector_mod[i][j]][cd_sector_ch[i][j]] = j;
-			        cd_layer[cd_sector_vme[i][j]][cd_sector_mod[i][j]][cd_sector_ch[i][j]]  = i;
-				
-			}
-			
-			else {
-				
-				std::cerr << "Dodgy CD settings:";
-				std::cerr << " crate = " << cd_sector_vme[i][j];
-				std::cerr << " module = " << cd_sector_mod[i][j];
-				std::cerr << " channel = " << cd_sector_ch[i][j] << std::endl;
-				
-			}
-			
-		}
-		
 	}
 	
 	
@@ -1083,12 +1060,15 @@ void ISSSettings::PrintSettings() {
 	PRINT_SETTING_INT(n_cd_layer);
 	PRINT_SETTING_INT(n_cd_sector);
 	PRINT_SETTING_INT(n_cd_ring);
-	PRINT_SETTING_VECT_VECT_INT(cd_ring_vme);
-	PRINT_SETTING_VECT_VECT_INT(cd_sector_vme);
-	PRINT_SETTING_VECT_VECT_INT(cd_ring_mod);
-	PRINT_SETTING_VECT_VECT_INT(cd_sector_mod);
-	PRINT_SETTING_VECT_VECT_INT(cd_ring_ch);
-	PRINT_SETTING_VECT_VECT_INT(cd_sector_ch);
+	PRINT_SETTING_INT(cd_eloss_start);
+	PRINT_SETTING_INT(cd_eloss_stop);
+	PRINT_SETTING_INT(cd_erest_start);
+	PRINT_SETTING_INT(cd_erest_stop);
+	PRINT_SETTING_INT(cd_etot_start);
+	PRINT_SETTING_INT(cd_etot_stop);
+	PRINT_SETTING_VECT_VECT_VECT_INT(cd_vme);
+	PRINT_SETTING_VECT_VECT_VECT_INT(cd_mod);
+	PRINT_SETTING_VECT_VECT_VECT_INT(cd_ch);
 	PRINT_SETTING_VECT_VECT_VECT_INT(cd_layer);
 	PRINT_SETTING_VECT_VECT_VECT_INT(cd_sector);
 	PRINT_SETTING_VECT_VECT_VECT_INT(cd_ring);

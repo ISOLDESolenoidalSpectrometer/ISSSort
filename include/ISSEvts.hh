@@ -40,16 +40,16 @@ public:
 	inline float 			GetEnergy(){ return pen; };
 	inline float 			GetPEnergy(){ return pen; };
 	inline float 			GetNEnergy(){ return nen; };
-	inline unsigned char 	GetPID(){ return pid; };
-	inline unsigned char 	GetNID(){ return nid; };
+	inline unsigned char		GetPID(){ return pid; };
+	inline unsigned char		GetNID(){ return nid; };
 	inline double			GetTime(){ return ptime; };
 	inline double			GetTimeDouble(){ return ptime; };
 	inline double			GetPTime(){ return ptime; };
 	inline double	 		GetNTime(){ return ntime; };
 	inline bool 			GetPHit(){ return phit; };
 	inline bool 			GetNHit(){ return nhit; };
-	inline unsigned char	GetModule(){ return mod; };
-	inline unsigned char	GetRow(){ return row; };
+	inline unsigned char		GetModule(){ return mod; };
+	inline unsigned char		GetRow(){ return row; };
 	
 	float		GetX();
 	float		GetY();
@@ -73,12 +73,12 @@ private:
 	// variables for particle event
 	bool			phit;	///< hit bit value for p-side event
 	bool			nhit;	///< hit bit value for n-side event
-	unsigned char	mod;	///< module number
-	unsigned char	row;	///< row number of the silicon
+	unsigned char		mod;	///< module number
+	unsigned char		row;	///< row number of the silicon
 	float			pen;	///< p-side energy in keV
 	float 			nen;	///< n-side energy in keV
-	unsigned char	pid;	///< p-side strip id, from 0 - 511, i.e along all 4 wafers
-	unsigned char	nid;	///< n-side strip id, from 0 - 65, i.e. around all 6 sides
+	unsigned char		pid;	///< p-side strip id, from 0 - 511, i.e along all 4 wafers
+	unsigned char		nid;	///< n-side strip id, from 0 - 65, i.e. around all 6 sides
 	double			ptime;	///< p-side timestamp
 	double			ntime;	///< n-side timestamp
 	
@@ -176,7 +176,7 @@ private:
 	
 	// variables for recoil events
 	std::vector<float>			energy;	///< differential energy list, i.e. Silicon dE-E length = 2
-	std::vector<unsigned char>	id;		///< differential id list, i.e. dE = 0, E = 1, for example
+	std::vector<unsigned char>		id;	///< differential id list, i.e. dE = 0, E = 1, for example
 	unsigned char				sec;	///< sector of the recoil detector, i.e 0-3 for QQQ1 quadrants
 	double					detime;	///< time stamp of dE event
 	double					etime;	///< time stamp of E event
@@ -200,7 +200,7 @@ public:
 	inline void SetAxis( unsigned char a ){ axis = a; };
 	inline void SetTime( double t ){ time = t; };
 	
-	inline int				GetTacDiff(){ return tacdiff; };
+	inline int		GetTacDiff(){ return tacdiff; };
 	inline unsigned char	GetAxis(){ return axis; };
 	inline double		GetTime(){ return time; };
 	
@@ -389,7 +389,7 @@ public:
 	inline float			GetX(){ return x; };
 	
 private:
-	unsigned char id;	///< Detector ID
+	unsigned char id;		///< Detector ID
 	
 	float be;			///< Energy in the detector (from the back-plane)
 	float ne;			///< near-side energy
@@ -397,7 +397,7 @@ private:
 	
 	
 	float x;			///< position along the detector
-	double time;		///< time stamp of the event
+	double time;			///< time stamp of the event
 	
 	ClassDef( ISSLumeEvt, 2 );
 	
@@ -406,66 +406,66 @@ private:
 class ISSCDEvt : public TObject {
 
 public:
-  ISSCDEvt();
-  ~ISSCDEvt();
+	ISSCDEvt();
+	~ISSCDEvt();
 
-  void SetEvent( std::vector<float> myenergy, std::vector<unsigned char> myid,
+	void SetEvent( std::vector<float> myenergy, std::vector<unsigned char> myid,
 		 unsigned char mysec, unsigned char myring,
 		 double mydetime, double myetime );
 
-  void ClearEvent();
+	void ClearEvent();
 
-  inline void AddFragment( float myenergy, unsigned char myid ){
+	inline void AddFragment( float myenergy, unsigned char myid ){
 		energy.push_back( myenergy );
 		id.push_back( myid );
 	};
 
-  inline void SetSector( unsigned char s ){ sec = s; };
-  inline void SetRing( unsigned char s ){ ring = s; };
-  inline void SetdETime( double t ){ detime = t; };
-  inline void SetETime( double t ){ etime = t; };
+	inline void SetSector( unsigned char s ){ sec = s; };
+	inline void SetRing( unsigned char s ){ ring = s; };
+	inline void SetdETime( double t ){ detime = t; };
+	inline void SetETime( double t ){ etime = t; };
 
-  inline unsigned char	GetDepth(){ return energy.size(); };
-  inline unsigned char	GetSector(){ return sec; };
-  inline unsigned char	GetRing(){ return ring; };
-  inline double		GetTime(){ return detime; };
-  inline double		GetdETime(){ return detime; };
-  inline double		GetETime(){ return etime; };
+	inline unsigned char	GetDepth(){ return energy.size(); };
+	inline unsigned char	GetSector(){ return sec; };
+	inline unsigned char	GetRing(){ return ring; };
+	inline double		GetTime(){ return detime; };
+	inline double		GetdETime(){ return detime; };
+	inline double		GetETime(){ return etime; };
 
-  inline std::vector<float>			GetEnergies(){ return energy; };
-  inline std::vector<unsigned char>	GetIDs(){ return id; };
+	inline std::vector<float>			GetEnergies(){ return energy; };
+	inline std::vector<unsigned char>	GetIDs(){ return id; };
 
 
-  inline float GetEnergy( unsigned char i ){
-    if( i < energy.size() ) return energy.at(i);
-    else return 0;
-  };
+	inline float GetEnergy( unsigned char i ){
+		if( i < energy.size() ) return energy.at(i);
+		else return 0;
+	};
 
-  inline float GetEnergyLoss( unsigned char start = 0, unsigned char stop = 0 ){
-    float total = 0;
-    for( unsigned int j = 0; j < energy.size(); ++j )
-      if( GetID(j) >= start && GetID(j) <= stop )
-	total += energy.at(j);
-    return total;
-  };
+	inline float GetEnergyLoss( unsigned char start = 0, unsigned char stop = 0 ){
+		float total = 0;
+		for( unsigned int j = 0; j < energy.size(); ++j )
+			if( GetID(j) >= start && GetID(j) <= stop )
+			total += energy.at(j);
+		return total;
+	};
 
-  inline float GetEnergyRest( unsigned char start = 1, unsigned char stop = 1 ){
-    float total = 0;
-    for( unsigned int j = 0; j < energy.size(); ++j )
-      if( GetID(j) >= start && GetID(j) <= stop )
-	total += energy.at(j);
-    return total;
-  };
+	inline float GetEnergyRest( unsigned char start = 1, unsigned char stop = 1 ){
+		float total = 0;
+		for( unsigned int j = 0; j < energy.size(); ++j )
+			if( GetID(j) >= start && GetID(j) <= stop )
+			total += energy.at(j);
+		return total;
+	};
 
-  inline float GetEnergyTotal( unsigned char start = 0, unsigned char stop = 1 ){
-    float total = 0;
-    for( unsigned int j = 0; j < energy.size(); ++j )
-      if( GetID(j) >= start && GetID(j) <= stop )
-	total += energy.at(j);
-    return total;
-  };
+	inline float GetEnergyTotal( unsigned char start = 0, unsigned char stop = 1 ){
+		float total = 0;
+		for( unsigned int j = 0; j < energy.size(); ++j )
+			if( GetID(j) >= start && GetID(j) <= stop )
+			total += energy.at(j);
+		return total;
+	};
 
-  inline unsigned char GetID( unsigned char i ){
+	inline unsigned char GetID( unsigned char i ){
 		if( i < id.size() ) return id.at(i);
 		else return -1;
 	};
@@ -473,15 +473,15 @@ public:
 
 private:
 
-  // variables for CD events
-  std::vector<float>			energy;	///< differential energy list, i.e. Silicon dE-E length = 2
-  std::vector<unsigned char>	id;		///< differential id list, i.e. dE = 0, E = 1, for example
-  unsigned char				sec;	///< sector of the CD detector
-  unsigned char				ring;	///< ring of the CD detector
-  double					detime;	///< time stamp of dE event
-  double					etime;	///< time stamp of E event
+	// variables for CD events
+	std::vector<float>			energy;	///< differential energy list, i.e. Silicon dE-E length = 2
+	std::vector<unsigned char>		id;	///< differential id list, i.e. dE = 0, E = 1, for example
+	unsigned char				sec;	///< sector of the CD detector
+	unsigned char				ring;	///< ring of the CD detector
+	double					detime;	///< time stamp of dE event
+	double					etime;	///< time stamp of E event
 
-  ClassDef( ISSCDEvt, 1 );
+	ClassDef( ISSCDEvt, 1 );
 
 };
 
