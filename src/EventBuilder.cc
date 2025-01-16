@@ -339,56 +339,8 @@ void ISSEventBuilder::Initialise(){
 	event_open = false;
 	
 	hit_ctr = 0;
-	
-	// Clear all vectors with the standard method
-	pen_list.clear();
-	nen_list.clear();
-	ptd_list.clear(); //uncorrected time
-	ntd_list.clear(); //uncorrected time
-    pwalk_list.clear(); //corrected time
-    nwalk_list.clear(); //corrected time
-	pid_list.clear();
-	nid_list.clear();
-	pmod_list.clear();
-	nmod_list.clear();
-	prow_list.clear();
-	nrow_list.clear();
-	phit_list.clear();
-	nhit_list.clear();
 
-	ren_list.clear();
-	rtd_list.clear();
-	rid_list.clear();
-	rsec_list.clear();
-	
-	mwpctac_list.clear();
-	mwpctd_list.clear();
-	mwpcaxis_list.clear();
-	mwpcid_list.clear();
-
-	een_list.clear();
-	etd_list.clear();
-	esec_list.clear();
-	
-	zen_list.clear();
-	ztd_list.clear();
-	zid_list.clear();
-	
-	saen_list.clear();
-	satd_list.clear();
-	said_list.clear();
-
-	lbe_list.clear();
-	lne_list.clear();
-	lfe_list.clear();
-	lbe_td_list.clear();
-	lne_td_list.clear();
-	lfe_td_list.clear();
-	lbe_id_list.clear();
-	lne_id_list.clear();
-	lfe_id_list.clear();
-	
-	// Now swap all these vectors with empty vectors to ensure they are fully cleared
+	// Swap all vectors with empty vectors
 	std::vector<float>().swap(pen_list);
 	std::vector<float>().swap(nen_list);
 	std::vector<double>().swap(ptd_list);
