@@ -104,7 +104,7 @@ public:
 	void ZeroDegreeFinder(); ///< Processes all hits on the zero-degree detector that fall within the build window
 	void GammaRayFinder(); ///< Processes hits in the ScintArray and maybe HPGe in the future
 	void LumeFinder(); ///< Processes all hits on the LUME that fall within the build window
-	void CdFinder():	///< Processes all hits on the CD that fall within the build window
+	void CdFinder();	///< Processes all hits on the CD that fall within the build window
 		
 	inline TFile* GetFile(){ return output_file; }; ///< Getter for the output_file pointer
 	inline TTree* GetTree(){ return output_tree; }; ///< Getter for the output tree pointer

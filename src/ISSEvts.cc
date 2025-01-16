@@ -168,13 +168,13 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSCDEvt> event ) {
 
 	// Make a copy of the event and push it back
 	ISSCDEvt fill_evt;
-	fill_evt.SetEvent(	event->GetEnergies(),
+	/*fill_evt.SetEvent(	event->GetEnergies(),
 				event->GetIDs(),
 				event->GetSector(),
 				event->GetRing(),
 				event->GetdETime(),
 				event->GetETime() );
-
+	*/
 	cd_event.push_back( fill_evt );
 
 }
@@ -616,16 +616,25 @@ void ISSLumeEvt::SetEvent( float myenergy, unsigned char myid,
 ISSCDEvt::ISSCDEvt(){}
 ISSCDEvt::~ISSCDEvt(){}
 
-void ISSCDEvt::SetEvent( std::vector<float> myenergy, std::vector<unsigned char> myid,
-			 unsigned char mysec, unsigned char myring,
-			 double mydetime, double myetime ) {
+void ISSCDEvt::SetEvent( std::vector<std::vector<float>> myenergy,
+			 std::vector<std::vector<unsigned char>> myid,
+			 std::vector<unsigned char> mysec, std::vector<unsigned char> myring,
+			 std::vector<double> mydetime, std::vector<double> myetime ) {
 
-	energy = myenergy;
-	id = myid;
-	sec = mysec;
-	ring = myring;
-	detime = mydetime;
-	etime = myetime;
+	hits.clear();
+
+
+	if (mysec.size() != myring.size() || mysec.size() != mydetime.size() || mysec.size() != myetime.size() 		|| mysec.size() != myenergy.size() || mysec.size() != myid.size()) {
+		std::cerr << "Error: The vectors for sector, ring, detime, etime, energy, and id must all have the same size!" << std::endl;
+		return;
+	}
+
+	for (size_t i = 0; i < mysec.size(); ++i) {
+		std::vector<float> energyForHit = myenergy[i];
+		std::vector<unsigned char> idForHit = myid[i];
+
+		AddHit(energyForHit, idForHit, mysec[i], myring[i], mydetime[i], myetime[i]);
+	}
 
 	return;
 
@@ -633,11 +642,135 @@ void ISSCDEvt::SetEvent( std::vector<float> myenergy, std::vector<unsigned char>
 
 void ISSCDEvt::ClearEvent(){
 
-	energy.clear();
-	id.clear();
-	std::vector<float>().swap(energy);
-	std::vector<unsigned char>().swap(id);
+	for (auto& hit : hits) {
+		hit.energy.clear();
+		hit.id.clear();
+		std::vector<float>().swap(hit.energy);
+		std::vector<unsigned char>().swap(hit.id);
+	}
+	hits.clear();
+	std::vector<Hit>().swap(hits);
 
+}
+
+std::vector<float> ISSCDEvt::GetEnergyVector( size_t hitIndex ) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].energy;
+	}
+	return {};
+}
+
+std::vector<unsigned char> ISSCDEvt::GetIDVector( size_t hitIndex ) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].id;
+	}
+	return {};
+}
+
+void ISSCDEvt::SetSector( size_t hitIndex, unsigned char s ) {
+	if (hitIndex < hits.size()) {
+		hits[hitIndex].sec = s;
+	}
+}
+
+void ISSCDEvt::SetRing( size_t hitIndex, unsigned char r ) {
+	if (hitIndex < hits.size()) {
+		hits[hitIndex].ring = r;
+	}
+}
+
+void ISSCDEvt::SetdETime( size_t hitIndex, double t ) {
+	if (hitIndex < hits.size()) {
+		hits[hitIndex].detime = t;
+	}
+}
+
+void ISSCDEvt::SetETime( size_t hitIndex, double t ) {
+	if (hitIndex < hits.size()) {
+		hits[hitIndex].etime = t;
+	}
+}
+
+unsigned char ISSCDEvt::GetDepth(size_t hitIndex) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].energy.size();
+	}
+	return -1;
+}
+
+unsigned char ISSCDEvt::GetSector(size_t hitIndex) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].sec;
+	}
+	return -1;
+}
+
+unsigned char ISSCDEvt::GetRing(size_t hitIndex) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].ring;
+	}
+	return -1;
+}
+
+double ISSCDEvt::GetTime(size_t hitIndex) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].detime;
+	}
+	return std::numeric_limits<double>::quiet_NaN();;
+}
+
+double ISSCDEvt::GetdETime(size_t hitIndex) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].detime;
+	}
+	return std::numeric_limits<double>::quiet_NaN();;
+}
+
+double ISSCDEvt::GetETime(size_t hitIndex) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].etime;
+	}
+	return std::numeric_limits<double>::quiet_NaN();;
+}
+
+std::vector<std::vector<float>> ISSCDEvt::GetEnergies() {
+	std::vector<std::vector<float>> allEnergies;
+	for (const auto& hit : hits) {
+		allEnergies.push_back(hit.energy);
+	}
+	return allEnergies;
+}
+
+std::vector<std::vector<unsigned char>> ISSCDEvt::GetIDs() {
+	std::vector<std::vector<unsigned char>> allIDs;
+	for (const auto& hit : hits) {
+		allIDs.push_back(hit.id);
+	}
+	return allIDs;
+}
+
+float ISSCDEvt::GetEnergy( size_t hitIndex, unsigned char i ) {
+	float total = 0.0f;
+	return total;
+}
+
+float ISSCDEvt::GetEnergyLoss( size_t hitIndex, unsigned char start, unsigned char stop ) {
+	float total = 0.0f;
+	return total;
+}
+
+float ISSCDEvt::GetEnergyRest( size_t hitIndex, unsigned char start, unsigned char stop ) {
+	float total = 0.0f;
+	return total;
+}
+
+float ISSCDEvt::GetEnergyTotal( size_t hitIndex, unsigned char start, unsigned char stop ) {
+	float total = 0.0f;
+	return total;
+}
+
+unsigned char ISSCDEvt::GetID( size_t hitIndex, unsigned char i ) {
+	return -1;
 }
 
 
