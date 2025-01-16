@@ -169,8 +169,8 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSCDEvt> event ) {
 	// Make a copy of the event and push it back
 	ISSCDEvt fill_evt;
 	fill_evt.SetEvent(	event->GetEnergies(),
-						event->GetIDs(),
-						event->GetSector(),
+				event->GetIDs(),
+				event->GetSector(),
 				event->GetRing(),
 				event->GetdETime(),
 				event->GetETime() );

@@ -2673,7 +2673,7 @@ void ISSEventBuilder::LumeFinder() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// This function takes a series of E and dE signals on the silicon CD (fission fragments) detector and determines what hits to keep from these using sensible conditions including a prompt coincidence window. Signals are triggered by the E detector, but if a corresponding dE signal is not found, then a hit at dE = 0 is still recorded.
+/// This function takes a series of E and dE signals on the silicon CD (fission fragments) detector and determines what hits to keep from these using sensible conditions including a prompt coincidence window. Signals are triggered by the dE detector, but if a corresponding E signal is not found, then a hit at E = 0 is still recorded.
 void ISSEventBuilder::CdFinder() {
 	// for now - just RecoilFinder copied
 
@@ -2683,6 +2683,10 @@ void ISSEventBuilder::CdFinder() {
 	std::vector<unsigned int> index;
 	std::vector<unsigned int> layers;
 	bool flag_skip;
+	int ringmax_idx, secmax_idx;		// Stores the maximum-energy index for the ring and sector hits
+	int ringtmp_idx, sectmp_idx;		// Stores a temporary index for the ring and sector hits
+	float ringmax_en, secmax_en;		// Stores the maximum energy for the ring and sector hits
+	float ringsum_en, secsum_en;		// Stores the summed energy for the p-side and n-side hits
 	
 	// Loop over recoil events
 	for( unsigned int i = 0; i < ren_list.size(); ++i ) {

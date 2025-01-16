@@ -406,82 +406,77 @@ private:
 class ISSCDEvt : public TObject {
 
 public:
+
 	ISSCDEvt();
 	~ISSCDEvt();
 
-	void SetEvent( std::vector<float> myenergy, std::vector<unsigned char> myid,
-		 unsigned char mysec, unsigned char myring,
-		 double mydetime, double myetime );
+	void SetEvent( std::vector<std::vector<float>> myenergy, std::vector<std::vector<unsigned char>> myid,
+		 std::vector<unsigned char> mysec, std::vector<unsigned char> myring,
+		 std::vector<double> mydetime, std::vector<double> myetime );
 
 	void ClearEvent();
 
-	inline void AddFragment( float myenergy, unsigned char myid ){
+	inline void AddHit( std::vector<float> myenergy, std::vector<unsigned char> myid,
+		unsigned char mysec, unsigned char myring, double mydetime, double myetime ) {
+		hits.push_back({myenergy, myid, mysec, myring, mydetime, myetime});
+	};
+
+  /*inline void AddFragment( float myenergy, unsigned char myid ){
 		energy.push_back( myenergy );
 		id.push_back( myid );
-	};
+		};*/
 
-	inline void SetSector( unsigned char s ){ sec = s; };
-	inline void SetRing( unsigned char s ){ ring = s; };
-	inline void SetdETime( double t ){ detime = t; };
-	inline void SetETime( double t ){ etime = t; };
+	inline unsigned char GetMultiplicity() { return hits.size(); };
 
-	inline unsigned char	GetDepth(){ return energy.size(); };
-	inline unsigned char	GetSector(){ return sec; };
-	inline unsigned char	GetRing(){ return ring; };
-	inline double		GetTime(){ return detime; };
-	inline double		GetdETime(){ return detime; };
-	inline double		GetETime(){ return etime; };
+	std::vector<float> GetEnergyVector( size_t hitIndex );
+	std::vector<unsigned char> GetIDVector( size_t hitIndex );
 
-	inline std::vector<float>			GetEnergies(){ return energy; };
-	inline std::vector<unsigned char>	GetIDs(){ return id; };
+	float GetEnergy( size_t hitIndex, size_t energyIndex );
+	unsigned char GetID( size_t hitIndex, size_t energyIndex );
+
+	void SetSector( unsigned char s, size_t hitIndex );
+	void SetRing( unsigned char s, size_t hitIndex );
+	void SetdETime( double t, size_t hitIndex );
+	void SetETime( double t, size_t hitIndex );
+
+	unsigned char	GetDepth( size_t hitIndex );
+	unsigned char	GetSector( size_t hitIndex );
+	unsigned char	GetRing( size_t hitIndex );
+	double		GetTime( size_t hitIndex );
+	double		GetdETime( size_t hitIndex );
+	double		GetETime( size_t hitIndex );
+
+	<std::vector<std::vector<float>>	GetEnergies();
+	<std::vectorstd::vector<unsigned char>>	GetIDs();
 
 
-	inline float GetEnergy( unsigned char i ){
-		if( i < energy.size() ) return energy.at(i);
-		else return 0;
-	};
-
-	inline float GetEnergyLoss( unsigned char start = 0, unsigned char stop = 0 ){
-		float total = 0;
-		for( unsigned int j = 0; j < energy.size(); ++j )
-			if( GetID(j) >= start && GetID(j) <= stop )
-			total += energy.at(j);
-		return total;
-	};
-
-	inline float GetEnergyRest( unsigned char start = 1, unsigned char stop = 1 ){
-		float total = 0;
-		for( unsigned int j = 0; j < energy.size(); ++j )
-			if( GetID(j) >= start && GetID(j) <= stop )
-			total += energy.at(j);
-		return total;
-	};
-
-	inline float GetEnergyTotal( unsigned char start = 0, unsigned char stop = 1 ){
-		float total = 0;
-		for( unsigned int j = 0; j < energy.size(); ++j )
-			if( GetID(j) >= start && GetID(j) <= stop )
-			total += energy.at(j);
-		return total;
-	};
-
-	inline unsigned char GetID( unsigned char i ){
-		if( i < id.size() ) return id.at(i);
-		else return -1;
-	};
+	float GetEnergy( size_t hitIndex, unsigned char i );
+	float GetEnergyLoss( size_t hitIndex, unsigned char start = 0, unsigned char stop = 0 );
+	float GetEnergyRest( size_t hitIndex, unsigned char start = 1, unsigned char stop = 1 );
+	float GetEnergyTotal( size_t hitIndex, unsigned char start = 0, unsigned char stop = 1 );
+	unsigned char GetID( size_t hitIndex, unsigned char i )};
 
 
 private:
 
-	// variables for CD events
-	std::vector<float>			energy;	///< differential energy list, i.e. Silicon dE-E length = 2
-	std::vector<unsigned char>		id;	///< differential id list, i.e. dE = 0, E = 1, for example
-	unsigned char				sec;	///< sector of the CD detector
-	unsigned char				ring;	///< ring of the CD detector
-	double					detime;	///< time stamp of dE event
-	double					etime;	///< time stamp of E event
+	// variables for CD events. Each CD event can have multiple events (hopefully two for the two fission fragments...). Each hit has it's own data structure.
+	struct Hit {
+		std::vector<float>		energy;	///< differential energy list, i.e. Silicon dE-E length = 2
+		std::vector<unsigned char>      id;	///< differential id list, i.e. dE = 0, E = 1, for example
+		unsigned char			sec;	///< sector of the CD detector
+		unsigned char			ring;	///< ring of the CD detector
+		double				detime;	///< time stamp of dE event
+		double				etime;	///< time stamp of E event
 
-	ClassDef( ISSCDEvt, 1 );
+		Hit() = default;
+		Hit(std::vector<float>& myenergy, std::vector<unsigned char>& myid,
+			unsigned char mysec, unsigned char myring, double mydetime, double myetime)
+			: energy(myenergy), id(myid), sector(mysec), ring(myring), detime(mydetime), etime(myetime) {}
+	};
+
+	std::vector<Hit> hits;
+
+	ClassDef( ISSCDEvt, 2 );
 
 };
 
