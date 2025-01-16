@@ -178,9 +178,9 @@ void ISSEventBuilder::StartFile(){
 	gamma_ctr	= 0;
 	lume_ctr	= 0;
 	cd_ctr		= 0;
-
-	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 	
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
+
 		n_fpga_pulser[i] = 0;
 		n_asic_pulser[i] = 0;
 		n_asic_pause[i] = 0;
@@ -347,8 +347,8 @@ void ISSEventBuilder::Initialise(){
 	std::vector<float>().swap(nen_list);
 	std::vector<double>().swap(ptd_list);
 	std::vector<double>().swap(ntd_list);
-    std::vector<double>().swap(pwalk_list);
-    std::vector<double>().swap(nwalk_list);
+	std::vector<double>().swap(pwalk_list);
+	std::vector<double>().swap(nwalk_list);
 	std::vector<char>().swap(pid_list);
 	std::vector<char>().swap(nid_list);
 	std::vector<char>().swap(pmod_list);
@@ -500,7 +500,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			if( overwrite_cal ) {
 
 				myenergy = cal->AsicEnergy( mymod, myasic,
-									 mych, asic_data->GetAdcValue() );
+										   mych, asic_data->GetAdcValue() );
 				mywalk = cal->AsicWalk( mymod, myasic, myenergy, myhitbit );
 
 				if( asic_data->GetAdcValue() < cal->AsicThreshold( mymod, myasic, mych ) )
@@ -971,9 +971,9 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 			// If we have a pulser event from the CAEN DAQs, fill time difference
 			if( flag_caen_pulser ) {
-			
-				for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
 				
+				for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
+
 					double fpga_tdiff = caen_time - fpga_time[j];
 					double asic_tdiff = caen_time - asic_time[j];
 
@@ -1104,7 +1104,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				ElumFinder();		// add an ElumEvt for each S1 event
 				ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
 				GammaRayFinder();	// add a GammaRay event for ScintArray/HPGe events
-				LumeFinder();           // add a LumeEvt for each LUME
+				LumeFinder();		// add a LumeEvt for each LUME
 				CdFinder();			// add a CDEvt for CD
 
 				// ------------------------------------
@@ -1114,7 +1114,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				write_evts->SetT1( t1_prev );
 				write_evts->SetSC( sc_prev );
 				if( TMath::Abs( (double)ebis_prev - (double)laser_prev ) < 1e3
-					&& laser_prev > 0 ) write_evts->SetLaserStatus( true );
+				   && laser_prev > 0 ) write_evts->SetLaserStatus( true );
 				else
 					write_evts->SetLaserStatus( false );
 				
@@ -1541,14 +1541,14 @@ void ISSEventBuilder::ArrayFinder() {
 
 					// Fill single event as a nice p/n correlation
 					array_evt->SetEvent( pen_list.at( pindex.at(0) ),
-										 nen_list.at( nindex.at(0) ),
-										 pid_list.at( pindex.at(0) ),
-										 nid_list.at( nindex.at(0) ),
-										 pwalk_list.at( pindex.at(0) ),
-										 nwalk_list.at( nindex.at(0) ),
-										 phit_list.at( pindex.at(0) ),
-										 nhit_list.at( nindex.at(0) ),
-										 i, j );
+										nen_list.at( nindex.at(0) ),
+										pid_list.at( pindex.at(0) ),
+										nid_list.at( nindex.at(0) ),
+										pwalk_list.at( pindex.at(0) ),
+										nwalk_list.at( nindex.at(0) ),
+										phit_list.at( pindex.at(0) ),
+										nhit_list.at( nindex.at(0) ),
+										i, j );
 					
 					write_evts->AddEvt( array_evt );
 					array_ctr++;
@@ -1564,14 +1564,14 @@ void ISSEventBuilder::ArrayFinder() {
 					
 					// Not prompt coincidence, assume pure p-side
 					arrayp_evt->SetEvent( pen_list.at( pindex.at(0) ),
-									  0,
-									  pid_list.at( pindex.at(0) ),
-									  5,
-									  pwalk_list.at( pindex.at(0) ),
-									  0,
-									  phit_list.at( pindex.at(0) ),
-									  false,
-									  i, j );
+										 0,
+										 pid_list.at( pindex.at(0) ),
+										 5,
+										 pwalk_list.at( pindex.at(0) ),
+										 0,
+										 phit_list.at( pindex.at(0) ),
+										 false,
+										 i, j );
 
 					write_evts->AddEvt( arrayp_evt );
 					arrayp_ctr++;
@@ -1585,14 +1585,14 @@ void ISSEventBuilder::ArrayFinder() {
 				
 				// High n-side threshold situation, fill p-only event
 				arrayp_evt->SetEvent( pen_list.at( pindex.at(0) ),
-									  0,
-									  pid_list.at( pindex.at(0) ),
-									  5,
-									  pwalk_list.at( pindex.at(0) ),
-									  0,
-									  phit_list.at( pindex.at(0) ),
-									  false,
-									  i, j );
+									 0,
+									 pid_list.at( pindex.at(0) ),
+									 5,
+									 pwalk_list.at( pindex.at(0) ),
+									 0,
+									 phit_list.at( pindex.at(0) ),
+									 false,
+									 i, j );
 
 				write_evts->AddEvt( arrayp_evt );
 				arrayp_ctr++;
@@ -1607,8 +1607,8 @@ void ISSEventBuilder::ArrayFinder() {
 				
 				// Neighbour strips and prompt coincidence (p-sides)
 				if( TMath::Abs( pid_list.at( pindex.at(0) ) - pid_list.at( pindex.at(1) ) ) == 1 &&
-				    ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - pwalk_list.at( pindex.at(1) ) ) < set->GetArrayPPHitWindow()
-					 || TMath::Abs( ptd_list.at( pindex.at(0) ) - ptd_list.at( pindex.at(1) ) ) == 0 ) ) {
+				   ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - pwalk_list.at( pindex.at(1) ) ) < set->GetArrayPPHitWindow()
+					|| TMath::Abs( ptd_list.at( pindex.at(0) ) - ptd_list.at( pindex.at(1) ) ) == 0 ) ) {
 
 					// Simple sum of both energies, cross-talk not included yet
 					psum_en  = pen_list.at( pindex.at(0) );
@@ -1616,21 +1616,21 @@ void ISSEventBuilder::ArrayFinder() {
 
 					// Check that p's and n are coincident
 					if ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ||
-					     TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
-					
+						TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
+
 						// Fill addback histogram
 						pn_pab[i][j]->Fill( psum_en, nen_list.at( nindex.at(0) ) );
 						
 						// Fill the addback event
 						array_evt->SetEvent( psum_en,
-											 nen_list.at( nindex.at(0) ),
-											 pid_list.at( pmax_idx ),
-											 nid_list.at( nindex.at(0) ),
-											 pwalk_list.at( pmax_idx ),
-											 nwalk_list.at( nindex.at(0) ),
-											 phit_list.at( pindex.at(0) ),
-											 nhit_list.at( nindex.at(0) ),
-											 i, j );
+											nen_list.at( nindex.at(0) ),
+											pid_list.at( pmax_idx ),
+											nid_list.at( nindex.at(0) ),
+											pwalk_list.at( pmax_idx ),
+											nwalk_list.at( nindex.at(0) ),
+											phit_list.at( pindex.at(0) ),
+											nhit_list.at( nindex.at(0) ),
+											i, j );
 
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
@@ -1646,14 +1646,14 @@ void ISSEventBuilder::ArrayFinder() {
 						
 						// p's coincident, no n coincidence -> do a pp event
 						arrayp_evt->SetEvent( psum_en,
-									  0,
-									  pid_list.at( pmax_idx ),
-									  5,
-									  pwalk_list.at( pmax_idx ),
-									  0,
-									  phit_list.at( pmax_idx ),
-									  false,
-									  i, j );
+											 0,
+											 pid_list.at( pmax_idx ),
+											 5,
+											 pwalk_list.at( pmax_idx ),
+											 0,
+											 phit_list.at( pmax_idx ),
+											 false,
+											 i, j );
 
 						write_evts->AddEvt( arrayp_evt );
 						arrayp_ctr++;
@@ -1670,14 +1670,14 @@ void ISSEventBuilder::ArrayFinder() {
 						
 						// Fill single event as a nice p/n correlation
 						array_evt->SetEvent( pen_list.at( pindex.at(0) ),
-											 nen_list.at( nindex.at(0) ),
-											 pid_list.at( pindex.at(0) ),
-											 nid_list.at( nindex.at(0) ),
-											 pwalk_list.at( pindex.at(0) ),
-											 nwalk_list.at( nindex.at(0) ),
-											 phit_list.at( pindex.at(0) ),
-											 nhit_list.at( nindex.at(0) ),
-											 i, j );
+											nen_list.at( nindex.at(0) ),
+											pid_list.at( pindex.at(0) ),
+											nid_list.at( nindex.at(0) ),
+											pwalk_list.at( pindex.at(0) ),
+											nwalk_list.at( nindex.at(0) ),
+											phit_list.at( pindex.at(0) ),
+											nhit_list.at( nindex.at(0) ),
+											i, j );
 						
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
@@ -1691,17 +1691,17 @@ void ISSEventBuilder::ArrayFinder() {
 					
 					// p2 and n coincident
 					else if( TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
-					
+
 						// Fill single event as a nice p/n correlation
 						array_evt->SetEvent( pen_list.at( pindex.at(1) ),
-											 nen_list.at( nindex.at(0) ),
-											 pid_list.at( pindex.at(1) ),
-											 nid_list.at( nindex.at(0) ),
-											 pwalk_list.at( pindex.at(1) ),
-											 nwalk_list.at( nindex.at(0) ),
-											 phit_list.at( pindex.at(1) ),
-											 nhit_list.at( nindex.at(0) ),
-											 i, j );
+											nen_list.at( nindex.at(0) ),
+											pid_list.at( pindex.at(1) ),
+											nid_list.at( nindex.at(0) ),
+											pwalk_list.at( pindex.at(1) ),
+											nwalk_list.at( nindex.at(0) ),
+											phit_list.at( pindex.at(1) ),
+											nhit_list.at( nindex.at(0) ),
+											i, j );
 						
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
@@ -1718,14 +1718,14 @@ void ISSEventBuilder::ArrayFinder() {
 						
 						// Do a p-only event
 						arrayp_evt->SetEvent( pen_list.at( pmax_idx ),
-									  0,
-									  pid_list.at( pmax_idx ),
-									  5,
-									  pwalk_list.at( pmax_idx ),
-									  0,
-									  phit_list.at( pmax_idx ),
-									  false,
-									  i, j );
+											 0,
+											 pid_list.at( pmax_idx ),
+											 5,
+											 pwalk_list.at( pmax_idx ),
+											 0,
+											 phit_list.at( pmax_idx ),
+											 false,
+											 i, j );
 
 						write_evts->AddEvt( arrayp_evt );
 						arrayp_ctr++;
@@ -1754,20 +1754,20 @@ void ISSEventBuilder::ArrayFinder() {
 					// Check that p and n are coincident
 					if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ||
 					   TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
-					
+
 						// Fill addback histogram
 						pn_nab[i][j]->Fill( pen_list.at( pindex.at(0) ), nsum_en );
 
 						// Fill the addback event
 						array_evt->SetEvent( pen_list.at( pindex.at(0) ),
-											 nsum_en,
-											 pid_list.at( pindex.at(0) ),
-											 nid_list.at( nmax_idx ),
-											 pwalk_list.at( pindex.at(0) ),
-											 nwalk_list.at( nmax_idx ),
-											 phit_list.at( pindex.at(0) ),
-											 nhit_list.at( nmax_idx ),
-											 i, j );
+											nsum_en,
+											pid_list.at( pindex.at(0) ),
+											nid_list.at( nmax_idx ),
+											pwalk_list.at( pindex.at(0) ),
+											nwalk_list.at( nmax_idx ),
+											phit_list.at( pindex.at(0) ),
+											nhit_list.at( nmax_idx ),
+											i, j );
 
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
@@ -1783,14 +1783,14 @@ void ISSEventBuilder::ArrayFinder() {
 						
 						// Have a pure p event and throw out both n's
 						arrayp_evt->SetEvent( pen_list.at( pindex.at(0) ),
-									  0,
-									  pid_list.at( pindex.at(0) ),
-									  5,
-									  pwalk_list.at( pindex.at(0) ),
-									  0,
-									  phit_list.at( pindex.at(0) ),
-									  false,
-									  i, j );
+											 0,
+											 pid_list.at( pindex.at(0) ),
+											 5,
+											 pwalk_list.at( pindex.at(0) ),
+											 0,
+											 phit_list.at( pindex.at(0) ),
+											 false,
+											 i, j );
 
 						write_evts->AddEvt( arrayp_evt );
 						arrayp_ctr++;
@@ -1807,14 +1807,14 @@ void ISSEventBuilder::ArrayFinder() {
 						
 						// Fill single event as a nice p/n correlation
 						array_evt->SetEvent( pen_list.at( pindex.at(0) ),
-											 nen_list.at( nindex.at(0) ),
-											 pid_list.at( pindex.at(0) ),
-											 nid_list.at( nindex.at(0) ),
-											 pwalk_list.at( pindex.at(0) ),
-											 nwalk_list.at( nindex.at(0) ),
-											 phit_list.at( pindex.at(0) ),
-											 nhit_list.at( nindex.at(0) ),
-											 i, j );
+											nen_list.at( nindex.at(0) ),
+											pid_list.at( pindex.at(0) ),
+											nid_list.at( nindex.at(0) ),
+											pwalk_list.at( pindex.at(0) ),
+											nwalk_list.at( nindex.at(0) ),
+											phit_list.at( pindex.at(0) ),
+											nhit_list.at( nindex.at(0) ),
+											i, j );
 						
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
@@ -1831,14 +1831,14 @@ void ISSEventBuilder::ArrayFinder() {
 
 						// Fill single event as a nice p/n correlation
 						array_evt->SetEvent( pen_list.at( pindex.at(0) ),
-											 nen_list.at( nindex.at(1) ),
-											 pid_list.at( pindex.at(0) ),
-											 nid_list.at( nindex.at(1) ),
-											 pwalk_list.at( pindex.at(0) ),
-											 nwalk_list.at( nindex.at(1) ),
-											 phit_list.at( pindex.at(0) ),
-											 nhit_list.at( nindex.at(1) ),
-											 i, j );
+											nen_list.at( nindex.at(1) ),
+											pid_list.at( pindex.at(0) ),
+											nid_list.at( nindex.at(1) ),
+											pwalk_list.at( pindex.at(0) ),
+											nwalk_list.at( nindex.at(1) ),
+											phit_list.at( pindex.at(0) ),
+											nhit_list.at( nindex.at(1) ),
+											i, j );
 						
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
@@ -1854,14 +1854,14 @@ void ISSEventBuilder::ArrayFinder() {
 					else {
 						
 						arrayp_evt->SetEvent( pen_list.at( pindex.at(0) ),
-									  0,
-									  pid_list.at( pindex.at(0) ),
-									  5,
-									  pwalk_list.at( pindex.at(0) ),
-									  0,
-									  phit_list.at( pindex.at(0) ),
-									  false,
-									  i, j );
+											 0,
+											 pid_list.at( pindex.at(0) ),
+											 5,
+											 pwalk_list.at( pindex.at(0) ),
+											 0,
+											 phit_list.at( pindex.at(0) ),
+											 false,
+											 i, j );
 
 						write_evts->AddEvt( arrayp_evt );
 						arrayp_ctr++;
@@ -1877,8 +1877,8 @@ void ISSEventBuilder::ArrayFinder() {
 				
 				// Neighbour strips and prompt coincidence
 				if( TMath::Abs( pid_list.at( pindex.at(0) ) - pid_list.at( pindex.at(1) ) ) == 1 &&
-				    ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - pwalk_list.at( pindex.at(1) ) ) < set->GetArrayPPHitWindow()
-					 || TMath::Abs( ptd_list.at( pindex.at(0) ) - ptd_list.at( pindex.at(1) ) ) == 0 ) ) {
+				   ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - pwalk_list.at( pindex.at(1) ) ) < set->GetArrayPPHitWindow()
+					|| TMath::Abs( ptd_list.at( pindex.at(0) ) - ptd_list.at( pindex.at(1) ) ) == 0 ) ) {
 
 					// Simple sum of both energies, cross-talk not included yet
 					psum_en  = pen_list.at( pindex.at(0) );
@@ -1889,14 +1889,14 @@ void ISSEventBuilder::ArrayFinder() {
 
 					// Fill add back event
 					arrayp_evt->SetEvent( psum_en,
-										  0,
-										  pid_list.at( pmax_idx ),
-										  5,
-										  pwalk_list.at( pmax_idx ),
-										  0,
-										  phit_list.at( pmax_idx ),
-										  false,
-										  i, j );
+										 0,
+										 pid_list.at( pmax_idx ),
+										 5,
+										 pwalk_list.at( pmax_idx ),
+										 0,
+										 phit_list.at( pmax_idx ),
+										 false,
+										 i, j );
 
 					write_evts->AddEvt( arrayp_evt );
 					arrayp_ctr++;
@@ -1908,14 +1908,14 @@ void ISSEventBuilder::ArrayFinder() {
 					
 					// Fill maximum energy only
 					arrayp_evt->SetEvent( pen_list.at( pmax_idx ),
-										  0,
-										  pid_list.at( pmax_idx ),
-										  5,
-										  pwalk_list.at( pmax_idx ),
-										  0,
-										  phit_list.at( pmax_idx ),
-										  false,
-										  i, j );
+										 0,
+										 pid_list.at( pmax_idx ),
+										 5,
+										 pwalk_list.at( pmax_idx ),
+										 0,
+										 phit_list.at( pmax_idx ),
+										 false,
+										 i, j );
 
 					write_evts->AddEvt( arrayp_evt );
 					arrayp_ctr++;
@@ -1934,12 +1934,12 @@ void ISSEventBuilder::ArrayFinder() {
 				
 				// Neighbour strips for both p and n and prompt coincidences for p and n respectively
 				if( TMath::Abs( pid_list.at( pindex.at(0) ) - pid_list.at( pindex.at(1) ) ) == 1 &&
-				    TMath::Abs( nid_list.at( nindex.at(0) ) - nid_list.at( nindex.at(1) ) ) == 1 && 
-				    ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - pwalk_list.at( pindex.at(1) ) ) < set->GetArrayPPHitWindow()
-					 || TMath::Abs( ptd_list.at( pindex.at(0) ) - ptd_list.at( pindex.at(1) ) ) == 0 ) &&
-				    ( TMath::Abs( nwalk_list.at( nindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayNNHitWindow()
+				   TMath::Abs( nid_list.at( nindex.at(0) ) - nid_list.at( nindex.at(1) ) ) == 1 &&
+				   ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - pwalk_list.at( pindex.at(1) ) ) < set->GetArrayPPHitWindow()
+					|| TMath::Abs( ptd_list.at( pindex.at(0) ) - ptd_list.at( pindex.at(1) ) ) == 0 ) &&
+				   ( TMath::Abs( nwalk_list.at( nindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayNNHitWindow()
 					|| TMath::Abs( ntd_list.at( nindex.at(0) ) - ntd_list.at( nindex.at(1) ) ) == 0 ) ) {
-				    
+
 					// Simple sum of both energies, cross-talk not included yet
 					psum_en  = pen_list.at( pindex.at(0) );
 					psum_en += pen_list.at( pindex.at(1) );
@@ -1948,23 +1948,23 @@ void ISSEventBuilder::ArrayFinder() {
 					
 					// Check p and n prompt with each other
 					if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ||
-					    TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ||
-					    TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ||
-					    TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
-					
+					   TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ||
+					   TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ||
+					   TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
+
 						// Fill addback histogram
 						pn_ab[i][j]->Fill( psum_en, nsum_en );
 
 						// Fill the addback event
 						array_evt->SetEvent( psum_en,
-											 nsum_en,
-											 pid_list.at( pmax_idx ),
-											 nid_list.at( nmax_idx ),
-											 pwalk_list.at( pmax_idx ),
-											 nwalk_list.at( nmax_idx ),
-											 phit_list.at( pmax_idx ),
-											 nhit_list.at( nmax_idx ),
-											 i, j );
+											nsum_en,
+											pid_list.at( pmax_idx ),
+											nid_list.at( nmax_idx ),
+											pwalk_list.at( pmax_idx ),
+											nwalk_list.at( nmax_idx ),
+											phit_list.at( pmax_idx ),
+											nhit_list.at( nmax_idx ),
+											i, j );
 
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
@@ -1984,14 +1984,14 @@ void ISSEventBuilder::ArrayFinder() {
 						
 						// Fill the addback event
 						arrayp_evt->SetEvent( psum_en,
-											  0,
-											  pid_list.at( pmax_idx ),
-											  5,
-											  pwalk_list.at( pmax_idx ),
-											  0,
-											  phit_list.at( pmax_idx ),
-											  false,
-											  i, j );
+											 0,
+											 pid_list.at( pmax_idx ),
+											 5,
+											 pwalk_list.at( pmax_idx ),
+											 0,
+											 phit_list.at( pmax_idx ),
+											 false,
+											 i, j );
 
 						write_evts->AddEvt( arrayp_evt );
 						arrayp_ctr++;
@@ -2012,21 +2012,21 @@ void ISSEventBuilder::ArrayFinder() {
 					// Check if any of the n-sides coincident with p
 					// n0 coincident with pp
 					if ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ||
-					     TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
+						TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
 						
 						// Fill addback histogram
 						pn_pab[i][j]->Fill( psum_en, nen_list.at( nindex.at(0) ) );
 
 						// Fill the addback event for p-side, but max for n-side
 						array_evt->SetEvent( psum_en,
-											 nen_list.at( nindex.at(0) ),
-											 pid_list.at( pmax_idx ),
-											 nid_list.at( nindex.at(0) ),
-											 pwalk_list.at( pmax_idx ),
-											 nwalk_list.at( nindex.at(0) ),
-											 phit_list.at( pmax_idx ),
-											 nhit_list.at( nindex.at(0) ),
-											 i, j );
+											nen_list.at( nindex.at(0) ),
+											pid_list.at( pmax_idx ),
+											nid_list.at( nindex.at(0) ),
+											pwalk_list.at( pmax_idx ),
+											nwalk_list.at( nindex.at(0) ),
+											phit_list.at( pmax_idx ),
+											nhit_list.at( nindex.at(0) ),
+											i, j );
 
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
@@ -2040,21 +2040,21 @@ void ISSEventBuilder::ArrayFinder() {
 					
 					// n1 coincident with pp
 					else if ( TMath::Abs( ptd_list.at( pindex.at(0) ) - ntd_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ||
-					          TMath::Abs( ptd_list.at( pindex.at(1) ) - ntd_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
+							 TMath::Abs( ptd_list.at( pindex.at(1) ) - ntd_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
 						
 						// Fill addback histogram
 						pn_pab[i][j]->Fill( psum_en, nen_list.at( nindex.at(1) ) );
 
 						// Fill the addback event for p-side, but max for n-side
 						array_evt->SetEvent( psum_en,
-											 nen_list.at( nindex.at(1) ),
-											 pid_list.at( pmax_idx ),
-											 nid_list.at( nindex.at(1) ),
-											 pwalk_list.at( pmax_idx ),
-											 nwalk_list.at( nindex.at(1) ),
-											 phit_list.at( pmax_idx ),
-											 nhit_list.at( nindex.at(1) ),
-											 i, j );
+											nen_list.at( nindex.at(1) ),
+											pid_list.at( pmax_idx ),
+											nid_list.at( nindex.at(1) ),
+											pwalk_list.at( pmax_idx ),
+											nwalk_list.at( nindex.at(1) ),
+											phit_list.at( pmax_idx ),
+											nhit_list.at( nindex.at(1) ),
+											i, j );
 
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
@@ -2074,14 +2074,14 @@ void ISSEventBuilder::ArrayFinder() {
 
 						// No n-sides coincident -> p-sides only
 						arrayp_evt->SetEvent( psum_en,
-										  0,
-										  pid_list.at( pmax_idx ),
-										  5,
-										  pwalk_list.at( pmax_idx ),
-										  0,
-										  phit_list.at( pmax_idx ),
-										  false,
-										  i, j );
+											 0,
+											 pid_list.at( pmax_idx ),
+											 5,
+											 pwalk_list.at( pmax_idx ),
+											 0,
+											 phit_list.at( pmax_idx ),
+											 false,
+											 i, j );
 
 						write_evts->AddEvt( arrayp_evt );
 						arrayp_ctr++;
@@ -2101,21 +2101,21 @@ void ISSEventBuilder::ArrayFinder() {
 
 					// Check p0 with n sides
 					if ( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ||
-					     TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
-					
+						TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
+
 						// Fill addback histogram
 						pn_nab[i][j]->Fill( pen_list.at( pindex.at(0) ), nsum_en );
 
 						// Fill the addback event
 						array_evt->SetEvent( pen_list.at( pindex.at(0) ),
-											 nsum_en,
-											 pid_list.at( pindex.at(0) ),
-											 nid_list.at( nmax_idx ),
-											 pwalk_list.at( pindex.at(0) ),
-											 nwalk_list.at( nmax_idx ),
-											 phit_list.at( pindex.at(0) ),
-											 nhit_list.at( nmax_idx ),
-											 i, j );
+											nsum_en,
+											pid_list.at( pindex.at(0) ),
+											nid_list.at( nmax_idx ),
+											pwalk_list.at( pindex.at(0) ),
+											nwalk_list.at( nmax_idx ),
+											phit_list.at( pindex.at(0) ),
+											nhit_list.at( nmax_idx ),
+											i, j );
 
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
@@ -2129,21 +2129,21 @@ void ISSEventBuilder::ArrayFinder() {
 					
 					// Check p1 with n sides
 					else if( TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ||
-					         TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
+							TMath::Abs( pwalk_list.at( pindex.at(1) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
 
 						// Fill addback histogram
 						pn_nab[i][j]->Fill( pen_list.at( pindex.at(1) ), nsum_en );
 
 						// Fill the addback event
 						array_evt->SetEvent( pen_list.at( pindex.at(1) ),
-											 nsum_en,
-											 pid_list.at( pindex.at(1) ),
-											 nid_list.at( nmax_idx ),
-											 pwalk_list.at( pindex.at(1) ),
-											 nwalk_list.at( nmax_idx ),
-											 phit_list.at( pindex.at(1) ),
-											 nhit_list.at( nmax_idx ),
-											 i, j );
+											nsum_en,
+											pid_list.at( pindex.at(1) ),
+											nid_list.at( nmax_idx ),
+											pwalk_list.at( pindex.at(1) ),
+											nwalk_list.at( nmax_idx ),
+											phit_list.at( pindex.at(1) ),
+											nhit_list.at( nmax_idx ),
+											i, j );
 
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
@@ -2167,7 +2167,7 @@ void ISSEventBuilder::ArrayFinder() {
 
 					// Pairing [0,0] because energy difference is smaller than [1,0]
 					if( TMath::Abs( pen_list.at( pindex.at(0) ) - nen_list.at( nindex.at(0) ) ) <
-					    TMath::Abs( pen_list.at( pindex.at(1) ) - nen_list.at( nindex.at(0) ) ) ) {
+					   TMath::Abs( pen_list.at( pindex.at(1) ) - nen_list.at( nindex.at(0) ) ) ) {
 						
 						// Try filling the [0,0] and then the [1,1]
 						for( int k = 0; k < 2; ++k ){
@@ -2182,14 +2182,14 @@ void ISSEventBuilder::ArrayFinder() {
 								pn_ab[i][j]->Fill( pen_list.at( ptmp_idx ), nen_list.at( ntmp_idx ) );
 
 								array_evt->SetEvent( pen_list.at( ptmp_idx ),
-													 nen_list.at( ntmp_idx ),
-													 pid_list.at( ptmp_idx ),
-													 nid_list.at( ntmp_idx ),
-													 pwalk_list.at( ptmp_idx ),
-													 nwalk_list.at( ntmp_idx ),
-													 phit_list.at( ptmp_idx ),
-													 nhit_list.at( ntmp_idx ),
-													 i, j );
+													nen_list.at( ntmp_idx ),
+													pid_list.at( ptmp_idx ),
+													nid_list.at( ntmp_idx ),
+													pwalk_list.at( ptmp_idx ),
+													nwalk_list.at( ntmp_idx ),
+													phit_list.at( ptmp_idx ),
+													nhit_list.at( ntmp_idx ),
+													i, j );
 
 								write_evts->AddEvt( array_evt );
 								array_ctr++;
@@ -2204,14 +2204,14 @@ void ISSEventBuilder::ArrayFinder() {
 								
 								// [0,0]/[1,1] not in prompt coincidence, so just store p as separate event
 								arrayp_evt->SetEvent( pen_list.at( ptmp_idx ),
-													  0,
-													  pid_list.at( ptmp_idx ),
-													  5,
-													  pwalk_list.at( ptmp_idx ),
-													  0,
-													  phit_list.at( ptmp_idx ),
-													  false,
-													  i, j );
+													 0,
+													 pid_list.at( ptmp_idx ),
+													 5,
+													 pwalk_list.at( ptmp_idx ),
+													 0,
+													 phit_list.at( ptmp_idx ),
+													 false,
+													 i, j );
 
 								write_evts->AddEvt( arrayp_evt );
 								arrayp_ctr++;
@@ -2238,14 +2238,14 @@ void ISSEventBuilder::ArrayFinder() {
 								pn_ab[i][j]->Fill( pen_list.at( ptmp_idx ), nen_list.at( ntmp_idx ) );
 
 								array_evt->SetEvent( pen_list.at( ptmp_idx ),
-													 nen_list.at( ntmp_idx ),
-													 pid_list.at( ptmp_idx ),
-													 nid_list.at( ntmp_idx ),
-													 pwalk_list.at( ptmp_idx ),
-													 nwalk_list.at( ntmp_idx ),
-													 phit_list.at( ptmp_idx ),
-													 nhit_list.at( ntmp_idx ),
-													 i, j );
+													nen_list.at( ntmp_idx ),
+													pid_list.at( ptmp_idx ),
+													nid_list.at( ntmp_idx ),
+													pwalk_list.at( ptmp_idx ),
+													nwalk_list.at( ntmp_idx ),
+													phit_list.at( ptmp_idx ),
+													nhit_list.at( ntmp_idx ),
+													i, j );
 
 								write_evts->AddEvt( array_evt );
 								array_ctr++;
@@ -2260,14 +2260,14 @@ void ISSEventBuilder::ArrayFinder() {
 
 								// [0,0]/[1,1] not in prompt coincidence, so just store p as separate event
 								arrayp_evt->SetEvent( pen_list.at( ptmp_idx ),
-													  0,
-													  pid_list.at( ptmp_idx ),
-													  5,
-													  pwalk_list.at( ptmp_idx ),
-													  0,
-													  phit_list.at( ptmp_idx ),
-													  false,
-													  i, j );
+													 0,
+													 pid_list.at( ptmp_idx ),
+													 5,
+													 pwalk_list.at( ptmp_idx ),
+													 0,
+													 phit_list.at( ptmp_idx ),
+													 false,
+													 i, j );
 
 								write_evts->AddEvt( arrayp_evt );
 								arrayp_ctr++;
@@ -2289,14 +2289,14 @@ void ISSEventBuilder::ArrayFinder() {
 			else if( pmax_idx >= 0 && nmax_idx >= 0 ){
 
 				array_evt->SetEvent( pen_list.at( pmax_idx ),
-									 nen_list.at( nmax_idx ),
-									 pid_list.at( pmax_idx ),
-									 nid_list.at( nmax_idx ),
-									 pwalk_list.at( pmax_idx ),
-									 nwalk_list.at( nmax_idx ),
-									 phit_list.at( pmax_idx ),
-									 nhit_list.at( nmax_idx ),
-									 i, j );
+									nen_list.at( nmax_idx ),
+									pid_list.at( pmax_idx ),
+									nid_list.at( nmax_idx ),
+									pwalk_list.at( pmax_idx ),
+									nwalk_list.at( nmax_idx ),
+									phit_list.at( pmax_idx ),
+									nhit_list.at( nmax_idx ),
+									i, j );
 
 				write_evts->AddEvt( array_evt );
 				array_ctr++;
@@ -2388,9 +2388,9 @@ void ISSEventBuilder::RecoilFinder() {
 			
 			// Histogram the recoils
 			recoil_EdE[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
-								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+										   recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 			recoil_dEsum[rsec_list[i]]->Fill( recoil_evt->GetEnergyTotal( set->GetRecoilEnergyTotalStart(), set->GetRecoilEnergyTotalStop() ),
-								recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+											 recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 			recoil_E_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
 			recoil_dE_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 			
@@ -2439,7 +2439,7 @@ void ISSEventBuilder::MwpcFinder() {
 
 				// Found a match
 				if( i != j && mwpcid_list[j] == 1 && !flag_skip &&
-				    mwpcaxis_list[i] == mwpcaxis_list[j] ){
+				   mwpcaxis_list[i] == mwpcaxis_list[j] ){
 					
 					index.push_back(j);
 					tac_diff = (int)mwpctac_list[i] - (int)mwpctac_list[j];
@@ -2467,7 +2467,7 @@ void ISSEventBuilder::MwpcFinder() {
 	if( write_evts->GetMwpcMultiplicity() == 2 ) {
 		
 		mwpc_pos->Fill( write_evts->GetMwpcEvt(0)->GetTacDiff(),
-					    write_evts->GetMwpcEvt(1)->GetTacDiff() );
+					   write_evts->GetMwpcEvt(1)->GetTacDiff() );
 		
 	}
 
@@ -2489,7 +2489,7 @@ void ISSEventBuilder::ElumFinder() {
 
 		// Set the ELUM event (nice and easy)
 		elum_evt->SetEvent( een_list[i], 0,
-							esec_list[i], etd_list[i] );
+						   esec_list[i], etd_list[i] );
 
 		// Write event to tree
 		write_evts->AddEvt( elum_evt );
@@ -2510,7 +2510,7 @@ void ISSEventBuilder::ElumFinder() {
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Assesses the validity of events in the zero degree detector. All dE events are recorded because they act
-/// as the trigger, even though there may not be a corresponding E signal on this detector. Also imposes a 
+/// as the trigger, even though there may not be a corresponding E signal on this detector. Also imposes a
 /// prompt coincidence on these hits, which can be altered in the ISSSettings file
 void ISSEventBuilder::ZeroDegreeFinder() {
 
@@ -2542,7 +2542,7 @@ void ISSEventBuilder::ZeroDegreeFinder() {
 				
 				// Found a match
 				if( i != j && zid_list[j] != 0 && !flag_skip &&
-				  TMath::Abs( ztd_list[i] - ztd_list[j] ) < set->GetZeroDegreeHitWindow() ){
+				   TMath::Abs( ztd_list[i] - ztd_list[j] ) < set->GetZeroDegreeHitWindow() ){
 					
 					index.push_back(j);
 					zd_evt->AddFragment( zen_list[j], zid_list[j] );
@@ -2596,9 +2596,9 @@ void ISSEventBuilder::GammaRayFinder() {
 				
 				gamma_gamma_E->Fill( saen_list[i], saen_list[j] );
 				gamma_gamma_E->Fill( saen_list[j], saen_list[i] );
-
-			} // prompt
 				
+			} // prompt
+
 		} // j
 
 		// Set the GammaRay event (nice and easy, ScintArray type = 0)
@@ -2642,7 +2642,7 @@ void ISSEventBuilder::LumeFinder() {
 				break;
 			}
 
-			}
+		}
 
 		// Find the corresponding f signal
 		bool has_lf = false;
@@ -2661,7 +2661,7 @@ void ISSEventBuilder::LumeFinder() {
 		}
 
 		ne_energy = has_ln ? ne_energy : 0;
-		fe_energy =  has_lf ? fe_energy : 0;
+		fe_energy = has_lf ? fe_energy : 0;
 
 		lume_evt->SetEvent(be_energy, be_id, be_timestamp, ne_energy, fe_energy);
 
@@ -3048,18 +3048,18 @@ void ISSEventBuilder::MakeHists(){
 		htitle = "Recoil dE vs E for sector " + std::to_string(i);
 		htitle += ";Rest energy, E [arb.];Energy loss, dE [arb.];Counts";
 		recoil_EdE_raw[i] = new TH2F( hname.data(), htitle.data(), 2048, 0, 65536, 2048, 0, 65536 );
-	
-		hname = "recoil_E_singles" + std::to_string(i);		
+
+		hname = "recoil_E_singles" + std::to_string(i);
 		htitle = "Recoil E singles in sector " + std::to_string(i);
 		htitle += "; E [keV]; Counts";
 		recoil_E_singles[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
 		
-		hname = "recoil_dE_singles" + std::to_string(i);		
+		hname = "recoil_dE_singles" + std::to_string(i);
 		htitle = "Recoil dE singles in sector " + std::to_string(i);
 		htitle += "; dE [keV]; Counts";
 		recoil_dE_singles[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
 		
-		hname = "recoil_E_dE_tdiff" + std::to_string(i);		
+		hname = "recoil_E_dE_tdiff" + std::to_string(i);
 		htitle = "Recoil E-dE time difference in sector" + std::to_string(i);
 		htitle += "; #Delta t [ns]; Counts";
 		recoil_E_dE_tdiff[i] = new TH1F( hname.data(), htitle.data(), 2000, -6e3, 6e3 );
@@ -3118,7 +3118,7 @@ void ISSEventBuilder::MakeHists(){
 	hname = "elum_E_vs_sec";
 	htitle = "ELUM energy vs sector;Sector;Energy [keV];Counts";
 	elum_E_vs_sec = new TH2F( hname.data(), htitle.data(),
-			set->GetNumberOfELUMSectors()+1, -0.5, set->GetNumberOfELUMSectors()+0.5, 2000, 0, 20000 );
+							 set->GetNumberOfELUMSectors()+1, -0.5, set->GetNumberOfELUMSectors()+0.5, 2000, 0, 20000 );
 
 	hname = "elum_E";
 	htitle = "ELUM energy;Energy [keV];Counts";
@@ -3150,7 +3150,7 @@ void ISSEventBuilder::MakeHists(){
 	hname = "gamma_E_vs_det";
 	htitle = "Gamma-ray energy vs detector ID;Detector ID;Energy [keV];Counts per 2 keV";
 	gamma_E_vs_det = new TH2F( hname.data(), htitle.data(),
-			set->GetNumberOfScintArrayDetectors()+1, -0.5, set->GetNumberOfScintArrayDetectors()+0.5, 4000, 0, 8000 );
+							  set->GetNumberOfScintArrayDetectors()+1, -0.5, set->GetNumberOfScintArrayDetectors()+0.5, 4000, 0, 8000 );
 
 	hname = "gamma_E";
 	htitle = "Gamma-ray energy;Energy [keV];Counts per 2 keV";
