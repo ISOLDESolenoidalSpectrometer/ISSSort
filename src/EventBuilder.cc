@@ -75,7 +75,7 @@ ISSEventBuilder::ISSEventBuilder( std::shared_ptr<ISSSettings> myset ){
 
 			// p-side: all channels used; fill n-side with -1; fill array_row with row number for p-side
 			if( asic_side.at(i) == 0 ) {
-			
+
 				array_pid[i].push_back( j );
 				array_nid[i].push_back( -1 );
 				array_row.at(i).push_back( asic_row.at(i) );
@@ -128,9 +128,9 @@ ISSEventBuilder::ISSEventBuilder( std::shared_ptr<ISSSettings> myset ){
 				array_nid[i].push_back( -1 );
 				array_pid[i].push_back( -1 );
 				array_row.at(i).push_back( 0 );	// N.B. these should only be for unused channels for the n-sides, but this is an actual row number so could run into problems down the line...
-	
+
 			}
-	
+
 		}
 		
 	}
@@ -212,7 +212,7 @@ void ISSEventBuilder::StartFile(){
 	
 	// Some flags must be false to start
 	flag_caen_pulser = false;
-		
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -339,7 +339,7 @@ void ISSEventBuilder::Initialise(){
 	
 	flag_close_event = false;
 	event_open = false;
-	
+
 	hit_ctr = 0;
 
 	// Swap all vectors with empty vectors
@@ -400,7 +400,7 @@ void ISSEventBuilder::Initialise(){
 	std::vector<char>().swap(cdsxx_list);
 
 	write_evts->ClearEvt();
-	
+
 	return;
 	
 }
@@ -465,7 +465,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 		//std::cout << std::setprecision(15) << i << "\t";
 		//std::cout << in_data->GetTimeStamp() << "\t" << mytime << std::endl;
-				
+
 		// check time stamp monotonically increases!
 		// but allow for the fine time of the CAEN system
 		if( (unsigned long long)time_prev > mytime + 5.0 ) {
@@ -498,11 +498,11 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			myrow = array_row.at( myasic ).at( mych );
 			myhitbit = asic_data->GetHitBit();
 			if( overwrite_cal ) {
-			
+
 				myenergy = cal->AsicEnergy( mymod, myasic,
 									 mych, asic_data->GetAdcValue() );
 				mywalk = cal->AsicWalk( mymod, myasic, myenergy, myhitbit );
-			
+
 				if( asic_data->GetAdcValue() < cal->AsicThreshold( mymod, myasic, mych ) )
 					mythres = false;
 				
@@ -513,7 +513,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				myenergy = asic_data->GetEnergy();
 				mywalk = asic_data->GetWalk();
 				mythres = asic_data->IsOverThreshold();
-			
+
 			}
 
 			// If it's below zero in energy, consider it below threshold
@@ -526,7 +526,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				
 				// Only use if it is an event from a detector
 				if( mystrip >= 0 ) {
-							
+
 					pen_list.push_back( myenergy );
 					ptd_list.push_back( mytime );
 					if( set->BuildByTimeStamp() )
@@ -552,7 +552,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 				// Only use if it is an event from a detector
 				if( mystrip >= 0 ) {
-							
+
 					nen_list.push_back( myenergy );
                     ntd_list.push_back( mytime );
 					if( set->BuildByTimeStamp() )
@@ -721,7 +721,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				saen_list.push_back( myenergy );
 				satd_list.push_back( mytime );
 				said_list.push_back( myid );
-				
+
 				hit_ctr++; // increase counter for bits of data included in this event
 
 			}
@@ -792,13 +792,13 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// Is it the start event?
 			if( vme_time_start.at( myvme ).at( mymod ) == 0 )
 				vme_time_start.at( myvme ).at( mymod ) = mytime;
-			
+
 			// or is it the end event (we don't know so keep updating)
 			vme_time_stop.at( myvme ).at( mymod ) = mytime;
 
 		}
-		
-		
+
+
 		// ------------------------------------------ //
 		// Find info events, like timestamps etc
 		// ------------------------------------------ //
@@ -818,7 +818,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// N.B. if you are exceeding the limits of long long, then your DAQ has been running too long
 			double info_tdiff;
 			if( info_data->GetCode() == set->GetEBISCode() ){
-			
+
 				// Each ASIC module sends ebis_time signal, so make sure difference between last ebis pulse and now is longer than the time it takes for them all to enter the DAQ
 				info_tdiff = info_data->GetTime() - ebis_prev;
 				if( TMath::Abs( info_tdiff ) > 1e3 ){
@@ -830,13 +830,13 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				}
 				
 			}
-		
+
 			// Update T1 time
 			else if( info_data->GetCode() == set->GetT1Code() ){
 				
 				info_tdiff = info_data->GetTime() - t1_prev;
 				if( TMath::Abs( info_tdiff ) > 1e3 ){
-				
+
 					t1_prev = info_data->GetTime();
 					if( t1_prev != 0 ){
 						t1_period->Fill( info_tdiff );
@@ -853,7 +853,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				
 				info_tdiff = info_data->GetTime() - sc_prev;
 				if( TMath::Abs( info_tdiff ) > 1e3 ){
-				
+
 					sc_prev = info_data->GetTime();
 					if( sc_prev != 0 ) sc_period->Fill( info_tdiff );
 					n_sc++;
@@ -867,7 +867,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				
 				info_tdiff = info_data->GetTime() - laser_prev;
 				if( TMath::Abs( info_tdiff ) > 1e3 ){
-				
+
 					laser_prev = info_data->GetTime();
 					if( laser_prev != 0 ) laser_period->Fill( info_tdiff );
 					n_laser++;
@@ -889,7 +889,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 			// Update ISS pulser time in FPGA
 			else if( info_data->GetCode() == set->GetExternalTriggerCode() ) {
-			   
+
 				fpga_time[info_data->GetModule()] = info_data->GetTime();
 				info_tdiff = fpga_time[info_data->GetModule()] - fpga_prev[info_data->GetModule()];
 
@@ -902,7 +902,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			
 			// Update ISS pulser time in ASICs
 			else if( info_data->GetCode() == set->GetArrayPulserCode0() ) {
-			   
+
 				asic_time[info_data->GetModule()] = info_data->GetTime();
 				info_tdiff = asic_time[info_data->GetModule()] - asic_prev[info_data->GetModule()];
 
@@ -917,15 +917,15 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			else if( info_data->GetCode() == set->GetPauseCode() ) {
 				
 				if( info_data->GetModule() < set->GetNumberOfArrayModules() ) {
-				
+
 					n_asic_pause[info_data->GetModule()]++;
 					flag_pause[info_data->GetModule()] = true;
 					pause_time[info_data->GetModule()] = info_data->GetTime();
-				
+
 				}
 				
 				else{
-				
+
 					std::cerr << "Bad pause event in module " << (int)info_data->GetModule() << std::endl;
 					
 				}
@@ -936,7 +936,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			else if( info_data->GetCode() == set->GetResumeCode() ) {
 				
 				if( info_data->GetModule() < set->GetNumberOfArrayModules() ) {
-				
+
 					n_asic_resume[info_data->GetModule()]++;
 					flag_resume[info_data->GetModule()] = true;
 					resume_time[info_data->GetModule()] = info_data->GetTime();
@@ -951,7 +951,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 					}
 					else{
-					
+
 						// Do have pause and resume -> work out the dead time
 						asic_dead_time[info_data->GetModule()] += resume_time[info_data->GetModule()];
 						asic_dead_time[info_data->GetModule()] -= pause_time[info_data->GetModule()];
@@ -959,9 +959,9 @@ unsigned long ISSEventBuilder::BuildEvents() {
 						// Reset flags
 						flag_pause[info_data->GetModule()] = false;
 						flag_resume[info_data->GetModule()] = false;
-					
+
 					}
-				
+
 				}
 				
 				else
@@ -1007,7 +1007,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			if( info_data->GetCode() == set->GetArrayPulserCode0() )
 				asic_prev[info_data->GetModule()] = asic_time[info_data->GetModule()];
 
-						
+
 		}
 		
 		// Sort out the timing for the event window
@@ -1051,7 +1051,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		else idx_next = att_index->GetIndex()[i+1];
 
 		if( input_tree->GetEntry(idx_next) ) {
-					
+
 			// Time difference to next event (with or without time walk correction)
 			if( set->BuildByTimeStamp() )
 				time_diff = in_data->GetTime() - time_first; // no correction
@@ -1065,14 +1065,14 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// we've gone on to the next file in the chain
 			else if( time_diff < 0 )
 				flag_close_event = true; // set flag to close this event
-				
+
 			// Fill tdiff hist only for real data
 			if( !in_data->IsInfo() ) {
 				
 				tdiff->Fill( time_diff );
 				if( mythres )
 					tdiff_clean->Fill( time_diff );
-			
+
 			}
 
 		}
@@ -1094,7 +1094,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			
 			// If we opened the event, then sort it out
 			if( event_open ) {
-			
+
 				//----------------------------------
 				// Build array events, recoils, etc
 				//----------------------------------
@@ -1142,7 +1142,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			Initialise();
 			
 		} // if close event
-				
+
 		// Progress bar
 		bool update_progress = false;
 		if( n_entries < 200 )
@@ -1468,10 +1468,10 @@ void ISSEventBuilder::ArrayFinder() {
 					
 					// Check if it is max energy
 					if( pen_list.at(k) > pmax_en ){
-					
+
 						pmax_en = pen_list.at(k);
 						pmax_idx = k;
-					
+
 					}
 					
 				}
@@ -1483,16 +1483,16 @@ void ISSEventBuilder::ArrayFinder() {
 				
 				// Check if it is the module and row we want
 				if( nmod_list.at(l) == (int)i && nrow_list.at(l) == (int)j ) {
-				
+
 					// Put in the index
 					nindex.push_back( l );
 					
 					// Check if it is max energy
 					if( nen_list.at(l) > nmax_en ){
-					
+
 						nmax_en = nen_list.at(l);
 						nmax_idx = l;
-					
+
 					}
 
 				}
@@ -1526,19 +1526,19 @@ void ISSEventBuilder::ArrayFinder() {
 					pn_td_uncorrected[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ) );
 					pn_td_Ep_uncorrected[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ), pen_list.at( pindex.at(k) ) );
 					pn_td_En_uncorrected[i][j]->Fill( ptd_list.at( pindex.at(k) ) - ntd_list.at( nindex.at(l) ), nen_list.at( nindex.at(l) ) );
-		
+
 				}
 			}
 			
 			// Easy case, p == 1 vs n == 1
 			if( pindex.size() == 1 && nindex.size() == 1 ) {
-			
+
 				// Fill 1p1n histogram
 				pn_11[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(0) ) );
 
 				// Prompt coincidence
 				if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
-				
+
 					// Fill single event as a nice p/n correlation
 					array_evt->SetEvent( pen_list.at( pindex.at(0) ),
 										 nen_list.at( nindex.at(0) ),
@@ -1557,7 +1557,7 @@ void ISSEventBuilder::ArrayFinder() {
 					arrayp_evt->CopyEvent( array_evt );
 					write_evts->AddEvt( arrayp_evt );
 					arrayp_ctr++;
-				
+
 				}
 				
 				else {
@@ -1639,7 +1639,7 @@ void ISSEventBuilder::ArrayFinder() {
 						arrayp_evt->CopyEvent( array_evt );
 						write_evts->AddEvt( arrayp_evt );
 						arrayp_ctr++;
-					
+
 					}
 					
 					else {
@@ -1657,7 +1657,7 @@ void ISSEventBuilder::ArrayFinder() {
 
 						write_evts->AddEvt( arrayp_evt );
 						arrayp_ctr++;
-					
+
 					}
 
 				}
@@ -1710,7 +1710,7 @@ void ISSEventBuilder::ArrayFinder() {
 						arrayp_evt->CopyEvent( array_evt );
 						write_evts->AddEvt( arrayp_evt );
 						arrayp_ctr++;
-					
+
 					}
 					
 					// Nothing in coincidence - take max energy p
@@ -1733,7 +1733,7 @@ void ISSEventBuilder::ArrayFinder() {
 					}
 					
 				}
-								
+
 			}
 			
 			// p == 1 vs n == 2
@@ -1801,7 +1801,7 @@ void ISSEventBuilder::ArrayFinder() {
 				
 				// Non-neighbour strips
 				else {
-				
+
 					// n1 and p coincident
 					if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
 						
@@ -1828,7 +1828,7 @@ void ISSEventBuilder::ArrayFinder() {
 					
 					// n2 and p coincident
 					else if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(1) ) ) < set->GetArrayPNHitWindow() ){
-					
+
 						// Fill single event as a nice p/n correlation
 						array_evt->SetEvent( pen_list.at( pindex.at(0) ),
 											 nen_list.at( nindex.at(1) ),
@@ -1977,7 +1977,7 @@ void ISSEventBuilder::ArrayFinder() {
 					}
 					
 					else {
-					
+
 						// Discard two n's and just take two p's
 						// Fill addback histogram
 						pn_pab[i][j]->Fill( psum_en, -1 );
@@ -1995,7 +1995,7 @@ void ISSEventBuilder::ArrayFinder() {
 
 						write_evts->AddEvt( arrayp_evt );
 						arrayp_ctr++;
-					
+
 					}
 
 				}
@@ -2071,7 +2071,7 @@ void ISSEventBuilder::ArrayFinder() {
 
 						// Fill addback histogram
 						pn_pab[i][j]->Fill( psum_en, -1 );
-				
+
 						// No n-sides coincident -> p-sides only
 						arrayp_evt->SetEvent( psum_en,
 										  0,
@@ -2164,7 +2164,7 @@ void ISSEventBuilder::ArrayFinder() {
 				
 				// Non-neighbour strips, maybe two events?
 				else {
-				
+
 					// Pairing [0,0] because energy difference is smaller than [1,0]
 					if( TMath::Abs( pen_list.at( pindex.at(0) ) - nen_list.at( nindex.at(0) ) ) <
 					    TMath::Abs( pen_list.at( pindex.at(1) ) - nen_list.at( nindex.at(0) ) ) ) {
@@ -2177,7 +2177,7 @@ void ISSEventBuilder::ArrayFinder() {
 							
 							// Prompt coincidence condition
 							if( TMath::Abs( pwalk_list.at( ptmp_idx ) - nwalk_list.at( ntmp_idx ) ) < set->GetArrayPNHitWindow() ){
-							
+
 								// Fill addback histogram
 								pn_ab[i][j]->Fill( pen_list.at( ptmp_idx ), nen_list.at( ntmp_idx ) );
 
@@ -2257,7 +2257,7 @@ void ISSEventBuilder::ArrayFinder() {
 							}
 							
 							else {
-							
+
 								// [0,0]/[1,1] not in prompt coincidence, so just store p as separate event
 								arrayp_evt->SetEvent( pen_list.at( ptmp_idx ),
 													  0,
@@ -2600,7 +2600,7 @@ void ISSEventBuilder::GammaRayFinder() {
 			} // prompt
 				
 		} // j
-		
+
 		// Set the GammaRay event (nice and easy, ScintArray type = 0)
 		gamma_evt->SetEvent( saen_list[i], said_list[i],
 							0, 0, satd_list[i] );
@@ -2659,6 +2659,7 @@ void ISSEventBuilder::LumeFinder() {
 				break;
 			}
 		}
+
 		ne_energy = has_ln ? ne_energy : 0;
 		fe_energy =  has_lf ? fe_energy : 0;
 
@@ -2893,7 +2894,7 @@ void ISSEventBuilder::MakeHists(){
 
 	// Loop over ISS modules
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
-	
+
 		dirname = maindirname + "/module_" + std::to_string(i);
 
 		if( !output_file->GetDirectory( dirname.data() ) )
@@ -2975,7 +2976,7 @@ void ISSEventBuilder::MakeHists(){
 			htitle = "p-side n-side time difference after correction vs n-side energy (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];n-side energy [keV]";
 			pn_td_En[i][j] = new TH2F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20, 2e3, 0, 2e4  );
-						
+
 			hname = "pn_td_uncorrected_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side vs. n-side time difference before correction (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];counts";
@@ -2990,7 +2991,7 @@ void ISSEventBuilder::MakeHists(){
 			htitle = "p-side n-side time difference before correction vs n-side energy (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];n-side energy [keV]";
 			pn_td_En_uncorrected[i][j] = new TH2F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20, 2e3, 0, 2e4  );
-						
+
 			hname = "pp_td_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side vs. p-side time difference (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];counts";
@@ -3032,7 +3033,7 @@ void ISSEventBuilder::MakeHists(){
 
 	// Loop over number of recoil sectors
 	for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
-	
+
 		hname = "recoil_EdE" + std::to_string(i);
 		htitle = "Recoil dE vs E for sector " + std::to_string(i);
 		htitle += ";Rest energy, E [keV];Energy loss, dE [keV];Counts";
@@ -3216,7 +3217,7 @@ void ISSEventBuilder::MakeHists(){
 
 
 	return;
-	
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3338,15 +3339,15 @@ void ISSEventBuilder::CleanHists() {
 	for( unsigned int i = 0; i < recoil_EdE_raw.size(); i++ )
 		delete (recoil_EdE_raw[i]);
 	recoil_EdE_raw.clear();
-		
+
 	for( unsigned int i = 0; i < recoil_E_singles.size(); i++ )
 		delete (recoil_E_singles[i]);
 	recoil_E_singles.clear();
-		
+
 	for( unsigned int i = 0; i < recoil_dE_singles.size(); i++ )
 		delete (recoil_dE_singles[i]);
 	recoil_dE_singles.clear();
-		
+
 	for( unsigned int i = 0; i < recoil_E_dE_tdiff.size(); i++ )
 		delete (recoil_E_dE_tdiff[i]);
 	recoil_E_dE_tdiff.clear();
@@ -3399,7 +3400,7 @@ void ISSEventBuilder::CleanHists() {
 		delete (asic_period[i]);
 		delete (asic_sync[i]);
 	}
-		
+
 	fpga_td.clear();
 	fpga_sync.clear();
 	fpga_period.clear();
@@ -3494,7 +3495,6 @@ void ISSEventBuilder::ResetHists() {
 		for( unsigned int j = 0; j < pn_mult.at(i).size(); j++ )
 			pn_mult[i][j]->Reset("ICESM");
 
-
 	for( unsigned int i = 0; i < recoil_EdE.size(); i++ )
 		recoil_EdE[i]->Reset("ICESM");
 	
@@ -3503,13 +3503,13 @@ void ISSEventBuilder::ResetHists() {
 	
 	for( unsigned int i = 0; i < recoil_EdE_raw.size(); i++ )
 		recoil_EdE_raw[i]->Reset("ICESM");
-		
+
 	for( unsigned int i = 0; i < recoil_E_singles.size(); i++ )
 		recoil_E_singles[i]->Reset("ICESM");
-		
+
 	for( unsigned int i = 0; i < recoil_dE_singles.size(); i++ )
 		recoil_dE_singles[i]->Reset("ICESM");
-		
+
 	for( unsigned int i = 0; i < recoil_E_dE_tdiff.size(); i++ )
 		recoil_E_dE_tdiff[i]->Reset("ICESM");
 	
