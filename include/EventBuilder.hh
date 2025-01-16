@@ -104,6 +104,7 @@ public:
 	void ZeroDegreeFinder(); ///< Processes all hits on the zero-degree detector that fall within the build window
 	void GammaRayFinder(); ///< Processes hits in the ScintArray and maybe HPGe in the future
 	void LumeFinder(); ///< Processes all hits on the LUME that fall within the build window
+	void CdFinder();	///< Processes all hits on the CD that fall within the build window
 		
 	inline TFile* GetFile(){ return output_file; }; ///< Getter for the output_file pointer
 	inline TTree* GetTree(){ return output_tree; }; ///< Getter for the output tree pointer
@@ -150,6 +151,7 @@ private:
 	std::shared_ptr<ISSZeroDegreeEvt> zd_evt;
 	std::shared_ptr<ISSGammaRayEvt> gamma_evt;
 	std::shared_ptr<ISSLumeEvt> lume_evt;
+	std::shared_ptr<ISSCDEvt> cd_evt;
 
 	/// Outputs
 	TFile *output_file; ///< Pointer to the output ROOT file containing events
@@ -236,11 +238,12 @@ private:
 	int					mystrip;	///< strip number for DSSSD
 	bool				myhitbit;	///< hit bit enabled?
 
-	// Data variables - Recoil / ELUM / ZeroDegree / MWPC
+	// Data variables - Recoil / ELUM / ZeroDegree / MWPC / CD
 	unsigned char		myid;		///< generic detector id
 	unsigned char		mysector;	///< 4 quadrants of the recoil, for example
 	unsigned char		mylayer;	///< 2 layers for the dE-E, for example
 	unsigned char		mytype;		///< type of detector (for LUME: be, ne, fe)
+	unsigned char		myring;		///< ring of the CD detector
 
 
 	// Array variables
@@ -297,6 +300,16 @@ private:
 	std::vector<char>		lne_id_list;	///< list of LUME detectors
 	std::vector<char>		lfe_id_list;	///< list of LUME detectors
 
+	// CD variables
+	std::vector<float>		cdren_list;	///< list of CD ring energies for CdFinder
+	std::vector<double>		cdrtd_list;	///< list of CD ring time differences  for CdFinder
+	std::vector<char>		cdrid_list;	///< list of CD layer ids for CdFinder
+	std::vector<char>		cdrxx_list;	///< list of CD rings for CdFinder
+	std::vector<float>		cdsen_list;	///< list of CD sector energies for CdFinder
+	std::vector<double>		cdstd_list;	///< list of CD sector time differences for CdFinder
+	std::vector<char>		cdsid_list;	///< list of CD layer ids for CdFinder
+	std::vector<char>		cdsxx_list;	///< list of CD sectors for CdFinder
+
 	// Counters
 	unsigned int		hit_ctr;		///< Counts the number of hits that make up an event within a given file
 	unsigned int		array_ctr;		///< Counts the number of real events (must have n and p-side signals) on the array within a given file
@@ -307,6 +320,7 @@ private:
 	unsigned int		zd_ctr;			///< Counts the number of zero-degree detector events within a given file
 	unsigned int		gamma_ctr;		///< Counts the number of Gamma-Ray events within a given file
 	unsigned int		lume_ctr;		///< Counts the number of LUME events within a given file
+	unsigned int		cd_ctr;			///< Counts the number of CD events within a given file
 	unsigned long		n_asic_data;	///< Counter for the number of asic data packets in a file
 	unsigned long		n_caen_data;	///< Counter for number of caen data packets in a file
 	unsigned long		n_mesy_data;	///< Counter for number of mesytec data packets in a file
@@ -390,6 +404,12 @@ private:
 	// LUME histograms
 	std::vector<TH1F*> lume_E;		///< The LUME spectrum histogram
 	std::vector<TH2F*> lume_E_vs_x;	///< Energy vs hit position for LUME
+
+	// CD histograms
+	std::vector<TH2F*> cd_rs_mult;	///< CD ring-strip multiplicity for each layer
+	TH2F* cd_EdE;					///< Histogram for the CD E-dE that are real (calibrated)
+	TH2F* cd_dEsum;					///< Histogram for the CD E+dE vs E (calibrated)
+
 };
 
 #endif

@@ -177,6 +177,7 @@ void ISSEventBuilder::StartFile(){
 	zd_ctr		= 0;
 	gamma_ctr	= 0;
 	lume_ctr	= 0;
+	cd_ctr		= 0;
 
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 	
@@ -310,6 +311,7 @@ void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 	zd_evt		= std::make_shared<ISSZeroDegreeEvt>();
 	gamma_evt	= std::make_shared<ISSGammaRayEvt>();
 	lume_evt	= std::make_shared<ISSLumeEvt>();
+	cd_evt		= std::make_shared<ISSCDEvt>();
 
 	// --------------------------------------------------------- //
 	// Create output file and create events tree
@@ -387,6 +389,15 @@ void ISSEventBuilder::Initialise(){
 	std::vector<char>().swap(lbe_id_list);
 	std::vector<char>().swap(lne_id_list);
 	std::vector<char>().swap(lfe_id_list);
+
+	std::vector<float>().swap(cdren_list);
+	std::vector<float>().swap(cdsen_list);
+	std::vector<double>().swap(cdrtd_list);
+	std::vector<double>().swap(cdstd_list);
+	std::vector<char>().swap(cdrid_list);
+	std::vector<char>().swap(cdsid_list);
+	std::vector<char>().swap(cdrxx_list);
+	std::vector<char>().swap(cdsxx_list);
 
 	write_evts->ClearEvt();
 	
@@ -747,6 +758,36 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				hit_ctr++; // increase counter for bits of data included in this event
 
 			}
+			// Is it a CD event?
+			if( set->IsCD( myvme, mymod, mych ) && mythres ) {
+
+				mylayer = set->GetCDLayer( myvme, mymod, mych );
+				myring = set->GetCDRing( myvme, mymod, mych );
+				mysector = set->GetCDSector( myvme, mymod, mych );
+
+				// Ring side
+				if( myring >= 0 ) {
+
+					cdren_list.push_back( myenergy );
+					cdrtd_list.push_back( mytime );
+					cdrid_list.push_back( mylayer );
+					cdrxx_list.push_back( myring );
+
+				}
+
+				// Sector side
+				if( mysector >= 0 ) {
+
+					cdsen_list.push_back( myenergy );
+					cdstd_list.push_back( mytime );
+					cdsid_list.push_back( mylayer );
+					cdsxx_list.push_back( mysector );
+
+				}
+
+				hit_ctr++; // increase counter for bits of data included in this event
+
+			}
 
 			// Is it the start event?
 			if( vme_time_start.at( myvme ).at( mymod ) == 0 )
@@ -1064,6 +1105,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
 				GammaRayFinder();	// add a GammaRay event for ScintArray/HPGe events
 				LumeFinder();           // add a LumeEvt for each LUME
+				CdFinder();			// add a CDEvt for CD
 
 				// ------------------------------------
 				// Add timing and fill the ISSEvts tree
@@ -1078,13 +1120,14 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				
 				// Fill only if we have some physics events
 				if( write_evts->GetArrayMultiplicity() ||
-					write_evts->GetArrayPMultiplicity() ||
-					write_evts->GetRecoilMultiplicity() ||
-					write_evts->GetMwpcMultiplicity() ||
-					write_evts->GetElumMultiplicity() ||
-					write_evts->GetZeroDegreeMultiplicity() ||
-					write_evts->GetGammaRayMultiplicity()  ||
-					write_evts->GetLumeMultiplicity() )
+				   write_evts->GetArrayPMultiplicity() ||
+				   write_evts->GetRecoilMultiplicity() ||
+				   write_evts->GetMwpcMultiplicity() ||
+				   write_evts->GetElumMultiplicity() ||
+				   write_evts->GetZeroDegreeMultiplicity() ||
+				   write_evts->GetGammaRayMultiplicity() ||
+				   write_evts->GetLumeMultiplicity() ||
+				   write_evts->GetCDMultiplicity() )
 					output_tree->Fill();
 
 				// Clean up if the next event is going to make the tree full
@@ -1166,6 +1209,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	ss_log << "   ZeroDegree events = " << zd_ctr << std::endl;
 	ss_log << "   Gamma-ray events = " << gamma_ctr << std::endl;
 	ss_log << "   LUME events = " << lume_ctr << std::endl;
+	ss_log << "   CD events = " << cd_ctr << std::endl;
 	ss_log << "   CAEN pulser = " << n_caen_pulser << std::endl;
 	ss_log << "   FPGA pulser" << std::endl;
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i )
@@ -2634,6 +2678,115 @@ void ISSEventBuilder::LumeFinder() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+/// This function takes a series of E and dE signals on the silicon CD (fission fragments) detector and determines what hits to keep from these using sensible conditions including a prompt coincidence window. Signals are triggered by the dE detector, but if a corresponding E signal is not found, then a hit at E = 0 is still recorded.
+void ISSEventBuilder::CdFinder() {
+
+	//std::cout << __PRETTY_FUNCTION__ << std::endl;
+
+	// Checks to prevent re-using events
+	std::vector<unsigned int> rindex;
+	std::vector<unsigned int> sindex;
+	bool flag_skip;
+	int rmax_idx, smax_idx;	// Stores the maximum-energy index for the ring and sector hits
+	int rtmp_idx, stmp_idx;	// Stores a temporary index for the ring and sector hits
+	float rmax_en, smax_en;	// Stores the maximum energy for the ring and sector hits
+	float rsum_en, ssum_en;	// Stores the summed energy for the p-side and n-side hits
+
+
+	// Do each layer of the CD separately
+	for( unsigned int i = 0; i < set->GetNumberOfCDLayers(); ++i ) {
+
+		// Empty the array of indexes
+		rindex.clear();
+		sindex.clear();
+		std::vector<unsigned int>().swap(rindex);
+		std::vector<unsigned int>().swap(sindex);
+		rmax_idx = smax_idx = -1;
+		rmax_en = smax_en = -99999.;
+		rsum_en = ssum_en = 0;
+
+		// Loop over p-side (ring) events
+		for( unsigned int k = 0; k < cdren_list.size(); ++k ) {
+
+			// Check if it is the module and row we want
+			if( cdrid_list.at(k) == (int)i ) {
+
+				// Put in the index
+				rindex.push_back( k );
+
+				// Check if it is max energy
+				if( cdren_list.at(k) > rmax_en ){
+
+					rmax_en = cdren_list.at(k);
+					rmax_idx = k;
+
+				}
+
+			}
+
+		}
+
+		// Loop over n-side (sector) events
+		for( unsigned int l = 0; l < cdsen_list.size(); ++l ) {
+
+			// Check if it is the module and row we want
+			if( cdsid_list.at(l) == (int)i ) {
+
+				// Put in the index
+				sindex.push_back( l );
+
+				// Check if it is max energy
+				if( cdsen_list.at(l) > smax_en ){
+
+					smax_en = cdsen_list.at(l);
+					smax_idx = l;
+
+				}
+
+			}
+
+		}
+
+		// Multiplicity matrix
+		if( rindex.size() || sindex.size() )
+			cd_rs_mult[i]->Fill( rindex.size(), sindex.size() );
+
+		// TODO: be more sophisticated than this!
+		// Set maximum energy on rings as the energy
+		cd_evt->AddFragment( rmax_en, i );
+
+		// For the first layer of the CD define the ring and sector
+		if( i == set->GetCDEnergyLossStart() ) {
+
+			cd_evt->SetRing( cdrxx_list[rmax_idx] );
+			cd_evt->SetSector( cdsxx_list[smax_idx] );
+			cd_evt->SetdETime( cdrtd_list[rmax_idx] );
+
+		}
+
+		else if( i == set->GetCDEnergyRestStart() )
+			cd_evt->SetETime( cdrtd_list[rmax_idx] );
+
+	}
+
+	// Histogram the CD fragments
+	cd_EdE->Fill( cd_evt->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
+				 cd_evt->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
+	cd_dEsum->Fill( cd_evt->GetEnergyTotal( set->GetCDEnergyTotalStart(), set->GetCDEnergyTotalStop() ),
+				   cd_evt->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
+
+	// Fill the tree and get ready for next CD event
+	write_evts->AddEvt( cd_evt );
+	cd_ctr++;
+
+	// Clean up
+	//delete recoil_evt;
+
+	return;
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
 /// *This function doesn't fill any histograms*, but just creates them. Called by the ISSEventBuilder::SetOutput function
 void ISSEventBuilder::MakeHists(){
 	
@@ -3034,6 +3187,34 @@ void ISSEventBuilder::MakeHists(){
 
 	}
 
+	// ------------- //
+	// CD histograms //
+	// ------------- //
+	dirname = "cd";
+	if( !output_file->GetDirectory( dirname.data() ) )
+		output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+
+	cd_rs_mult.resize( set->GetNumberOfCDLayers() );
+
+	for( unsigned int i = 0; i < set->GetNumberOfCDLayers(); ++i ) {
+
+		hname = "cd_rs_mult_" + std::to_string(i);
+		htitle = "ring vs. sector multiplicity (layer ";
+		htitle += std::to_string(i) + ");mult rings;mult sectors";
+		cd_rs_mult[i] = new TH2F( hname.data(), htitle.data(), 6, -0.5, 5.5, 6, -0.5, 5.5 );
+
+	}
+
+	hname = "cd_EdE";
+	htitle = "CD fission fragments dE vs E;Rest Energy [keV];Energy Loss [keV];Counts";
+	cd_EdE = new TH2F( hname.data(), htitle.data(), 2000, 0, 2e5, 4000, 0, 8e5 );
+
+	hname = "cd_dEsum";
+	htitle = "CD fission fragments dE vs total energy;Total Energy [keV];Energy Loss [keV];Counts";
+	cd_dEsum = new TH2F( hname.data(), htitle.data(), 10000, 0, 2e6, 4000, 0, 8e5 );
+
+
 	return;
 	
 }
@@ -3202,6 +3383,12 @@ void ISSEventBuilder::CleanHists() {
 		delete (lume_E_vs_x[i]);
 	lume_E_vs_x.clear();
 
+
+	for( unsigned int i = 0; i < cd_rs_mult.size(); i++ )
+		delete (cd_rs_mult[i]);
+	cd_rs_mult.clear();
+
+
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
 		delete (fpga_td[i]);
 		delete (asic_td[i]);
@@ -3350,6 +3537,12 @@ void ISSEventBuilder::ResetHists() {
 
 	for( unsigned int i = 0; i < lume_E_vs_x.size(); i++ )
 		lume_E_vs_x[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < cd_rs_mult.size(); i++ )
+		cd_rs_mult[i]->Reset("ICESM");
+
+	cd_EdE->Reset("ICESM");
+	cd_dEsum->Reset("ICESM");
 
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
 		fpga_td[i]->Reset("ICESM");
