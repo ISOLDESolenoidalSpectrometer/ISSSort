@@ -168,13 +168,16 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSCDEvt> event ) {
 
 	// Make a copy of the event and push it back
 	ISSCDEvt fill_evt;
-	/*fill_evt.SetEvent(	event->GetEnergies(),
-				event->GetIDs(),
-				event->GetSector(),
-				event->GetRing(),
-				event->GetdETime(),
-				event->GetETime() );
-	*/
+	for (size_t i = 0; i < event->GetMultiplicity(); ++i) {
+		fill_evt.AddHit(
+			event->GetEnergyVector(i),      // Energies for hit i
+			event->GetIDVector(i),          // IDs for hit i
+			event->GetSector(i),            // Sector for hit i
+			event->GetRing(i),              // Ring for hit i
+			event->GetdETime(i),            // dE time for hit i
+			event->GetETime(i)              // E time for hit i
+		);
+	}
 	cd_event.push_back( fill_evt );
 
 }
@@ -750,27 +753,77 @@ std::vector<std::vector<unsigned char>> ISSCDEvt::GetIDs() {
 }
 
 float ISSCDEvt::GetEnergy( size_t hitIndex, unsigned char i ) {
-	float total = 0.0f;
-	return total;
+	if (hitIndex >= hits.size()) {
+		return 0.0f;
+	}
+
+	const auto& hit = hits[hitIndex];
+	if (i >= hit.energy.size()) {
+		return 0.0f;
+	}
+
+	return hit.energy[i];
 }
 
 float ISSCDEvt::GetEnergyLoss( size_t hitIndex, unsigned char start, unsigned char stop ) {
+	if (hitIndex >= hits.size()) {
+		return 0.0f;
+	}
+
 	float total = 0.0f;
+	const auto& hit = hits[hitIndex];
+
+	for (size_t j = 0; j < hit.energy.size(); ++j) {
+		if (hit.id[j] >= start && hit.id[j] <= stop) {
+			total += hit.energy[j];
+		}
+	}
 	return total;
 }
 
 float ISSCDEvt::GetEnergyRest( size_t hitIndex, unsigned char start, unsigned char stop ) {
+	if (hitIndex >= hits.size()) {
+		return 0.0f;
+	}
+
 	float total = 0.0f;
+	const auto& hit = hits[hitIndex];
+
+	for (size_t j = 0; j < hit.energy.size(); ++j) {
+		if (hit.id[j] >= start && hit.id[j] <= stop) {
+			total += hit.energy[j];
+		}
+	}
 	return total;
 }
 
 float ISSCDEvt::GetEnergyTotal( size_t hitIndex, unsigned char start, unsigned char stop ) {
+	if (hitIndex >= hits.size()) {
+		return 0.0f;
+	}
+
 	float total = 0.0f;
+	const auto& hit = hits[hitIndex];
+
+	for (size_t j = 0; j < hit.energy.size(); ++j) {
+		if (hit.id[j] >= start && hit.id[j] <= stop) {
+			total += hit.energy[j];
+		}
+	}
 	return total;
 }
 
-unsigned char ISSCDEvt::GetID( size_t hitIndex, unsigned char i ) {
-	return -1;
+int ISSCDEvt::GetID( size_t hitIndex, unsigned char i ) {
+	if (hitIndex >= hits.size()) {
+		return -1;
+	}
+
+	const auto& hit = hits[hitIndex];
+	if (i >= hit.id.size()) {
+		return -1;
+	}
+
+	return hit.id[i];
 }
 
 

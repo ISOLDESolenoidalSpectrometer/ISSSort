@@ -410,9 +410,10 @@ public:
 	ISSCDEvt();
 	~ISSCDEvt();
 
-	void SetEvent( std::vector<std::vector<float>> myenergy, std::vector<std::vector<unsigned char>> myid,
-		 std::vector<unsigned char> mysec, std::vector<unsigned char> myring,
-		 std::vector<double> mydetime, std::vector<double> myetime );
+	void SetEvent( std::vector<std::vector<float>> myenergy,
+		       std::vector<std::vector<unsigned char>> myid,
+		       std::vector<unsigned char> mysec, std::vector<unsigned char> myring,
+		       std::vector<double> mydetime, std::vector<double> myetime );
 
 	void ClearEvent();
 
@@ -420,11 +421,6 @@ public:
 		unsigned char mysec, unsigned char myring, double mydetime, double myetime ) {
 		hits.push_back({myenergy, myid, mysec, myring, mydetime, myetime});
 	};
-
-  /*inline void AddFragment( float myenergy, unsigned char myid ){
-		energy.push_back( myenergy );
-		id.push_back( myid );
-		};*/
 
 	inline unsigned char GetMultiplicity() { return hits.size(); };
 
@@ -450,9 +446,12 @@ public:
 	float GetEnergyLoss( size_t hitIndex, unsigned char start = 0, unsigned char stop = 0 );
 	float GetEnergyRest( size_t hitIndex, unsigned char start = 1, unsigned char stop = 1 );
 	float GetEnergyTotal( size_t hitIndex, unsigned char start = 0, unsigned char stop = 1 );
-	unsigned char GetID( size_t hitIndex, unsigned char i );
+        int GetID( size_t hitIndex, unsigned char i );
 
-	// variables for CD events. Each CD event can have multiple events (hopefully two for the two fission fragments...). Each hit has it's own data structure.
+	// variables for CD events. Each CD event can have multiple events
+	// (hopefully two for the two fission fragments...).
+	// Each hit has it's own data structure.
+
 	struct Hit {
 		std::vector<float>		energy;	///< differential energy list, i.e. Silicon dE-E length = 2
 		std::vector<unsigned char>      id;	///< differential id list, i.e. dE = 0, E = 1, for example
