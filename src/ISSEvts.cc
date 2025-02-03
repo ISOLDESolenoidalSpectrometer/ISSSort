@@ -27,7 +27,8 @@ void ISSEvts::ClearEvt() {
 	zd_event.clear();
 	gamma_event.clear();
 	lume_event.clear();
-	
+        cd_event.clear();
+
 	std::vector<ISSArrayEvt>().swap(array_event);
 	std::vector<ISSArrayPEvt>().swap(arrayp_event);
 	std::vector<ISSRecoilEvt>().swap(recoil_event);
@@ -36,7 +37,8 @@ void ISSEvts::ClearEvt() {
 	std::vector<ISSZeroDegreeEvt>().swap(zd_event);
 	std::vector<ISSGammaRayEvt>().swap(gamma_event);
 	std::vector<ISSLumeEvt>().swap(lume_event);
-	
+	std::vector<ISSCDEvt>().swap(cd_event);
+
 	ebis = -999;
 	t1 = -999;
 	
@@ -160,6 +162,24 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSLumeEvt> event ) {
 	
 	lume_event.push_back( fill_evt );
 	
+}
+
+void ISSEvts::AddEvt( std::shared_ptr<ISSCDEvt> event ) {
+
+	// Make a copy of the event and push it back
+	ISSCDEvt fill_evt;
+	for (size_t i = 0; i < event->GetMultiplicity(); ++i) {
+		fill_evt.AddHit(
+			event->GetEnergyVector(i),      // Energies for hit i
+			event->GetIDVector(i),          // IDs for hit i
+			event->GetSector(i),            // Sector for hit i
+			event->GetRing(i),              // Ring for hit i
+			event->GetdETime(i),            // dE time for hit i
+			event->GetETime(i)              // E time for hit i
+		);
+	}
+	cd_event.push_back( fill_evt );
+
 }
 
 // ------------ //
@@ -591,6 +611,221 @@ void ISSLumeEvt::SetEvent( float myenergy, unsigned char myid,
 	return;
 	
 }
+
+// ---------------- //
+// CD events        //
+// ---------------- //
+
+ISSCDEvt::ISSCDEvt(){}
+ISSCDEvt::~ISSCDEvt(){}
+
+void ISSCDEvt::SetEvent( std::vector<std::vector<float>> myenergy,
+			 std::vector<std::vector<unsigned char>> myid,
+			 std::vector<unsigned char> mysec, std::vector<unsigned char> myring,
+			 std::vector<double> mydetime, std::vector<double> myetime ) {
+
+	hits.clear();
+
+
+	if (mysec.size() != myring.size() || mysec.size() != mydetime.size() || mysec.size() != myetime.size() 		|| mysec.size() != myenergy.size() || mysec.size() != myid.size()) {
+		std::cerr << "Error: The vectors for sector, ring, detime, etime, energy, and id must all have the same size!" << std::endl;
+		return;
+	}
+
+	for (size_t i = 0; i < mysec.size(); ++i) {
+		std::vector<float> energyForHit = myenergy[i];
+		std::vector<unsigned char> idForHit = myid[i];
+
+		AddHit(energyForHit, idForHit, mysec[i], myring[i], mydetime[i], myetime[i]);
+	}
+
+	return;
+
+}
+
+void ISSCDEvt::ClearEvent(){
+
+	for (auto& hit : hits) {
+		hit.energy.clear();
+		hit.id.clear();
+		std::vector<float>().swap(hit.energy);
+		std::vector<unsigned char>().swap(hit.id);
+	}
+	hits.clear();
+	std::vector<Hit>().swap(hits);
+
+}
+
+std::vector<float> ISSCDEvt::GetEnergyVector( size_t hitIndex ) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].energy;
+	}
+	return {};
+}
+
+std::vector<unsigned char> ISSCDEvt::GetIDVector( size_t hitIndex ) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].id;
+	}
+	return {};
+}
+
+void ISSCDEvt::SetSector( size_t hitIndex, unsigned char s ) {
+	if (hitIndex < hits.size()) {
+		hits[hitIndex].sec = s;
+	}
+}
+
+void ISSCDEvt::SetRing( size_t hitIndex, unsigned char r ) {
+	if (hitIndex < hits.size()) {
+		hits[hitIndex].ring = r;
+	}
+}
+
+void ISSCDEvt::SetdETime( size_t hitIndex, double t ) {
+	if (hitIndex < hits.size()) {
+		hits[hitIndex].detime = t;
+	}
+}
+
+void ISSCDEvt::SetETime( size_t hitIndex, double t ) {
+	if (hitIndex < hits.size()) {
+		hits[hitIndex].etime = t;
+	}
+}
+
+unsigned char ISSCDEvt::GetDepth(size_t hitIndex) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].energy.size();
+	}
+	return -1;
+}
+
+unsigned char ISSCDEvt::GetSector(size_t hitIndex) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].sec;
+	}
+	return -1;
+}
+
+unsigned char ISSCDEvt::GetRing(size_t hitIndex) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].ring;
+	}
+	return -1;
+}
+
+double ISSCDEvt::GetTime(size_t hitIndex) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].detime;
+	}
+	return std::numeric_limits<double>::quiet_NaN();;
+}
+
+double ISSCDEvt::GetdETime(size_t hitIndex) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].detime;
+	}
+	return std::numeric_limits<double>::quiet_NaN();;
+}
+
+double ISSCDEvt::GetETime(size_t hitIndex) {
+	if (hitIndex < hits.size()) {
+		return hits[hitIndex].etime;
+	}
+	return std::numeric_limits<double>::quiet_NaN();;
+}
+
+std::vector<std::vector<float>> ISSCDEvt::GetEnergies() {
+	std::vector<std::vector<float>> allEnergies;
+	for (const auto& hit : hits) {
+		allEnergies.push_back(hit.energy);
+	}
+	return allEnergies;
+}
+
+std::vector<std::vector<unsigned char>> ISSCDEvt::GetIDs() {
+	std::vector<std::vector<unsigned char>> allIDs;
+	for (const auto& hit : hits) {
+		allIDs.push_back(hit.id);
+	}
+	return allIDs;
+}
+
+float ISSCDEvt::GetEnergy( size_t hitIndex, unsigned char i ) {
+	if (hitIndex >= hits.size()) {
+		return 0.0f;
+	}
+
+	const auto& hit = hits[hitIndex];
+	if (i >= hit.energy.size()) {
+		return 0.0f;
+	}
+
+	return hit.energy[i];
+}
+
+float ISSCDEvt::GetEnergyLoss( size_t hitIndex, unsigned char start, unsigned char stop ) {
+	if (hitIndex >= hits.size()) {
+		return 0.0f;
+	}
+
+	float total = 0.0f;
+	const auto& hit = hits[hitIndex];
+
+	for (size_t j = 0; j < hit.energy.size(); ++j) {
+		if (hit.id[j] >= start && hit.id[j] <= stop) {
+			total += hit.energy[j];
+		}
+	}
+	return total;
+}
+
+float ISSCDEvt::GetEnergyRest( size_t hitIndex, unsigned char start, unsigned char stop ) {
+	if (hitIndex >= hits.size()) {
+		return 0.0f;
+	}
+
+	float total = 0.0f;
+	const auto& hit = hits[hitIndex];
+
+	for (size_t j = 0; j < hit.energy.size(); ++j) {
+		if (hit.id[j] >= start && hit.id[j] <= stop) {
+			total += hit.energy[j];
+		}
+	}
+	return total;
+}
+
+float ISSCDEvt::GetEnergyTotal( size_t hitIndex, unsigned char start, unsigned char stop ) {
+	if (hitIndex >= hits.size()) {
+		return 0.0f;
+	}
+
+	float total = 0.0f;
+	const auto& hit = hits[hitIndex];
+
+	for (size_t j = 0; j < hit.energy.size(); ++j) {
+		if (hit.id[j] >= start && hit.id[j] <= stop) {
+			total += hit.energy[j];
+		}
+	}
+	return total;
+}
+
+int ISSCDEvt::GetID( size_t hitIndex, unsigned char i ) {
+	if (hitIndex >= hits.size()) {
+		return -1;
+	}
+
+	const auto& hit = hits[hitIndex];
+	if (i >= hit.id.size()) {
+		return -1;
+	}
+
+	return hit.id[i];
+}
+
 
 // Get minimum time from any old event
 double ISSEvts::GetTime(){

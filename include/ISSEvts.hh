@@ -40,16 +40,16 @@ public:
 	inline float 			GetEnergy(){ return pen; };
 	inline float 			GetPEnergy(){ return pen; };
 	inline float 			GetNEnergy(){ return nen; };
-	inline unsigned char 	GetPID(){ return pid; };
-	inline unsigned char 	GetNID(){ return nid; };
+	inline unsigned char		GetPID(){ return pid; };
+	inline unsigned char		GetNID(){ return nid; };
 	inline double			GetTime(){ return ptime; };
 	inline double			GetTimeDouble(){ return ptime; };
 	inline double			GetPTime(){ return ptime; };
 	inline double	 		GetNTime(){ return ntime; };
 	inline bool 			GetPHit(){ return phit; };
 	inline bool 			GetNHit(){ return nhit; };
-	inline unsigned char	GetModule(){ return mod; };
-	inline unsigned char	GetRow(){ return row; };
+	inline unsigned char		GetModule(){ return mod; };
+	inline unsigned char		GetRow(){ return row; };
 	
 	float		GetX();
 	float		GetY();
@@ -73,12 +73,12 @@ private:
 	// variables for particle event
 	bool			phit;	///< hit bit value for p-side event
 	bool			nhit;	///< hit bit value for n-side event
-	unsigned char	mod;	///< module number
-	unsigned char	row;	///< row number of the silicon
+	unsigned char		mod;	///< module number
+	unsigned char		row;	///< row number of the silicon
 	float			pen;	///< p-side energy in keV
 	float 			nen;	///< n-side energy in keV
-	unsigned char	pid;	///< p-side strip id, from 0 - 511, i.e along all 4 wafers
-	unsigned char	nid;	///< n-side strip id, from 0 - 65, i.e. around all 6 sides
+	unsigned char		pid;	///< p-side strip id, from 0 - 511, i.e along all 4 wafers
+	unsigned char		nid;	///< n-side strip id, from 0 - 65, i.e. around all 6 sides
 	double			ptime;	///< p-side timestamp
 	double			ntime;	///< n-side timestamp
 	
@@ -176,7 +176,7 @@ private:
 	
 	// variables for recoil events
 	std::vector<float>			energy;	///< differential energy list, i.e. Silicon dE-E length = 2
-	std::vector<unsigned char>	id;		///< differential id list, i.e. dE = 0, E = 1, for example
+	std::vector<unsigned char>		id;	///< differential id list, i.e. dE = 0, E = 1, for example
 	unsigned char				sec;	///< sector of the recoil detector, i.e 0-3 for QQQ1 quadrants
 	double					detime;	///< time stamp of dE event
 	double					etime;	///< time stamp of E event
@@ -200,7 +200,7 @@ public:
 	inline void SetAxis( unsigned char a ){ axis = a; };
 	inline void SetTime( double t ){ time = t; };
 	
-	inline int				GetTacDiff(){ return tacdiff; };
+	inline int		GetTacDiff(){ return tacdiff; };
 	inline unsigned char	GetAxis(){ return axis; };
 	inline double		GetTime(){ return time; };
 	
@@ -389,7 +389,7 @@ public:
 	inline float			GetX(){ return x; };
 	
 private:
-	unsigned char id;	///< Detector ID
+	unsigned char id;		///< Detector ID
 	
 	float be;			///< Energy in the detector (from the back-plane)
 	float ne;			///< near-side energy
@@ -397,11 +397,83 @@ private:
 	
 	
 	float x;			///< position along the detector
-	double time;		///< time stamp of the event
+	double time;			///< time stamp of the event
 	
 	ClassDef( ISSLumeEvt, 2 );
 	
 };
+
+class ISSCDEvt : public TObject {
+
+public:
+
+	ISSCDEvt();
+	~ISSCDEvt();
+
+	void SetEvent( std::vector<std::vector<float>> myenergy,
+		       std::vector<std::vector<unsigned char>> myid,
+		       std::vector<unsigned char> mysec, std::vector<unsigned char> myring,
+		       std::vector<double> mydetime, std::vector<double> myetime );
+
+	void ClearEvent();
+
+	inline void AddHit( std::vector<float> myenergy, std::vector<unsigned char> myid,
+		unsigned char mysec, unsigned char myring, double mydetime, double myetime ) {
+		hits.push_back({myenergy, myid, mysec, myring, mydetime, myetime});
+	};
+
+	inline unsigned char GetMultiplicity() { return hits.size(); };
+
+	std::vector<float> GetEnergyVector( size_t hitIndex );
+	std::vector<unsigned char> GetIDVector( size_t hitIndex );
+
+	void SetSector( size_t hitIndex , unsigned char s );
+	void SetRing( size_t hitIndex , unsigned char s );
+	void SetdETime( size_t hitIndex , double t );
+	void SetETime( size_t hitIndex , double t );
+
+	unsigned char	GetDepth( size_t hitIndex );
+	unsigned char	GetSector( size_t hitIndex );
+	unsigned char	GetRing( size_t hitIndex );
+	double		GetTime( size_t hitIndex );
+	double		GetdETime( size_t hitIndex );
+	double		GetETime( size_t hitIndex );
+
+	std::vector<std::vector<float>>		GetEnergies();
+	std::vector<std::vector<unsigned char>>	GetIDs();
+
+	float GetEnergy( size_t hitIndex, unsigned char i ); // hitIndex - which hit, i - which layer
+	float GetEnergyLoss( size_t hitIndex, unsigned char start = 0, unsigned char stop = 0 );
+	float GetEnergyRest( size_t hitIndex, unsigned char start = 1, unsigned char stop = 1 );
+	float GetEnergyTotal( size_t hitIndex, unsigned char start = 0, unsigned char stop = 1 );
+        int GetID( size_t hitIndex, unsigned char i );
+
+	// variables for CD events. Each CD event can have multiple events
+	// (hopefully two for the two fission fragments...).
+	// Each hit has it's own data structure.
+
+	struct Hit {
+		std::vector<float>		energy;	///< differential energy list, i.e. Silicon dE-E length = 2
+		std::vector<unsigned char>      id;	///< differential id list, i.e. dE = 0, E = 1, for example
+		unsigned char			sec;	///< sector of the CD detector
+		unsigned char			ring;	///< ring of the CD detector
+		double				detime;	///< time stamp of dE event
+		double				etime;	///< time stamp of E event
+
+		Hit() = default;
+		Hit(std::vector<float>& myenergy, std::vector<unsigned char>& myid,
+			unsigned char mysec, unsigned char myring, double mydetime, double myetime)
+			: energy(myenergy), id(myid), sec(mysec), ring(myring), detime(mydetime), etime(myetime) {}
+	};
+
+private:
+	std::vector<Hit> hits;
+
+	ClassDef( ISSCDEvt, 2 );
+
+};
+
+
 
 class ISSEvts : public TObject {
 	//class ISSEvts {
@@ -420,7 +492,8 @@ public:
 	void AddEvt( std::shared_ptr<ISSZeroDegreeEvt> event );
 	void AddEvt( std::shared_ptr<ISSGammaRayEvt> event );
 	void AddEvt( std::shared_ptr<ISSLumeEvt> event );
-	
+	void AddEvt( std::shared_ptr<ISSCDEvt> event );
+
 	inline unsigned int GetArrayMultiplicity(){ return array_event.size(); };
 	inline unsigned int GetArrayPMultiplicity(){ return arrayp_event.size(); };
 	inline unsigned int GetRecoilMultiplicity(){ return recoil_event.size(); };
@@ -429,7 +502,8 @@ public:
 	inline unsigned int GetZeroDegreeMultiplicity(){ return zd_event.size(); };
 	inline unsigned int GetGammaRayMultiplicity(){ return gamma_event.size(); };
 	inline unsigned int GetLumeMultiplicity(){ return lume_event.size(); };
-	
+	inline unsigned int GetCDMultiplicity(){ return cd_event.size(); };
+
 	inline std::shared_ptr<ISSArrayEvt> GetArrayEvt( unsigned int i ){
 		if( i < array_event.size() ) return std::make_shared<ISSArrayEvt>( array_event.at(i) );
 		else return nullptr;
@@ -462,7 +536,11 @@ public:
 		if( i < lume_event.size() ) return std::make_shared<ISSLumeEvt>( lume_event.at(i) );
 		else return nullptr;
 	};
-	
+	inline std::shared_ptr<ISSCDEvt> GetCDEvt( unsigned int i ){
+		if( i < cd_event.size() ) return std::make_shared<ISSCDEvt>( cd_event.at(i) );
+		else return nullptr;
+	};
+
 	void ClearEvt();
 	
 	// ISOLDE timestamping
@@ -494,9 +572,10 @@ private:
 	std::vector<ISSElumEvt> elum_event;
 	std::vector<ISSZeroDegreeEvt> zd_event;
 	std::vector<ISSGammaRayEvt> gamma_event;
-	std::vector<ISSLumeEvt> lume_event;
-	
-	ClassDef( ISSEvts, 8 )
+        std::vector<ISSLumeEvt> lume_event;
+	std::vector<ISSCDEvt> cd_event;
+
+	ClassDef( ISSEvts, 9 )
 	
 };
 

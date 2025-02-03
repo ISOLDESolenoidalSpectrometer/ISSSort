@@ -20,6 +20,7 @@
 #pragma link C++ class ISSZeroDegreeEvt+;
 #pragma link C++ class ISSGammaRayEvt+;
 #pragma link C++ class ISSLumeEvt+;
+#pragma link C++ class ISSCDEvt+;
 #pragma link C++ class ISSDataPackets+;
 #pragma link C++ class ISSAsicData+;
 #pragma link C++ class ISSVmeData+;

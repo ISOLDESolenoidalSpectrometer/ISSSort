@@ -104,6 +104,7 @@ public:
 	void ZeroDegreeFinder(); ///< Processes all hits on the zero-degree detector that fall within the build window
 	void GammaRayFinder(); ///< Processes hits in the ScintArray and maybe HPGe in the future
 	void LumeFinder(); ///< Processes all hits on the LUME that fall within the build window
+	void CdFinder();	///< Processes all hits on the CD that fall within the build window
 		
 	inline TFile* GetFile(){ return output_file; }; ///< Getter for the output_file pointer
 	inline TTree* GetTree(){ return output_tree; }; ///< Getter for the output tree pointer
@@ -150,6 +151,7 @@ private:
 	std::shared_ptr<ISSZeroDegreeEvt> zd_evt;
 	std::shared_ptr<ISSGammaRayEvt> gamma_evt;
 	std::shared_ptr<ISSLumeEvt> lume_evt;
+	std::shared_ptr<ISSCDEvt> cd_evt;
 
 	/// Outputs
 	TFile *output_file; ///< Pointer to the output ROOT file containing events
@@ -234,11 +236,12 @@ private:
 	int					mystrip;	///< strip number for DSSSD
 	bool				myhitbit;	///< hit bit enabled?
 
-	// Data variables - Recoil / ELUM / ZeroDegree / MWPC
+	// Data variables - Recoil / ELUM / ZeroDegree / MWPC / CD
 	unsigned char		myid;		///< generic detector id
 	unsigned char		mysector;	///< 4 quadrants of the recoil, for example
 	unsigned char		mylayer;	///< 2 layers for the dE-E, for example
 	unsigned char		mytype;		///< type of detector (for LUME: be, ne, fe)
+	unsigned char		myring;		///< ring of the CD detector
 
 
 	// Array variables
@@ -285,15 +288,22 @@ private:
 	std::vector<char>			said_list;	///< list of ScintArray detectors ids for GammaFinder
 
 	// LUME variables. Each LUME is a position-sensitive silicon detector and has 3 readout channels: the total energy output at the back face (denoted here as be), and two energy readouts at both edges of the front face of a detector (ne and fe)
-	std::vector<float>		lbe_list;		///< list of LUME back energies (signal from the back face)
-	std::vector<float>		lne_list;		///< list of LUME ne signals
-	std::vector<float>		lfe_list;		///< list of LUME fe signals
+	std::vector<float>		lbe_list;	///< list of LUME back energies (signal from the back face)
+	std::vector<float>		lne_list;	///< list of LUME ne signals
+	std::vector<float>		lfe_list;	///< list of LUME fe signals
 	std::vector<double>		lbe_td_list;	///< list of LUME time differences
 	std::vector<double>		lne_td_list;	///< list of LUME time differences
 	std::vector<double>		lfe_td_list;	///< list of LUME time differences
 	std::vector<char>		lbe_id_list;	///< list of LUME detectors
 	std::vector<char>		lne_id_list;	///< list of LUME detectors
 	std::vector<char>		lfe_id_list;	///< list of LUME detectors
+
+	// CD variables
+	std::vector<float>		cden_list;	///< list of CD energies for CdFinder
+	std::vector<double>		cdtd_list;	///< list of CD time differences for CdFinder
+	std::vector<char>		cdid_list;	///< list of CD IDs/layers for CdFinder
+	std::vector<char>		cdsec_list;	///< list of CD sectors for CdFinder
+	std::vector<char>		cdring_list;	///< list of CD sectors for CdFinder
 
 	// Counters
 	unsigned int		hit_ctr;		///< Counts the number of hits that make up an event within a given file
@@ -305,6 +315,7 @@ private:
 	unsigned int		zd_ctr;			///< Counts the number of zero-degree detector events within a given file
 	unsigned int		gamma_ctr;		///< Counts the number of Gamma-Ray events within a given file
 	unsigned int		lume_ctr;		///< Counts the number of LUME events within a given file
+	unsigned int		cd_ctr;		///< Counts the number of CD events within a given file
 	unsigned long		n_asic_data;	///< Counter for the number of asic data packets in a file
 	unsigned long		n_caen_data;	///< Counter for number of caen data packets in a file
 	unsigned long		n_mesy_data;	///< Counter for number of mesytec data packets in a file
@@ -388,6 +399,8 @@ private:
 	// LUME histograms
 	std::vector<TH1F*> lume_E;		///< The LUME spectrum histogram
 	std::vector<TH2F*> lume_E_vs_x;	///< Energy vs hit position for LUME
+
+	// CD histograms
 };
 
 #endif
