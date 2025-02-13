@@ -497,6 +497,23 @@ public:
 		laser = laserflag;
 	};
 	
+	// Getters
+	inline double GetThetaCM(){ return theta_cm; };
+	inline double GetThetaLab(){ return theta_lab; };
+	inline double GetDistanceMeasured(){ return z_meas; };
+	inline double GetDistance(){ return z; };
+	inline double GetPhi(){ return phi; };
+	inline double GetPhiMeasured(){ return phi_meas; };
+	inline double GetRadiusMeasured(){ return r_meas; };
+	inline double GetEnergyDetected(){ return Edet; };
+	inline double GetEx(){ return Ex; };
+	inline double GetQvalue(){ return Qvalue; };
+	inline double GetGammaEjectile(){ return gamma_ejectile; };
+	inline double GetBetaEjectile(){ return beta_ejectile; };
+	inline double GetEBISTime(){ return ebis_td; };
+	inline double GetT1Time(){ return t1_td; };
+	inline bool GetLaserStatus(){ return laser; };
+
 private:
 	
 	// Members of the class
@@ -527,6 +544,14 @@ public:
 		gamma = react->GetGamma();
 		beta = react->GetBeta();
 	};
+	
+	// Getters
+	inline double GetField(){ return Mfield; };
+	inline double GetEnergyTotalLab(){ return Etot_lab; };
+	inline double GetEnergyTotalCM(){ return Etot_cm; };
+	inline double GetGamma(){ return gamma; };
+	inline double GetBeta(){ return beta; };
+
 	
 private:
 	
