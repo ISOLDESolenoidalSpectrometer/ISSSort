@@ -480,8 +480,8 @@ public:
 	
 	// Set function
 	inline void SetRxEvent( std::shared_ptr<ISSReaction> react, double E, double ebistime, double t1time, bool laserflag ){
-		theta_cm = react->GetThetaLab();
-		theta_lab = react->GetThetaCM();
+		theta_cm = react->GetThetaCM();
+		theta_lab = react->GetThetaLab();
 		z = react->GetDistance();
 		z_meas = react->GetDistanceMeasured();
 		phi = react->GetPhi();
@@ -513,6 +513,12 @@ public:
 	inline double GetEBISTime(){ return ebis_td; };
 	inline double GetT1Time(){ return t1_td; };
 	inline bool GetLaserStatus(){ return laser; };
+	
+	// Getters for some derived data
+	inline char GetPID(){ return ISSArrayEvt::FindPID( z_meas ); };
+	inline char GetNID(){ return ISSArrayEvt::FindNID( phi_meas ); };
+	inline char GetRow(){ return ISSArrayEvt::FindRow( z_meas ); };
+	inline char GetModule(){ return ISSArrayEvt::FindModule( phi_meas ); };
 
 private:
 	

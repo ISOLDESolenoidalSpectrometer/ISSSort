@@ -3,7 +3,7 @@
 
 // To run this, do the following:
 // root -l
-// root [0] gSystem->Load("libiss_sort.so")
+// root [0] gSystem->Load("libiss_sort")
 // root [1] .L utils/elum_energy_calculator.cc
 // root [2] elum_energy_calculator
 
