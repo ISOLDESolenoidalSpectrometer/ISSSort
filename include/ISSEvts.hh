@@ -83,7 +83,7 @@ private:
 	double			ntime;	///< n-side timestamp
 	
 	
-	ClassDef( ISSArrayEvt, 4 )
+	ClassDef( ISSArrayEvt, 5 )
 	
 };
 
