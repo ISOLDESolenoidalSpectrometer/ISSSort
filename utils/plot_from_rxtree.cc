@@ -13,6 +13,8 @@
 //#include “ISSEvts.hh”
 //#include “Reaction.hh”
 
+R__LOAD_LIBRARY(libiss_sort.so)
+
 // Create a settings reaction and events instance
 std::shared_ptr<ISSSettings> myset;
 std::shared_ptr<ISSReaction> myreact;
@@ -35,7 +37,7 @@ void plot_from_rxtree( std::string rootfile = "myhists.root",
 	t->SetBranchAddress( "RxInfo", &myrxinfo );
 
 	// Make a histogram or two
-	TH2F *zphimap = new TH2F( "zphimap", "z-phi hit map", 1000, -1000, 1000, 360, -180, 180 );
+	TH2F *zphimap = new TH2F( "zphimap", "z-phi hit map", 1000, -1000, 1000, 440, -40, 400 );
 	TH2F *pmodmap = new TH2F( "pmodmap", "p vs module hit map", 512, -0.5, 511.5, 3, -0.5, 2.5 );
 	TH2F *pnmap = new TH2F( "pnmap", "p vs n hit map", 512, -0.5, 511.5, 264, -0.5, 263.5 );
 
@@ -56,7 +58,7 @@ void plot_from_rxtree( std::string rootfile = "myhists.root",
 		// Plot hit maps
 		zphimap->Fill( z, phi*TMath::RadToDeg() ); // reaction z-phi, not measured z-phi
 		pmodmap->Fill( myrow*128 + mypid, mymod );
-		pnmap->Fill( myrow*128 + mypid, mymod*88 + myrow*22 + mynid );
+		pnmap->Fill( myrow*128 + mypid, mymod*88 + mynid );
 
 	}
 	

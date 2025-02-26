@@ -495,30 +495,43 @@ public:
 		ebis_td = ebistime;
 		t1_td = t1time;
 		laser = laserflag;
+		
+		// Hit information is derived, depends on array orientation
+		if( z_meas < 0 ) {
+			mod = ISSArrayEvt::FindModule( -1.0 * phi_meas );
+			nid = ISSArrayEvt::FindNID( -1.0 * phi_meas );
+			row = ISSArrayEvt::FindRow( -1.0 * ( z_meas - react->GetArrayDistance() ) );
+			pid = ISSArrayEvt::FindPID( -1.0 * ( z_meas - react->GetArrayDistance() ) );
+		}
+		else {
+			mod = ISSArrayEvt::FindModule( phi_meas );
+			nid = ISSArrayEvt::FindNID( phi_meas );
+			row = ISSArrayEvt::FindRow( z_meas - react->GetArrayDistance() );
+			pid = ISSArrayEvt::FindPID( z_meas - react->GetArrayDistance() );
+		}
+
 	};
 	
 	// Getters
-	inline double GetThetaCM(){ return theta_cm; };
-	inline double GetThetaLab(){ return theta_lab; };
-	inline double GetDistanceMeasured(){ return z_meas; };
-	inline double GetDistance(){ return z; };
-	inline double GetPhi(){ return phi; };
-	inline double GetPhiMeasured(){ return phi_meas; };
-	inline double GetRadiusMeasured(){ return r_meas; };
-	inline double GetEnergyDetected(){ return Edet; };
-	inline double GetEx(){ return Ex; };
-	inline double GetQvalue(){ return Qvalue; };
-	inline double GetGammaEjectile(){ return gamma_ejectile; };
-	inline double GetBetaEjectile(){ return beta_ejectile; };
-	inline double GetEBISTime(){ return ebis_td; };
-	inline double GetT1Time(){ return t1_td; };
-	inline bool GetLaserStatus(){ return laser; };
-	
-	// Getters for some derived data
-	inline char GetPID(){ return ISSArrayEvt::FindPID( z_meas ); };
-	inline char GetNID(){ return ISSArrayEvt::FindNID( phi_meas ); };
-	inline char GetRow(){ return ISSArrayEvt::FindRow( z_meas ); };
-	inline char GetModule(){ return ISSArrayEvt::FindModule( phi_meas ); };
+	inline double 	GetThetaCM(){ return theta_cm; };
+	inline double 	GetThetaLab(){ return theta_lab; };
+	inline double 	GetDistanceMeasured(){ return z_meas; };
+	inline double 	GetDistance(){ return z; };
+	inline double 	GetPhi(){ return phi; };
+	inline double 	GetPhiMeasured(){ return phi_meas; };
+	inline double 	GetRadiusMeasured(){ return r_meas; };
+	inline double 	GetEnergyDetected(){ return Edet; };
+	inline double 	GetEx(){ return Ex; };
+	inline double 	GetQvalue(){ return Qvalue; };
+	inline double 	GetGammaEjectile(){ return gamma_ejectile; };
+	inline double 	GetBetaEjectile(){ return beta_ejectile; };
+	inline double 	GetEBISTime(){ return ebis_td; };
+	inline double 	GetT1Time(){ return t1_td; };
+	inline int		GetPID(){ return pid; };
+	inline int		GetNID(){ return nid; };
+	inline int		GetRow(){ return row; };
+	inline int		GetModule(){ return mod; };
+	inline bool		GetLaserStatus(){ return laser; };
 
 private:
 	
@@ -528,9 +541,10 @@ private:
 	double Edet, Ex, Qvalue;
 	double gamma_ejectile, beta_ejectile;
 	double ebis_td, t1_td;
+	int mod, row, pid, nid;
 	bool laser;
 	
-	ClassDef( ISSRxEvent, 1 )
+	ClassDef( ISSRxEvent, 2 )
 	
 };
 
@@ -545,6 +559,7 @@ public:
 	// Set function
 	inline void SetRxInfo( std::shared_ptr<ISSReaction> react ){
 		Mfield = react->GetField();
+		ArrayDistance = react->GetArrayDistance();
 		Etot_lab = react->GetEnergyTotLab();
 		Etot_cm = react->GetEnergyTotCM();
 		gamma = react->GetGamma();
@@ -562,11 +577,11 @@ public:
 private:
 	
 	// Members of the class
-	double Mfield;
+	double Mfield, ArrayDistance;
 	double Etot_lab, Etot_cm;
 	double gamma, beta;
 	
-	ClassDef( ISSRxInfo, 1 )
+	ClassDef( ISSRxInfo, 2 )
 	
 };
 

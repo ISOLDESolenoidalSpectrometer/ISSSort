@@ -1174,9 +1174,14 @@ double ISSReaction::SimulateDecay( TVector3 vec, double en, int detector ){
 	// Set the input parameters, might use them in another function
 	Ejectile.SetEnergyLab(en);			// ejectile energy in keV
 	z_meas = vec.Z();					// measured z in mm
-	if( z0 < 0 ) z_meas = z0 - z_meas;	// upstream
-	else z_meas += z0;					// downstream
-	phi_meas = vec.Phi();
+	if( z0 < 0 ) {						// upstream
+		z_meas = z0 - z_meas;
+		phi_meas = -1.0 * vec.Phi();
+	}
+	else {								// downstream
+		z_meas += z0;
+		phi_meas = vec.Phi();
+	}
 	
 	//------------------------//
 	// Kinematics calculation //
@@ -1327,9 +1332,14 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	//Ejectile.SetEnergyLab(en);		// ejectile energy in keV
 	z_meas = vec.Z();					// measured z in mm
 	r_meas = vec.Perp();				// measured radius
-	if( z0 < 0 ) z_meas = z0 - z_meas;	// upstream
-	else z_meas += z0;					// downstream
-	phi_meas = vec.Phi();
+	if( z0 < 0 ) {						// upstream
+		z_meas = z0 - z_meas;
+		phi_meas = -1.0 * vec.Phi();
+	}
+	else {								// downstream
+		z_meas += z0;
+		phi_meas = vec.Phi();
+	}
 
 	// Pulse height conversion to proton energy using RDP
 	en = GetPulseHeightCorrection( en, true );

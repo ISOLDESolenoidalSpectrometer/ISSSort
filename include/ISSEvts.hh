@@ -58,14 +58,14 @@ public:
 	TVector2	GetPhiXY();
 	TVector3	GetPosition();
 	
-	static char	FindPID( double z );
-	static char	FindNID( double phi );
-	static char	FindModule( double phi );
-	static char	FindRow( double z );
-	static char	FindModule( unsigned short detNo );
-	static char	FindRow( unsigned short detNo );
-	static char	FindAsicP( unsigned short detNo );
-	static char	FindAsicN( unsigned short detNo );
+	static int	FindPID( double z );
+	static int	FindNID( double phi );
+	static int	FindModule( double phi );
+	static int	FindRow( double z );
+	static int	FindModule( unsigned short detNo );
+	static int	FindRow( unsigned short detNo );
+	static int	FindAsicP( unsigned short detNo );
+	static int	FindAsicN( unsigned short detNo );
 	
 	
 private:
