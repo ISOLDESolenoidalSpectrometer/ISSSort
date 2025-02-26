@@ -37,7 +37,7 @@ void plot_from_rxtree( std::string rootfile = "myhists.root",
 	t->SetBranchAddress( "RxInfo", &myrxinfo );
 
 	// Make a histogram or two
-	TH2F *zphimap = new TH2F( "zphimap", "z-phi hit map", 1000, -1000, 1000, 440, -40, 400 );
+	TH2F *zphimap = new TH2F( "zphimap", "z-phi hit map", 1000, -1000, 1000, 560, -100, 460 );
 	TH2F *pmodmap = new TH2F( "pmodmap", "p vs module hit map", 512, -0.5, 511.5, 3, -0.5, 2.5 );
 	TH2F *pnmap = new TH2F( "pnmap", "p vs n hit map", 512, -0.5, 511.5, 264, -0.5, 263.5 );
 
