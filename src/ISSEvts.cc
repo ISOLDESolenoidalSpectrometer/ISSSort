@@ -265,10 +265,10 @@ TVector2 ISSArrayEvt::GetPhiXY(){
 	// This vector can now be rotated to the correct position
 	TVector2 vec( x, y );
 	
-	vec = vec.Rotate( -1.0 * TMath::Pi() / 6. );		// first face is at -30˚
-	vec = vec.Rotate( mod * 2. * TMath::Pi() / 3. );	// rotate 120˚ for each module
+	vec = vec.Rotate( -1.0 * TMath::Pi() / 6. );	// first face is at -30˚
+	vec = vec.Rotate( mod * TMath::TwoPi() / 3. );	// rotate 120˚ for each module
 	if( nid > 10 )
-		vec = vec.Rotate(  2. * TMath::Pi() / 6. );	// rotate 60˚ for each face
+		vec = vec.Rotate( TMath::TwoPi() / 6. );	// rotate 60˚ for each face
 	
 	return vec;
 	
@@ -283,7 +283,7 @@ TVector3 ISSArrayEvt::GetPosition(){
 	
 }
 
-char ISSArrayEvt::FindModule( unsigned short detNo ){
+int ISSArrayEvt::FindModule( unsigned short detNo ){
 	
 	/// Return the module number depending on the detector number from NPTool. 
 	if( detNo > 24 ) return -1;
@@ -291,7 +291,7 @@ char ISSArrayEvt::FindModule( unsigned short detNo ){
 	
 }
 
-char ISSArrayEvt::FindRow( unsigned short detNo ){
+int ISSArrayEvt::FindRow( unsigned short detNo ){
 	
 	/// Return the row number depending on the detector number from NPTool
 	if( detNo > 24 ) return -1;
@@ -299,7 +299,7 @@ char ISSArrayEvt::FindRow( unsigned short detNo ){
 	
 }
 
-char ISSArrayEvt::FindAsicP( unsigned short detNo ){
+int ISSArrayEvt::FindAsicP( unsigned short detNo ){
 	
 	/// Return the p-side ASIC number depending on the detector number from NPTool
 	if( detNo > 24 ) return -1;
@@ -313,7 +313,7 @@ char ISSArrayEvt::FindAsicP( unsigned short detNo ){
 	
 }
 
-char ISSArrayEvt::FindAsicN( unsigned short detNo ){
+int ISSArrayEvt::FindAsicN( unsigned short detNo ){
 	
 	/// Return the n-side ASIC number depending on the detector number from NPTool
 	if( detNo > 24 ) return -1;
@@ -326,29 +326,23 @@ char ISSArrayEvt::FindAsicN( unsigned short detNo ){
 	
 }
 
-char ISSArrayEvt::FindModule( double phi ){
+int ISSArrayEvt::FindModule( double phi ){
 	
 	/// Return the module number depending on the phi angle
-	// First put us in the 0 -> 2π range
+
+	// First rotate us so we have edge of module 0 vertical, +60˚
+	phi += TMath::Pi() / 3.;
+	
+	// Then put us in the 0 -> 2π range
 	if( phi < 0.0 ) phi += TMath::TwoPi();
 	if( phi > TMath::TwoPi() ) phi -= TMath::TwoPi();
 	
-	// module 0 combos
-	if( phi > 5. * TMath::Pi() / 3. ) return 0;
-	else if( phi <= TMath::Pi() / 3. ) return 0;
-	
-	// module 1 combos
-	else if( phi > TMath::Pi() / 3. && phi <= TMath::Pi() ) return 1;
-	
-	// module 2 combos
-	else if( phi > TMath::Pi() && phi <= 5. * TMath::Pi() / 3. ) return 2;
-	
-	// shouldn't be anything else left
-	else return -1;
-	
+	// Return value is integer of 2π/3
+	return (int)( phi / ( TMath::TwoPi() / 3. ) );
+
 }
 
-char ISSArrayEvt::FindRow( double z ){
+int ISSArrayEvt::FindRow( double z ){
 	
 	/// Return the row number depending on the z position
 	
@@ -367,7 +361,7 @@ char ISSArrayEvt::FindRow( double z ){
 	
 }
 
-char ISSArrayEvt::FindPID( double z ){
+int ISSArrayEvt::FindPID( double z ){
 	
 	/// Return the pid number depending on the z position and row number
 	
@@ -400,7 +394,7 @@ char ISSArrayEvt::FindPID( double z ){
 	
 }
 
-char ISSArrayEvt::FindNID( double phi ){
+int ISSArrayEvt::FindNID( double phi ){
 	
 	/// Return the nid number depending on the phi position
 	
@@ -409,10 +403,12 @@ char ISSArrayEvt::FindNID( double phi ){
 	
 	// Straight away return 0 if we don't hit the silicon
 	if( mod < 0 ) return -1;
-	
+
 	// Shift the phi to within a single module
-	phi += TMath::TwoPi() / 6.;
 	phi -= (double)mod * TMath::TwoPi() / 3.;
+	
+	// Rotate module 0 edge to vertical
+	phi += TMath::TwoPi() / 6.;
 	
 	// Then put us in the 0 -> 2π range
 	if( phi < 0.0 ) phi += TMath::TwoPi();
@@ -426,7 +422,7 @@ char ISSArrayEvt::FindNID( double phi ){
 		phi -= TMath::TwoPi() / 6.;
 		
 	}
-	
+
 	// Loop over each strip
 	for( unsigned char i = 0; i < 11; i++ ){
 		
@@ -434,12 +430,13 @@ char ISSArrayEvt::FindNID( double phi ){
 		TVector2 vec_low( array_radius, ( (double)i-5.5 ) * nstrip_pitch );
 		TVector2 vec_upp( array_radius, ( (double)i-4.5 ) * nstrip_pitch );
 		
-		// Rotate by pi/6 to get it aligned with reference
-		vec_low.Rotate( TMath::TwoPi() / 6. );
-		vec_upp.Rotate( TMath::TwoPi() / 6. );
+		// Rotate by pi/6 to get it aligned with reference, i.e. +30˚
+		// this puts the edge of the wafer in the vertical position
+		vec_low = vec_low.Rotate( TMath::Pi() / 6. );
+		vec_upp = vec_upp.Rotate( TMath::Pi() / 6. );
 		
 		// check if we are in the strip
-		if( phi > vec_low.Phi() && phi <= vec_upp.Phi() )
+		if( phi > vec_low.Phi() && phi < vec_upp.Phi() )
 			return i + 11 * sideB;
 		
 	}
