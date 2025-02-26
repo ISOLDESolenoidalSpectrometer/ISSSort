@@ -1176,7 +1176,7 @@ double ISSReaction::SimulateDecay( TVector3 vec, double en, int detector ){
 	z_meas = vec.Z();					// measured z in mm
 	if( z0 < 0 ) {						// upstream
 		z_meas = z0 - z_meas;
-		phi_meas = -1.0 * vec.Phi();
+		phi_meas = TMath::TwoPi() - vec.Phi();
 	}
 	else {								// downstream
 		z_meas += z0;
@@ -1216,7 +1216,8 @@ double ISSReaction::SimulateDecay( TVector3 vec, double en, int detector ){
 	alpha  = TMath::ASin( alpha );
 	Ejectile.SetThetaLab( TMath::PiOver2() + alpha );
 	
-	// Phi
+	// Phi - TODO: this depends on direction of the field!
+	if( phi_meas < 0 ) phi_meas += TMath::TwoPi();
 	phi = phi_meas * z / z_meas + TMath::Pi();
 	if( phi > TMath::TwoPi() ) phi -= TMath::TwoPi();
 	
@@ -1334,7 +1335,7 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 	r_meas = vec.Perp();				// measured radius
 	if( z0 < 0 ) {						// upstream
 		z_meas = z0 - z_meas;
-		phi_meas = -1.0 * vec.Phi();
+		phi_meas = TMath::TwoPi() - vec.Phi();
 	}
 	else {								// downstream
 		z_meas += z0;
@@ -1471,7 +1472,8 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 		Recoil.SetEx( Ex );
 		Ejectile.SetEx( 0.0 );
 		
-		// Phi
+		// Phi - TODO: This depends on the direction of the field!
+		if( phi_meas < 0 ) phi_meas += TMath::TwoPi();
 		phi = phi_meas * z / z_meas + TMath::Pi();
 		if( phi > TMath::TwoPi() ) phi -= TMath::TwoPi();
 
