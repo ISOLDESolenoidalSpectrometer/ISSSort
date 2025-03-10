@@ -2631,7 +2631,7 @@ void ISSEventBuilder::LumeFinder() {
 
 		lume_evt->SetEvent(be_energy, be_id, be_timestamp, ne_energy, fe_energy);
 
-		if (has_ln && has_lf)
+		if (has_ln || has_lf)
 		  lume_E_vs_x[be_id]->Fill(( fe_energy - ne_energy ) / ( ne_energy + fe_energy ), be_energy);
 
 		write_evts->AddEvt( lume_evt );
