@@ -2626,8 +2626,10 @@ void ISSEventBuilder::LumeFinder() {
 				break;
 			}
 		}
+		ne_energy = has_ln ? ne_energy : TMath::QuietNaN();
+		fe_energy =  has_lf ? fe_energy : TMath::QuietNaN();
 
-		lume_evt->SetEvent(be_energy, be_id, be_timestamp, has_ln ? ne_energy : TMath::QuietNaN(), has_lf ? fe_energy : TMath::QuietNaN() );
+		lume_evt->SetEvent(be_energy, be_id, be_timestamp, ne_energy, fe_energy);
 
 		if (has_ln && has_lf)
 		  lume_E_vs_x[be_id]->Fill(( fe_energy - ne_energy ) / ( ne_energy + fe_energy ), be_energy);
