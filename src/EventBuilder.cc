@@ -2626,8 +2626,8 @@ void ISSEventBuilder::LumeFinder() {
 				break;
 			}
 		}
-		ne_energy = has_ln ? ne_energy : TMath::QuietNaN();
-		fe_energy =  has_lf ? fe_energy : TMath::QuietNaN();
+		ne_energy = has_ln ? ne_energy : 0;
+		fe_energy =  has_lf ? fe_energy : 0;
 
 		lume_evt->SetEvent(be_energy, be_id, be_timestamp, ne_energy, fe_energy);
 
