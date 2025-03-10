@@ -3031,11 +3031,11 @@ void ISSEventBuilder::MakeHists(){
 	for( unsigned int i = 0; i < set->GetNumberOfLUMEDetectors(); ++i ) {
 
 		hname = "lume_E_" + std::to_string(i);
-		htitle = "LUME energy spectrum;Energy [ch];Counts";
+		htitle = "LUME energy spectrum;Energy [keV];Counts";
 		lume_E[i] = new TH1F( hname.data(), htitle.data(), 1000, -200, 80000);
 
 		hname = "lume_E_vs_x_" + std::to_string(i);
-		htitle = "LUME energy vs position spectrum;Position;Energy [ch]";
+		htitle = "LUME energy vs position spectrum;Position;Energy [keV]";
 		lume_E_vs_x[i] = new TH2F( hname.data(), htitle.data(), 1000, -1.01, 1.01, 1000, -200, 80000 );
 
 	}
