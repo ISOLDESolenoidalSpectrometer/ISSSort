@@ -505,7 +505,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				
 		// check time stamp monotonically increases!
 		// but allow for the fine time of the CAEN system
-		if( (unsigned long long)time_prev > in_data->GetTimeStamp() + 5.0 ) {
+		if( (unsigned long long)time_prev > mytime + 5.0 ) {
 			
 			std::cout << "Out of order event in file ";
 			std::cout << input_tree->GetName() << std::endl;
@@ -566,7 +566,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 							
 					pen_list.push_back( myenergy );
 					ptd_list.push_back( mytime );
-					pwalk_list.push_back( mytime + mywalk );
+					if( set->BuildByTimeStamp() )
+						pwalk_list.push_back( mytime + mywalk );
+					else
+						pwalk_list.push_back( mytime );
 					pmod_list.push_back( mymod );
 					pid_list.push_back( mystrip );
 					prow_list.push_back( myrow );
@@ -589,7 +592,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 							
 					nen_list.push_back( myenergy );
                     ntd_list.push_back( mytime );
-                    nwalk_list.push_back( mytime + mywalk );
+					if( set->BuildByTimeStamp() )
+						nwalk_list.push_back( mytime + mywalk );
+					else
+						nwalk_list.push_back( mytime );
 					nmod_list.push_back( mymod );
 					nid_list.push_back( mystrip );
 					nrow_list.push_back( myrow );
