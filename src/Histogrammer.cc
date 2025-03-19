@@ -1332,6 +1332,7 @@ void ISSHistogrammer::ResetHists() {
 	ebis_td_recoil->Reset("ICESM");
 	ebis_td_array->Reset("ICESM");
 	ebis_td_elum->Reset("ICESM");
+	ebis_td_lume->Reset("ICESM");
 	t1_td_recoil->Reset("ICESM");
 	sc_td_recoil->Reset("ICESM");
 	recoil_array_tw_hit0->Reset("ICESM");
@@ -1753,6 +1754,28 @@ void ISSHistogrammer::ResetHists() {
 	elum_recoil_random->Reset("ICESM");
 	elum_recoilT_random->Reset("ICESM");
 	elum_vs_T1->Reset("ICESM");
+
+	//LUME (All vectors have the same size.)
+	for ( unsigned int i = 0; i < lume_det.size(); ++i ) {
+		lume_det[i]->Reset("ICESM");
+		lume_ebis_det[i]->Reset("ICESM");
+		lume_ebis_on_det[i]->Reset("ICESM");
+		lume_ebis_off_det[i]->Reset("ICESM");
+		lume_E_vs_x_det[i]->Reset("ICESM");
+		lume_E_vs_x_ebis_det[i]->Reset("ICESM");
+		lume_E_vs_x_ebis_on_det[i]->Reset("ICESM");
+		lume_E_vs_x_ebis_off_det[i]->Reset("ICESM");
+	}
+
+	lume->Reset("ICESM");
+	lume_E_vs_x->Reset("ICESM");
+	lume_ebis->Reset("ICESM");
+	lume_ebis_on->Reset("ICESM");
+	lume_ebis_off->Reset("ICESM");
+	lume_vs_T1->Reset("ICESM");
+	lume_E_vs_x_ebis->Reset("ICESM");
+	lume_E_vs_x_ebis_on->Reset("ICESM");
+	lume_E_vs_x_ebis_off->Reset("ICESM");
 
 	return;
 	
