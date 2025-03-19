@@ -1150,6 +1150,7 @@ void ISSHistogrammer::MakeHists() {
 	ebis_td_recoil = new TH1F( "ebis_td_recoil", "Recoil time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	ebis_td_array = new TH1F( "ebis_td_array", "Array time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	ebis_td_elum = new TH1F( "ebis_td_elum", "ELUM time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
+	ebis_td_lume = new TH1F( "ebis_td_lume", "LUME time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	
 	// Supercycle and proton pulses
 	t1_td_recoil = new TH1F( "t1_td_recoil", "Recoil time difference with respect to the T1;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
@@ -1227,7 +1228,78 @@ void ISSHistogrammer::MakeHists() {
 		elum_recoilT_random_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
 
 	} // ELUM
-	
+
+	// For LUME detectors
+	dirname = "LumeDetector";
+	output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+
+	lume = new TH1F( "lume", "LUME singles;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
+	lume_ebis = new TH1F( "lume_ebis", "LUME gated by EBIS and off beam subtracted;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
+	lume_ebis_on = new TH1F( "lume_ebis_on", "LUME gated on EBIS;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
+	lume_ebis_off = new TH1F( "lume_ebis_off", "LUME gated off EBIS;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
+	lume_vs_T1 = new TH2F( "lume_vs_T1", "LUME energy versus T1 time (gated on EBIS);Energy (keV);Counts per 5 keV", 5000, 0, 50e9, 10100, -200, 50000 );
+	lume_E_vs_x = new TH2F( "lume_E_vs_x", "LUME energy versus position;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
+	lume_E_vs_x_ebis = new TH2F( "lume_E_vs_x_ebis", "LUME energy versus position gated by EBIS and off beam subtracted;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
+	lume_E_vs_x_ebis_on = new TH2F( "lume_E_vs_x_ebis_on", "LUME energy versus position gated on EBIS;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
+	lume_E_vs_x_ebis_off = new TH2F( "lume_E_vs_x_ebis_off", "LUME energy versus positiongated off EBIS ;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
+
+	lume_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_ebis_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_ebis_on_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_ebis_off_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_E_vs_x_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_E_vs_x_ebis_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_E_vs_x_ebis_on_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_E_vs_x_ebis_off_det.resize( set->GetNumberOfLUMEDetectors() );
+
+	// Loop over number of LUME detectors
+	for( unsigned int i = 0; i < set->GetNumberOfLUMEDetectors(); ++i ) {
+	  dirname = "LumeDetector/detector_" + std::to_string(i);
+	  output_file->mkdir( dirname.data() );
+	  output_file->cd( dirname.data() );
+
+	  hname = "lume_det_" + std::to_string(i);
+	  htitle = "LUME energy spectrum for detector " + std::to_string(i);
+	  htitle += ";Energy [keV];Counts per 5 keV";
+	  lume_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000);
+
+	  hname = "lume_ebis_det_" + std::to_string(i);
+	  htitle = "LUME events for  detector " + std::to_string(i);
+	  htitle += " gated by EBIS and off beam subtracted;Energy (keV);Counts per 5 keV";
+	  lume_ebis_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
+
+	  hname = "lume_ebis_on_det_" + std::to_string(i);
+	  htitle = "LUME events for detector " + std::to_string(i);
+	  htitle += " gated on EBIS ;Energy (keV);Counts per 5 keV";
+	  lume_ebis_on_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
+
+	  hname = "lume_ebis_off_det_" + std::to_string(i);
+	  htitle = "LUME events for detector " + std::to_string(i);
+	  htitle += " gated off EBIS ;Energy (keV);Counts per 5 keV";
+	  lume_ebis_off_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
+
+	  hname = "lume_E_vs_x_det_" + std::to_string(i);
+	  htitle = "LUME energy vs position spectrum for detecor " + std::to_string(i);
+	  htitle += ";Position;Energy [keV]";
+	  lume_E_vs_x_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+
+	  hname = "lume_E_vs_x_ebis_det_" + std::to_string(i);
+	  htitle = "LUME energy vs position spectrum for detector " + std::to_string(i);
+	  htitle += " gated by EBIS and off beam subtracted;Position;Energy [keV]";
+	  lume_E_vs_x_ebis_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+
+	  hname = "lume_E_vs_x_ebis_on_det_" + std::to_string(i);
+	  htitle = "LUME energy vs position spectrum for detecor " + std::to_string(i);
+	  htitle += " gated on EBIS;Position;Energy [keV]";
+	  lume_E_vs_x_ebis_on_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+
+	  hname = "lume_E_vs_x_ebis_off_det_" + std::to_string(i);
+	  htitle = "LUME energy vs position spectrum for detecor " + std::to_string(i);
+	  htitle += " gated off EBIS;Position;Energy [keV]";
+	  lume_E_vs_x_ebis_off_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+	} // LUME
+
 	output_file->cd();
 	
 }
