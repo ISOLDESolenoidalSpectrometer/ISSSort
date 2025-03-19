@@ -2356,7 +2356,55 @@ unsigned long ISSHistogrammer::FillHists() {
 			recoil_E_eloss[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
 
 		} // recoils
-		
+
+		// Loop over LUME events
+		for( unsigned int j = 0; j < read_evts->GetLumeMultiplicity(); ++j ){
+			// Get LUME event
+			lume_evt = read_evts->GetLumeEvt(j);
+
+			int det_id = lume_evt->GetID();
+			if (det_id >= set->GetNumberOfLUMEDetectors()){
+			  std::cerr << "Bad LUME detector ID " << det_id << ". Only " << set->GetNumberOfLUMEDetectors()
+						<< " detectors are set. Ignoring this event for histogramming." << std::endl;
+			  continue;
+			}
+
+			// EBIS time
+			ebis_td_lume->Fill( lume_evt->GetTime() - read_evts->GetEBIS() );
+
+			// Singles
+			lume->Fill( lume_evt->GetBE() );
+			lume_det[det_id]->Fill( lume_evt->GetBE() );
+
+			// E versus x
+			lume_E_vs_x->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+			lume_E_vs_x_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1 );
+
+			// Check for events in the EBIS on-beam window
+			if( OnBeam( lume_evt ) ){
+
+			  lume_vs_T1->Fill( lume_evt->GetTime() - read_evts->GetT1(), lume_evt->GetBE() );
+			  lume_ebis_on->Fill( lume_evt->GetBE() );
+			  lume_E_vs_x_ebis->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+			  lume_E_vs_x_ebis_on->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+
+			  lume_ebis_on_det[det_id]->Fill( lume_evt->GetBE() );
+			  lume_E_vs_x_ebis_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+			  lume_E_vs_x_ebis_on_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+			}
+
+			else {
+
+			  lume_ebis_off->Fill( lume_evt->GetBE() );
+			  lume_ebis_off_det[det_id]->Fill( lume_evt->GetBE() );
+
+			  lume_E_vs_x_ebis->Fill( lume_evt->GetX(),lume_evt->GetBE(),-1.* react->GetEBISFillRatio() );
+			  lume_E_vs_x_ebis_off->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+			  lume_E_vs_x_ebis_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),-1.* react->GetEBISFillRatio() );
+			  lume_E_vs_x_ebis_off_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+			} // ebis
+		}
+
 		// Progress bar
 		bool update_progress = false;
 		if( n_entries < 200 )
