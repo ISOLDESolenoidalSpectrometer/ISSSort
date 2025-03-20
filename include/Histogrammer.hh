@@ -389,6 +389,7 @@ private:
 	TH1F *lume, *lume_ebis, *lume_ebis_on, *lume_ebis_off;
     TH2F *lume_E_vs_x, *lume_vs_T1, *lume_E_vs_x_ebis;
     TH2F *lume_E_vs_x_ebis_on, *lume_E_vs_x_ebis_off;
+    TH2F *lume_E_vs_x_wide;
 
 };
 

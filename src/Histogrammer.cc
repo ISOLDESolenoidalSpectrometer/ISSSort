@@ -1243,6 +1243,7 @@ void ISSHistogrammer::MakeHists() {
 	lume_E_vs_x_ebis = new TH2F( "lume_E_vs_x_ebis", "LUME energy versus position gated by EBIS and off beam subtracted;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
 	lume_E_vs_x_ebis_on = new TH2F( "lume_E_vs_x_ebis_on", "LUME energy versus position gated on EBIS;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
 	lume_E_vs_x_ebis_off = new TH2F( "lume_E_vs_x_ebis_off", "LUME energy versus positiongated off EBIS ;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
+	lume_E_vs_x_wide = new TH2F( "lume_E_vs_x_wide", "LUME energy versus position;Position;Energy (keV)", 400, -2, 2, 8000, -200, 160000 );
 
 	lume_det.resize( set->GetNumberOfLUMEDetectors() );
 	lume_ebis_det.resize( set->GetNumberOfLUMEDetectors() );
@@ -1769,6 +1770,7 @@ void ISSHistogrammer::ResetHists() {
 
 	lume->Reset("ICESM");
 	lume_E_vs_x->Reset("ICESM");
+	lume_E_vs_x_wide->Reset("ICESM");
 	lume_ebis->Reset("ICESM");
 	lume_ebis_on->Reset("ICESM");
 	lume_ebis_off->Reset("ICESM");
@@ -2378,6 +2380,7 @@ unsigned long ISSHistogrammer::FillHists() {
 
 			// E versus x
 			lume_E_vs_x->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+			lume_E_vs_x_wide->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
 			lume_E_vs_x_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1 );
 
 			// Check for events in the EBIS on-beam window
