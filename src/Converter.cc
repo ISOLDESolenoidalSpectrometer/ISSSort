@@ -185,7 +185,7 @@ void ISSConverter::MakeHists() {
 					
 				hasic[i][j] = new TH2F( hname.data(), htitle.data(),
 							set->GetNumberOfArrayChannels(), -0.5, set->GetNumberOfArrayChannels()-0.5,
-							4096, -0.5, 4095.5 );
+							4196, -0.5, 4195.5 );
 				hasic[i][j]->SetDirectory(
 						output_file->GetDirectory( dirname.data() ) );
 					
@@ -260,7 +260,7 @@ void ISSConverter::MakeHists() {
 			else {
 				
 				hcaen_qlong[i][j] = new TH1F( hname.data(), htitle.data(),
-											 65536, -0.5, 65535.5 );
+											 66536, -0.5, 66535.5 );
 				
 				hcaen_qlong[i][j]->SetDirectory(
 												output_file->GetDirectory( dirname.data() ) );
@@ -283,7 +283,7 @@ void ISSConverter::MakeHists() {
 			else {
 				
 				hcaen_qshort[i][j] = new TH1F( hname.data(), htitle.data(),
-											  32768, -0.5, 32767.5 );
+											  33768, -0.5, 33767.5 );
 				
 				hcaen_qshort[i][j]->SetDirectory(
 												 output_file->GetDirectory( dirname.data() ) );
@@ -306,7 +306,7 @@ void ISSConverter::MakeHists() {
 			else {
 				
 				hcaen_qdiff[i][j] = new TH1F( hname.data(), htitle.data(),
-											 65536, -0.5, 65535.5 );
+											 66536, -0.5, 66535.5 );
 				
 				hcaen_qdiff[i][j]->SetDirectory(
 												output_file->GetDirectory( dirname.data() ) );
@@ -382,7 +382,7 @@ void ISSConverter::MakeHists() {
 			else {
 				
 				hmesy_qlong[i][j] = new TH1F( hname.data(), htitle.data(),
-											 65536, -0.5, 65535.5 );
+											 66536, -0.5, 66535.5 );
 				
 				hmesy_qlong[i][j]->SetDirectory(
 												output_file->GetDirectory( dirname.data() ) );
@@ -405,7 +405,7 @@ void ISSConverter::MakeHists() {
 			else {
 				
 				hmesy_qshort[i][j] = new TH1F( hname.data(), htitle.data(),
-											  32768, -0.5, 32767.5 );
+											  33768, -0.5, 33767.5 );
 				
 				hmesy_qshort[i][j]->SetDirectory(
 												output_file->GetDirectory( dirname.data() ) );
@@ -428,7 +428,7 @@ void ISSConverter::MakeHists() {
 			else {
 				
 				hmesy_qdiff[i][j] = new TH1F( hname.data(), htitle.data(),
-											 65536, -0.5, 65535.5 );
+											 66536, -0.5, 66535.5 );
 				
 				hmesy_qdiff[i][j]->SetDirectory(
 												output_file->GetDirectory( dirname.data() ) );
