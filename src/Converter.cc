@@ -1211,8 +1211,7 @@ void ISSConverter::ProcessCAENData(){
 		
 		// Fill histograms
 		hcaen_qlong[my_mod_id][my_ch_id]->Fill( my_adc_data );
-		if( my_adc_data == 0xFFFF ) caen_data->SetQlong( 0 );
-		else caen_data->SetQlong( my_adc_data );
+		caen_data->SetQlong( my_adc_data );
 		flag_caen_data0 = true;
 		
 	}
@@ -1222,8 +1221,7 @@ void ISSConverter::ProcessCAENData(){
 		
 		my_adc_data = my_adc_data & 0x7FFF; // 15 bits from 0
 		hcaen_qshort[my_mod_id][my_ch_id]->Fill( my_adc_data );
-		if( my_adc_data == 0x7FFF ) caen_data->SetQshort( 0 );
-		else caen_data->SetQshort( my_adc_data );
+		caen_data->SetQshort( my_adc_data );
 		flag_caen_data1 = true;
 		
 	}
@@ -1504,8 +1502,7 @@ void ISSConverter::ProcessMesytecData(){
 		
 		// Fill histograms
 		hmesy_qlong[my_mod_id][my_ch_id]->Fill( my_adc_data );
-		if( my_adc_data == 0xFFFF ) mesy_data->SetQlong( 0 );
-		else mesy_data->SetQlong( my_adc_data );
+		mesy_data->SetQlong( my_adc_data );
 		flag_mesy_data0 = true;
 		
 	}
@@ -1516,8 +1513,7 @@ void ISSConverter::ProcessMesytecData(){
 		// Fill histograms
 		my_adc_data = my_adc_data & 0x7FFF; // 15 bits from 0
 		hmesy_qshort[my_mod_id][my_ch_id]->Fill( my_adc_data );
-		if( my_adc_data == 0x7FFF ) mesy_data->SetQshort( 0 );
-		else mesy_data->SetQshort( my_adc_data );
+		mesy_data->SetQshort( my_adc_data );
 		flag_mesy_data1 = true;
 		
 	}
