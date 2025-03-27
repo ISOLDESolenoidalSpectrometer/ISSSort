@@ -112,8 +112,13 @@ void ISSSettings::ReadSettings() {
 	flag_asic_only = config->GetValue( "ASICOnlyData", false );
 	flag_caen_only = config->GetValue( "CAENOnlyData", false );
 	flag_mesy_only = config->GetValue( "MesytecOnlyData", false );
-	
-	
+
+
+	// Event rejection
+	clipped_reject = config->GetValue( "ClippedRejection", true );
+	overflow_reject = config->GetValue( "OverflowRejection", true );
+
+
 	// Recoil detector
 	n_recoil_sector = config->GetValue( "NumberOfRecoilSectors", 4 );
 	n_recoil_layer  = config->GetValue( "NumberOfRecoilLayers", 2 );

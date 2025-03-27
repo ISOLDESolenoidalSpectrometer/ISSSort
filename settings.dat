@@ -91,6 +91,14 @@
 #ZeroDegreeHitWindow: 500 # in ns. Default is 500 ns
 #GammaRayHitWindow: 500 # in ns. Default is 500 ns
 
+
+#-----------------#
+# Event rejection #
+#-----------------#
+#ClippedRejection: true		# reject if a signal is marked as clipped by the firmware
+#OverflowRejection: true	# reject if the energy is in the overflow
+
+
 ##-----------------#
 ## Recoil Detector #
 ##-----------------#
