@@ -58,14 +58,14 @@ public:
 	TVector2	GetPhiXY();
 	TVector3	GetPosition();
 	
-	char	FindPID( double z );
-	char	FindNID( double phi );
-	char	FindModule( double phi );
-	char	FindRow( double z );
-	char	FindModule( unsigned short detNo );
-	char	FindRow( unsigned short detNo );
-	char	FindAsicP( unsigned short detNo );
-	char	FindAsicN( unsigned short detNo );
+	static int	FindPID( double z );
+	static int	FindNID( double phi );
+	static int	FindModule( double phi );
+	static int	FindRow( double z );
+	static int	FindModule( unsigned short detNo );
+	static int	FindRow( unsigned short detNo );
+	static int	FindAsicP( unsigned short detNo );
+	static int	FindAsicN( unsigned short detNo );
 	
 	
 private:
@@ -83,7 +83,7 @@ private:
 	double			ntime;	///< n-side timestamp
 	
 	
-	ClassDef( ISSArrayEvt, 4 )
+	ClassDef( ISSArrayEvt, 5 )
 	
 };
 

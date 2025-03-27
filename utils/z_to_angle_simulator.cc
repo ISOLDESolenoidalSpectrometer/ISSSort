@@ -4,7 +4,7 @@
 
 // To run this, do the following:
 // root -l
-// root [0] gSystem->Load("libiss_sort.so")
+// root [0] gSystem->Load("libiss_sort")
 // root [1] .L utils/z_to_angle_simulator.cc++
 // root [2] z_to_angle_simulator( "reaction.dat" )
 // root [3] get_theta_cm( z_det, E_x )  --> in radians

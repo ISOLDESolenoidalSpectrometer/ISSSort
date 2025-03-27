@@ -1150,6 +1150,7 @@ void ISSHistogrammer::MakeHists() {
 	ebis_td_recoil = new TH1F( "ebis_td_recoil", "Recoil time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	ebis_td_array = new TH1F( "ebis_td_array", "Array time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	ebis_td_elum = new TH1F( "ebis_td_elum", "ELUM time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
+	ebis_td_lume = new TH1F( "ebis_td_lume", "LUME time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	
 	// Supercycle and proton pulses
 	t1_td_recoil = new TH1F( "t1_td_recoil", "Recoil time difference with respect to the T1;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
@@ -1227,7 +1228,79 @@ void ISSHistogrammer::MakeHists() {
 		elum_recoilT_random_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
 
 	} // ELUM
-	
+
+	// For LUME detectors
+	dirname = "LumeDetector";
+	output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+
+	lume = new TH1F( "lume", "LUME singles;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
+	lume_ebis = new TH1F( "lume_ebis", "LUME gated by EBIS and off beam subtracted;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
+	lume_ebis_on = new TH1F( "lume_ebis_on", "LUME gated on EBIS;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
+	lume_ebis_off = new TH1F( "lume_ebis_off", "LUME gated off EBIS;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
+	lume_vs_T1 = new TH2F( "lume_vs_T1", "LUME energy versus T1 time (gated on EBIS);Energy (keV);Counts per 5 keV", 5000, 0, 50e9, 10100, -200, 50000 );
+	lume_E_vs_x = new TH2F( "lume_E_vs_x", "LUME energy versus position;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
+	lume_E_vs_x_ebis = new TH2F( "lume_E_vs_x_ebis", "LUME energy versus position gated by EBIS and off beam subtracted;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
+	lume_E_vs_x_ebis_on = new TH2F( "lume_E_vs_x_ebis_on", "LUME energy versus position gated on EBIS;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
+	lume_E_vs_x_ebis_off = new TH2F( "lume_E_vs_x_ebis_off", "LUME energy versus positiongated off EBIS ;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
+	lume_E_vs_x_wide = new TH2F( "lume_E_vs_x_wide", "LUME energy versus position;Position;Energy (keV)", 400, -2, 2, 8000, -200, 160000 );
+
+	lume_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_ebis_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_ebis_on_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_ebis_off_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_E_vs_x_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_E_vs_x_ebis_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_E_vs_x_ebis_on_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_E_vs_x_ebis_off_det.resize( set->GetNumberOfLUMEDetectors() );
+
+	// Loop over number of LUME detectors
+	for( unsigned int i = 0; i < set->GetNumberOfLUMEDetectors(); ++i ) {
+	  dirname = "LumeDetector/detector_" + std::to_string(i);
+	  output_file->mkdir( dirname.data() );
+	  output_file->cd( dirname.data() );
+
+	  hname = "lume_det_" + std::to_string(i);
+	  htitle = "LUME energy spectrum for detector " + std::to_string(i);
+	  htitle += ";Energy [keV];Counts per 5 keV";
+	  lume_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000);
+
+	  hname = "lume_ebis_det_" + std::to_string(i);
+	  htitle = "LUME events for  detector " + std::to_string(i);
+	  htitle += " gated by EBIS and off beam subtracted;Energy (keV);Counts per 5 keV";
+	  lume_ebis_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
+
+	  hname = "lume_ebis_on_det_" + std::to_string(i);
+	  htitle = "LUME events for detector " + std::to_string(i);
+	  htitle += " gated on EBIS ;Energy (keV);Counts per 5 keV";
+	  lume_ebis_on_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
+
+	  hname = "lume_ebis_off_det_" + std::to_string(i);
+	  htitle = "LUME events for detector " + std::to_string(i);
+	  htitle += " gated off EBIS ;Energy (keV);Counts per 5 keV";
+	  lume_ebis_off_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
+
+	  hname = "lume_E_vs_x_det_" + std::to_string(i);
+	  htitle = "LUME energy vs position spectrum for detecor " + std::to_string(i);
+	  htitle += ";Position;Energy [keV]";
+	  lume_E_vs_x_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+
+	  hname = "lume_E_vs_x_ebis_det_" + std::to_string(i);
+	  htitle = "LUME energy vs position spectrum for detector " + std::to_string(i);
+	  htitle += " gated by EBIS and off beam subtracted;Position;Energy [keV]";
+	  lume_E_vs_x_ebis_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+
+	  hname = "lume_E_vs_x_ebis_on_det_" + std::to_string(i);
+	  htitle = "LUME energy vs position spectrum for detecor " + std::to_string(i);
+	  htitle += " gated on EBIS;Position;Energy [keV]";
+	  lume_E_vs_x_ebis_on_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+
+	  hname = "lume_E_vs_x_ebis_off_det_" + std::to_string(i);
+	  htitle = "LUME energy vs position spectrum for detecor " + std::to_string(i);
+	  htitle += " gated off EBIS;Position;Energy [keV]";
+	  lume_E_vs_x_ebis_off_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+	} // LUME
+
 	output_file->cd();
 	
 }
@@ -1260,6 +1333,7 @@ void ISSHistogrammer::ResetHists() {
 	ebis_td_recoil->Reset("ICESM");
 	ebis_td_array->Reset("ICESM");
 	ebis_td_elum->Reset("ICESM");
+	ebis_td_lume->Reset("ICESM");
 	t1_td_recoil->Reset("ICESM");
 	sc_td_recoil->Reset("ICESM");
 	recoil_array_tw_hit0->Reset("ICESM");
@@ -1681,6 +1755,29 @@ void ISSHistogrammer::ResetHists() {
 	elum_recoil_random->Reset("ICESM");
 	elum_recoilT_random->Reset("ICESM");
 	elum_vs_T1->Reset("ICESM");
+
+	//LUME (All vectors have the same size.)
+	for ( unsigned int i = 0; i < lume_det.size(); ++i ) {
+		lume_det[i]->Reset("ICESM");
+		lume_ebis_det[i]->Reset("ICESM");
+		lume_ebis_on_det[i]->Reset("ICESM");
+		lume_ebis_off_det[i]->Reset("ICESM");
+		lume_E_vs_x_det[i]->Reset("ICESM");
+		lume_E_vs_x_ebis_det[i]->Reset("ICESM");
+		lume_E_vs_x_ebis_on_det[i]->Reset("ICESM");
+		lume_E_vs_x_ebis_off_det[i]->Reset("ICESM");
+	}
+
+	lume->Reset("ICESM");
+	lume_E_vs_x->Reset("ICESM");
+	lume_E_vs_x_wide->Reset("ICESM");
+	lume_ebis->Reset("ICESM");
+	lume_ebis_on->Reset("ICESM");
+	lume_ebis_off->Reset("ICESM");
+	lume_vs_T1->Reset("ICESM");
+	lume_E_vs_x_ebis->Reset("ICESM");
+	lume_E_vs_x_ebis_on->Reset("ICESM");
+	lume_E_vs_x_ebis_off->Reset("ICESM");
 
 	return;
 	
@@ -2261,7 +2358,56 @@ unsigned long ISSHistogrammer::FillHists() {
 			recoil_E_eloss[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
 
 		} // recoils
-		
+
+		// Loop over LUME events
+		for( unsigned int j = 0; j < read_evts->GetLumeMultiplicity(); ++j ){
+			// Get LUME event
+			lume_evt = read_evts->GetLumeEvt(j);
+
+			int det_id = lume_evt->GetID();
+			if (det_id >= set->GetNumberOfLUMEDetectors()){
+			  std::cerr << "Bad LUME detector ID " << det_id << ". Only " << set->GetNumberOfLUMEDetectors()
+						<< " detectors are set. Ignoring this event for histogramming." << std::endl;
+			  continue;
+			}
+
+			// EBIS time
+			ebis_td_lume->Fill( lume_evt->GetTime() - read_evts->GetEBIS() );
+
+			// Singles
+			lume->Fill( lume_evt->GetBE() );
+			lume_det[det_id]->Fill( lume_evt->GetBE() );
+
+			// E versus x
+			lume_E_vs_x->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+			lume_E_vs_x_wide->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+			lume_E_vs_x_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1 );
+
+			// Check for events in the EBIS on-beam window
+			if( OnBeam( lume_evt ) ){
+
+			  lume_vs_T1->Fill( lume_evt->GetTime() - read_evts->GetT1(), lume_evt->GetBE() );
+			  lume_ebis_on->Fill( lume_evt->GetBE() );
+			  lume_E_vs_x_ebis->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+			  lume_E_vs_x_ebis_on->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+
+			  lume_ebis_on_det[det_id]->Fill( lume_evt->GetBE() );
+			  lume_E_vs_x_ebis_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+			  lume_E_vs_x_ebis_on_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+			}
+
+			else {
+
+			  lume_ebis_off->Fill( lume_evt->GetBE() );
+			  lume_ebis_off_det[det_id]->Fill( lume_evt->GetBE() );
+
+			  lume_E_vs_x_ebis->Fill( lume_evt->GetX(),lume_evt->GetBE(),-1.* react->GetEBISFillRatio() );
+			  lume_E_vs_x_ebis_off->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+			  lume_E_vs_x_ebis_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),-1.* react->GetEBISFillRatio() );
+			  lume_E_vs_x_ebis_off_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+			} // ebis
+		}
+
 		// Progress bar
 		bool update_progress = false;
 		if( n_entries < 200 )

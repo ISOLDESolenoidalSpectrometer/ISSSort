@@ -117,6 +117,11 @@ public:
 			z->GetTime() - read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
+  	inline bool	OnBeam( std::shared_ptr<ISSLumeEvt> l ){
+		if( l->GetTime() - read_evts->GetEBIS() >= 0 &&
+			l->GetTime() - read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
+		else return false;
+	};
 	inline bool	OffBeam( std::shared_ptr<ISSRecoilEvt> r ){
 		if( r->GetTime() - read_evts->GetEBIS() >= react->GetEBISOnTime() &&
 			r->GetTime() - read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
@@ -183,7 +188,8 @@ private:
 	std::shared_ptr<ISSRecoilEvt> recoil_evt;
 	std::shared_ptr<ISSElumEvt> elum_evt;
 	std::shared_ptr<ISSZeroDegreeEvt> zd_evt;
-	
+    std::shared_ptr<ISSLumeEvt> lume_evt;
+
 	/// Output file and tree
 	TFile *output_file;
 	TTree *output_tree;
@@ -211,6 +217,7 @@ private:
 	TProfile *recoil_array_tw_hit0_prof, *recoil_array_tw_hit1_prof;
 	TH1F *ebis_td_recoil, *ebis_td_array, *ebis_td_elum;
 	TH1F *t1_td_recoil, *sc_td_recoil;
+    TH1F *ebis_td_lume;
 
 	// Recoils
 	std::vector<TH2F*> recoil_EdE;
@@ -369,7 +376,21 @@ private:
 	TH1F *elum_recoil, *elum_recoilT;
 	TH1F *elum_recoil_random, *elum_recoilT_random;
 	TH2F *elum_vs_T1;
-	
+
+    // LUME
+	std::vector<TH1F*> lume_det;
+	std::vector<TH1F*> lume_ebis_det;
+	std::vector<TH1F*> lume_ebis_on_det;
+	std::vector<TH1F*> lume_ebis_off_det;
+	std::vector<TH2F*> lume_E_vs_x_det;
+	std::vector<TH2F*> lume_E_vs_x_ebis_det;
+	std::vector<TH2F*> lume_E_vs_x_ebis_on_det;
+	std::vector<TH2F*> lume_E_vs_x_ebis_off_det;
+	TH1F *lume, *lume_ebis, *lume_ebis_on, *lume_ebis_off;
+    TH2F *lume_E_vs_x, *lume_vs_T1, *lume_E_vs_x_ebis;
+    TH2F *lume_E_vs_x_ebis_on, *lume_E_vs_x_ebis_off;
+    TH2F *lume_E_vs_x_wide;
+
 };
 
 #endif
