@@ -469,8 +469,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	std::cout << n_entries << std::endl;
 	
 	// Event building by timestamp only
-	if( set->BuildByTimeStamp() )
+	if( set->BuildByTimeStamp() ) {
+		std::cout << " Event Building: using raw timestamp for event ordering" << std::endl;
 		input_tree->BuildIndex( "GetTimeStamp()" );
+	}
 	
 	// Or apply time-walk correction, i.e. get new time ordering
 	else {
@@ -480,8 +482,6 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	
 	// Get the index
 	TTreeIndex *att_index = (TTreeIndex*)input_tree->GetTreeIndex();
-
-	(void) att_index; // Avoid unused variable warning.
 
 	// ------------------------------------------------------------------------ //
 	// Main loop over TTree to find events
