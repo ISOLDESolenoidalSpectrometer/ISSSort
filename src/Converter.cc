@@ -1191,19 +1191,19 @@ void ISSConverter::ProcessCAENData(){
 	// is not trace data. So set the flag to be true and finish the
 	// event with an empty trace.
 	else if( flag_caen_data0 && flag_caen_data1 && ( flag_caen_data2 || flag_caen_data3 ) ){
-		
+
 		// Fake trace flag, but with an empty trace
 		flag_caen_trace = true;
-		
+
 		// Finish up the previous event
 		FinishCAENData();
-		
+
 		// Then set the info correctly for this event
 		caen_data->SetTimeStamp( my_tm_stp );
 		caen_data->SetCrate(0); // CAEN crate is always 0
 		caen_data->SetModule( my_mod_id );
 		caen_data->SetChannel( my_ch_id );
-		
+
 	}
 	
 	// Qlong
