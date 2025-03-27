@@ -468,13 +468,20 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	std::cout << " Event Building: number of entries in input tree = ";
 	std::cout << n_entries << std::endl;
 	
-	// Apply time-walk correction, i.e. get new time ordering
-	//std::cout << " Event Building: applying time walk-correction to event ordering" << std::endl;
-	//input_tree->BuildIndex( "GetTimeWithWalk()" );
-	input_tree->BuildIndex( "GetTimeStamp()" );
+	// Event building by timestamp only
+	if( set->BuildByTimeStamp() ) {
+		std::cout << " Event Building: using raw timestamp for event ordering" << std::endl;
+		input_tree->BuildIndex( "GetTimeStamp()" );
+	}
+	
+	// Or apply time-walk correction, i.e. get new time ordering
+	else {
+		std::cout << " Event Building: applying time walk-correction to event ordering" << std::endl;
+		input_tree->BuildIndex( "GetTimeWithWalk()" );
+	}
+	
+	// Get the index
 	TTreeIndex *att_index = (TTreeIndex*)input_tree->GetTreeIndex();
-
-	(void) att_index; // Avoid unused variable warning.
 
 	// ------------------------------------------------------------------------ //
 	// Main loop over TTree to find events
@@ -482,8 +489,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	for( unsigned long i = 0; i < n_entries; ++i ) {
 		
 		// Get time-ordered event index (with or without walk correction)
-		unsigned long long idx = i; // no correction
-		//unsigned long long idx = att_index->GetIndex()[i]; // with correction
+		unsigned long long idx = att_index->GetIndex()[i];
 
 		// Current event data
 		if( input_tree->MemoryFull(30e6) )
@@ -491,15 +497,15 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		if( i == 0 ) input_tree->GetEntry(idx);
 		
 		// Get the time of the event (with or without walk correction)
-		mytime = in_data->GetTime(); // no correction
-		//mytime = in_data->GetTimeWithWalk(); // with correction
+		if( set->BuildByTimeStamp() ) mytime = in_data->GetTime(); // no correction
+		else mytime = in_data->GetTimeWithWalk(); // with correction
 
 		//std::cout << std::setprecision(15) << i << "\t";
 		//std::cout << in_data->GetTimeStamp() << "\t" << mytime << std::endl;
 				
 		// check time stamp monotonically increases!
 		// but allow for the fine time of the CAEN system
-		if( (unsigned long long)time_prev > in_data->GetTimeStamp() + 5.0 ) {
+		if( (unsigned long long)time_prev > mytime + 5.0 ) {
 			
 			std::cout << "Out of order event in file ";
 			std::cout << input_tree->GetName() << std::endl;
@@ -553,9 +559,6 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// p-side event
 			if( myside == 0 && mythres ) {
 			
-			// test here about hit bit value
-			//if( myside == 0 && mythres && !asic_data->GetHitBit() ) {
-
 				mystrip = array_pid.at( myasic ).at( mych );
 				
 				// Only use if it is an event from a detector
@@ -563,7 +566,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 							
 					pen_list.push_back( myenergy );
 					ptd_list.push_back( mytime );
-					pwalk_list.push_back( mytime + mywalk );
+					if( set->BuildByTimeStamp() )
+						pwalk_list.push_back( mytime + mywalk );
+					else
+						pwalk_list.push_back( mytime );
 					pmod_list.push_back( mymod );
 					pid_list.push_back( mystrip );
 					prow_list.push_back( myrow );
@@ -579,9 +585,6 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// n-side event
 			else if( myside == 1 && mythres ) {
 
-			// test here about hit bit value
-			//else if( myside == 1 && mythres && asic_data->GetHitBit() ) {
-
 				mystrip = array_nid.at( asic_data->GetAsic() ).at( asic_data->GetChannel() );
 
 				// Only use if it is an event from a detector
@@ -589,7 +592,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 							
 					nen_list.push_back( myenergy );
                     ntd_list.push_back( mytime );
-                    nwalk_list.push_back( mytime + mywalk );
+					if( set->BuildByTimeStamp() )
+						nwalk_list.push_back( mytime + mywalk );
+					else
+						nwalk_list.push_back( mytime );
 					nmod_list.push_back( mymod );
 					nid_list.push_back( mystrip );
 					nrow_list.push_back( myrow );
@@ -735,7 +741,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				mytype = set->GetLUMEType( myvme, mymod, mych );
 				myid = set->GetLUMEDetector( myvme, mymod, mych );
 
-				switch (mytype) {
+				switch( mytype ) {
 				case 0:
 					lbe_list.push_back( myenergy );
 					lbe_td_list.push_back( mytime );
@@ -1016,17 +1022,17 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		//------------------------------
 		//  check if last datum from this event and do some cleanup
 		//------------------------------
-		unsigned long long idx_next = i+1; // no correction
-		
-		// Comment out the two lines below to ignore time-walk correction
-		//if( i+1 == n_entries ) idx_next = n_entries; // with correction
-		//else idx_next = att_index->GetIndex()[i+1]; // with correction
+		unsigned long long idx_next;
+		if( i+1 == n_entries ) idx_next = n_entries;
+		else idx_next = att_index->GetIndex()[i+1];
 
 		if( input_tree->GetEntry(idx_next) ) {
 					
 			// Time difference to next event (with or without time walk correction)
-			time_diff = in_data->GetTime() - time_first; // no correction
-			//time_diff = in_data->GetTimeWithWalk() - time_first; // with correction
+			if( set->BuildByTimeStamp() )
+				time_diff = in_data->GetTime() - time_first; // no correction
+			else
+				time_diff = in_data->GetTimeWithWalk() - time_first; // with correction
 
 			// window = time_stamp_first + time_window
 			if( time_diff > build_window )

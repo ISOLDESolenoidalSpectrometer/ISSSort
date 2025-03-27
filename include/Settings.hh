@@ -113,6 +113,7 @@ public:
 
 
 	// Event builder
+	inline double BuildByTimeStamp(){ return build_by_tm_stp; };
 	inline double GetEventWindow(){ return event_window; };
 	inline double GetRecoilHitWindow(){ return recoil_hit_window; }
 	inline double GetArrayPNHitWindow(){ return array_pn_hit_window; }
@@ -238,6 +239,7 @@ private:
 
 	
 	// Event builder
+	bool build_by_tm_stp;			///< Build event using the timestamp only (default = true), or with time-walk correction (false)
 	double event_window;			///< Event builder time window in ns
 	double recoil_hit_window;		///< Time window in ns for correlating recoil E-dE hits
 	double array_pn_hit_window;		///< Time window in ns for correlating p-n hits on the array

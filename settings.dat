@@ -83,13 +83,15 @@
 ##---------------#
 ## Event builder #
 ##---------------#
-#EventWindow: 3e3 # in ns. Default is 3 µs
-#RecoilHitWindow: 500 # in ns. Default is 500 ns
-#ArrayHitWindow.PN: 500 # in ns. Default is 500 ns
-#ArrayHitWindow.PP: 500 # in ns. Default is 500 ns
-#ArrayHitWindow.NN: 500 # in ns. Default is 500 ns
-#ZeroDegreeHitWindow: 500 # in ns. Default is 500 ns
-#GammaRayHitWindow: 500 # in ns. Default is 500 ns
+#BuildByTimeStamp: true		# true: use timestamp only for event building (default)
+							# false: use time-walk corrected times for event building
+#EventWindow: 3e3 			# in ns. Default is 3 µs
+#RecoilHitWindow: 500		# in ns. Default is 500 ns
+#ArrayHitWindow.PN: 500		# in ns. Default is 500 ns
+#ArrayHitWindow.PP: 500		# in ns. Default is 500 ns
+#ArrayHitWindow.NN: 500		# in ns. Default is 500 ns
+#ZeroDegreeHitWindow: 500	# in ns. Default is 500 ns
+#GammaRayHitWindow: 500		# in ns. Default is 500 ns
 
 ##-----------------#
 ## Recoil Detector #
