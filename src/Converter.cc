@@ -185,7 +185,7 @@ void ISSConverter::MakeHists() {
 					
 				hasic[i][j] = new TH2F( hname.data(), htitle.data(),
 							set->GetNumberOfArrayChannels(), -0.5, set->GetNumberOfArrayChannels()-0.5,
-							4096, -0.5, 4095.5 );
+							4196, -0.5, 4195.5 );
 				hasic[i][j]->SetDirectory(
 						output_file->GetDirectory( dirname.data() ) );
 					
@@ -260,7 +260,7 @@ void ISSConverter::MakeHists() {
 			else {
 				
 				hcaen_qlong[i][j] = new TH1F( hname.data(), htitle.data(),
-											 65536, -0.5, 65535.5 );
+											 66536, -0.5, 66535.5 );
 				
 				hcaen_qlong[i][j]->SetDirectory(
 												output_file->GetDirectory( dirname.data() ) );
@@ -283,7 +283,7 @@ void ISSConverter::MakeHists() {
 			else {
 				
 				hcaen_qshort[i][j] = new TH1F( hname.data(), htitle.data(),
-											  32768, -0.5, 32767.5 );
+											  33768, -0.5, 33767.5 );
 				
 				hcaen_qshort[i][j]->SetDirectory(
 												 output_file->GetDirectory( dirname.data() ) );
@@ -306,7 +306,7 @@ void ISSConverter::MakeHists() {
 			else {
 				
 				hcaen_qdiff[i][j] = new TH1F( hname.data(), htitle.data(),
-											 65536, -0.5, 65535.5 );
+											 66536, -0.5, 66535.5 );
 				
 				hcaen_qdiff[i][j]->SetDirectory(
 												output_file->GetDirectory( dirname.data() ) );
@@ -382,7 +382,7 @@ void ISSConverter::MakeHists() {
 			else {
 				
 				hmesy_qlong[i][j] = new TH1F( hname.data(), htitle.data(),
-											 65536, -0.5, 65535.5 );
+											 66536, -0.5, 66535.5 );
 				
 				hmesy_qlong[i][j]->SetDirectory(
 												output_file->GetDirectory( dirname.data() ) );
@@ -405,7 +405,7 @@ void ISSConverter::MakeHists() {
 			else {
 				
 				hmesy_qshort[i][j] = new TH1F( hname.data(), htitle.data(),
-											  32768, -0.5, 32767.5 );
+											  33768, -0.5, 33767.5 );
 				
 				hmesy_qshort[i][j]->SetDirectory(
 												output_file->GetDirectory( dirname.data() ) );
@@ -428,7 +428,7 @@ void ISSConverter::MakeHists() {
 			else {
 				
 				hmesy_qdiff[i][j] = new TH1F( hname.data(), htitle.data(),
-											 65536, -0.5, 65535.5 );
+											 66536, -0.5, 66535.5 );
 				
 				hmesy_qdiff[i][j]->SetDirectory(
 												output_file->GetDirectory( dirname.data() ) );
@@ -1209,10 +1209,17 @@ void ISSConverter::ProcessCAENData(){
 	// Qlong
 	if( my_data_id == 0 ) {
 		
-		// Fill histograms
+		// Overflow flag
+		if( ( my_adc_data & 0xFFFF ) == 0xFFFF )
+			caen_data->SetOverflowLong( true );
+		else
+			caen_data->SetOverflowLong( false );
+
+		// Energy
 		hcaen_qlong[my_mod_id][my_ch_id]->Fill( my_adc_data );
-		if( my_adc_data == 0xFFFF ) caen_data->SetQlong( 0 );
-		else caen_data->SetQlong( my_adc_data );
+		caen_data->SetQlong( my_adc_data );
+
+		// Mark data received
 		flag_caen_data0 = true;
 		
 	}
@@ -1220,10 +1227,22 @@ void ISSConverter::ProcessCAENData(){
 	// Qshort
 	if( my_data_id == 1 ) {
 		
+		// Clipped flag
+		bool myclipped = (my_adc_data >> 15) & 0x1; // 1 bit from 15
+		caen_data->SetClipped( myclipped );
+		
+		// Overflow flag
+		if( ( my_adc_data & 0x7FFF ) == 0x7FFF )
+			caen_data->SetOverflowShort( true );
+		else
+			caen_data->SetOverflowShort( false );
+
+		// Energy
 		my_adc_data = my_adc_data & 0x7FFF; // 15 bits from 0
 		hcaen_qshort[my_mod_id][my_ch_id]->Fill( my_adc_data );
-		if( my_adc_data == 0x7FFF ) caen_data->SetQshort( 0 );
-		else caen_data->SetQshort( my_adc_data );
+		caen_data->SetQshort( my_adc_data );
+		
+		// Mark data received
 		flag_caen_data1 = true;
 		
 	}

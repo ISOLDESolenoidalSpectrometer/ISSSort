@@ -78,7 +78,10 @@ public:
 	inline unsigned short	GetQdiff() { return (int)Qlong-(int)Qshort; };
 	inline float			GetEnergy() { return energy; };
 	inline bool				IsOverThreshold() { return thres; };
-	
+	inline bool				IsOverflowLong() { return overflow_long; };
+	inline bool				IsOverflowShort() { return overflow_short; };
+	inline bool				IsClipped() { return clipped; };
+
 	inline void	SetTimeStamp( unsigned long long t ) { timestamp = t; };
 	inline void	SetFineTime( float t ) { finetime = t; };
 	inline void	SetBaseline( float b ) { baseline = b; };
@@ -91,7 +94,10 @@ public:
 	inline void	SetChannel( unsigned char c ) { ch = c; };
 	inline void SetEnergy( float e ){ energy = e; };
 	inline void SetThreshold( bool t ){ thres = t; };
-	
+	inline void	SetOverflowLong( bool o ) { overflow_long = o; };
+	inline void	SetOverflowShort( bool o ) { overflow_short = o; };
+	inline void	SetClipped( bool c ) { clipped = c; };
+
 	inline void ClearTrace() { trace.clear(); };
 	void ClearData();
 	
@@ -107,10 +113,13 @@ protected:
 	unsigned char				mod;
 	unsigned char				ch;
 	bool						thres;		///< is the energy over threshold?
+	bool						clipped;	///< does firmware park pluse clipped?
+	bool						overflow_long;
+	bool						overflow_short;
 	float						energy;
 
 	
-	ClassDef( ISSVmeData, 1 )
+	ClassDef( ISSVmeData, 2 )
 
 };
 
