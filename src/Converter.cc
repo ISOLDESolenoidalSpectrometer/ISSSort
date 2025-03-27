@@ -1223,7 +1223,7 @@ void ISSConverter::ProcessCAENData(){
 		flag_caen_data0 = true;
 		
 	}
-	
+
 	// Qshort
 	if( my_data_id == 1 ) {
 		
