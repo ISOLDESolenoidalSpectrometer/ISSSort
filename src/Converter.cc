@@ -1208,7 +1208,7 @@ void ISSConverter::ProcessCAENData(){
 	
 	// Qlong
 	if( my_data_id == 0 ) {
-		
+
 		// Overflow flag
 		if( ( my_adc_data & 0xFFFF ) == 0xFFFF )
 			caen_data->SetOverflowLong( true );
@@ -1221,16 +1221,16 @@ void ISSConverter::ProcessCAENData(){
 
 		// Mark data received
 		flag_caen_data0 = true;
-		
+
 	}
 
 	// Qshort
 	if( my_data_id == 1 ) {
-		
+
 		// Clipped flag
 		bool myclipped = (my_adc_data >> 15) & 0x1; // 1 bit from 15
 		caen_data->SetClipped( myclipped );
-		
+
 		// Overflow flag
 		if( ( my_adc_data & 0x7FFF ) == 0x7FFF )
 			caen_data->SetOverflowShort( true );
@@ -1241,10 +1241,10 @@ void ISSConverter::ProcessCAENData(){
 		my_adc_data = my_adc_data & 0x7FFF; // 15 bits from 0
 		hcaen_qshort[my_mod_id][my_ch_id]->Fill( my_adc_data );
 		caen_data->SetQshort( my_adc_data );
-		
+
 		// Mark data received
 		flag_caen_data1 = true;
-		
+
 	}
 	
 	// Extra word items
