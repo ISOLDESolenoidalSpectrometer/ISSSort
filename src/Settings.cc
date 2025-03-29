@@ -174,9 +174,9 @@ void ISSSettings::ReadSettings() {
 			else {
 				
 				std::cerr << "Dodgy recoil settings:";
-				std::cerr << " crate = " << recoil_vme[i][j];
-				std::cerr << " module = " << recoil_mod[i][j];
-				std::cerr << " channel = " << recoil_ch[i][j] << std::endl;
+				std::cerr << " crate = " << (int)recoil_vme[i][j];
+				std::cerr << " module = " << (int)recoil_mod[i][j];
+				std::cerr << " channel = " << (int)recoil_ch[i][j] << std::endl;
 				
 			}
 			
@@ -237,9 +237,9 @@ void ISSSettings::ReadSettings() {
 			else {
 				
 				std::cerr << "Dodgy MWPC settings:";
-				std::cerr << " crate = " << mwpc_vme[i][j];
-				std::cerr << " module = " << mwpc_mod[i][j];
-				std::cerr << " channel = " << mwpc_ch[i][j] << std::endl;
+				std::cerr << " crate = " << (int)mwpc_vme[i][j];
+				std::cerr << " module = " << (int)mwpc_mod[i][j];
+				std::cerr << " channel = " << (int)mwpc_ch[i][j] << std::endl;
 				
 			}
 		}
@@ -279,9 +279,9 @@ void ISSSettings::ReadSettings() {
 		else {
 			
 			std::cerr << "Dodgy ELUM settings:";
-			std::cerr << " crate = " << elum_vme[i];
-			std::cerr << " module = " << elum_mod[i];
-			std::cerr << " channel = " << elum_ch[i] << std::endl;
+			std::cerr << " crate = " << (int)elum_vme[i];
+			std::cerr << " module = " << (int)elum_mod[i];
+			std::cerr << " channel = " << (int)elum_ch[i] << std::endl;
 			
 		}
 		
@@ -319,9 +319,9 @@ void ISSSettings::ReadSettings() {
 		else {
 			
 			std::cerr << "Dodgy ZeroDegree settings:";
-			std::cerr << " crate = " << zd_vme[i];
-			std::cerr << " module = " << zd_mod[i];
-			std::cerr << " channel = " << zd_ch[i] << std::endl;
+			std::cerr << " crate = " << (int)zd_vme[i];
+			std::cerr << " module = " << (int)zd_mod[i];
+			std::cerr << " channel = " << (int)zd_ch[i] << std::endl;
 			
 		}
 		
@@ -370,9 +370,9 @@ void ISSSettings::ReadSettings() {
 		else {
 			
 			std::cerr << "Dodgy ScintArray settings:";
-			std::cerr << " crate = " << scint_vme[i];
-			std::cerr << " module = " << scint_mod[i];
-			std::cerr << " channel = " << scint_ch[i] << std::endl;
+			std::cerr << " crate = " << (int)scint_vme[i];
+			std::cerr << " module = " << (int)scint_mod[i];
+			std::cerr << " channel = " << (int)scint_ch[i] << std::endl;
 			
 		}
 		
@@ -430,9 +430,9 @@ void ISSSettings::ReadSettings() {
 			else {
 				
 				std::cerr << "Dodgy LUME settings:";
-				std::cerr << " crate = " << lume_vme[i][j];
-				std::cerr << " module = " << lume_mod[i][j];
-				std::cerr << " channel = " << lume_ch[i][j] << std::endl;
+				std::cerr << " crate = " << (int)lume_vme[i][j];
+				std::cerr << " module = " << (int)lume_mod[i][j];
+				std::cerr << " channel = " << (int)lume_ch[i][j] << std::endl;
 				
 			}
 			
@@ -443,7 +443,7 @@ void ISSSettings::ReadSettings() {
 	// CD
 	n_cd_ring   = config->GetValue( "NumberOfCDRings", 16 );
 	n_cd_sector = config->GetValue( "NumberOfCDSectors", 8 );
-	n_cd_layer  = config->GetValue( "NumberOfCDLayers", 2 );
+	n_cd_layer  = config->GetValue( "NumberOfCDLayers", 0 );
 	n_cd_side   = 2;
 	cd_eloss_start = config->GetValue( "CDEnergyLossStart", 0 );
 	cd_eloss_stop  = config->GetValue( "CDEnergyLossStop", 0 );
@@ -500,9 +500,15 @@ void ISSSettings::ReadSettings() {
 			
 			for( unsigned int k = 0; k < nstrips; ++k ){
 				
+				unsigned char mm = 2*i;
+				unsigned char cc = k;
+				if( k > GetMaximumNumberOfVmeChannels() ) {
+					mm++;
+					cc -= GetMaximumNumberOfVmeChannels();
+				}
 				cd_vme[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Crate", i, j, sidechar.data() ), (int)1 ); // layer, ring
-				cd_mod[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Module", i, j, sidechar.data() ), (int)(2*i) );
-				cd_ch[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Channel", i, j, sidechar.data() ), (int)j );
+				cd_mod[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Module", i, j, sidechar.data() ), (int)mm );
+				cd_ch[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Channel", i, j, sidechar.data() ), (int)cc );
 				
 				if( cd_vme[i][j][k] < GetNumberOfVmeCrates() &&
 				   cd_mod[i][j][k] < GetMaximumNumberOfVmeModules() &&
@@ -517,9 +523,9 @@ void ISSSettings::ReadSettings() {
 				else {
 					
 					std::cerr << "Dodgy CD settings:";
-					std::cerr << " crate = " << cd_vme[i][j][k];
-					std::cerr << " module = " << cd_mod[i][j][k];
-					std::cerr << " channel = " << cd_ch[i][j][k] << std::endl;
+					std::cerr << " crate = " << (int)cd_vme[i][j][k];
+					std::cerr << " module = " << (int)cd_mod[i][j][k];
+					std::cerr << " channel = " << (int)cd_ch[i][j][k] << std::endl;
 					
 				}
 				
