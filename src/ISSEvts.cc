@@ -1,5 +1,7 @@
 #include "ISSEvts.hh"
 
+ClassImp(ISSSingleLayerDetectorEvt)
+ClassImp(ISSMultiLayerDetectorEvt)
 ClassImp(ISSArrayEvt)
 ClassImp(ISSArrayPEvt)
 ClassImp(ISSRecoilEvt)
@@ -27,7 +29,8 @@ void ISSEvts::ClearEvt() {
 	zd_event.clear();
 	gamma_event.clear();
 	lume_event.clear();
-	
+	cd_event.clear();
+
 	std::vector<ISSArrayEvt>().swap(array_event);
 	std::vector<ISSArrayPEvt>().swap(arrayp_event);
 	std::vector<ISSRecoilEvt>().swap(recoil_event);
@@ -36,7 +39,8 @@ void ISSEvts::ClearEvt() {
 	std::vector<ISSZeroDegreeEvt>().swap(zd_event);
 	std::vector<ISSGammaRayEvt>().swap(gamma_event);
 	std::vector<ISSLumeEvt>().swap(lume_event);
-	
+	std::vector<ISSCDEvt>().swap(cd_event);
+
 	ebis = -999;
 	t1 = -999;
 	
@@ -141,6 +145,7 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSGammaRayEvt> event ) {
 	ISSGammaRayEvt fill_evt;
 	fill_evt.SetEvent( event->GetEnergy(),
 					  event->GetID(),
+					  event->GetSector(),
 					  event->GetType(),
 					  event->GetTime() );
 	
@@ -152,13 +157,80 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSLumeEvt> event ) {
 	
 	// Make a copy of the event and push it back
 	ISSLumeEvt fill_evt;
-	fill_evt.SetEvent(	event->GetBE(),
+	fill_evt.SetEvent( event->GetBE(),
 					  event->GetID(),
 					  event->GetTime(),
 					  event->GetNE(),
 					  event->GetFE() );
 	
 	lume_event.push_back( fill_evt );
+	
+}
+
+void ISSEvts::AddEvt( std::shared_ptr<ISSCDEvt> event ) {
+
+	// Make a copy of the event and push it back
+	ISSCDEvt fill_evt;
+	fill_evt.SetEvent( event->GetEnergies(),	// Energies
+					  event->GetIDs(),			// IDs
+					  event->GetSector(),		// Sector
+					  event->GetRing(),			// Ring
+					  event->GetdETime(),		// dE time
+					  event->GetETime() );		// E time
+		
+
+	cd_event.push_back( fill_evt );
+
+}
+
+// ----------------------- //
+// Generic detector events //
+// ----------------------- //
+ISSSingleLayerDetectorEvt::ISSSingleLayerDetectorEvt(){}
+ISSSingleLayerDetectorEvt::~ISSSingleLayerDetectorEvt(){}
+
+void ISSSingleLayerDetectorEvt::SetEvent( float myenergy, unsigned char myid,
+										 unsigned char mysec, double mytime ) {
+	
+	energy = myenergy;
+	id = myid;
+	sec = mysec;
+	time = mytime;
+	
+	return;
+	
+}
+
+ISSMultiLayerDetectorEvt::ISSMultiLayerDetectorEvt(){}
+ISSMultiLayerDetectorEvt::~ISSMultiLayerDetectorEvt(){}
+
+void ISSMultiLayerDetectorEvt::SetEvent( std::vector<float> myenergy,
+										std::vector<unsigned char> myid, unsigned char mysec,
+										double mydetime, double myetime ) {
+	
+	if( myenergy.size() != myid.size() ) {
+		
+		std::cerr << __PRETTY_FUNCTION__;
+		std::cerr << " error: The vectors for energy and id must have the same size!";
+		std::cerr << std::endl;
+		return;
+		
+	}
+
+	energy = myenergy;
+	id = myid;
+	sec = mysec;
+	detime = mydetime;
+	etime = myetime;
+	
+	return;
+	
+}
+
+void ISSMultiLayerDetectorEvt::ClearEvent(){
+	
+	std::vector<float>().swap(energy);
+	std::vector<unsigned char>().swap(id);
 	
 }
 
@@ -460,28 +532,6 @@ ISSArrayPEvt::~ISSArrayPEvt(){}
 ISSRecoilEvt::ISSRecoilEvt(){}
 ISSRecoilEvt::~ISSRecoilEvt(){}
 
-void ISSRecoilEvt::SetEvent( std::vector<float> myenergy,
-							std::vector<unsigned char> myid, unsigned char mysec,
-							double mydetime, double myetime ) {
-	
-	energy = myenergy;
-	id = myid;
-	sec = mysec;
-	detime = mydetime;
-	etime = myetime;
-	
-	return;
-	
-}
-
-void ISSRecoilEvt::ClearEvent(){
-	
-	energy.clear();
-	id.clear();
-	std::vector<float>().swap(energy);
-	std::vector<unsigned char>().swap(id);
-	
-}
 
 // ----------- //
 // MWPC events //
@@ -507,47 +557,12 @@ void ISSMwpcEvt::SetEvent( int mytacdiff, unsigned char myaxis,
 ISSElumEvt::ISSElumEvt(){}
 ISSElumEvt::~ISSElumEvt(){}
 
-void ISSElumEvt::SetEvent( float myenergy, unsigned char myid,
-						  unsigned char mysec, double mytime ) {
-	
-	energy = myenergy;
-	id = myid;
-	sec = mysec;
-	time = mytime;
-	
-	return;
-	
-}
-
 
 // ----------------- //
 // ZeroDegree events //
 // ----------------- //
 ISSZeroDegreeEvt::ISSZeroDegreeEvt(){}
 ISSZeroDegreeEvt::~ISSZeroDegreeEvt(){}
-
-void ISSZeroDegreeEvt::SetEvent( std::vector<float> myenergy,
-								std::vector<unsigned char> myid, unsigned char mysec,
-								double mydetime, double myetime ) {
-	
-	energy = myenergy;
-	id = myid;
-	sec = mysec;
-	detime = mydetime;
-	etime = myetime;
-	
-	return;
-	
-}
-
-void ISSZeroDegreeEvt::ClearEvent(){
-	
-	energy.clear();
-	id.clear();
-	std::vector<float>().swap(energy);
-	std::vector<unsigned char>().swap(id);
-	
-}
 
 
 // ---------------- //
@@ -557,10 +572,12 @@ ISSGammaRayEvt::ISSGammaRayEvt(){}
 ISSGammaRayEvt::~ISSGammaRayEvt(){}
 
 void ISSGammaRayEvt::SetEvent( float myenergy, unsigned char myid,
-							  unsigned char mytype, double mytime ) {
+							  unsigned char mysec, unsigned char mytype,
+							  double mytime ) {
 	
 	energy = myenergy;
 	id = myid;
+	sec = mysec;
 	type = mytype;
 	time = mytime;
 	
@@ -587,6 +604,39 @@ void ISSLumeEvt::SetEvent( float myenergy, unsigned char myid,
 	
 	return;
 	
+}
+
+// ---------------- //
+// CD events        //
+// ---------------- //
+
+ISSCDEvt::ISSCDEvt(){}
+ISSCDEvt::~ISSCDEvt(){}
+
+void ISSCDEvt::SetEvent( std::vector<float> myenergy,
+			 std::vector<unsigned char> myid,
+			 unsigned char mysec, unsigned char myring,
+			 double mydetime, double myetime ) {
+
+
+	if( myenergy.size() != myid.size() ) {
+		
+		std::cerr << __PRETTY_FUNCTION__;
+		std::cerr << " error: The vectors for energy and id must have the same size!";
+		std::cerr << std::endl;
+		return;
+		
+	}
+
+	energy = myenergy;
+	id = myid;
+	sec = mysec;
+	ring = myring;
+	detime = mydetime;
+	etime = myetime;
+
+	return;
+
 }
 
 // Get minimum time from any old event
@@ -661,6 +711,15 @@ double ISSEvts::GetTime(){
 	for( unsigned int i = 0; i < this->GetLumeMultiplicity(); ++i ){
 		
 		double cur_time = this->GetLumeEvt(i)->GetTime();
+		if( cur_time < min_time || min_time < 0 )
+			min_time = cur_time;
+		
+	}
+	
+	// Check minimum time from all CD events
+	for( unsigned int i = 0; i < this->GetCDMultiplicity(); ++i ){
+		
+		double cur_time = this->GetCDEvt(i)->GetTime();
 		if( cur_time < min_time || min_time < 0 )
 			min_time = cur_time;
 		

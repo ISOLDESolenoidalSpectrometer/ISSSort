@@ -40,8 +40,8 @@ public:
 	inline float 			GetEnergy(){ return pen; };
 	inline float 			GetPEnergy(){ return pen; };
 	inline float 			GetNEnergy(){ return nen; };
-	inline unsigned char 	GetPID(){ return pid; };
-	inline unsigned char 	GetNID(){ return nid; };
+	inline unsigned char	GetPID(){ return pid; };
+	inline unsigned char	GetNID(){ return nid; };
 	inline double			GetTime(){ return ptime; };
 	inline double			GetTimeDouble(){ return ptime; };
 	inline double			GetPTime(){ return ptime; };
@@ -68,7 +68,7 @@ public:
 	static int	FindAsicN( unsigned short detNo );
 	
 	
-private:
+protected:
 	
 	// variables for particle event
 	bool			phit;	///< hit bit value for p-side event
@@ -95,20 +95,54 @@ public:
 	ISSArrayPEvt();
 	~ISSArrayPEvt();
 	
-private:
-	
+protected:
 	
 	ClassDef( ISSArrayPEvt, 1 )
 	
 };
 
-class ISSRecoilEvt : public TObject {
+class ISSSingleLayerDetectorEvt : public TObject {
 	
 public:
 	
 	// setup functions
-	ISSRecoilEvt();
-	~ISSRecoilEvt();
+	ISSSingleLayerDetectorEvt();
+	~ISSSingleLayerDetectorEvt();
+	
+	void SetEvent( float myenergy, unsigned char myid,
+				  unsigned char mysec, double mytime );
+
+	inline void SetEnergy( float e ){ energy = e; };
+	inline void SetSector( unsigned char s ){ sec = s; };
+	inline void SetID( unsigned char i ){ id = i; };
+	inline void SetTime( double t ){ time = t; };
+
+	inline float			GetEnergy(){ return energy; };
+	inline unsigned char	GetID(){ return id; };
+	inline unsigned char	GetSector(){ return sec; };
+	inline double			GetTime(){ return time; };
+	
+	
+protected:
+	
+	float			energy;	///< Energy in the  detector
+	unsigned char	id;		///< ID list, example: many CeBr detectors of the ScintArray all have different IDs
+	unsigned char	sec;	///< sector or quandrant, example: ELUM detector, i.e. 0-3 when split into 4
+	double			time;	///< time stamp of the  event
+	
+	ClassDef( ISSSingleLayerDetectorEvt, 1 );
+	
+};
+
+
+
+class ISSMultiLayerDetectorEvt : public TObject {
+
+public:
+	
+	// setup functions
+	ISSMultiLayerDetectorEvt();
+	~ISSMultiLayerDetectorEvt();
 	
 	void SetEvent( std::vector<float> myenergy,
 				  std::vector<unsigned char> myid, unsigned char mysec,
@@ -116,7 +150,7 @@ public:
 	
 	void ClearEvent();
 	
-	inline void AddRecoil( float myenergy, unsigned char myid ){
+	inline void AddFragment( float myenergy, unsigned char myid ){
 		energy.push_back( myenergy );
 		id.push_back( myid );
 	};
@@ -128,9 +162,9 @@ public:
 	
 	inline unsigned char	GetDepth(){ return energy.size(); };
 	inline unsigned char	GetSector(){ return sec; };
-	inline double		GetTime(){ return detime; };
-	inline double		GetdETime(){ return detime; };
-	inline double		GetETime(){ return etime; };
+	inline double			GetTime(){ return detime; };
+	inline double			GetdETime(){ return detime; };
+	inline double			GetETime(){ return etime; };
 	
 	inline std::vector<float>			GetEnergies(){ return energy; };
 	inline std::vector<unsigned char>	GetIDs(){ return id; };
@@ -171,17 +205,30 @@ public:
 	};
 	
 	
-	
-private:
+protected:
 	
 	// variables for recoil events
 	std::vector<float>			energy;	///< differential energy list, i.e. Silicon dE-E length = 2
 	std::vector<unsigned char>	id;		///< differential id list, i.e. dE = 0, E = 1, for example
 	unsigned char				sec;	///< sector of the recoil detector, i.e 0-3 for QQQ1 quadrants
-	double					detime;	///< time stamp of dE event
-	double					etime;	///< time stamp of E event
+	double						detime;	///< time stamp of dE event
+	double						etime;	///< time stamp of E event
 	
-	ClassDef( ISSRecoilEvt, 4 )
+	ClassDef( ISSMultiLayerDetectorEvt, 1 )
+	
+};
+
+class ISSRecoilEvt : public ISSMultiLayerDetectorEvt {
+	
+public:
+	
+	// setup functions
+	ISSRecoilEvt();
+	~ISSRecoilEvt();
+	
+protected:
+	
+	ClassDef( ISSRecoilEvt, 5 )
 	
 };
 
@@ -202,20 +249,20 @@ public:
 	
 	inline int				GetTacDiff(){ return tacdiff; };
 	inline unsigned char	GetAxis(){ return axis; };
-	inline double		GetTime(){ return time; };
+	inline double			GetTime(){ return time; };
 	
 	
-private:
+protected:
 	
 	int				tacdiff;	///< TAC differences
 	unsigned char	axis;		///< axis ID, usually just x=0 and y=1
-	double		time;		///< time stamp of the MWPC event
+	double			time;		///< time stamp of the MWPC event
 	
 	ClassDef( ISSMwpcEvt, 2 );
 	
 };
 
-class ISSElumEvt : public TObject {
+class ISSElumEvt : public ISSSingleLayerDetectorEvt {
 	
 public:
 	
@@ -223,32 +270,13 @@ public:
 	ISSElumEvt();
 	~ISSElumEvt();
 	
-	void SetEvent( float myenergy, unsigned char myid,
-				  unsigned char mysec, double mytime );
+protected:
 	
-	inline void SetEnergy( float e ){ energy = e; };
-	inline void SetSector( unsigned char s ){ sec = s; };
-	inline void SetID( unsigned char i ){ id = i; };
-	inline void SetTime( double t ){ time = t; };
-	
-	inline float			GetEnergy(){ return energy; };
-	inline unsigned char	GetID(){ return id; };
-	inline unsigned char	GetSector(){ return sec; };
-	inline double		GetTime(){ return time; };
-	
-	
-private:
-	
-	float			energy;	///< Energy in the ELUM detector
-	unsigned char	id;		///< ID list, well, we only have one ELUM detector so it is always == 0
-	unsigned char	sec;	///< sector or quandrant of the ELUM detector, i.e. 0-3 when split into 4
-	double		time;	///< time stamp of the ELUM event
-	
-	ClassDef( ISSElumEvt, 3 );
+	ClassDef( ISSElumEvt, 4 );
 	
 };
 
-class ISSZeroDegreeEvt : public TObject {
+class ISSZeroDegreeEvt : public ISSMultiLayerDetectorEvt {
 	
 public:
 	
@@ -256,77 +284,19 @@ public:
 	ISSZeroDegreeEvt();
 	~ISSZeroDegreeEvt();
 	
-	void SetEvent( std::vector<float> myenergy,
-				  std::vector<unsigned char> myid, unsigned char mysec,
-				  double mydetime, double myetime );
-	
-	void ClearEvent();
-	
-	inline void AddZeroDegree( float myenergy, unsigned char myid ){
-		energy.push_back( myenergy );
-		id.push_back( myid );
-	};
-	
-	inline void SetSector( unsigned char s ){ sec = s; };
-	inline void SetdETime( double t ){ detime = t; };
-	inline void SetETime( double t ){ etime = t; };
-	
-	inline unsigned char	GetDepth(){ return energy.size(); };
-	inline unsigned char	GetSector(){ return sec; };
-	inline double		GetTime(){ return detime; };
-	inline double		GetdETime(){ return detime; };
-	inline double		GetETime(){ return etime; };
-	
-	inline std::vector<float>			GetEnergies(){ return energy; };
-	inline std::vector<unsigned char>	GetIDs(){ return id; };
-	
-	inline float GetEnergy( unsigned char i ){
-		if( i < energy.size() ) return energy.at(i);
-		else return 0;
-	};
-	
-	inline float GetEnergyLoss( unsigned char start = 0, unsigned char stop = 0 ){
-		float total = 0;
-		for( unsigned int j = 0; j < energy.size(); ++j )
-			if( GetID(j) >= start && GetID(j) <= stop )
-				total += energy.at(j);
-		return total;
-	};
-	
-	inline float GetEnergyRest( unsigned char start = 1, unsigned char stop = 1 ){
-		float total = 0;
-		for( unsigned int j = 0; j < energy.size(); ++j )
-			if( GetID(j) >= start && GetID(j) <= stop )
-				total += energy.at(j);
-		return total;
-	};
-	
-	inline float GetEnergyTotal( unsigned char start = 0, unsigned char stop = 1 ){
-		float total = 0;
-		for( unsigned int j = 0; j < energy.size(); ++j )
-			if( GetID(j) >= start && GetID(j) <= stop )
-				total += energy.at(j);
-		return total;
-	};
-	
-	inline int GetID( unsigned char i ){
-		if( i < id.size() ) return id.at(i);
-		else return -1;
-	};
-	
-private:
+protected:
 	
 	std::vector<float>			energy;	///< differential energy list, i.e. Silicon dE-E length = 2
 	std::vector<unsigned char>	id;		///< differential id list, i.e. dE = 0, E = 1, for example
 	unsigned char				sec;	///< sector or quandrant of the ZeroDegree detector, i.e. 0 because we just have one
-	double					detime;	///< time stamp of ZeroDegree event
-	double					etime;	///< time stamp of ZeroDegree event
+	double						detime;	///< time stamp of ZeroDegree event
+	double						etime;	///< time stamp of ZeroDegree event
 	
-	ClassDef( ISSZeroDegreeEvt, 4 )
+	ClassDef( ISSZeroDegreeEvt, 5 )
 	
 };
 
-class ISSGammaRayEvt : public TObject {
+class ISSGammaRayEvt : public ISSSingleLayerDetectorEvt {
 	
 public:
 	
@@ -335,27 +305,19 @@ public:
 	~ISSGammaRayEvt();
 	
 	void SetEvent( float myenergy, unsigned char myid,
-				  unsigned char mytype, double mytime );
+				  unsigned char mysec, unsigned char mytype,
+				  double mytime );
 	
-	inline void SetEnergy( float e ){ energy = e; };
-	inline void SetID( unsigned char i ){ id = i; };
-	inline void SetType( unsigned char t ){ type = t; };
-	inline void SetTime( double t ){ time = t; };
-	
-	inline float			GetEnergy(){ return energy; };
-	inline unsigned char	GetID(){ return id; };
+	inline void				SetType( unsigned char t ){ type = t; };
 	inline unsigned char	GetType(){ return type; };
-	inline double		GetTime(){ return time; };
 	
 	
-private:
+protected:
 	
-	float			energy;	///< Energy in the detector
-	unsigned char	id;		///< Detector ID
+	// Extra variables for gamma-ray events
 	unsigned char	type;	///< Detector type: 0 - ScintArray, 1 - ... HPGe?
-	double		time;	///< time stamp of the event
 	
-	ClassDef( ISSGammaRayEvt, 2 );
+	ClassDef( ISSGammaRayEvt, 3 );
 	
 };
 
@@ -388,8 +350,8 @@ public:
 	inline double			GetTime(){ return time; };
 	inline float			GetX(){ return x; };
 	
-private:
-	unsigned char id;	///< Detector ID
+protected:
+	unsigned char id;		///< Detector ID
 	
 	float be;			///< Energy in the detector (from the back-plane)
 	float ne;			///< near-side energy
@@ -397,14 +359,39 @@ private:
 	
 	
 	float x;			///< position along the detector
-	double time;		///< time stamp of the event
+	double time;			///< time stamp of the event
 	
 	ClassDef( ISSLumeEvt, 2 );
 	
 };
 
+class ISSCDEvt : public ISSMultiLayerDetectorEvt {
+
+public:
+
+	ISSCDEvt();
+	~ISSCDEvt();
+
+	void SetEvent( std::vector<float> myenergy,
+		       std::vector<unsigned char> myid,
+		       unsigned char mysec, unsigned char myring,
+		       double mydetime, double myetime );
+
+	inline void 			SetRing( unsigned char s ){ ring = s; };
+	inline unsigned char	GetRing(){ return ring; };
+
+protected:
+
+	// extra variables for CD events
+	unsigned char				ring;	///< ring of the CD detector
+
+	ClassDef( ISSCDEvt, 3 );
+
+};
+
+
+
 class ISSEvts : public TObject {
-	//class ISSEvts {
 	
 public:
 	
@@ -420,7 +407,8 @@ public:
 	void AddEvt( std::shared_ptr<ISSZeroDegreeEvt> event );
 	void AddEvt( std::shared_ptr<ISSGammaRayEvt> event );
 	void AddEvt( std::shared_ptr<ISSLumeEvt> event );
-	
+	void AddEvt( std::shared_ptr<ISSCDEvt> event );
+
 	inline unsigned int GetArrayMultiplicity(){ return array_event.size(); };
 	inline unsigned int GetArrayPMultiplicity(){ return arrayp_event.size(); };
 	inline unsigned int GetRecoilMultiplicity(){ return recoil_event.size(); };
@@ -429,7 +417,8 @@ public:
 	inline unsigned int GetZeroDegreeMultiplicity(){ return zd_event.size(); };
 	inline unsigned int GetGammaRayMultiplicity(){ return gamma_event.size(); };
 	inline unsigned int GetLumeMultiplicity(){ return lume_event.size(); };
-	
+	inline unsigned int GetCDMultiplicity(){ return cd_event.size(); };
+
 	inline std::shared_ptr<ISSArrayEvt> GetArrayEvt( unsigned int i ){
 		if( i < array_event.size() ) return std::make_shared<ISSArrayEvt>( array_event.at(i) );
 		else return nullptr;
@@ -462,7 +451,11 @@ public:
 		if( i < lume_event.size() ) return std::make_shared<ISSLumeEvt>( lume_event.at(i) );
 		else return nullptr;
 	};
-	
+	inline std::shared_ptr<ISSCDEvt> GetCDEvt( unsigned int i ){
+		if( i < cd_event.size() ) return std::make_shared<ISSCDEvt>( cd_event.at(i) );
+		else return nullptr;
+	};
+
 	void ClearEvt();
 	
 	// ISOLDE timestamping
@@ -479,7 +472,7 @@ public:
 	double GetTime();
 	
 	
-private:
+protected:
 	
 	// variables for timestamping
 	double ebis;		///< absolute EBIS pulse time
@@ -495,8 +488,9 @@ private:
 	std::vector<ISSZeroDegreeEvt> zd_event;
 	std::vector<ISSGammaRayEvt> gamma_event;
 	std::vector<ISSLumeEvt> lume_event;
-	
-	ClassDef( ISSEvts, 8 )
+	std::vector<ISSCDEvt> cd_event;
+
+	ClassDef( ISSEvts, 9 )
 	
 };
 

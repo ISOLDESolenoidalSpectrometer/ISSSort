@@ -12,6 +12,8 @@
 #pragma link C++ class ISSConverter+;
 #pragma link C++ class ISSEventBuilder+;
 #pragma link C++ class ISSEvts+;
+#pragma link C++ class ISSSingleLayerDetectorEvt+;
+#pragma link C++ class ISSMultiLayerDetectorEvt+;
 #pragma link C++ class ISSArrayEvt+;
 #pragma link C++ class ISSArrayPEvt+;
 #pragma link C++ class ISSRecoilEvt+;
@@ -20,6 +22,7 @@
 #pragma link C++ class ISSZeroDegreeEvt+;
 #pragma link C++ class ISSGammaRayEvt+;
 #pragma link C++ class ISSLumeEvt+;
+#pragma link C++ class ISSCDEvt+;
 #pragma link C++ class ISSDataPackets+;
 #pragma link C++ class ISSAsicData+;
 #pragma link C++ class ISSVmeData+;
