@@ -15,15 +15,16 @@
 
 
 ## Reaction definition
-#BeamA: 30		# mass number
-#BeamZ: 12		# atomic number
-#BeamE: 8500.	# the laboratory beam energy in keV/u (note, not the usual MeV/u)
-#TargetA: 2		#
-#TargetZ: 1		#  
-#EjectileA: 1	# in (d,p) the ejectile is the proton
-#EjectileZ: 1	# we keep this language even though we have inverse kinematics
-#RecoilA: 31	# the recoil is the heavy ion
-#RecoilZ: 12	# not the target-like product as in normal kinematics
+#BeamA: 30				# mass number
+#BeamZ: 12				# atomic number
+#BeamE: 8500.			# the laboratory beam energy in keV/u (note, not the usual MeV/u)
+#TargetA: 2				#
+#TargetZ: 1				#
+#EjectileA: 1			# in (d,p) the ejectile is the proton
+#EjectileZ: 1			# we keep this language even though we have inverse kinematics
+#RecoilA: 31			# the recoil is the heavy ion
+#RecoilZ: 12			# not the target-like product as in normal kinematics
+#RecoilFission: false	# set to true if you are studying fission of the recoiling nucleus
 
 
 ## Magnetic field settings
@@ -90,4 +91,4 @@
 
 ## Histogramming options
 #Hists.ArrayMode: 0			# 0 - demand p/n coincidences, 1 - p-side only
-#Hists.OutputTree: 0			# 0 - off, 1 - reaction data output to tree
+#Hists.OutputTree: 0		# 0 - off, 1 - reaction data output to tree

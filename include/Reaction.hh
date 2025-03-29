@@ -197,6 +197,7 @@ public:
 	double	SimulateEmission( double en, double theta_lab, double phi_lab, int detector = 0 );///< Called during the simulation of particle emission
 
 	// Getters
+	inline bool   IsFission(){ return fission; }; ///< returns true/false if we are studying fission of the recoiling nucleus
 	inline double GetField(){ return Mfield; };///< Getter for the magnetic field strength
 	inline double GetField_corr(){ return Mfield*T_to_mm; };///< Calculates magnetic field strength in MeV/ e*mm*c
 	inline double GetArrayDistance(){ return z0; };///< Getter for the distance between the array and first silicon wafer
@@ -383,6 +384,7 @@ private:
 	
 	// Initial properties from file
 	double Eb;		///< Laboratory beam energy in keV/u
+	bool fission;	///< True if we are studying the fission of the recoiling nucleus
 	
 	// Stuff for the Ex calculation
 	std::unique_ptr<ROOT::Math::RootFinder> rf;		///< Pointer to a root finder object

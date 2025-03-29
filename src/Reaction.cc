@@ -462,6 +462,9 @@ void ISSReaction::ReadReaction() {
 	}
 	Recoil.SetBindingEnergy( ame_be.at( Recoil.GetIsotope() ) );
 	
+	// Fission?
+	fission = config->GetValue( "RecoilFission", false );
+
 	// Get recoil energy cut
 	nrecoilcuts = set->GetNumberOfRecoilSectors();
 	recoil_cut.resize( nrecoilcuts );
