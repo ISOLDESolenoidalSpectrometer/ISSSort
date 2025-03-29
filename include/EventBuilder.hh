@@ -288,9 +288,9 @@ private:
 	std::vector<char>			said_list;	///< list of ScintArray detectors ids for GammaFinder
 
 	// LUME variables. Each LUME is a position-sensitive silicon detector and has 3 readout channels: the total energy output at the back face (denoted here as be), and two energy readouts at both edges of the front face of a detector (ne and fe)
-	std::vector<float>		lbe_list;	///< list of LUME back energies (signal from the back face)
-	std::vector<float>		lne_list;	///< list of LUME ne signals
-	std::vector<float>		lfe_list;	///< list of LUME fe signals
+	std::vector<float>		lbe_list;		///< list of LUME back energies (signal from the back face)
+	std::vector<float>		lne_list;		///< list of LUME ne signals
+	std::vector<float>		lfe_list;		///< list of LUME fe signals
 	std::vector<double>		lbe_td_list;	///< list of LUME time differences
 	std::vector<double>		lne_td_list;	///< list of LUME time differences
 	std::vector<double>		lfe_td_list;	///< list of LUME time differences
@@ -299,11 +299,14 @@ private:
 	std::vector<char>		lfe_id_list;	///< list of LUME detectors
 
 	// CD variables
-	std::vector<float>		cden_list;	///< list of CD energies for CdFinder
-	std::vector<double>		cdtd_list;	///< list of CD time differences for CdFinder
-	std::vector<char>		cdid_list;	///< list of CD IDs/layers for CdFinder
-	std::vector<char>		cdsec_list;	///< list of CD sectors for CdFinder
-	std::vector<char>		cdring_list;	///< list of CD sectors for CdFinder
+	std::vector<float>		cdren_list;	///< list of CD ring energies for CdFinder
+	std::vector<double>		cdrtd_list;	///< list of CD ring time differences  for CdFinder
+	std::vector<char>		cdrid_list;	///< list of CD layer ids for CdFinder
+	std::vector<char>		cdrxx_list;	///< list of CD rings for CdFinder
+	std::vector<float>		cdsen_list;	///< list of CD sector energies for CdFinder
+	std::vector<double>		cdstd_list;	///< list of CD sector time differences for CdFinder
+	std::vector<char>		cdsid_list;	///< list of CD layer ids for CdFinder
+	std::vector<char>		cdsxx_list;	///< list of CD sectors for CdFinder
 
 	// Counters
 	unsigned int		hit_ctr;		///< Counts the number of hits that make up an event within a given file
@@ -315,7 +318,7 @@ private:
 	unsigned int		zd_ctr;			///< Counts the number of zero-degree detector events within a given file
 	unsigned int		gamma_ctr;		///< Counts the number of Gamma-Ray events within a given file
 	unsigned int		lume_ctr;		///< Counts the number of LUME events within a given file
-	unsigned int		cd_ctr;		///< Counts the number of CD events within a given file
+	unsigned int		cd_ctr;			///< Counts the number of CD events within a given file
 	unsigned long		n_asic_data;	///< Counter for the number of asic data packets in a file
 	unsigned long		n_caen_data;	///< Counter for number of caen data packets in a file
 	unsigned long		n_mesy_data;	///< Counter for number of mesytec data packets in a file
@@ -401,6 +404,10 @@ private:
 	std::vector<TH2F*> lume_E_vs_x;	///< Energy vs hit position for LUME
 
 	// CD histograms
+	std::vector<TH2F*> cd_rs_mult;	///< CD ring-strip multiplicity for each layer
+	TH2F* cd_EdE;					///< Histogram for the CD E-dE that are real (calibrated)
+	TH2F* cd_dEsum;					///< Histogram for the CD E+dE vs E (calibrated)
+
 };
 
 #endif

@@ -342,61 +342,7 @@ void ISSEventBuilder::Initialise(){
 	
 	hit_ctr = 0;
 	
-	// Clear all vectors with the standard method
-	pen_list.clear();
-	nen_list.clear();
-	ptd_list.clear(); //uncorrected time
-	ntd_list.clear(); //uncorrected time
-	pwalk_list.clear(); //corrected time
-	nwalk_list.clear(); //corrected time
-	pid_list.clear();
-	nid_list.clear();
-	pmod_list.clear();
-	nmod_list.clear();
-	prow_list.clear();
-	nrow_list.clear();
-	phit_list.clear();
-	nhit_list.clear();
-	
-	ren_list.clear();
-	rtd_list.clear();
-	rid_list.clear();
-	rsec_list.clear();
-	
-	mwpctac_list.clear();
-	mwpctd_list.clear();
-	mwpcaxis_list.clear();
-	mwpcid_list.clear();
-	
-	een_list.clear();
-	etd_list.clear();
-	esec_list.clear();
-	
-	zen_list.clear();
-	ztd_list.clear();
-	zid_list.clear();
-	
-	saen_list.clear();
-	satd_list.clear();
-	said_list.clear();
-	
-	lbe_list.clear();
-	lne_list.clear();
-	lfe_list.clear();
-	lbe_td_list.clear();
-	lne_td_list.clear();
-	lfe_td_list.clear();
-	lbe_id_list.clear();
-	lne_id_list.clear();
-	lfe_id_list.clear();
-	
-	cden_list.clear();
-	cdtd_list.clear();
-	cdid_list.clear();
-	cdsec_list.clear();
-	cdring_list.clear();
-	
-	// Now swap all these vectors with empty vectors to ensure they are fully cleared
+	// Swap all vectors with empty vectors
 	std::vector<float>().swap(pen_list);
 	std::vector<float>().swap(nen_list);
 	std::vector<double>().swap(ptd_list);
@@ -444,12 +390,15 @@ void ISSEventBuilder::Initialise(){
 	std::vector<char>().swap(lne_id_list);
 	std::vector<char>().swap(lfe_id_list);
 	
-	std::vector<float>().swap(cden_list);
-	std::vector<double>().swap(cdtd_list);
-	std::vector<char>().swap(cdid_list);
-	std::vector<char>().swap(cdsec_list);
-	std::vector<char>().swap(cdring_list);
-	
+	std::vector<float>().swap(cdren_list);
+	std::vector<float>().swap(cdsen_list);
+	std::vector<double>().swap(cdrtd_list);
+	std::vector<double>().swap(cdstd_list);
+	std::vector<char>().swap(cdrid_list);
+	std::vector<char>().swap(cdsid_list);
+	std::vector<char>().swap(cdrxx_list);
+	std::vector<char>().swap(cdsxx_list);
+
 	write_evts->ClearEvt();
 	
 	return;
@@ -775,15 +724,29 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// Is it a CD event?
 			if( set->IsCD( myvme, mymod, mych ) && mythres ) {
 				
-				mysector = set->GetCDSector( myvme, mymod, mych );
 				mylayer = set->GetCDLayer( myvme, mymod, mych );
 				myring = set->GetCDRing( myvme, mymod, mych );
+				mysector = set->GetCDSector( myvme, mymod, mych );
+
+				// Ring side
+				if( myring >= 0 ) {
+					
+					cdren_list.push_back( myenergy );
+					cdrtd_list.push_back( mytime );
+					cdrid_list.push_back( mylayer );
+					cdrxx_list.push_back( myring );
+					
+				}
 				
-				cden_list.push_back( myenergy );
-				cdtd_list.push_back( mytime );
-				cdid_list.push_back( mylayer );
-				cdsec_list.push_back( mysector );	// -1 is returned if that is data from a ring
-				cdring_list.push_back( myring );	// -1 from 'sector' data
+				// Sector side
+				if( mysector >= 0 ) {
+					
+					cdsen_list.push_back( myenergy );
+					cdstd_list.push_back( mytime );
+					cdsid_list.push_back( mylayer );
+					cdsxx_list.push_back( mysector );
+
+				}
 				
 				hit_ctr++; // increase counter for bits of data included in this event
 				
@@ -1104,8 +1067,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				ElumFinder();		// add an ElumEvt for each S1 event
 				ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
 				GammaRayFinder();	// add a GammaRay event for ScintArray/HPGe events
-				LumeFinder();           // add a LumeEvt for each LUME
-				CdFinder();		// add a CDEvt for CD
+				LumeFinder();		// add a LumeEvt for each LUME
+				CdFinder();			// add a CDEvt for CD
 				
 				// ------------------------------------
 				// Add timing and fill the ISSEvts tree
@@ -2343,7 +2306,7 @@ void ISSEventBuilder::RecoilFinder() {
 			recoil_evt->ClearEvent();
 			recoil_evt->SetdETime( rtd_list[i] );
 			recoil_evt->SetSector( rsec_list[i] );
-			recoil_evt->AddRecoil( ren_list[i], rid_list[i] );
+			recoil_evt->AddFragment( ren_list[i], rid_list[i] );
 			
 			index.push_back(i);
 			layers.push_back(rid_list[i]);
@@ -2375,7 +2338,7 @@ void ISSEventBuilder::RecoilFinder() {
 						
 						index.push_back(j);
 						layers.push_back(rid_list[j]);
-						recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
+						recoil_evt->AddFragment( ren_list[j], rid_list[j] );
 						
 						if( rid_list[j] == (int)set->GetRecoilEnergyRestStart() )
 							recoil_evt->SetETime( rtd_list[j] );
@@ -2529,7 +2492,7 @@ void ISSEventBuilder::ZeroDegreeFinder() {
 			zd_evt->ClearEvent();
 			zd_evt->SetdETime( ztd_list[i] );
 			zd_evt->SetSector( 0 ); // always 0 ZeroDegree
-			zd_evt->AddZeroDegree( zen_list[i], 0 );
+			zd_evt->AddFragment( zen_list[i], 0 );
 			
 			// Look for matching dE events
 			for( unsigned int j = 0; j < zen_list.size(); ++j ) {
@@ -2545,7 +2508,7 @@ void ISSEventBuilder::ZeroDegreeFinder() {
 				   TMath::Abs( ztd_list[i] - ztd_list[j] ) < set->GetZeroDegreeHitWindow() ){
 					
 					index.push_back(j);
-					zd_evt->AddZeroDegree( zen_list[j], zid_list[j] );
+					zd_evt->AddFragment( zen_list[j], zid_list[j] );
 					if( zid_list[j] == 1 ) zd_evt->SetETime( ztd_list[i] );
 					
 					// Histogram the ZeroDegree
@@ -2603,7 +2566,7 @@ void ISSEventBuilder::GammaRayFinder() {
 		
 		// Set the GammaRay event (nice and easy, ScintArray type = 0)
 		gamma_evt->SetEvent( saen_list[i], said_list[i],
-							0, satd_list[i] );
+							0, 0, satd_list[i] );
 		
 		// Write event to tree
 		write_evts->AddEvt( gamma_evt );
@@ -2660,8 +2623,8 @@ void ISSEventBuilder::LumeFinder() {
 			}
 		}
 
-    ne_energy = has_ln ? ne_energy : 0;
-		fe_energy =  has_lf ? fe_energy : 0;
+		ne_energy = has_ln ? ne_energy : 0;
+		fe_energy = has_lf ? fe_energy : 0;
 
 		lume_evt->SetEvent(be_energy, be_id, be_timestamp, ne_energy, fe_energy);
 
@@ -2681,87 +2644,105 @@ void ISSEventBuilder::LumeFinder() {
 ////////////////////////////////////////////////////////////////////////////////
 /// This function takes a series of E and dE signals on the silicon CD (fission fragments) detector and determines what hits to keep from these using sensible conditions including a prompt coincidence window. Signals are triggered by the dE detector, but if a corresponding E signal is not found, then a hit at E = 0 is still recorded.
 void ISSEventBuilder::CdFinder() {
-	// for now - just RecoilFinder copied
 	
 	//std::cout << __PRETTY_FUNCTION__ << std::endl;
 	
 	// Checks to prevent re-using events
-	std::vector<unsigned int> index;
-	std::vector<unsigned int> layers;
+	std::vector<unsigned int> rindex;
+	std::vector<unsigned int> sindex;
 	bool flag_skip;
-	int ringmax_idx, secmax_idx;		// Stores the maximum-energy index for the ring and sector hits
-	int ringtmp_idx, sectmp_idx;		// Stores a temporary index for the ring and sector hits
-	float ringmax_en, secmax_en;		// Stores the maximum energy for the ring and sector hits
-	float ringsum_en, secsum_en;		// Stores the summed energy for the p-side and n-side hits
+	int rmax_idx, smax_idx;	// Stores the maximum-energy index for the ring and sector hits
+	int rtmp_idx, stmp_idx;	// Stores a temporary index for the ring and sector hits
+	float rmax_en, smax_en;	// Stores the maximum energy for the ring and sector hits
+	float rsum_en, ssum_en;	// Stores the summed energy for the p-side and n-side hits
 	
-	// Loop over recoil events
-	for( unsigned int i = 0; i < ren_list.size(); ++i ) {
+	
+	// Do each layer of the CD separately
+	for( unsigned int i = 0; i < set->GetNumberOfCDLayers(); ++i ) {
 		
-		// Find the dE event, usually the trigger
-		if( rid_list[i] == (int)set->GetRecoilEnergyLossStart() ){
+		// Empty the array of indexes
+		rindex.clear();
+		sindex.clear();
+		std::vector<unsigned int>().swap(rindex);
+		std::vector<unsigned int>().swap(sindex);
+		rmax_idx = smax_idx = -1;
+		rmax_en = smax_en = -99999.;
+		rsum_en = ssum_en = 0;
+		
+		// Loop over p-side (ring) events
+		for( unsigned int k = 0; k < cdren_list.size(); ++k ) {
 			
-			recoil_evt->ClearEvent();
-			recoil_evt->SetdETime( rtd_list[i] );
-			recoil_evt->SetSector( rsec_list[i] );
-			recoil_evt->AddRecoil( ren_list[i], rid_list[i] );
-			
-			index.push_back(i);
-			layers.push_back(rid_list[i]);
-			
-			// Look for matching E events
-			for( unsigned int j = 0; j < ren_list.size(); ++j ) {
+			// Check if it is the module and row we want
+			if( cdrid_list.at(k) == (int)i ) {
 				
-				// Check if we already used this hit
-				flag_skip = false;
-				for( unsigned int k = 0; k < index.size(); ++k ) {
-					if( index[k] == j ) flag_skip = true;
-					if( (int)layers[k] == rid_list[j] ) flag_skip = true;
-				}
+				// Put in the index
+				rindex.push_back( k );
 				
-				// Found a match
-				// ^^^ Not sure if this will work with the ionisation chamber!
-				if( i != j && 		// Not looking at the same hit
-				   !flag_skip &&	// Not looking at a previously-used hit
-				   rsec_list[i] == rsec_list[j] &&		// They are in the same sector
-				   rid_list[i] != rid_list[j]			// They are not in the same layer
-				   ){
+				// Check if it is max energy
+				if( cdren_list.at(k) > rmax_en ){
 					
-					if( rid_list[j] == (int)set->GetRecoilEnergyRestStart() )
-						recoil_E_dE_tdiff[rsec_list[i]]->Fill( rtd_list[j] - rtd_list[i] );
-					recoil_tdiff[rsec_list[i]]->Fill( rid_list[j], rtd_list[j] - rtd_list[i] );
-					
-					// The hits lie within the recoil hit window
-					if( TMath::Abs( rtd_list[i] - rtd_list[j] ) < set->GetRecoilHitWindow() ) {
-						
-						index.push_back(j);
-						layers.push_back(rid_list[j]);
-						recoil_evt->AddRecoil( ren_list[j], rid_list[j] );
-						
-						if( rid_list[j] == (int)set->GetRecoilEnergyRestStart() )
-							recoil_evt->SetETime( rtd_list[j] );
-						
-					}
+					rmax_en = cdren_list.at(k);
+					rmax_idx = k;
 					
 				}
 				
 			}
 			
-			// Histogram the recoils
-			recoil_EdE[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
-										   recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
-			recoil_dEsum[rsec_list[i]]->Fill( recoil_evt->GetEnergyTotal( set->GetRecoilEnergyTotalStart(), set->GetRecoilEnergyTotalStop() ),
-											 recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
-			recoil_E_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
-			recoil_dE_singles[rsec_list[i]]->Fill( recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+		}
+		
+		// Loop over n-side (sector) events
+		for( unsigned int l = 0; l < cdsen_list.size(); ++l ) {
 			
-			// Fill the tree and get ready for next recoil event
-			write_evts->AddEvt( recoil_evt );
-			recoil_ctr++;
+			// Check if it is the module and row we want
+			if( cdsid_list.at(l) == (int)i ) {
+				
+				// Put in the index
+				sindex.push_back( l );
+				
+				// Check if it is max energy
+				if( cdsen_list.at(l) > smax_en ){
+					
+					smax_en = cdsen_list.at(l);
+					smax_idx = l;
+					
+				}
+				
+			}
 			
 		}
 		
+		// Multiplicity matrix
+		if( rindex.size() || sindex.size() )
+			cd_rs_mult[i]->Fill( rindex.size(), sindex.size() );
+		
+		// TODO: be more sophisticated than this!
+		// Set maximum energy on rings as the energy
+		cd_evt->AddFragment( rmax_en, i );
+	
+		// For the first layer of the CD define the ring and sector
+		if( i == set->GetCDEnergyLossStart() ) {
+			
+			cd_evt->SetRing( cdrxx_list[rmax_idx] );
+			cd_evt->SetSector( cdsxx_list[smax_idx] );
+			cd_evt->SetdETime( cdrtd_list[rmax_idx] );
+
+		}
+		
+		else if( i == set->GetCDEnergyRestStart() )
+			cd_evt->SetETime( cdrtd_list[rmax_idx] );
+
 	}
 	
+	// Histogram the CD fragments
+	cd_EdE->Fill( cd_evt->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
+				 cd_evt->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
+	cd_dEsum->Fill( cd_evt->GetEnergyTotal( set->GetCDEnergyTotalStart(), set->GetCDEnergyTotalStop() ),
+				   cd_evt->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
+	
+	// Fill the tree and get ready for next CD event
+	write_evts->AddEvt( cd_evt );
+	cd_ctr++;
+		
 	// Clean up
 	//delete recoil_evt;
 	
@@ -3170,6 +3151,34 @@ void ISSEventBuilder::MakeHists(){
 
 	}
 	
+	// ------------- //
+	// CD histograms //
+	// ------------- //
+	dirname = "cd";
+	if( !output_file->GetDirectory( dirname.data() ) )
+		output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+	
+	cd_rs_mult.resize( set->GetNumberOfCDLayers() );
+	
+	for( unsigned int i = 0; i < set->GetNumberOfCDLayers(); ++i ) {
+		
+		hname = "cd_rs_mult_" + std::to_string(i);
+		htitle = "ring vs. sector multiplicity (layer ";
+		htitle += std::to_string(i) + ");mult rings;mult sectors";
+		cd_rs_mult[i] = new TH2F( hname.data(), htitle.data(), 6, -0.5, 5.5, 6, -0.5, 5.5 );
+		
+	}
+	
+	hname = "cd_EdE";
+	htitle = "CD fission fragments dE vs E;Rest Energy [keV];Energy Loss [keV];Counts";
+	cd_EdE = new TH2F( hname.data(), htitle.data(), 2000, 0, 2e5, 4000, 0, 8e5 );
+	
+	hname = "cd_dEsum";
+	htitle = "CD fission fragments dE vs total energy;Total Energy [keV];Energy Loss [keV];Counts";
+	cd_dEsum = new TH2F( hname.data(), htitle.data(), 10000, 0, 2e6, 4000, 0, 8e5 );
+
+	
 	return;
 	
 }
@@ -3309,7 +3318,7 @@ void ISSEventBuilder::CleanHists() {
 	for( unsigned int i = 0; i < recoil_tdiff.size(); i++ )
 		delete (recoil_tdiff[i]);
 	recoil_tdiff.clear();
-	
+
 	
 	for( unsigned int i = 0; i < mwpc_tac_axis.size(); i++ ) {
 		for( unsigned int j = 0; j < mwpc_tac_axis.at(i).size(); j++ )
@@ -3337,6 +3346,12 @@ void ISSEventBuilder::CleanHists() {
 	for( unsigned int i = 0; i < lume_E_vs_x.size(); i++ )
 		delete (lume_E_vs_x[i]);
 	lume_E_vs_x.clear();
+	
+	
+	for( unsigned int i = 0; i < cd_rs_mult.size(); i++ )
+		delete (cd_rs_mult[i]);
+	cd_rs_mult.clear();
+	
 	
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
 		delete (fpga_td[i]);
@@ -3486,6 +3501,12 @@ void ISSEventBuilder::ResetHists() {
 	for( unsigned int i = 0; i < lume_E_vs_x.size(); i++ )
 		lume_E_vs_x[i]->Reset("ICESM");
 	
+	for( unsigned int i = 0; i < cd_rs_mult.size(); i++ )
+		cd_rs_mult[i]->Reset("ICESM");
+	
+	cd_EdE->Reset("ICESM");
+	cd_dEsum->Reset("ICESM");
+
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
 		fpga_td[i]->Reset("ICESM");
 		asic_td[i]->Reset("ICESM");

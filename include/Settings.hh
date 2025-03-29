@@ -335,22 +335,23 @@ private:
 	std::vector<std::vector<std::vector<char>>> lume_type;		///< A channel map for the LUME detector types (0= be, 1= ne, 2= fe)
 	std::vector<std::string> lume_type_list;					///< A list of string types for the LUME signals
 
-  // CD detectors
+	// CD detectors
 	unsigned char n_cd_layer;	///< Number of CD detector layers (layer 0 is dE, layer 1 is E)
 	unsigned char n_cd_sector;	///< Number of CD detector sectors for each detector
-	unsigned char n_cd_ring;								///< Number of CD detector rings for each detector
+	unsigned char n_cd_ring;	///< Number of CD detector rings for each detector
+	unsigned char n_cd_side;	///< Number of CD sides, it's always 2, i.e. p-side and n-side
 	unsigned char cd_eloss_start;	///< Start layer for integrating energy loss, 0 for Silicon, about 1 for gas.
 	unsigned char cd_eloss_stop;	///< Stop layer for integrating energy loss, 0 for Silicon, about 1 for gas.
 	unsigned char cd_erest_start;	///< Start layer for integrating energy rest, 1 for Silicon, about 5 for gas.
 	unsigned char cd_erest_stop;	///< Stop layer for integrating energy rest, 1 for Silicon, about 5 for gas.
 	unsigned char cd_etot_start;	///< Start layer for integrating energy total, 0 for Silicon, 0 for gas.
-	unsigned char cd_etot_stop;	///< Stop layer for integrating energy total, 1 for Silicon, about 8 for gas.
-	std::vector<std::vector<std::vector<unsigned char>>> cd_vme;	///< A list of VME crate numbers for each CD detector layer, each ring, and each sector
-	std::vector<std::vector<std::vector<unsigned char>>> cd_mod;	///< A list of module numbers for each CD detector layer, each ring, and each sector
-	std::vector<std::vector<std::vector<unsigned char>>> cd_ch;	///< A list of channel numbers for each CD detector layer, each ring, and each sector
-	std::vector<std::vector<std::vector<char>>> cd_layer;		///< A channel map for the CD layers (-1 if not a CD)
-	std::vector<std::vector<std::vector<char>>> cd_ring;		///< A channel map for the CD rings (-1 if not a CD)
-	std::vector<std::vector<std::vector<char>>> cd_sector;		///< A channel map for the CD sectors (-1 if not a CD)
+	unsigned char cd_etot_stop;		///< Stop layer for integrating energy total, 1 for Silicon, about 8 for gas.
+	std::vector<std::vector<std::vector<unsigned char>>> cd_vme;	///< A list of VME crate numbers for each CD detector layer, each side and each strip
+	std::vector<std::vector<std::vector<unsigned char>>> cd_mod;	///< A list of module numbers for each CD detector layer, each ring/sector
+	std::vector<std::vector<std::vector<unsigned char>>> cd_ch;		///< A list of channel numbers for each CD detector layer, each ring/sector
+	std::vector<std::vector<std::vector<char>>> cd_layer;			///< A channel map for the CD layers (-1 if not a CD)
+	std::vector<std::vector<std::vector<char>>> cd_strip;			///< A channel map for the CD ring/sector IDs (-1 if not a CD)
+	std::vector<std::vector<std::vector<char>>> cd_side;			///< A channel map for the CD sides (rings = 0, sectors = 1) (-1 if not a CD)
 
   
 };
