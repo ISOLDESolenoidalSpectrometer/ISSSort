@@ -465,6 +465,57 @@ void ISSReaction::ReadReaction() {
 	// Fission?
 	fission = config->GetValue( "RecoilFission", false );
 
+	// Get fission energy cuts
+	fissioncutHfile = config->GetValue( "FissionCut.Heavy.File", "NULL" );
+	fissioncutHname = config->GetValue( "FissionCut.Heavy.Name", "CUTG" );
+	fissioncutLfile = config->GetValue( "FissionCut.Light.File", "NULL" );
+	fissioncutLname = config->GetValue( "FissionCut.Light.Name", "CUTG" );
+
+	// Check if heavy cut is given by the user
+	if( fissioncutHfile != "NULL" ) {
+
+		TFile *fission_file = new TFile( fissioncutHfile.data(), "READ" );
+		if( fission_file->IsZombie() )
+			std::cout << "Couldn't open " << fissioncutHfile << " correctly" << std::endl;
+
+		else {
+
+			if( !fission_file->GetListOfKeys()->Contains( fissioncutHname.data() ) )
+				std::cout << "Couldn't find " << fissioncutHname << " in " << fissioncutHfile << std::endl;
+			else
+				fission_cutH = std::make_shared<TCutG>( *static_cast<TCutG*>( fission_file->Get( fissioncutHname.data() )->Clone() ) );
+
+		}
+
+		fission_file->Close();
+
+	}
+
+	// Check if light cut is given by the user
+	if( fissioncutLfile != "NULL" ) {
+
+		TFile *fission_file = new TFile( fissioncutLfile.data(), "READ" );
+		if( fission_file->IsZombie() )
+			std::cout << "Couldn't open " << fissioncutLfile << " correctly" << std::endl;
+
+		else {
+
+			if( !fission_file->GetListOfKeys()->Contains( fissioncutLname.data() ) )
+				std::cout << "Couldn't find " << fissioncutLname << " in " << fissioncutLfile << std::endl;
+			else
+				fission_cutL = std::make_shared<TCutG>( *static_cast<TCutG*>( fission_file->Get( fissioncutLname.data() )->Clone() ) );
+
+		}
+
+		fission_file->Close();
+
+	}
+
+	// Assign an empty cut file if none is given, so the code doesn't crash
+	if( !fission_cutH ) fission_cutH = std::make_shared<TCutG>();
+	if( !fission_cutL ) fission_cutL = std::make_shared<TCutG>();
+
+
 	// Get recoil energy cut
 	nrecoilcuts = set->GetNumberOfRecoilSectors();
 	recoil_cut.resize( nrecoilcuts );

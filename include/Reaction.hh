@@ -324,14 +324,22 @@ public:
 	double GetPulseHeightCorrection( double Ei, bool detected ); ///< Returns the pulse height correction from the relevant TGraph
 	void CalculatePulseHeightCorrection( std::string isotope ); ///< This function generates all neccessary pulse-height correction plots
 
-	// Get cuts
+	// Get recoil cuts
 	inline unsigned int GetNumberOfRecoilCuts(){ return nrecoilcuts; };///< Getter for the number of recoil cuts
 	inline std::shared_ptr<TCutG> GetRecoilCut( unsigned int i ){
 		if( i < nrecoilcuts ) return recoil_cut.at(i);
 		else return nullptr;
 	};///< Getter for particular recoil cuts
 	
-	// Get cuts
+	// Get fission fragmnet cuts
+	inline std::shared_ptr<TCutG> GetFissionCutHeavy(){
+		return fission_cutH;
+	};///< Getter for the heavy fission fragment cut
+	inline std::shared_ptr<TCutG> GetFissionCutLight(){
+		return fission_cutL;
+	};///< Getter for the light fission fragment cut
+
+	// Get array cuts
 	inline unsigned int GetNumberOfEvsZCuts(){ return nevszcuts; };///< Getter for the number of E vs z cuts
 	inline std::shared_ptr<TCutG> GetEvsZCut( unsigned int i ){
 		if( i < nevszcuts ) return e_vs_z_cut.at(i);
@@ -447,16 +455,20 @@ private:
 	double elum_deadlayer;	///< Dead layer on ELUM in mm of Si equivalent
 
 	// Cuts
-	unsigned int nrecoilcuts;					///< The number of recoil cuts
-	unsigned int nevszcuts;						///< The number of E vs z cuts
-	std::vector<std::string> recoilcutfile;		///< The location of the recoil cut files
-	std::vector<std::string> recoilcutname;		///< The names of the recoil cuts
-	std::vector<std::string> evszcutfile;		///< The location of the E vs z cut files
-	std::vector<std::string> evszcutname;		///< The names of the E vs z cuts
+	unsigned int nrecoilcuts;						///< The number of recoil cuts
+	unsigned int nevszcuts;							///< The number of E vs z cuts
+	std::vector<std::string> recoilcutfile;			///< The location of the recoil cut files
+	std::vector<std::string> recoilcutname;			///< The names of the recoil cuts
+	std::vector<std::string> evszcutfile;			///< The location of the E vs z cut files
+	std::vector<std::string> evszcutname;			///< The names of the E vs z cuts
+	std::string fissioncutHfile, fissioncutLfile;
+	std::string fissioncutHname, fissioncutLname;
 	//TFile *recoil_file;							///< Pointer for opening the recoil cut files (??? could this be a local variable)
 	//TFile *e_vs_z_file;							///< Pointer for the E vs z cut file names (??? could this be a local variable)
-	std::vector<std::shared_ptr<TCutG>> recoil_cut;				///< Vector containing the recoil cuts
-	std::vector<std::shared_ptr<TCutG>> e_vs_z_cut;				///< Vector containing the E vs z cuts
+	std::vector<std::shared_ptr<TCutG>> recoil_cut;	///< Vector containing the recoil cuts
+	std::vector<std::shared_ptr<TCutG>> e_vs_z_cut;	///< Vector containing the E vs z cuts
+	std::shared_ptr<TCutG> fission_cutH;			///< Heavy fission fragment cut
+	std::shared_ptr<TCutG> fission_cutL;			///< Light fission fragment cut
 
 	// Stopping powers
 	std::vector<std::unique_ptr<TGraph>> gStopping;	///< Vector of pointer to relevant stopping-power TGraphs relevant to the reaction of study

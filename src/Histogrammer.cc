@@ -39,10 +39,10 @@ void ISSHistogrammer::SetOutput( std::string output_file_name ){
 
 void ISSHistogrammer::MakeHists() {
 	
-    std::string hname, htitle;
-    std::string dirname;
-   
-    std::vector<double> zbins;
+	std::string hname, htitle;
+	std::string dirname;
+
+	std::vector<double> zbins;
 	double d0 = react->GetArrayDistance();
 	double d;
 	
@@ -1578,31 +1578,37 @@ void ISSHistogrammer::MakeHists() {
 		htitle = "fission dE-E plot";
 		htitle += " - singles;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 		fission_EdE = new TH2F( hname.data(), htitle.data(),
-								 4000, 0, 800000, 4000, 0, 800000 );
-		
-		hname = "fission_EdE_cut";
+							   4000, 0, 800000, 4000, 0, 800000 );
+
+		hname = "fission_EdE_cutH";
 		htitle = "fission dE-E plot";
-		htitle += " - with energy cut;Rest energy, E [keV];Energy loss, dE [keV];Counts";
-		fission_EdE_cut = new TH2F( hname.data(), htitle.data(),
-									 4000, 0, 800000, 4000, 0, 800000 );
-		
+		htitle += " - with energy cut on the heavy fragment;Rest energy, E [keV];Energy loss, dE [keV];Counts";
+		fission_EdE_cutH = new TH2F( hname.data(), htitle.data(),
+								   4000, 0, 800000, 4000, 0, 800000 );
+
+		hname = "fission_EdE_cutL";
+		htitle = "fission dE-E plot";
+		htitle += " - with energy cut on the light fragment;Rest energy, E [keV];Energy loss, dE [keV];Counts";
+		fission_EdE_cutL = new TH2F( hname.data(), htitle.data(),
+								   4000, 0, 800000, 4000, 0, 800000 );
+
 		hname = "fission_EdE_array";
 		htitle = "fission dE-E plot";
 		htitle += " - in coincidence with array;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 		fission_EdE_array = new TH2F( hname.data(), htitle.data(),
-									   4000, 0, 800000, 4000, 0, 800000 );
-		
+									 4000, 0, 800000, 4000, 0, 800000 );
+
 		hname = "fission_bragg";
 		htitle = "fission Bragg plot";
 		htitle += ";Bragg ID;Energy loss, dE [keV];Counts";
 		fission_bragg = new TH2F( hname.data(), htitle.data(),
-								   set->GetNumberOfCDLayers(), -0.5, set->GetNumberOfCDLayers()-0.5, 4000, 0, 800000 );
+								 set->GetNumberOfCDLayers(), -0.5, set->GetNumberOfCDLayers()-0.5, 4000, 0, 800000 );
 
 		hname = "fission_dE_vs_T1";
 		htitle = "fission dE plot versus T1 time";
 		htitle += ";Time since T1 proton pulse [ns];Energy loss, dE [keV];Counts";
 		fission_dE_vs_T1 = new TH2F( hname.data(), htitle.data(),
-									  5000, 0, 50e9, 4000, 0, 800000 );
+									5000, 0, 50e9, 4000, 0, 800000 );
 
 		hname = "fission_dE_eloss";
 		htitle = "fission dE energy loss";
@@ -1627,7 +1633,7 @@ void ISSHistogrammer::MakeHists() {
 			htitle += " and array module " + std::to_string(j);
 			htitle += ";#Deltat;Counts";
 			fission_array_td[j] = new TH1F( hname.data(), htitle.data(),
-											 1000, -1.0*set->GetEventWindow()-50, 1.0*set->GetEventWindow()+50 );
+										   1000, -1.0*set->GetEventWindow()-50, 1.0*set->GetEventWindow()+50 );
 			
 		}
 		
@@ -1639,20 +1645,20 @@ void ISSHistogrammer::MakeHists() {
 			htitle += " and ELUM sector " + std::to_string(j);
 			htitle += ";#Deltat;Counts";
 			fission_elum_td[j] = new TH1F( hname.data(), htitle.data(),
-											1000, -1.0*set->GetEventWindow()-50, 1.0*set->GetEventWindow()+50 );
-			
+										  1000, -1.0*set->GetEventWindow()-50, 1.0*set->GetEventWindow()+50 );
+
 		}
 
 		// fission-array time walk
 		output_file->cd( "Timing" );
 		fission_array_tw_hit0 = new TH2F( "tw_fission_array_hit0",
-										"Time-walk histogram for array-fission coincidences with hit bit false;#Deltat [ns];Array energy [keV];Counts",
-										1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-										800, 0, 16000 );
+										 "Time-walk histogram for array-fission coincidences with hit bit false;#Deltat [ns];Array energy [keV];Counts",
+										 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
+										 800, 0, 16000 );
 		fission_array_tw_hit1 = new TH2F( "tw_fission_array_hit1",
-										"Time-walk histogram for array-fission coincidences with hit bit true;#Deltat [ns];Array energy [keV];Counts",
-										1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-										800, 0, 16000 );
+										 "Time-walk histogram for array-fission coincidences with hit bit true;#Deltat [ns];Array energy [keV];Counts",
+										 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
+										 800, 0, 16000 );
 		fission_array_tw_hit0_prof = new TProfile( "tw_fission_array_hit0_prof", "Time-walk profile for fission-array coincidences with hit bit false;Array energy;#Delta t", 2000, 0, 60000 );
 		fission_array_tw_hit1_prof = new TProfile( "tw_fission_array_hit1_prof", "Time-walk profile for fission-array coincidences with hit bit true;Array energy;#Delta t", 2000, 0, 60000 );
 
@@ -1672,18 +1678,18 @@ void ISSHistogrammer::MakeHists() {
 				htitle = "Time-walk histogram for array-fission coincidences (module ";
 				htitle += std::to_string(i) + ", row " + std::to_string(j) + ") with hit bit false;Deltat [ns];Array energy [keV];Counts";
 				fission_array_tw_hit0_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-														  800, 0, 16000 );
+														   800, 0, 16000 );
 
 				hname = "tw_fission_array_hit1_mod_" + std::to_string(i) + "_row" + std::to_string(j);
 				htitle = "Time-walk histogram for array-fission coincidences (module ";
 				htitle += std::to_string(i) + ", row " + std::to_string(j) + ") with hit bit true;Deltat [ns];Array energy [keV];Counts";
 				fission_array_tw_hit1_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-														  800, 0, 16000 );
+														   800, 0, 16000 );
 
 			}
-			
+
 		}
-		
+
 	} // fission
 
 	// EBIS time windows
@@ -1970,10 +1976,10 @@ void ISSHistogrammer::ResetHists() {
 		fission_array_tw_hit1->Reset("ICESM");
 
 		for( unsigned int i = 0; i < fission_array_td.size(); ++i )
-				fission_array_td[i]->Reset("ICESM");
+			fission_array_td[i]->Reset("ICESM");
 
 		for( unsigned int i = 0; i < fission_elum_td.size(); ++i )
-				fission_elum_td[i]->Reset("ICESM");
+			fission_elum_td[i]->Reset("ICESM");
 
 		for( unsigned int i = 0; i < fission_array_tw_hit0_row.size(); ++i )
 			for( unsigned int j = 0; j < fission_array_tw_hit0_row[i].size(); ++j )
@@ -1984,7 +1990,8 @@ void ISSHistogrammer::ResetHists() {
 				fission_array_tw_hit1_row[i][j]->Reset("ICESM");
 
 		fission_EdE->Reset("ICESM");
-		fission_EdE_cut->Reset("ICESM");
+		fission_EdE_cutH->Reset("ICESM");
+		fission_EdE_cutL->Reset("ICESM");
 		fission_bragg->Reset("ICESM");
 		fission_dE_vs_T1->Reset("ICESM");
 		fission_dE_eloss->Reset("ICESM");
@@ -2154,13 +2161,13 @@ void ISSHistogrammer::ResetHists() {
 	
 	for( unsigned int i = 0; i < Ex_vs_theta_ebis_cut.size(); ++i )
 		Ex_vs_theta_ebis_cut[i]->Reset("ICESM");
-	
+
 	for( unsigned int i = 0; i < Ex_vs_theta_cut.size(); ++i )
 		Ex_vs_theta_cut[i]->Reset("ICESM");
 
 	for( unsigned int i = 0; i < Ex_vs_theta_T1_cut.size(); ++i )
 		Ex_vs_theta_T1_cut[i]->Reset("ICESM");
-	
+
 	for( unsigned int i = 0; i < Ex_vs_theta_ebis_off_cut.size(); ++i )
 		Ex_vs_theta_ebis_off_cut[i]->Reset("ICESM");
 
@@ -2464,7 +2471,7 @@ void ISSHistogrammer::ResetHists() {
 	
 	for( unsigned int i = 0; i < Ex_ebis_on_cut.size(); ++i )
 		Ex_ebis_on_cut[i]->Reset("ICESM");
-	
+
 	for( unsigned int i = 0; i < Ex_ebis_off_cut.size(); ++i )
 		Ex_ebis_off_cut[i]->Reset("ICESM");
 
@@ -2799,7 +2806,7 @@ unsigned long ISSHistogrammer::FillHists() {
 					E_vs_theta_T1->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
 					Ex_vs_theta_T1->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
 					Ex_vs_z_T1->Fill( react->GetZmeasured(), react->GetEx() );
-				
+
 				} // T1
 
 				// Check the E vs z cuts from the user
@@ -2831,7 +2838,7 @@ unsigned long ISSHistogrammer::FillHists() {
 							E_vs_theta_T1_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
 							Ex_vs_theta_T1_cut[k]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
 							Ex_vs_z_T1_cut[k]->Fill( react->GetZmeasured(), react->GetEx() );
-						
+
 						} // T1
 
 					} // inside cut
@@ -3118,7 +3125,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				} // random
 				
 			} // recoil mode finished
-				
+
 		} // array
 		
 		// Loop over ELUM events
@@ -3155,106 +3162,166 @@ unsigned long ISSHistogrammer::FillHists() {
 				
 			}
 			
-			// Loop over recoil events
+			// Coincidence with recoil/fission events
 			bool promptcheck = false;
 			bool randomcheck = false;
-			for( unsigned int k = 0; k < read_evts->GetRecoilMultiplicity(); ++k ){
-				
-				// Get recoil event
-				recoil_evt = read_evts->GetRecoilEvt(k);
-				
-				// Time differences
-				tdiff = recoil_evt->GetTime() - elum_evt->GetTime();
-				recoil_elum_td[recoil_evt->GetSector()][elum_evt->GetSector()]->Fill( tdiff );
-				
-				// Check for prompt events with recoils
-				if( PromptCoincidence( recoil_evt, elum_evt ) )
-					promptcheck = true;
-				
-				// Check for random events with recoils
-				if( RandomCoincidence( recoil_evt, elum_evt ) )
-					randomcheck = true;
-				
-			} // recoils
 			
-			// Plot the prompt events
-			if( promptcheck == true ){
+			// Fission mode
+			if( react->IsFission() ) {
 				
-				elum_recoilT->Fill( elum_evt->GetEnergy() );
-				elum_recoilT_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
-				
-				// Add an energy gate
-				if( RecoilCut( recoil_evt ) ) {
-					
-					elum_recoil->Fill( elum_evt->GetEnergy() );
-					elum_recoil_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
-					
-				} // energy cuts
-				
-			} // prompt
-			
-			// Plot the random events, but only if we didn't already use it as a prompt
-			else if( randomcheck == true ){
+			} // end of fission mode
 
-				elum_recoilT_random->Fill( elum_evt->GetEnergy() );
-				elum_recoilT_random_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
+			// Recoil mode
+			else {
 				
-				// Add an energy gate
-				if( RecoilCut( recoil_evt ) ) {
-					
-					elum_recoil_random->Fill( elum_evt->GetEnergy() );
-					elum_recoil_random_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
-					
-				} // energy cuts
+				for( unsigned int k = 0; k < read_evts->GetRecoilMultiplicity(); ++k ){
 
-			} // random
+					// Get recoil event
+					recoil_evt = read_evts->GetRecoilEvt(k);
+
+					// Time differences
+					tdiff = recoil_evt->GetTime() - elum_evt->GetTime();
+					recoil_elum_td[recoil_evt->GetSector()][elum_evt->GetSector()]->Fill( tdiff );
+
+					// Check for prompt events with recoils
+					if( PromptCoincidence( recoil_evt, elum_evt ) )
+						promptcheck = true;
+					
+					// Check for random events with recoils
+					if( RandomCoincidence( recoil_evt, elum_evt ) )
+						randomcheck = true;
+					
+				} // recoils
+				
+				// Plot the prompt events
+				if( promptcheck == true ){
+
+					elum_recoilT->Fill( elum_evt->GetEnergy() );
+					elum_recoilT_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
+
+					// Add an energy gate
+					if( RecoilCut( recoil_evt ) ) {
+
+						elum_recoil->Fill( elum_evt->GetEnergy() );
+						elum_recoil_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
+
+					} // energy cuts
+
+				} // prompt
+				
+				// Plot the random events, but only if we didn't already use it as a prompt
+				else if( randomcheck == true ){
+					
+					elum_recoilT_random->Fill( elum_evt->GetEnergy() );
+					elum_recoilT_random_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
+					
+					// Add an energy gate
+					if( RecoilCut( recoil_evt ) ) {
+
+						elum_recoil_random->Fill( elum_evt->GetEnergy() );
+						elum_recoil_random_sec[elum_evt->GetSector()]->Fill( elum_evt->GetEnergy() );
+
+					} // energy cuts
+
+				} // random
+
+			} // end of recoil mode
 			
 		} // ELUM
 		
 		
-		// Loop over recoil events
-		for( unsigned int j = 0; j < read_evts->GetRecoilMultiplicity(); ++j ){
+		// Fission mode
+		if( react->IsFission() ) {
 			
-			// Get recoil event
-			recoil_evt = read_evts->GetRecoilEvt(j);
+			// Loop over CD events
+			for( unsigned int j = 0; j < read_evts->GetCDMultiplicity(); ++j ){
+
+				// Get CD event
+				cd_evt1 = read_evts->GetCDEvt(j);
+
+				// EBIS, T1, SC time
+				ebis_td_fission->Fill( cd_evt1->GetTime() - read_evts->GetEBIS() );
+				t1_td_fission->Fill( cd_evt1->GetTime() - read_evts->GetT1() );
+				sc_td_fission->Fill( cd_evt1->GetTime() - read_evts->GetSC() );
+
+				// Energy EdE plot, unconditioned
+				fission_EdE->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
+								  cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+
+				// Energy dE versus T1 time
+				fission_dE_vs_T1->Fill( cd_evt1->GetTime() - read_evts->GetT1(),
+									   cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+
+				// Bragg curve
+				for( unsigned int k = 0; k < cd_evt1->GetEnergies().size(); ++k )
+					fission_bragg->Fill( cd_evt1->GetID(k), cd_evt1->GetEnergy(k) );
+
+				// Energy EdE plot, after cut on heavy fragment
+				if( FissionCutHeavy( cd_evt1 ) )
+					fission_EdE_cutH->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
+										   cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+
+				// Energy EdE plot, after cut on light fragment
+				if( FissionCutLight( cd_evt1 ) )
+					fission_EdE_cutL->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
+										   cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+
+				fission_dE_eloss->Fill( cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+				fission_E_eloss->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
+
+			} // cd events
 			
-			// EBIS, T1, SC time
-			ebis_td_recoil->Fill( recoil_evt->GetTime() - read_evts->GetEBIS() );
-			t1_td_recoil->Fill( recoil_evt->GetTime() - read_evts->GetT1() );
-			sc_td_recoil->Fill( recoil_evt->GetTime() - read_evts->GetSC() );
+		} // end of fission mode
 
-			// Energy EdE plot, unconditioned
-			recoil_EdE[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
-													  recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
-
-			// Energy dE versus T1 time
-			recoil_dE_vs_T1[recoil_evt->GetSector()]->Fill( recoil_evt->GetTime() - read_evts->GetT1(),
-														   recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
-
-			// Bragg curve
-			for( unsigned int k = 0; k < recoil_evt->GetEnergies().size(); ++k )
-				recoil_bragg[recoil_evt->GetSector()]->Fill( recoil_evt->GetID(k), recoil_evt->GetEnergy(k) );
+		// Recoil mode
+		else {
 			
-			// Energy EdE plot, after cut
-			if( RecoilCut( recoil_evt ) )
-				recoil_EdE_cut[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
-															  recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
-			
-			recoil_dE_eloss[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
-			recoil_E_eloss[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
+			// Loop over recoil events
+			for( unsigned int j = 0; j < read_evts->GetRecoilMultiplicity(); ++j ){
 
-		} // recoils
+				// Get recoil event
+				recoil_evt = read_evts->GetRecoilEvt(j);
+
+				// EBIS, T1, SC time
+				ebis_td_recoil->Fill( recoil_evt->GetTime() - read_evts->GetEBIS() );
+				t1_td_recoil->Fill( recoil_evt->GetTime() - read_evts->GetT1() );
+				sc_td_recoil->Fill( recoil_evt->GetTime() - read_evts->GetSC() );
+
+				// Energy EdE plot, unconditioned
+				recoil_EdE[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
+														  recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+
+				// Energy dE versus T1 time
+				recoil_dE_vs_T1[recoil_evt->GetSector()]->Fill( recoil_evt->GetTime() - read_evts->GetT1(),
+															   recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+
+				// Bragg curve
+				for( unsigned int k = 0; k < recoil_evt->GetEnergies().size(); ++k )
+					recoil_bragg[recoil_evt->GetSector()]->Fill( recoil_evt->GetID(k), recoil_evt->GetEnergy(k) );
+
+				// Energy EdE plot, after cut
+				if( RecoilCut( recoil_evt ) )
+					recoil_EdE_cut[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
+																  recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+
+				recoil_dE_eloss[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+				recoil_E_eloss[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
+
+			} // recoils
+
+		} // end of recoil mode
 
 		// Loop over LUME events
 		for( unsigned int j = 0; j < read_evts->GetLumeMultiplicity(); ++j ){
+
 			// Get LUME event
 			lume_evt = read_evts->GetLumeEvt(j);
 
 			int det_id = lume_evt->GetID();
-			if (det_id >= set->GetNumberOfLUMEDetectors()){
-			  std::cerr << "Bad LUME detector ID " << det_id << ". Only " << set->GetNumberOfLUMEDetectors()
-						<< " detectors are set. Ignoring this event for histogramming." << std::endl;
-			  continue;
+			if( det_id >= set->GetNumberOfLUMEDetectors() ){
+				std::cerr << "Bad LUME detector ID " << det_id << ". Only " << set->GetNumberOfLUMEDetectors();
+				std::cerr << " detectors are set. Ignoring this event for histogramming." << std::endl;
+				continue;
 			}
 
 			// EBIS time
@@ -3272,26 +3339,29 @@ unsigned long ISSHistogrammer::FillHists() {
 			// Check for events in the EBIS on-beam window
 			if( OnBeam( lume_evt ) ){
 
-			  lume_vs_T1->Fill( lume_evt->GetTime() - read_evts->GetT1(), lume_evt->GetBE() );
-			  lume_ebis_on->Fill( lume_evt->GetBE() );
-			  lume_E_vs_x_ebis->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
-			  lume_E_vs_x_ebis_on->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+				lume_vs_T1->Fill( lume_evt->GetTime() - read_evts->GetT1(), lume_evt->GetBE() );
+				lume_ebis_on->Fill( lume_evt->GetBE() );
+				lume_E_vs_x_ebis->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+				lume_E_vs_x_ebis_on->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
 
-			  lume_ebis_on_det[det_id]->Fill( lume_evt->GetBE() );
-			  lume_E_vs_x_ebis_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
-			  lume_E_vs_x_ebis_on_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+				lume_ebis_on_det[det_id]->Fill( lume_evt->GetBE() );
+				lume_E_vs_x_ebis_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+				lume_E_vs_x_ebis_on_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+
 			}
 
 			else {
 
-			  lume_ebis_off->Fill( lume_evt->GetBE() );
-			  lume_ebis_off_det[det_id]->Fill( lume_evt->GetBE() );
+				lume_ebis_off->Fill( lume_evt->GetBE() );
+				lume_ebis_off_det[det_id]->Fill( lume_evt->GetBE() );
 
-			  lume_E_vs_x_ebis->Fill( lume_evt->GetX(),lume_evt->GetBE(),-1.* react->GetEBISFillRatio() );
-			  lume_E_vs_x_ebis_off->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
-			  lume_E_vs_x_ebis_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),-1.* react->GetEBISFillRatio() );
-			  lume_E_vs_x_ebis_off_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+				lume_E_vs_x_ebis->Fill( lume_evt->GetX(),lume_evt->GetBE(),-1.* react->GetEBISFillRatio() );
+				lume_E_vs_x_ebis_off->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+				lume_E_vs_x_ebis_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),-1.* react->GetEBISFillRatio() );
+				lume_E_vs_x_ebis_off_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
+
 			} // ebis
+
 		}
 
 		// Progress bar
@@ -3570,7 +3640,7 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 
 			// Fill the tree
 			input_tree->Fill();
-		
+
 		}
 		
 		// Progress bar
@@ -3578,7 +3648,7 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 		if( number_of_data < 200 )
 			update_progress = true;
 		else if( current_data % (number_of_data/100) == 0 ||
-				 current_data == number_of_data )
+				current_data == number_of_data )
 			update_progress = true;
 		
 		if( update_progress ) {
@@ -3600,7 +3670,7 @@ void ISSHistogrammer::ReadPace4File( std::string input_file_name ) {
 			std::cout.flush();
 			
 		} // progress bar
-			
+
 	}
 
 	// Reset the ejectile before we finish

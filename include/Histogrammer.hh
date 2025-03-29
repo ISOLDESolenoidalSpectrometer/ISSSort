@@ -172,6 +172,19 @@ public:
 								r->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 	}
 
+	// Fission fragment energy gates
+	inline bool FissionCutHeavy( std::shared_ptr<ISSCDEvt> r ){
+		return react->GetFissionCutHeavy()
+		->IsInside( r->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
+				   r->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
+	}
+	inline bool FissionCutLight( std::shared_ptr<ISSCDEvt> r ){
+		return react->GetFissionCutLight()
+		->IsInside( r->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
+				   r->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
+	}
+
+
 private:
 	
 	// Reaction
@@ -188,7 +201,9 @@ private:
 	std::shared_ptr<ISSRecoilEvt> recoil_evt;
 	std::shared_ptr<ISSElumEvt> elum_evt;
 	std::shared_ptr<ISSZeroDegreeEvt> zd_evt;
-    std::shared_ptr<ISSLumeEvt> lume_evt;
+	std::shared_ptr<ISSLumeEvt> lume_evt;
+	std::shared_ptr<ISSCDEvt> cd_evt1; // need two cd_evt's because
+	std::shared_ptr<ISSCDEvt> cd_evt2; // we look for coincidences
 
 	/// Output file and tree
 	TFile *output_file;
@@ -236,7 +251,8 @@ private:
 
 	// Fission fragments
 	TH2F* fission_EdE;
-	TH2F* fission_EdE_cut;
+	TH2F* fission_EdE_cutH;
+	TH2F* fission_EdE_cutL;
 	TH2F* fission_EdE_array;
 	TH2F* fission_bragg;
 	TH2F* fission_dE_vs_T1;

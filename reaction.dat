@@ -82,6 +82,12 @@
 #RecoilCut_3.File: NULL	# sector 3
 #RecoilCut_3.Name: CUTG	# sector 3
 
+## Fission cut files
+FissionCut.Heavy.File: NULL
+FissionCut.Heavy.Name: CUTG
+FissionCut.Light.File: NULL
+FissionCut.Light.Name: CUTG
+
 
 ## E vs Z cut files
 #NumberOfEvsZCuts: 1		# default is 1, but you can have as many as your RAM will handle
