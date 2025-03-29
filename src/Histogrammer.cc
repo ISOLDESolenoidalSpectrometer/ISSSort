@@ -513,414 +513,831 @@ void ISSHistogrammer::MakeHists() {
 		
 	}
 	
-	// Recoil mode
-	dirname = "RecoilMode";
-	output_file->mkdir( dirname.data() );
-	output_file->cd( dirname.data() );
-	
-	hname = "E_vs_z_recoil";
-	htitle = "Energy vs. z distance gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_recoil = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
-	
-	hname = "E_vs_z_recoilT";
-	htitle = "Energy vs. z distance with a prompt time gate on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
-	
-	hname = "E_vs_z_recoil_random";
-	htitle = "Energy vs. z distance time-random gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_recoil_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
-	
-	hname = "E_vs_z_recoilT_random";
-	htitle = "Energy vs. z distance with a random time gate on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_recoilT_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
-
-	hname = "Theta_recoil";
-	htitle = "Centre of mass angle gated on recoils;#theta_{CM} [deg];Counts per deg";
-	Theta_recoil = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
-
-	hname = "Theta_recoilT";
-	htitle = "Centre of mass angle with a prompt time gate on recoils;#theta_{CM} [deg];Counts per deg";
-	Theta_recoilT = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
-
-	hname = "Theta_recoil_random";
-	htitle = "Centre of mass angle time-random gated on recoils;#theta_{CM} [deg];Counts per deg";
-	Theta_recoil_random = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
-
-	hname = "Theta_recoilT_random";
-	htitle = "Centre of mass angle with a random time gate on recoils;#theta_{CM} [deg];Counts per deg";
-	Theta_recoilT_random = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
-
-	hname = "Ex_recoil";
-	htitle = "Excitation energy gated by recoils;Excitation energy [keV];Counts per 20 keV";
-	Ex_recoil = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
-	
-	hname = "Ex_recoilT";
-	htitle = "Excitation energy with a prompt time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
-	Ex_recoilT = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
-	
-	hname = "Ex_recoil_random";
-	htitle = "Excitation energy time-random gated by recoils;Excitation energy [keV];Counts per 20 keV";
-	Ex_recoil_random = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
-	
-	hname = "Ex_recoilT_random";
-	htitle = "Excitation energy with a random time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
-	Ex_recoilT_random = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
-
-	hname = "E_vs_theta_recoil";
-	htitle = "Energy vs. centre of mass angle gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-	E_vs_theta_recoil = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
-
-	hname = "E_vs_theta_recoilT";
-	htitle = "Energy vs. centre of mass angle with a prompt time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-	E_vs_theta_recoilT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
-
-	hname = "E_vs_theta_recoil_random";
-	htitle = "Energy vs. centre of mass angle time-random gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-	E_vs_theta_recoil_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
-
-	hname = "E_vs_theta_recoilT_random";
-	htitle = "Energy vs. centre of mass angle with a random time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-	E_vs_theta_recoilT_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
-	
-	hname = "Ex_vs_theta_recoil";
-	htitle = "Excitation energy vs. centre of mass angle gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta_recoil = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
-	
-	hname = "Ex_vs_theta_recoilT";
-	htitle = "Excitation energy vs. centre of mass angle with a prompt time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta_recoilT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
-	
-	hname = "Ex_vs_theta_recoil_random";
-	htitle = "Excitation energy vs. centre of mass angle time-random gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta_recoil_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
-	
-	hname = "Ex_vs_theta_recoilT_random";
-	htitle = "Excitation energy vs. centre of mass angle with a random time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta_recoilT_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
-	
-	hname = "Ex_vs_z_recoil";
-	htitle = "Excitation energy vs. measured z gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_recoil = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
-	
-	hname = "Ex_vs_z_recoilT";
-	htitle = "Excitation energy vs. measured z with a prompt time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
-	
-	hname = "Ex_vs_z_recoil_random";
-	htitle = "Excitation energy vs. measured z time-random gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_recoil_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
-	
-	hname = "Ex_vs_z_recoilT_random";
-	htitle = "Excitation energy vs. measured z with a random time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_recoilT_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
-	
-	// For each user cut
-	E_vs_z_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
-	E_vs_z_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
-	E_vs_z_recoil_random_cut.resize( react->GetNumberOfEvsZCuts() );
-	E_vs_z_recoilT_random_cut.resize( react->GetNumberOfEvsZCuts() );
-	Theta_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
-	Theta_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
-	Theta_recoil_random_cut.resize( react->GetNumberOfEvsZCuts() );
-	Theta_recoilT_random_cut.resize( react->GetNumberOfEvsZCuts() );
-	Ex_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
-	Ex_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
-	Ex_recoil_random_cut.resize( react->GetNumberOfEvsZCuts() );
-	Ex_recoilT_random_cut.resize( react->GetNumberOfEvsZCuts() );
-	E_vs_theta_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
-	E_vs_theta_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
-	E_vs_theta_recoil_random_cut.resize( react->GetNumberOfEvsZCuts() );
-	E_vs_theta_recoilT_random_cut.resize( react->GetNumberOfEvsZCuts() );
-	Ex_vs_theta_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
-	Ex_vs_theta_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
-	Ex_vs_theta_recoil_random_cut.resize( react->GetNumberOfEvsZCuts() );
-	Ex_vs_theta_recoilT_random_cut.resize( react->GetNumberOfEvsZCuts() );
-	Ex_vs_z_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
-	Ex_vs_z_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
-	Ex_vs_z_recoil_random_cut.resize( react->GetNumberOfEvsZCuts() );
-	Ex_vs_z_recoilT_random_cut.resize( react->GetNumberOfEvsZCuts() );
-	for( unsigned int j = 0; j < react->GetNumberOfEvsZCuts(); ++j ) {
+	// Recoil mode, but only if we are not doing fission
+	if( !react->IsFission() ) {
 		
-		dirname = "RecoilMode/cut_" + std::to_string(j);
+		dirname = "RecoilMode";
 		output_file->mkdir( dirname.data() );
 		output_file->cd( dirname.data() );
 		
-		hname = "E_vs_z_recoil_cut" + std::to_string(j);
-		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
-		htitle += " gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
-		
-		hname = "E_vs_z_recoilT_cut" + std::to_string(j);
-		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
-		htitle += " with a prompt time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
-		
-		hname = "E_vs_z_recoil_random_cut" + std::to_string(j);
-		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
-		htitle += " time-random gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
-		
-		hname = "E_vs_z_recoilT_random_cut" + std::to_string(j);
-		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
-		htitle += " with a random time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		hname = "E_vs_z_recoil";
+		htitle = "Energy vs. z distance gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_recoil = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
 
-		hname = "Theta_recoil_cut"+ std::to_string(j);
-		htitle = "Centre of mass angle for user cut " + std::to_string(j);
-		htitle += " gated on recoils;#theta_{CM} [deg];Counts per deg";
-		Theta_recoil_cut[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+		hname = "E_vs_z_recoilT";
+		htitle = "Energy vs. z distance with a prompt time gate on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
 
-		hname = "Theta_recoilT_cut"+ std::to_string(j);
-		htitle = "Centre of mass angle for user cut " + std::to_string(j);
-		htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Counts per deg";
-		Theta_recoilT_cut[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+		hname = "E_vs_z_recoil_random";
+		htitle = "Energy vs. z distance time-random gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_recoil_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
 
-		hname = "Theta_recoil_random_cut"+ std::to_string(j);
-		htitle = "Centre of mass angle for user cut " + std::to_string(j);
-		htitle += " time-random gated on recoils;#theta_{CM} [deg];Counts per deg";
-		Theta_recoil_random_cut[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+		hname = "E_vs_z_recoilT_random";
+		htitle = "Energy vs. z distance with a random time gate on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_recoilT_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
 
-		hname = "Theta_recoilT_random_cut"+ std::to_string(j);
-		htitle = "Centre of mass angle for user cut " + std::to_string(j);
-		htitle += " with a random time gate on all recoil;#theta_{CM} [deg];Counts per deg";
-		Theta_recoilT_random_cut[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
-		
-		hname = "Ex_recoil_cut" + std::to_string(j);
-		htitle = "Excitation energy for user cut " + std::to_string(j);
-		htitle += " gated by recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoil_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
-		
-		hname = "Ex_recoilT_cut" + std::to_string(j);
-		htitle = "Excitation energy for user cut " + std::to_string(j);
-		htitle += " with a prompt time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoilT_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
-		
-		hname = "Ex_recoil_random_cut" + std::to_string(j);
-		htitle = "Excitation energy for user cut " + std::to_string(j);
-		htitle += " time-random gated by recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoil_random_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
-		
-		hname = "Ex_recoilT_random_cut" + std::to_string(j);
-		htitle = "Excitation energy for user cut " + std::to_string(j);
-		htitle += " with a random time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoilT_random_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		hname = "Theta_recoil";
+		htitle = "Centre of mass angle gated on recoils;#theta_{CM} [deg];Counts per deg";
+		Theta_recoil = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
 
-		hname = "E_vs_theta_recoil_cut";
-		htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
-		htitle += " gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		hname = "Theta_recoilT";
+		htitle = "Centre of mass angle with a prompt time gate on recoils;#theta_{CM} [deg];Counts per deg";
+		Theta_recoilT = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
 
-		hname = "E_vs_theta_recoilT_cut";
-		htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
-		htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		hname = "Theta_recoil_random";
+		htitle = "Centre of mass angle time-random gated on recoils;#theta_{CM} [deg];Counts per deg";
+		Theta_recoil_random = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
 
-		hname = "E_vs_theta_recoil_random_cut";
-		htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
-		htitle += " time-random gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		hname = "Theta_recoilT_random";
+		htitle = "Centre of mass angle with a random time gate on recoils;#theta_{CM} [deg];Counts per deg";
+		Theta_recoilT_random = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
 
-		hname = "E_vs_theta_recoilT_random_cut";
-		htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
-		htitle += " with a random time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
-		
-		hname = "Ex_vs_theta_recoil_cut" + std::to_string(j);
-		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
-		htitle += " gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
-		
-		hname = "Ex_vs_theta_recoilT_cut" + std::to_string(j);
-		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
-		htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
-		
-		hname = "Ex_vs_theta_recoil_random_cut" + std::to_string(j);
-		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
-		htitle += " time-random gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
-		
-		hname = "Ex_vs_theta_recoilT_random_cut" + std::to_string(j);
-		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
-		htitle += " with a random time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
-		
-		hname = "Ex_vs_z_recoil_cut" + std::to_string(j);
-		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
-		htitle += " gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
-		
-		hname = "Ex_vs_z_recoilT_cut" + std::to_string(j);
-		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
-		htitle += " with a prompt time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
-		
-		hname = "Ex_vs_z_recoil_random_cut" + std::to_string(j);
-		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
-		htitle += " time-random gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
-		
-		hname = "Ex_vs_z_recoilT_random_cut" + std::to_string(j);
-		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
-		htitle += " with a random time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
-		
-	} // Array
-	
-	// For each array module
-	E_vs_z_recoil_mod.resize( set->GetNumberOfArrayModules() );
-	E_vs_z_recoilT_mod.resize( set->GetNumberOfArrayModules() );
-	E_vs_z_recoil_random_mod.resize( set->GetNumberOfArrayModules() );
-	E_vs_z_recoilT_random_mod.resize( set->GetNumberOfArrayModules() );
-	Theta_recoil_mod.resize( set->GetNumberOfArrayModules() );
-	Theta_recoilT_mod.resize( set->GetNumberOfArrayModules() );
-	Theta_recoil_random_mod.resize( set->GetNumberOfArrayModules() );
-	Theta_recoilT_random_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_recoil_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_recoilT_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_recoil_random_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_recoilT_random_mod.resize( set->GetNumberOfArrayModules() );
-	E_vs_theta_recoil_mod.resize( set->GetNumberOfArrayModules() );
-	E_vs_theta_recoilT_mod.resize( set->GetNumberOfArrayModules() );
-	E_vs_theta_recoil_random_mod.resize( set->GetNumberOfArrayModules() );
-	E_vs_theta_recoilT_random_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_vs_theta_recoil_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_vs_theta_recoilT_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_vs_theta_recoil_random_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_vs_theta_recoilT_random_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_vs_z_recoil_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_vs_z_recoilT_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_vs_z_recoil_random_mod.resize( set->GetNumberOfArrayModules() );
-	Ex_vs_z_recoilT_random_mod.resize( set->GetNumberOfArrayModules() );
-	for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
-		
-		dirname = "RecoilMode/module_" + std::to_string(j);
+		hname = "Ex_recoil";
+		htitle = "Excitation energy gated by recoils;Excitation energy [keV];Counts per 20 keV";
+		Ex_recoil = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+		hname = "Ex_recoilT";
+		htitle = "Excitation energy with a prompt time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
+		Ex_recoilT = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+		hname = "Ex_recoil_random";
+		htitle = "Excitation energy time-random gated by recoils;Excitation energy [keV];Counts per 20 keV";
+		Ex_recoil_random = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+		hname = "Ex_recoilT_random";
+		htitle = "Excitation energy with a random time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
+		Ex_recoilT_random = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+		hname = "E_vs_theta_recoil";
+		htitle = "Energy vs. centre of mass angle gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+		E_vs_theta_recoil = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+		hname = "E_vs_theta_recoilT";
+		htitle = "Energy vs. centre of mass angle with a prompt time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+		E_vs_theta_recoilT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+		hname = "E_vs_theta_recoil_random";
+		htitle = "Energy vs. centre of mass angle time-random gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+		E_vs_theta_recoil_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+		hname = "E_vs_theta_recoilT_random";
+		htitle = "Energy vs. centre of mass angle with a random time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+		E_vs_theta_recoilT_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+		hname = "Ex_vs_theta_recoil";
+		htitle = "Excitation energy vs. centre of mass angle gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		Ex_vs_theta_recoil = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+		hname = "Ex_vs_theta_recoilT";
+		htitle = "Excitation energy vs. centre of mass angle with a prompt time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		Ex_vs_theta_recoilT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+		hname = "Ex_vs_theta_recoil_random";
+		htitle = "Excitation energy vs. centre of mass angle time-random gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		Ex_vs_theta_recoil_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+		hname = "Ex_vs_theta_recoilT_random";
+		htitle = "Excitation energy vs. centre of mass angle with a random time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		Ex_vs_theta_recoilT_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+		hname = "Ex_vs_z_recoil";
+		htitle = "Excitation energy vs. measured z gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_z_recoil = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+		hname = "Ex_vs_z_recoilT";
+		htitle = "Excitation energy vs. measured z with a prompt time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+		hname = "Ex_vs_z_recoil_random";
+		htitle = "Excitation energy vs. measured z time-random gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_z_recoil_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+		hname = "Ex_vs_z_recoilT_random";
+		htitle = "Excitation energy vs. measured z with a random time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_z_recoilT_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+		// For each user cut
+		E_vs_z_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
+		E_vs_z_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
+		E_vs_z_recoil_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		E_vs_z_recoilT_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Theta_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
+		Theta_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
+		Theta_recoil_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Theta_recoilT_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_recoil_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_recoilT_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		E_vs_theta_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
+		E_vs_theta_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
+		E_vs_theta_recoil_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		E_vs_theta_recoilT_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_theta_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_theta_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_theta_recoil_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_theta_recoilT_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_z_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_z_recoilT_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_z_recoil_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_z_recoilT_random_cut.resize( react->GetNumberOfEvsZCuts() );
+
+		for( unsigned int j = 0; j < react->GetNumberOfEvsZCuts(); ++j ) {
+
+			dirname = "RecoilMode/cut_" + std::to_string(j);
+			output_file->mkdir( dirname.data() );
+			output_file->cd( dirname.data() );
+
+			hname = "E_vs_z_recoil_cut" + std::to_string(j);
+			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
+			htitle += " gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "E_vs_z_recoilT_cut" + std::to_string(j);
+			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
+			htitle += " with a prompt time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "E_vs_z_recoil_random_cut" + std::to_string(j);
+			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
+			htitle += " time-random gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "E_vs_z_recoilT_random_cut" + std::to_string(j);
+			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
+			htitle += " with a random time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "Theta_recoil_cut"+ std::to_string(j);
+			htitle = "Centre of mass angle for user cut " + std::to_string(j);
+			htitle += " gated on recoils;#theta_{CM} [deg];Counts per deg";
+			Theta_recoil_cut[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Theta_recoilT_cut"+ std::to_string(j);
+			htitle = "Centre of mass angle for user cut " + std::to_string(j);
+			htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Counts per deg";
+			Theta_recoilT_cut[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Theta_recoil_random_cut"+ std::to_string(j);
+			htitle = "Centre of mass angle for user cut " + std::to_string(j);
+			htitle += " time-random gated on recoils;#theta_{CM} [deg];Counts per deg";
+			Theta_recoil_random_cut[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Theta_recoilT_random_cut"+ std::to_string(j);
+			htitle = "Centre of mass angle for user cut " + std::to_string(j);
+			htitle += " with a random time gate on all recoil;#theta_{CM} [deg];Counts per deg";
+			Theta_recoilT_random_cut[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Ex_recoil_cut" + std::to_string(j);
+			htitle = "Excitation energy for user cut " + std::to_string(j);
+			htitle += " gated by recoils;Excitation energy [keV];Counts per 20 keV";
+			Ex_recoil_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_recoilT_cut" + std::to_string(j);
+			htitle = "Excitation energy for user cut " + std::to_string(j);
+			htitle += " with a prompt time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
+			Ex_recoilT_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_recoil_random_cut" + std::to_string(j);
+			htitle = "Excitation energy for user cut " + std::to_string(j);
+			htitle += " time-random gated by recoils;Excitation energy [keV];Counts per 20 keV";
+			Ex_recoil_random_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_recoilT_random_cut" + std::to_string(j);
+			htitle = "Excitation energy for user cut " + std::to_string(j);
+			htitle += " with a random time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
+			Ex_recoilT_random_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "E_vs_theta_recoil_cut";
+			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "E_vs_theta_recoilT_cut";
+			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "E_vs_theta_recoil_random_cut";
+			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " time-random gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "E_vs_theta_recoilT_random_cut";
+			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " with a random time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "Ex_vs_theta_recoil_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_theta_recoilT_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_theta_recoil_random_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " time-random gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_theta_recoilT_random_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " with a random time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_recoil_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
+			htitle += " gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_recoilT_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
+			htitle += " with a prompt time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_recoil_random_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
+			htitle += " time-random gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_recoilT_random_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
+			htitle += " with a random time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+		} // Array
+
+		// For each array module
+		E_vs_z_recoil_mod.resize( set->GetNumberOfArrayModules() );
+		E_vs_z_recoilT_mod.resize( set->GetNumberOfArrayModules() );
+		E_vs_z_recoil_random_mod.resize( set->GetNumberOfArrayModules() );
+		E_vs_z_recoilT_random_mod.resize( set->GetNumberOfArrayModules() );
+		Theta_recoil_mod.resize( set->GetNumberOfArrayModules() );
+		Theta_recoilT_mod.resize( set->GetNumberOfArrayModules() );
+		Theta_recoil_random_mod.resize( set->GetNumberOfArrayModules() );
+		Theta_recoilT_random_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_recoil_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_recoilT_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_recoil_random_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_recoilT_random_mod.resize( set->GetNumberOfArrayModules() );
+		E_vs_theta_recoil_mod.resize( set->GetNumberOfArrayModules() );
+		E_vs_theta_recoilT_mod.resize( set->GetNumberOfArrayModules() );
+		E_vs_theta_recoil_random_mod.resize( set->GetNumberOfArrayModules() );
+		E_vs_theta_recoilT_random_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_theta_recoil_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_theta_recoilT_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_theta_recoil_random_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_theta_recoilT_random_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_z_recoil_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_z_recoilT_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_z_recoil_random_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_z_recoilT_random_mod.resize( set->GetNumberOfArrayModules() );
+
+		for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
+
+			dirname = "RecoilMode/module_" + std::to_string(j);
+			output_file->mkdir( dirname.data() );
+			output_file->cd( dirname.data() );
+
+			hname = "E_vs_z_recoil_mod" + std::to_string(j);
+			htitle = "Energy vs. z distance for module " + std::to_string(j);
+			htitle += " gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "E_vs_z_recoilT_mod" + std::to_string(j);
+			htitle = "Energy vs. z distance for module " + std::to_string(j);
+			htitle += " with a prompt time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "E_vs_z_recoil_random_mod" + std::to_string(j);
+			htitle = "Energy vs. z distance for module " + std::to_string(j);
+			htitle += " time-random gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "E_vs_z_recoilT_random_mod" + std::to_string(j);
+			htitle = "Energy vs. z distance for module " + std::to_string(j);
+			htitle += " with a random time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "Theta_recoil_mod"+ std::to_string(j);
+			htitle = "Centre of mass angle for module " + std::to_string(j);
+			htitle += " gated on recoils;#theta_{CM} [deg];Counts per deg";
+			Theta_recoil_mod[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Theta_recoilT_mod"+ std::to_string(j);
+			htitle = "Centre of mass angle for module " + std::to_string(j);
+			htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Counts per deg";
+			Theta_recoilT_mod[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Theta_recoil_random_mod"+ std::to_string(j);
+			htitle = "Centre of mass angle for module " + std::to_string(j);
+			htitle += " time-random gated on recoils;#theta_{CM} [deg];Counts per deg";
+			Theta_recoil_random_mod[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Theta_recoilT_random_mod"+ std::to_string(j);
+			htitle = "Centre of mass angle for module " + std::to_string(j);
+			htitle += " with a random time gate on all recoils;#theta_{CM} [deg];Counts per deg";
+			Theta_recoilT_random_mod[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Ex_recoil_mod" + std::to_string(j);
+			htitle = "Excitation energy for module " + std::to_string(j);
+			htitle += " gated by recoils;Excitation energy [keV];Counts per 20 keV";
+			Ex_recoil_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_recoilT_mod" + std::to_string(j);
+			htitle = "Excitation energy for module " + std::to_string(j);
+			htitle += " with a prompt time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
+			Ex_recoilT_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_recoil_random_mod" + std::to_string(j);
+			htitle = "Excitation energy for module " + std::to_string(j);
+			htitle += " time-random gated by recoils;Excitation energy [keV];Counts per 20 keV";
+			Ex_recoil_random_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_recoilT_random_mod" + std::to_string(j);
+			htitle = "Excitation energy for module " + std::to_string(j);
+			htitle += " with a random time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
+			Ex_recoilT_random_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "E_vs_theta_recoil_mod"+ std::to_string(j);
+			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "E_vs_theta_recoilT_mod"+ std::to_string(j);
+			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "E_vs_theta_recoil_random_mod"+ std::to_string(j);
+			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " time-random gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "E_vs_theta_recoilT_random_mod"+ std::to_string(j);
+			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " with a random time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "Ex_vs_theta_recoil_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_theta_recoilT_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_theta_recoil_random_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " time-random gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_theta_recoilT_random_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " with a random time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_recoil_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
+			htitle += " gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_recoilT_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
+			htitle += " with a prompt time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_recoil_random_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
+			htitle += " time-random gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_recoilT_random_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
+			htitle += " with a random time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+		} // Array
+
+	} // recoil mode
+
+	// Fission mode
+	if( react->IsFission() ) {
+
+		dirname = "FissionMode";
 		output_file->mkdir( dirname.data() );
 		output_file->cd( dirname.data() );
 		
-		hname = "E_vs_z_recoil_mod" + std::to_string(j);
-		htitle = "Energy vs. z distance for module " + std::to_string(j);
-		htitle += " gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
-		
-		hname = "E_vs_z_recoilT_mod" + std::to_string(j);
-		htitle = "Energy vs. z distance for module " + std::to_string(j);
-		htitle += " with a prompt time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
-		
-		hname = "E_vs_z_recoil_random_mod" + std::to_string(j);
-		htitle = "Energy vs. z distance for module " + std::to_string(j);
-		htitle += " time-random gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
-		
-		hname = "E_vs_z_recoilT_random_mod" + std::to_string(j);
-		htitle = "Energy vs. z distance for module " + std::to_string(j);
-		htitle += " with a random time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		hname = "E_vs_z_fission";
+		htitle = "Energy vs. z distance gated on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_fission = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
 
-		hname = "Theta_recoil_mod"+ std::to_string(j);
-		htitle = "Centre of mass angle for module " + std::to_string(j);
-		htitle += " gated on recoils;#theta_{CM} [deg];Counts per deg";
-		Theta_recoil_mod[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+		hname = "E_vs_z_fissionT";
+		htitle = "Energy vs. z distance with a prompt time gate on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_fissionT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
 
-		hname = "Theta_recoilT_mod"+ std::to_string(j);
-		htitle = "Centre of mass angle for module " + std::to_string(j);
-		htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Counts per deg";
-		Theta_recoilT_mod[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+		hname = "E_vs_z_fission_random";
+		htitle = "Energy vs. z distance time-random gated on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_fission_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
 
-		hname = "Theta_recoil_random_mod"+ std::to_string(j);
-		htitle = "Centre of mass angle for module " + std::to_string(j);
-		htitle += " time-random gated on recoils;#theta_{CM} [deg];Counts per deg";
-		Theta_recoil_random_mod[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+		hname = "E_vs_z_fissionT_random";
+		htitle = "Energy vs. z distance with a random time gate on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
+		E_vs_z_fissionT_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
 
-		hname = "Theta_recoilT_random_mod"+ std::to_string(j);
-		htitle = "Centre of mass angle for module " + std::to_string(j);
-		htitle += " with a random time gate on all recoils;#theta_{CM} [deg];Counts per deg";
-		Theta_recoilT_random_mod[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
-		
-		hname = "Ex_recoil_mod" + std::to_string(j);
-		htitle = "Excitation energy for module " + std::to_string(j);
-		htitle += " gated by recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoil_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
-		
-		hname = "Ex_recoilT_mod" + std::to_string(j);
-		htitle = "Excitation energy for module " + std::to_string(j);
-		htitle += " with a prompt time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoilT_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
-		
-		hname = "Ex_recoil_random_mod" + std::to_string(j);
-		htitle = "Excitation energy for module " + std::to_string(j);
-		htitle += " time-random gated by recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoil_random_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
-		
-		hname = "Ex_recoilT_random_mod" + std::to_string(j);
-		htitle = "Excitation energy for module " + std::to_string(j);
-		htitle += " with a random time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoilT_random_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		hname = "Theta_fission";
+		htitle = "Centre of mass angle gated on fission fragments;#theta_{CM} [deg];Counts per deg";
+		Theta_fission = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
 
-		hname = "E_vs_theta_recoil_mod"+ std::to_string(j);
-		htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
-		htitle += " gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		hname = "Theta_fissionT";
+		htitle = "Centre of mass angle with a prompt time gate on fission fragments;#theta_{CM} [deg];Counts per deg";
+		Theta_fissionT = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
 
-		hname = "E_vs_theta_recoilT_mod"+ std::to_string(j);
-		htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
-		htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		hname = "Theta_fission_random";
+		htitle = "Centre of mass angle time-random gated on fission fragments;#theta_{CM} [deg];Counts per deg";
+		Theta_fission_random = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
 
-		hname = "E_vs_theta_recoil_random_mod"+ std::to_string(j);
-		htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
-		htitle += " time-random gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		hname = "Theta_fissionT_random";
+		htitle = "Centre of mass angle with a random time gate on fission fragments;#theta_{CM} [deg];Counts per deg";
+		Theta_fissionT_random = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
 
-		hname = "E_vs_theta_recoilT_random_mod"+ std::to_string(j);
-		htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
-		htitle += " with a random time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
-		
-		hname = "Ex_vs_theta_recoil_mod" + std::to_string(j);
-		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
-		htitle += " gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
-		
-		hname = "Ex_vs_theta_recoilT_mod" + std::to_string(j);
-		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
-		htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
-		
-		hname = "Ex_vs_theta_recoil_random_mod" + std::to_string(j);
-		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
-		htitle += " time-random gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
-		
-		hname = "Ex_vs_theta_recoilT_random_mod" + std::to_string(j);
-		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
-		htitle += " with a random time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
-		
-		hname = "Ex_vs_z_recoil_mod" + std::to_string(j);
-		htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
-		htitle += " gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
-		
-		hname = "Ex_vs_z_recoilT_mod" + std::to_string(j);
-		htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
-		htitle += " with a prompt time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
-		
-		hname = "Ex_vs_z_recoil_random_mod" + std::to_string(j);
-		htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
-		htitle += " time-random gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
-		
-		hname = "Ex_vs_z_recoilT_random_mod" + std::to_string(j);
-		htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
-		htitle += " with a random time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
-		
-	} // Array
+		hname = "Ex_fission";
+		htitle = "Excitation energy gated by fission fragments;Excitation energy [keV];Counts per 20 keV";
+		Ex_fission = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+		hname = "Ex_fissionT";
+		htitle = "Excitation energy with a prompt time gate on all fission fragments;Excitation energy [keV];Counts per 20 keV";
+		Ex_fissionT = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+		hname = "Ex_fission_random";
+		htitle = "Excitation energy time-random gated by fission fragments;Excitation energy [keV];Counts per 20 keV";
+		Ex_fission_random = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+		hname = "Ex_fissionT_random";
+		htitle = "Excitation energy with a random time gate on all fission fragments;Excitation energy [keV];Counts per 20 keV";
+		Ex_fissionT_random = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+		hname = "E_vs_theta_fission";
+		htitle = "Energy vs. centre of mass angle gated by fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+		E_vs_theta_fission = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+		hname = "E_vs_theta_fissionT";
+		htitle = "Energy vs. centre of mass angle with a prompt time gate on all fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+		E_vs_theta_fissionT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+		hname = "E_vs_theta_fission_random";
+		htitle = "Energy vs. centre of mass angle time-random gated by fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+		E_vs_theta_fission_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+		hname = "E_vs_theta_fissionT_random";
+		htitle = "Energy vs. centre of mass angle with a random time gate on all fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+		E_vs_theta_fissionT_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+		hname = "Ex_vs_theta_fission";
+		htitle = "Excitation energy vs. centre of mass angle gated by fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		Ex_vs_theta_fission = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+		hname = "Ex_vs_theta_fissionT";
+		htitle = "Excitation energy vs. centre of mass angle with a prompt time gate on all fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		Ex_vs_theta_fissionT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+		hname = "Ex_vs_theta_fission_random";
+		htitle = "Excitation energy vs. centre of mass angle time-random gated by fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		Ex_vs_theta_fission_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+		hname = "Ex_vs_theta_fissionT_random";
+		htitle = "Excitation energy vs. centre of mass angle with a random time gate on all fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+		Ex_vs_theta_fissionT_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+		hname = "Ex_vs_z_fission";
+		htitle = "Excitation energy vs. measured z gated by fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_z_fission = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+		hname = "Ex_vs_z_fissionT";
+		htitle = "Excitation energy vs. measured z with a prompt time gate on all fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_z_fissionT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+		hname = "Ex_vs_z_fission_random";
+		htitle = "Excitation energy vs. measured z time-random gated by fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_z_fission_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+		hname = "Ex_vs_z_fissionT_random";
+		htitle = "Excitation energy vs. measured z with a random time gate on all fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+		Ex_vs_z_fissionT_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+		// For each user cut
+		E_vs_z_fission_cut.resize( react->GetNumberOfEvsZCuts() );
+		E_vs_z_fissionT_cut.resize( react->GetNumberOfEvsZCuts() );
+		E_vs_z_fission_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		E_vs_z_fissionT_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Theta_fission_cut.resize( react->GetNumberOfEvsZCuts() );
+		Theta_fissionT_cut.resize( react->GetNumberOfEvsZCuts() );
+		Theta_fission_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Theta_fissionT_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_fission_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_fissionT_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_fission_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_fissionT_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		E_vs_theta_fission_cut.resize( react->GetNumberOfEvsZCuts() );
+		E_vs_theta_fissionT_cut.resize( react->GetNumberOfEvsZCuts() );
+		E_vs_theta_fission_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		E_vs_theta_fissionT_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_theta_fission_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_theta_fissionT_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_theta_fission_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_theta_fissionT_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_z_fission_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_z_fissionT_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_z_fission_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		Ex_vs_z_fissionT_random_cut.resize( react->GetNumberOfEvsZCuts() );
+		for( unsigned int j = 0; j < react->GetNumberOfEvsZCuts(); ++j ) {
+
+			dirname = "FissionMode/cut_" + std::to_string(j);
+			output_file->mkdir( dirname.data() );
+			output_file->cd( dirname.data() );
+
+			hname = "E_vs_z_fission_cut" + std::to_string(j);
+			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
+			htitle += " gated on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_fission_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "E_vs_z_fissionT_cut" + std::to_string(j);
+			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
+			htitle += " with a prompt time gate on all fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_fissionT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "E_vs_z_fission_random_cut" + std::to_string(j);
+			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
+			htitle += " time-random gated on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_fission_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "E_vs_z_fissionT_random_cut" + std::to_string(j);
+			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
+			htitle += " with a random time gate on all fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_fissionT_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "Theta_fission_cut"+ std::to_string(j);
+			htitle = "Centre of mass angle for user cut " + std::to_string(j);
+			htitle += " gated on fission fragments;#theta_{CM} [deg];Counts per deg";
+			Theta_fission_cut[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Theta_fissionT_cut"+ std::to_string(j);
+			htitle = "Centre of mass angle for user cut " + std::to_string(j);
+			htitle += " with a prompt time gate on all fission fragments;#theta_{CM} [deg];Counts per deg";
+			Theta_fissionT_cut[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Theta_fission_random_cut"+ std::to_string(j);
+			htitle = "Centre of mass angle for user cut " + std::to_string(j);
+			htitle += " time-random gated on fission fragments;#theta_{CM} [deg];Counts per deg";
+			Theta_fission_random_cut[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Theta_fissionT_random_cut"+ std::to_string(j);
+			htitle = "Centre of mass angle for user cut " + std::to_string(j);
+			htitle += " with a random time gate on all fission;#theta_{CM} [deg];Counts per deg";
+			Theta_fissionT_random_cut[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Ex_fission_cut" + std::to_string(j);
+			htitle = "Excitation energy for user cut " + std::to_string(j);
+			htitle += " gated by fission fragments;Excitation energy [keV];Counts per 20 keV";
+			Ex_fission_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_fissionT_cut" + std::to_string(j);
+			htitle = "Excitation energy for user cut " + std::to_string(j);
+			htitle += " with a prompt time gate on all fission fragments;Excitation energy [keV];Counts per 20 keV";
+			Ex_fissionT_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_fission_random_cut" + std::to_string(j);
+			htitle = "Excitation energy for user cut " + std::to_string(j);
+			htitle += " time-random gated by fission fragments;Excitation energy [keV];Counts per 20 keV";
+			Ex_fission_random_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_fissionT_random_cut" + std::to_string(j);
+			htitle = "Excitation energy for user cut " + std::to_string(j);
+			htitle += " with a random time gate on all fission fragments;Excitation energy [keV];Counts per 20 keV";
+			Ex_fissionT_random_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "E_vs_theta_fission_cut";
+			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " gated by fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_fission_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "E_vs_theta_fissionT_cut";
+			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " with a prompt time gate on all fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_fissionT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "E_vs_theta_fission_random_cut";
+			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " time-random gated by fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_fission_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "E_vs_theta_fissionT_random_cut";
+			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " with a random time gate on all fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_fissionT_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "Ex_vs_theta_fission_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " gated by fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_fission_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_theta_fissionT_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " with a prompt time gate on all fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_fissionT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_theta_fission_random_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " time-random gated by fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_fission_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_theta_fissionT_random_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
+			htitle += " with a random time gate on all fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_fissionT_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_fission_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
+			htitle += " gated by fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_fission_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_fissionT_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
+			htitle += " with a prompt time gate on all fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_fissionT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_fission_random_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
+			htitle += " time-random gated by fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_fission_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_fissionT_random_cut" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
+			htitle += " with a random time gate on all fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_fissionT_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+		} // Array
+
+		// For each array module
+		E_vs_z_fission_mod.resize( set->GetNumberOfArrayModules() );
+		E_vs_z_fissionT_mod.resize( set->GetNumberOfArrayModules() );
+		E_vs_z_fission_random_mod.resize( set->GetNumberOfArrayModules() );
+		E_vs_z_fissionT_random_mod.resize( set->GetNumberOfArrayModules() );
+		Theta_fission_mod.resize( set->GetNumberOfArrayModules() );
+		Theta_fissionT_mod.resize( set->GetNumberOfArrayModules() );
+		Theta_fission_random_mod.resize( set->GetNumberOfArrayModules() );
+		Theta_fissionT_random_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_fission_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_fissionT_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_fission_random_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_fissionT_random_mod.resize( set->GetNumberOfArrayModules() );
+		E_vs_theta_fission_mod.resize( set->GetNumberOfArrayModules() );
+		E_vs_theta_fissionT_mod.resize( set->GetNumberOfArrayModules() );
+		E_vs_theta_fission_random_mod.resize( set->GetNumberOfArrayModules() );
+		E_vs_theta_fissionT_random_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_theta_fission_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_theta_fissionT_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_theta_fission_random_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_theta_fissionT_random_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_z_fission_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_z_fissionT_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_z_fission_random_mod.resize( set->GetNumberOfArrayModules() );
+		Ex_vs_z_fissionT_random_mod.resize( set->GetNumberOfArrayModules() );
+		for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
+
+			dirname = "FissionMode/module_" + std::to_string(j);
+			output_file->mkdir( dirname.data() );
+			output_file->cd( dirname.data() );
+
+			hname = "E_vs_z_fission_mod" + std::to_string(j);
+			htitle = "Energy vs. z distance for module " + std::to_string(j);
+			htitle += " gated on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_fission_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "E_vs_z_fissionT_mod" + std::to_string(j);
+			htitle = "Energy vs. z distance for module " + std::to_string(j);
+			htitle += " with a prompt time gate on all fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_fissionT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "E_vs_z_fission_random_mod" + std::to_string(j);
+			htitle = "Energy vs. z distance for module " + std::to_string(j);
+			htitle += " time-random gated on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_fission_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "E_vs_z_fissionT_random_mod" + std::to_string(j);
+			htitle = "Energy vs. z distance for module " + std::to_string(j);
+			htitle += " with a random time gate on all fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
+			E_vs_z_fissionT_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+
+			hname = "Theta_fission_mod"+ std::to_string(j);
+			htitle = "Centre of mass angle for module " + std::to_string(j);
+			htitle += " gated on fission fragments;#theta_{CM} [deg];Counts per deg";
+			Theta_fission_mod[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Theta_fissionT_mod"+ std::to_string(j);
+			htitle = "Centre of mass angle for module " + std::to_string(j);
+			htitle += " with a prompt time gate on all fission fragments;#theta_{CM} [deg];Counts per deg";
+			Theta_fissionT_mod[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Theta_fission_random_mod"+ std::to_string(j);
+			htitle = "Centre of mass angle for module " + std::to_string(j);
+			htitle += " time-random gated on fission fragments;#theta_{CM} [deg];Counts per deg";
+			Theta_fission_random_mod[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Theta_fissionT_random_mod"+ std::to_string(j);
+			htitle = "Centre of mass angle for module " + std::to_string(j);
+			htitle += " with a random time gate on all fission fragments;#theta_{CM} [deg];Counts per deg";
+			Theta_fissionT_random_mod[j] = new TH1F( hname.data(), htitle.data(),  180, 0, 180.0 );
+
+			hname = "Ex_fission_mod" + std::to_string(j);
+			htitle = "Excitation energy for module " + std::to_string(j);
+			htitle += " gated by fission fragments;Excitation energy [keV];Counts per 20 keV";
+			Ex_fission_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_fissionT_mod" + std::to_string(j);
+			htitle = "Excitation energy for module " + std::to_string(j);
+			htitle += " with a prompt time gate on all fission fragments;Excitation energy [keV];Counts per 20 keV";
+			Ex_fissionT_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_fission_random_mod" + std::to_string(j);
+			htitle = "Excitation energy for module " + std::to_string(j);
+			htitle += " time-random gated by fission fragments;Excitation energy [keV];Counts per 20 keV";
+			Ex_fission_random_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_fissionT_random_mod" + std::to_string(j);
+			htitle = "Excitation energy for module " + std::to_string(j);
+			htitle += " with a random time gate on all fission fragments;Excitation energy [keV];Counts per 20 keV";
+			Ex_fissionT_random_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+
+			hname = "E_vs_theta_fission_mod"+ std::to_string(j);
+			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " gated by fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_fission_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "E_vs_theta_fissionT_mod"+ std::to_string(j);
+			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " with a prompt time gate on all fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_fissionT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "E_vs_theta_fission_random_mod"+ std::to_string(j);
+			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " time-random gated by fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_fission_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "E_vs_theta_fissionT_random_mod"+ std::to_string(j);
+			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " with a random time gate on all fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
+			E_vs_theta_fissionT_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+
+			hname = "Ex_vs_theta_fission_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " gated by fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_fission_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_theta_fissionT_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " with a prompt time gate on all fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_fissionT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_theta_fission_random_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " time-random gated by fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_fission_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_theta_fissionT_random_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
+			htitle += " with a random time gate on all fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
+			Ex_vs_theta_fissionT_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_fission_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
+			htitle += " gated by fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_fission_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_fissionT_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
+			htitle += " with a prompt time gate on all fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_fissionT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_fission_random_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
+			htitle += " time-random gated by fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_fission_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+			hname = "Ex_vs_z_fissionT_random_mod" + std::to_string(j);
+			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
+			htitle += " with a random time gate on all fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
+			Ex_vs_z_fissionT_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+
+		} // Array
+
+	} // fission mode
 	
-	
+
 	// T1 mode
 	dirname = "T1Mode";
 	output_file->mkdir( dirname.data() );
@@ -962,6 +1379,7 @@ void ISSHistogrammer::MakeHists() {
 	E_vs_theta_T1_cut.resize( react->GetNumberOfEvsZCuts() );
 	Ex_vs_theta_T1_cut.resize( react->GetNumberOfEvsZCuts() );
 	Ex_vs_z_T1_cut.resize( react->GetNumberOfEvsZCuts() );
+
 	for( unsigned int j = 0; j < react->GetNumberOfEvsZCuts(); ++j ) {
 		
 		dirname = "T1Mode/cut_" + std::to_string(j);
@@ -1009,82 +1427,206 @@ void ISSHistogrammer::MakeHists() {
 	dirname = "Timing";
 	output_file->mkdir( dirname.data() );
 	
-	// For recoil sectors
-	dirname = "RecoilDetector";
-	output_file->mkdir( dirname.data() );
-	output_file->cd( dirname.data() );
-	
-	recoil_array_td.resize( set->GetNumberOfRecoilSectors() );
-	recoil_elum_td.resize( set->GetNumberOfRecoilSectors() );
-	recoil_EdE.resize( set->GetNumberOfRecoilSectors() );
-	recoil_EdE_cut.resize( set->GetNumberOfRecoilSectors() );
-	recoil_EdE_array.resize( set->GetNumberOfRecoilSectors() );
-	recoil_bragg.resize( set->GetNumberOfRecoilSectors() );
-	recoil_dE_vs_T1.resize( set->GetNumberOfRecoilSectors() );
-	recoil_dE_eloss.resize( set->GetNumberOfRecoilSectors() );
-	recoil_E_eloss.resize( set->GetNumberOfRecoilSectors() );
+	// For recoil sectors, but only if we are not doing fission
+	if( !react->IsFission() ) {
 
-	// Loop over each recoil sector
-	for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
+		dirname = "RecoilDetector";
+		output_file->mkdir( dirname.data() );
+		output_file->cd( dirname.data() );
+
+		recoil_array_td.resize( set->GetNumberOfRecoilSectors() );
+		recoil_elum_td.resize( set->GetNumberOfRecoilSectors() );
+		recoil_EdE.resize( set->GetNumberOfRecoilSectors() );
+		recoil_EdE_cut.resize( set->GetNumberOfRecoilSectors() );
+		recoil_EdE_array.resize( set->GetNumberOfRecoilSectors() );
+		recoil_bragg.resize( set->GetNumberOfRecoilSectors() );
+		recoil_dE_vs_T1.resize( set->GetNumberOfRecoilSectors() );
+		recoil_dE_eloss.resize( set->GetNumberOfRecoilSectors() );
+		recoil_E_eloss.resize( set->GetNumberOfRecoilSectors() );
+
+		// Loop over each recoil sector
+		for( unsigned int i = 0; i < set->GetNumberOfRecoilSectors(); ++i ) {
+
+			dirname = "RecoilDetector/sector_" + std::to_string(i);
+			output_file->mkdir( dirname.data() );
+			output_file->cd( dirname.data() );
+
+			// Recoil energy plots
+			hname = "recoil_EdE_sec" + std::to_string(i);
+			htitle = "Recoil dE-E plot for sector " + std::to_string(i);
+			htitle += " - singles;Rest energy, E [keV];Energy loss, dE [keV];Counts";
+			recoil_EdE[i] = new TH2F( hname.data(), htitle.data(),
+									 4000, 0, 800000, 4000, 0, 800000 );
+
+			hname = "recoil_EdE_cut_sec" + std::to_string(i);
+			htitle = "Recoil dE-E plot for sector " + std::to_string(i);
+			htitle += " - with energy cut;Rest energy, E [keV];Energy loss, dE [keV];Counts";
+			recoil_EdE_cut[i] = new TH2F( hname.data(), htitle.data(),
+										 4000, 0, 800000, 4000, 0, 800000 );
+
+			hname = "recoil_EdE_array_sec" + std::to_string(i);
+			htitle = "Recoil dE-E plot for sector " + std::to_string(i);
+			htitle += " - in coincidence with array;Rest energy, E [keV];Energy loss, dE [keV];Counts";
+			recoil_EdE_array[i] = new TH2F( hname.data(), htitle.data(),
+										   4000, 0, 800000, 4000, 0, 800000 );
+
+			hname = "recoil_bragg_sec" + std::to_string(i);
+			htitle = "Recoil Bragg plot for sector " + std::to_string(i);
+			htitle += ";Bragg ID;Energy loss, dE [keV];Counts";
+			recoil_bragg[i] = new TH2F( hname.data(), htitle.data(),
+									   set->GetNumberOfRecoilLayers(), -0.5, set->GetNumberOfRecoilLayers()-0.5, 4000, 0, 800000 );
+
+			hname = "recoil_dE_vs_T1_sec" + std::to_string(i);
+			htitle = "Recoil dE plot versus T1 time for sector " + std::to_string(i);
+			htitle += ";Time since T1 proton pulse [ns];Energy loss, dE [keV];Counts";
+			recoil_dE_vs_T1[i] = new TH2F( hname.data(), htitle.data(),
+										  5000, 0, 50e9, 4000, 0, 800000 );
+
+			hname = "recoil_dE_eloss_sec" + std::to_string(i);
+			htitle = "Recoil dE energy loss for sector " + std::to_string(i);
+			htitle += ";Energy loss, dE [keV];Counts";
+			recoil_dE_eloss[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
+
+			hname = "recoil_E_eloss_sec" + std::to_string(i);
+			htitle = "Recoil E energy loss for sector " + std::to_string(i);
+			htitle += ";Energy loss, E [keV];Counts";
+			recoil_E_eloss[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
+
+			// Timing plots
+			output_file->cd( "Timing" );
+			recoil_array_td[i].resize( set->GetNumberOfArrayModules() );
+			recoil_elum_td[i].resize( set->GetNumberOfELUMSectors() );
+
+			// For array modules
+			for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
+
+				hname = "td_recoil_array_sec" + std::to_string(i) + "_mod" + std::to_string(j);
+				htitle = "Time difference between recoil sector " + std::to_string(i);
+				htitle += " and array module " + std::to_string(j);
+				htitle += ";#Deltat;Counts";
+				recoil_array_td[i][j] = new TH1F( hname.data(), htitle.data(),
+												 1000, -1.0*set->GetEventWindow()-50, 1.0*set->GetEventWindow()+50 );
+
+			}
+
+			// For ELUM sectors
+			for( unsigned int j = 0; j < set->GetNumberOfELUMSectors(); ++j ) {
+
+				hname = "td_recoil_elum_sec" + std::to_string(i) + "_mod" + std::to_string(j);
+				htitle = "Time difference between recoil sector " + std::to_string(i);
+				htitle += " and ELUM sector " + std::to_string(j);
+				htitle += ";#Deltat;Counts";
+				recoil_elum_td[i][j] = new TH1F( hname.data(), htitle.data(),
+												1000, -1.0*set->GetEventWindow()-50, 1.0*set->GetEventWindow()+50 );
+
+			}
+
+		} // Recoils
+
+		// Recoil-array time walk
+		output_file->cd( "Timing" );
+		recoil_array_tw_hit0 = new TH2F( "tw_recoil_array_hit0",
+										"Time-walk histogram for array-recoil coincidences with hit bit false;#Deltat [ns];Array energy [keV];Counts",
+										1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
+										800, 0, 16000 );
+		recoil_array_tw_hit1 = new TH2F( "tw_recoil_array_hit1",
+										"Time-walk histogram for array-recoil coincidences with hit bit true;#Deltat [ns];Array energy [keV];Counts",
+										1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
+										800, 0, 16000 );
+		recoil_array_tw_hit0_prof = new TProfile( "tw_recoil_array_hit0_prof", "Time-walk profile for recoil-array coincidences with hit bit false;Array energy;#Delta t", 2000, 0, 60000 );
+		recoil_array_tw_hit1_prof = new TProfile( "tw_recoil_array_hit1_prof", "Time-walk profile for recoil-array coincidences with hit bit true;Array energy;#Delta t", 2000, 0, 60000 );
+
+		recoil_array_tw_hit0_row.resize( set->GetNumberOfArrayModules() );
+		recoil_array_tw_hit1_row.resize( set->GetNumberOfArrayModules() );
+
+		// Loop over ISS modules
+		for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
+
+			recoil_array_tw_hit0_row[i].resize( set->GetNumberOfArrayRows() );
+			recoil_array_tw_hit1_row[i].resize( set->GetNumberOfArrayRows() );
+
+			// Loop over rows of the array
+			for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
+
+				hname = "tw_recoil_array_hit0_mod_" + std::to_string(i) + "_row" + std::to_string(j);
+				htitle = "Time-walk histogram for array-recoil coincidences (module ";
+				htitle += std::to_string(i) + ", row " + std::to_string(j) + ") with hit bit false;Deltat [ns];Array energy [keV];Counts";
+				recoil_array_tw_hit0_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
+														  800, 0, 16000 );
+
+				hname = "tw_recoil_array_hit1_mod_" + std::to_string(i) + "_row" + std::to_string(j);
+				htitle = "Time-walk histogram for array-recoil coincidences (module ";
+				htitle += std::to_string(i) + ", row " + std::to_string(j) + ") with hit bit true;Deltat [ns];Array energy [keV];Counts";
+				recoil_array_tw_hit1_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
+														  800, 0, 16000 );
+
+			}
+
+		}
+
+	} // recoils: not fission
+
+	// For fission fragment sectors
+	if( react->IsFission() ) {
 		
-		dirname = "RecoilDetector/sector_" + std::to_string(i);
+		dirname = "FissionDetector";
 		output_file->mkdir( dirname.data() );
 		output_file->cd( dirname.data() );
 		
-		// Recoil energy plots
-		hname = "recoil_EdE_sec" + std::to_string(i);
-		htitle = "Recoil dE-E plot for sector " + std::to_string(i);
+		// Fission fragment energy plots
+		hname = "fission_EdE";
+		htitle = "fission dE-E plot";
 		htitle += " - singles;Rest energy, E [keV];Energy loss, dE [keV];Counts";
-		recoil_EdE[i] = new TH2F( hname.data(), htitle.data(),
+		fission_EdE = new TH2F( hname.data(), htitle.data(),
 								 4000, 0, 800000, 4000, 0, 800000 );
 		
-		hname = "recoil_EdE_cut_sec" + std::to_string(i);
-		htitle = "Recoil dE-E plot for sector " + std::to_string(i);
+		hname = "fission_EdE_cut";
+		htitle = "fission dE-E plot";
 		htitle += " - with energy cut;Rest energy, E [keV];Energy loss, dE [keV];Counts";
-		recoil_EdE_cut[i] = new TH2F( hname.data(), htitle.data(),
+		fission_EdE_cut = new TH2F( hname.data(), htitle.data(),
 									 4000, 0, 800000, 4000, 0, 800000 );
 		
-		hname = "recoil_EdE_array_sec" + std::to_string(i);
-		htitle = "Recoil dE-E plot for sector " + std::to_string(i);
+		hname = "fission_EdE_array";
+		htitle = "fission dE-E plot";
 		htitle += " - in coincidence with array;Rest energy, E [keV];Energy loss, dE [keV];Counts";
-		recoil_EdE_array[i] = new TH2F( hname.data(), htitle.data(),
+		fission_EdE_array = new TH2F( hname.data(), htitle.data(),
 									   4000, 0, 800000, 4000, 0, 800000 );
 		
-		hname = "recoil_bragg_sec" + std::to_string(i);
-		htitle = "Recoil Bragg plot for sector " + std::to_string(i);
+		hname = "fission_bragg";
+		htitle = "fission Bragg plot";
 		htitle += ";Bragg ID;Energy loss, dE [keV];Counts";
-		recoil_bragg[i] = new TH2F( hname.data(), htitle.data(),
-								 set->GetNumberOfRecoilLayers(), -0.5, set->GetNumberOfRecoilLayers()-0.5, 4000, 0, 800000 );
+		fission_bragg = new TH2F( hname.data(), htitle.data(),
+								   set->GetNumberOfCDLayers(), -0.5, set->GetNumberOfCDLayers()-0.5, 4000, 0, 800000 );
 
-		hname = "recoil_dE_vs_T1_sec" + std::to_string(i);
-		htitle = "Recoil dE plot versus T1 time for sector " + std::to_string(i);
+		hname = "fission_dE_vs_T1";
+		htitle = "fission dE plot versus T1 time";
 		htitle += ";Time since T1 proton pulse [ns];Energy loss, dE [keV];Counts";
-		recoil_dE_vs_T1[i] = new TH2F( hname.data(), htitle.data(),
-								 5000, 0, 50e9, 4000, 0, 800000 );
-			
-		hname = "recoil_dE_eloss_sec" + std::to_string(i);
-		htitle = "Recoil dE energy loss for sector " + std::to_string(i);
-		htitle += ";Energy loss, dE [keV];Counts";
-		recoil_dE_eloss[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
+		fission_dE_vs_T1 = new TH2F( hname.data(), htitle.data(),
+									  5000, 0, 50e9, 4000, 0, 800000 );
 
-		hname = "recoil_E_eloss_sec" + std::to_string(i);
-		htitle = "Recoil E energy loss for sector " + std::to_string(i);
+		hname = "fission_dE_eloss";
+		htitle = "fission dE energy loss";
+		htitle += ";Energy loss, dE [keV];Counts";
+		fission_dE_eloss = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
+
+		hname = "fission_E_eloss";
+		htitle = "fission E energy loss";
 		htitle += ";Energy loss, E [keV];Counts";
-		recoil_E_eloss[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
+		fission_E_eloss = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
 		
 		// Timing plots
 		output_file->cd( "Timing" );
-		recoil_array_td[i].resize( set->GetNumberOfArrayModules() );
-		recoil_elum_td[i].resize( set->GetNumberOfELUMSectors() );
+		fission_array_td.resize( set->GetNumberOfArrayModules() );
+		fission_elum_td.resize( set->GetNumberOfELUMSectors() );
 
 		// For array modules
 		for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
 			
-			hname = "td_recoil_array_sec" + std::to_string(i) + "_mod" + std::to_string(j);
-			htitle = "Time difference between recoil sector " + std::to_string(i);
+			hname = "td_fission_array_mod" + std::to_string(j);
+			htitle = "Time difference between fission detector ";
 			htitle += " and array module " + std::to_string(j);
 			htitle += ";#Deltat;Counts";
-			recoil_array_td[i][j] = new TH1F( hname.data(), htitle.data(),
+			fission_array_td[j] = new TH1F( hname.data(), htitle.data(),
 											 1000, -1.0*set->GetEventWindow()-50, 1.0*set->GetEventWindow()+50 );
 			
 		}
@@ -1092,70 +1634,77 @@ void ISSHistogrammer::MakeHists() {
 		// For ELUM sectors
 		for( unsigned int j = 0; j < set->GetNumberOfELUMSectors(); ++j ) {
 			
-			hname = "td_recoil_elum_sec" + std::to_string(i) + "_mod" + std::to_string(j);
-			htitle = "Time difference between recoil sector " + std::to_string(i);
+			hname = "td_fission_elum_mod" + std::to_string(j);
+			htitle = "Time difference between fission detector ";
 			htitle += " and ELUM sector " + std::to_string(j);
 			htitle += ";#Deltat;Counts";
-			recoil_elum_td[i][j] = new TH1F( hname.data(), htitle.data(),
+			fission_elum_td[j] = new TH1F( hname.data(), htitle.data(),
 											1000, -1.0*set->GetEventWindow()-50, 1.0*set->GetEventWindow()+50 );
 			
 		}
-		
-	} // Recoils
-	
-	// Recoil-array time walk
-	output_file->cd( "Timing" );
-	recoil_array_tw_hit0 = new TH2F( "tw_recoil_array_hit0",
-							   "Time-walk histogram for array-recoil coincidences with hit bit false;#Deltat [ns];Array energy [keV];Counts",
-							   1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-							   800, 0, 16000 );
-	recoil_array_tw_hit1 = new TH2F( "tw_recoil_array_hit1",
-							   "Time-walk histogram for array-recoil coincidences with hit bit true;#Deltat [ns];Array energy [keV];Counts",
-							   1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-							   800, 0, 16000 );
-	recoil_array_tw_hit0_prof = new TProfile( "tw_recoil_array_hit0_prof", "Time-walk profile for recoil-array coincidences with hit bit false;Array energy;#Delta t", 2000, 0, 60000 );
-	recoil_array_tw_hit1_prof = new TProfile( "tw_recoil_array_hit1_prof", "Time-walk profile for recoil-array coincidences with hit bit true;Array energy;#Delta t", 2000, 0, 60000 );
 
-	recoil_array_tw_hit0_row.resize( set->GetNumberOfArrayModules() );
-	recoil_array_tw_hit1_row.resize( set->GetNumberOfArrayModules() );
+		// fission-array time walk
+		output_file->cd( "Timing" );
+		fission_array_tw_hit0 = new TH2F( "tw_fission_array_hit0",
+										"Time-walk histogram for array-fission coincidences with hit bit false;#Deltat [ns];Array energy [keV];Counts",
+										1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
+										800, 0, 16000 );
+		fission_array_tw_hit1 = new TH2F( "tw_fission_array_hit1",
+										"Time-walk histogram for array-fission coincidences with hit bit true;#Deltat [ns];Array energy [keV];Counts",
+										1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
+										800, 0, 16000 );
+		fission_array_tw_hit0_prof = new TProfile( "tw_fission_array_hit0_prof", "Time-walk profile for fission-array coincidences with hit bit false;Array energy;#Delta t", 2000, 0, 60000 );
+		fission_array_tw_hit1_prof = new TProfile( "tw_fission_array_hit1_prof", "Time-walk profile for fission-array coincidences with hit bit true;Array energy;#Delta t", 2000, 0, 60000 );
 
-	// Loop over ISS modules
-	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
-		
-		recoil_array_tw_hit0_row[i].resize( set->GetNumberOfArrayRows() );
-		recoil_array_tw_hit1_row[i].resize( set->GetNumberOfArrayRows() );
+		fission_array_tw_hit0_row.resize( set->GetNumberOfArrayModules() );
+		fission_array_tw_hit1_row.resize( set->GetNumberOfArrayModules() );
 
-		// Loop over rows of the array
-		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
-			
-			hname = "tw_recoil_array_hit0_mod_" + std::to_string(i) + "_row" + std::to_string(j);
-			htitle = "Time-walk histogram for array-recoil coincidences (module ";
-			htitle += std::to_string(i) + ", row " + std::to_string(j) + ") with hit bit false;Deltat [ns];Array energy [keV];Counts";
-			recoil_array_tw_hit0_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-													  800, 0, 16000 );
-			
-			hname = "tw_recoil_array_hit1_mod_" + std::to_string(i) + "_row" + std::to_string(j);
-			htitle = "Time-walk histogram for array-recoil coincidences (module ";
-			htitle += std::to_string(i) + ", row " + std::to_string(j) + ") with hit bit true;Deltat [ns];Array energy [keV];Counts";
-			recoil_array_tw_hit1_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-													  800, 0, 16000 );
+		// Loop over ISS modules
+		for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
+
+			fission_array_tw_hit0_row[i].resize( set->GetNumberOfArrayRows() );
+			fission_array_tw_hit1_row[i].resize( set->GetNumberOfArrayRows() );
+
+			// Loop over rows of the array
+			for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
+
+				hname = "tw_fission_array_hit0_mod_" + std::to_string(i) + "_row" + std::to_string(j);
+				htitle = "Time-walk histogram for array-fission coincidences (module ";
+				htitle += std::to_string(i) + ", row " + std::to_string(j) + ") with hit bit false;Deltat [ns];Array energy [keV];Counts";
+				fission_array_tw_hit0_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
+														  800, 0, 16000 );
+
+				hname = "tw_fission_array_hit1_mod_" + std::to_string(i) + "_row" + std::to_string(j);
+				htitle = "Time-walk histogram for array-fission coincidences (module ";
+				htitle += std::to_string(i) + ", row " + std::to_string(j) + ") with hit bit true;Deltat [ns];Array energy [keV];Counts";
+				fission_array_tw_hit1_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
+														  800, 0, 16000 );
+
+			}
 			
 		}
 		
-	}
-	
-	
+	} // fission
+
 	// EBIS time windows
 	output_file->cd( "Timing" );
-	ebis_td_recoil = new TH1F( "ebis_td_recoil", "Recoil time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	ebis_td_array = new TH1F( "ebis_td_array", "Array time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	ebis_td_elum = new TH1F( "ebis_td_elum", "ELUM time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	ebis_td_lume = new TH1F( "ebis_td_lume", "LUME time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
+	if( react->IsFission() )
+		ebis_td_fission = new TH1F( "ebis_td_fission", "Fission fragment time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
+	else
+		ebis_td_recoil = new TH1F( "ebis_td_recoil", "Recoil time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	
 	// Supercycle and proton pulses
-	t1_td_recoil = new TH1F( "t1_td_recoil", "Recoil time difference with respect to the T1;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
-	sc_td_recoil = new TH1F( "sc_td_recoil", "Recoil time difference with respect to the SuperCycle;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
-
+	if( react->IsFission() ) {
+		t1_td_fission = new TH1F( "t1_td_fission", "Fission fragment time difference with respect to the T1;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
+		sc_td_fission = new TH1F( "sc_td_fission", "Fission fragment time difference with respect to the SuperCycle;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
+	}
+	else {
+		t1_td_recoil = new TH1F( "t1_td_recoil", "Recoil time difference with respect to the T1;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
+		sc_td_recoil = new TH1F( "sc_td_recoil", "Recoil time difference with respect to the SuperCycle;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
+	}
 	
 	// For ELUM sectors
 	dirname = "ElumDetector";
@@ -1166,20 +1715,39 @@ void ISSHistogrammer::MakeHists() {
 	elum_ebis = new TH1F( "elum_ebis", "ELUM gated by EBIS and off beam subtracted;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
 	elum_ebis_on = new TH1F( "elum_ebis_on", "ELUM gated on EBIS;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
 	elum_ebis_off = new TH1F( "elum_ebis_off", "ELUM gated off EBIS;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
-	elum_recoil = new TH1F( "elum_recoil", "ELUM gated on recoils;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
-	elum_recoilT = new TH1F( "elum_recoilT", "ELUM with prompt time gate on all recoils;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
-	elum_recoil_random = new TH1F( "elum_recoil_random", "ELUM with time-random gate on recoils;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
-	elum_recoilT_random = new TH1F( "elum_recoilT_random", "ELUM with random time gate on all recoils;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
 	elum_vs_T1 = new TH2F( "elum_vs_T1", "ELUM energy versus T1 time (gated on EBIS);Energy (keV);Counts per 5 keV", 5000, 0, 50e9, 10000, 0, 50000 );
+
+	// Recoils only if we are not doing fission
+	if( !react->IsFission() ) {
+		elum_recoil = new TH1F( "elum_recoil", "ELUM gated on recoils;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
+		elum_recoilT = new TH1F( "elum_recoilT", "ELUM with prompt time gate on all recoils;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
+		elum_recoil_random = new TH1F( "elum_recoil_random", "ELUM with time-random gate on recoils;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
+		elum_recoilT_random = new TH1F( "elum_recoilT_random", "ELUM with random time gate on all recoils;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
+	}
+	else {
+		elum_fission = new TH1F( "elum_fission", "ELUM gated on fission fragments;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
+		elum_fissionT = new TH1F( "elum_fissionT", "ELUM with prompt time gate on all fission fragments;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
+		elum_fission_random = new TH1F( "elum_fission_random", "ELUM with time-random gate on fission fragments;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
+		elum_fissionT_random = new TH1F( "elum_fissionT_random", "ELUM with random time gate on all fission fragments;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
+	}
 
 	elum_sec.resize( set->GetNumberOfELUMSectors() );
 	elum_ebis_sec.resize( set->GetNumberOfELUMSectors() );
 	elum_ebis_on_sec.resize( set->GetNumberOfELUMSectors() );
 	elum_ebis_off_sec.resize( set->GetNumberOfELUMSectors() );
-	elum_recoil_sec.resize( set->GetNumberOfELUMSectors() );
-	elum_recoilT_sec.resize( set->GetNumberOfELUMSectors() );
-	elum_recoil_random_sec.resize( set->GetNumberOfELUMSectors() );
-	elum_recoilT_random_sec.resize( set->GetNumberOfELUMSectors() );
+
+	if( !react->IsFission() ) {
+		elum_recoil_sec.resize( set->GetNumberOfELUMSectors() );
+		elum_recoilT_sec.resize( set->GetNumberOfELUMSectors() );
+		elum_recoil_random_sec.resize( set->GetNumberOfELUMSectors() );
+		elum_recoilT_random_sec.resize( set->GetNumberOfELUMSectors() );
+	}
+	else {
+		elum_fission_sec.resize( set->GetNumberOfELUMSectors() );
+		elum_fissionT_sec.resize( set->GetNumberOfELUMSectors() );
+		elum_fission_random_sec.resize( set->GetNumberOfELUMSectors() );
+		elum_fissionT_random_sec.resize( set->GetNumberOfELUMSectors() );
+	}
 
 	for( unsigned int j = 0; j < set->GetNumberOfELUMSectors(); ++j ) {
 		
@@ -1207,25 +1775,55 @@ void ISSHistogrammer::MakeHists() {
 		htitle += " gated off EBIS;Energy [keV];Counts 5 keV";
 		elum_ebis_off_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
 		
-		hname = "elum_recoil_sec" + std::to_string(j);
-		htitle = "ELUM singles for sector " + std::to_string(j);
-		htitle += " gated on recoils;Energy [keV];Counts 5 keV";
-		elum_recoil_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
+		// Recoils
+		if( !react->IsFission() ) {
+
+			hname = "elum_recoil_sec" + std::to_string(j);
+			htitle = "ELUM singles for sector " + std::to_string(j);
+			htitle += " gated on recoils;Energy [keV];Counts 5 keV";
+			elum_recoil_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
+
+			hname = "elum_recoilT_sec" + std::to_string(j);
+			htitle = "ELUM singles for sector " + std::to_string(j);
+			htitle += " with a prompt time gate on all recoils;Energy [keV];Counts 5 keV";
+			elum_recoilT_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
+
+			hname = "elum_recoil_random_sec" + std::to_string(j);
+			htitle = "ELUM singles for sector " + std::to_string(j);
+			htitle += " time-random gated on recoils;Energy [keV];Counts 5 keV";
+			elum_recoil_random_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
+
+			hname = "elum_recoilT_random_sec" + std::to_string(j);
+			htitle = "ELUM singles for sector " + std::to_string(j);
+			htitle += " with a random time gate on all recoils;Energy [keV];Counts 5 keV";
+			elum_recoilT_random_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
+
+		}
 		
-		hname = "elum_recoilT_sec" + std::to_string(j);
-		htitle = "ELUM singles for sector " + std::to_string(j);
-		htitle += " with a prompt time gate on all recoils;Energy [keV];Counts 5 keV";
-		elum_recoilT_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
-		
-		hname = "elum_recoil_random_sec" + std::to_string(j);
-		htitle = "ELUM singles for sector " + std::to_string(j);
-		htitle += " time-random gated on recoils;Energy [keV];Counts 5 keV";
-		elum_recoil_random_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
-		
-		hname = "elum_recoilT_random_sec" + std::to_string(j);
-		htitle = "ELUM singles for sector " + std::to_string(j);
-		htitle += " with a random time gate on all recoils;Energy [keV];Counts 5 keV";
-		elum_recoilT_random_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
+		// Fission
+		else {
+
+			hname = "elum_fission_sec" + std::to_string(j);
+			htitle = "ELUM singles for sector " + std::to_string(j);
+			htitle += " gated on fission fragments;Energy [keV];Counts 5 keV";
+			elum_fission_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
+
+			hname = "elum_fissionT_sec" + std::to_string(j);
+			htitle = "ELUM singles for sector " + std::to_string(j);
+			htitle += " with a prompt time gate on all fission fragments;Energy [keV];Counts 5 keV";
+			elum_fissionT_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
+
+			hname = "elum_fission_random_sec" + std::to_string(j);
+			htitle = "ELUM singles for sector " + std::to_string(j);
+			htitle += " time-random gated on fission fragments;Energy [keV];Counts 5 keV";
+			elum_fission_random_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
+
+			hname = "elum_fissionT_random_sec" + std::to_string(j);
+			htitle = "ELUM singles for sector " + std::to_string(j);
+			htitle += " with a random time gate on all fission fragments;Energy [keV];Counts 5 keV";
+			elum_fissionT_random_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
+
+		}
 
 	} // ELUM
 
@@ -1256,49 +1854,51 @@ void ISSHistogrammer::MakeHists() {
 
 	// Loop over number of LUME detectors
 	for( unsigned int i = 0; i < set->GetNumberOfLUMEDetectors(); ++i ) {
-	  dirname = "LumeDetector/detector_" + std::to_string(i);
-	  output_file->mkdir( dirname.data() );
-	  output_file->cd( dirname.data() );
 
-	  hname = "lume_det_" + std::to_string(i);
-	  htitle = "LUME energy spectrum for detector " + std::to_string(i);
-	  htitle += ";Energy [keV];Counts per 5 keV";
-	  lume_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000);
+		dirname = "LumeDetector/detector_" + std::to_string(i);
+		output_file->mkdir( dirname.data() );
+		output_file->cd( dirname.data() );
 
-	  hname = "lume_ebis_det_" + std::to_string(i);
-	  htitle = "LUME events for  detector " + std::to_string(i);
-	  htitle += " gated by EBIS and off beam subtracted;Energy (keV);Counts per 5 keV";
-	  lume_ebis_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
+		hname = "lume_det_" + std::to_string(i);
+		htitle = "LUME energy spectrum for detector " + std::to_string(i);
+		htitle += ";Energy [keV];Counts per 5 keV";
+		lume_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000);
 
-	  hname = "lume_ebis_on_det_" + std::to_string(i);
-	  htitle = "LUME events for detector " + std::to_string(i);
-	  htitle += " gated on EBIS ;Energy (keV);Counts per 5 keV";
-	  lume_ebis_on_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
+		hname = "lume_ebis_det_" + std::to_string(i);
+		htitle = "LUME events for  detector " + std::to_string(i);
+		htitle += " gated by EBIS and off beam subtracted;Energy (keV);Counts per 5 keV";
+		lume_ebis_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
 
-	  hname = "lume_ebis_off_det_" + std::to_string(i);
-	  htitle = "LUME events for detector " + std::to_string(i);
-	  htitle += " gated off EBIS ;Energy (keV);Counts per 5 keV";
-	  lume_ebis_off_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
+		hname = "lume_ebis_on_det_" + std::to_string(i);
+		htitle = "LUME events for detector " + std::to_string(i);
+		htitle += " gated on EBIS ;Energy (keV);Counts per 5 keV";
+		lume_ebis_on_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
 
-	  hname = "lume_E_vs_x_det_" + std::to_string(i);
-	  htitle = "LUME energy vs position spectrum for detecor " + std::to_string(i);
-	  htitle += ";Position;Energy [keV]";
-	  lume_E_vs_x_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+		hname = "lume_ebis_off_det_" + std::to_string(i);
+		htitle = "LUME events for detector " + std::to_string(i);
+		htitle += " gated off EBIS ;Energy (keV);Counts per 5 keV";
+		lume_ebis_off_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
 
-	  hname = "lume_E_vs_x_ebis_det_" + std::to_string(i);
-	  htitle = "LUME energy vs position spectrum for detector " + std::to_string(i);
-	  htitle += " gated by EBIS and off beam subtracted;Position;Energy [keV]";
-	  lume_E_vs_x_ebis_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+		hname = "lume_E_vs_x_det_" + std::to_string(i);
+		htitle = "LUME energy vs position spectrum for detecor " + std::to_string(i);
+		htitle += ";Position;Energy [keV]";
+		lume_E_vs_x_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
 
-	  hname = "lume_E_vs_x_ebis_on_det_" + std::to_string(i);
-	  htitle = "LUME energy vs position spectrum for detecor " + std::to_string(i);
-	  htitle += " gated on EBIS;Position;Energy [keV]";
-	  lume_E_vs_x_ebis_on_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+		hname = "lume_E_vs_x_ebis_det_" + std::to_string(i);
+		htitle = "LUME energy vs position spectrum for detector " + std::to_string(i);
+		htitle += " gated by EBIS and off beam subtracted;Position;Energy [keV]";
+		lume_E_vs_x_ebis_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
 
-	  hname = "lume_E_vs_x_ebis_off_det_" + std::to_string(i);
-	  htitle = "LUME energy vs position spectrum for detecor " + std::to_string(i);
-	  htitle += " gated off EBIS;Position;Energy [keV]";
-	  lume_E_vs_x_ebis_off_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+		hname = "lume_E_vs_x_ebis_on_det_" + std::to_string(i);
+		htitle = "LUME energy vs position spectrum for detecor " + std::to_string(i);
+		htitle += " gated on EBIS;Position;Energy [keV]";
+		lume_E_vs_x_ebis_on_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+
+		hname = "lume_E_vs_x_ebis_off_det_" + std::to_string(i);
+		htitle = "LUME energy vs position spectrum for detecor " + std::to_string(i);
+		htitle += " gated off EBIS;Position;Energy [keV]";
+		lume_E_vs_x_ebis_off_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+
 	} // LUME
 
 	output_file->cd();
@@ -1311,67 +1911,131 @@ void ISSHistogrammer::ResetHists() {
 	std::cout << "in ISSHistogrammer::Reset_Hist()" << std::endl;
 	
 	// Timing
-	for( unsigned int i = 0; i < recoil_array_td.size(); ++i )
-		for( unsigned int j = 0; j < recoil_array_td[i].size(); ++j )
-			recoil_array_td[i][j]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < recoil_elum_td.size(); ++i )
-		for( unsigned int j = 0; j < recoil_elum_td[i].size(); ++j )
-			recoil_elum_td[i][j]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < recoil_array_tw_hit0_row.size(); ++i )
-		for( unsigned int j = 0; j < recoil_array_tw_hit0_row[i].size(); ++j )
-			recoil_array_tw_hit0_row[i][j]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < recoil_array_tw_hit1_row.size(); ++i )
-		for( unsigned int j = 0; j < recoil_array_tw_hit1_row[i].size(); ++j )
-			recoil_array_tw_hit1_row[i][j]->Reset("ICESM");
-	
-
-	//recoil_array_tw_hit0_prof->Reset("ICESM");
-	//recoil_array_tw_hit1_prof->Reset("ICESM");
-	ebis_td_recoil->Reset("ICESM");
 	ebis_td_array->Reset("ICESM");
 	ebis_td_elum->Reset("ICESM");
 	ebis_td_lume->Reset("ICESM");
-	t1_td_recoil->Reset("ICESM");
-	sc_td_recoil->Reset("ICESM");
-	recoil_array_tw_hit0->Reset("ICESM");
-	recoil_array_tw_hit1->Reset("ICESM");
 
-	// Recoils
-	for( unsigned int i = 0; i < recoil_EdE.size(); ++i )
-		recoil_EdE[i]->Reset("ICESM");
+	// Recoils, but only if we are not doing fission
+	if( !react->IsFission() ) {
+
+		ebis_td_recoil->Reset("ICESM");
+		t1_td_recoil->Reset("ICESM");
+		sc_td_recoil->Reset("ICESM");
+		recoil_array_tw_hit0->Reset("ICESM");
+		recoil_array_tw_hit1->Reset("ICESM");
+
+		for( unsigned int i = 0; i < recoil_array_td.size(); ++i )
+			for( unsigned int j = 0; j < recoil_array_td[i].size(); ++j )
+				recoil_array_td[i][j]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < recoil_elum_td.size(); ++i )
+			for( unsigned int j = 0; j < recoil_elum_td[i].size(); ++j )
+				recoil_elum_td[i][j]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < recoil_array_tw_hit0_row.size(); ++i )
+			for( unsigned int j = 0; j < recoil_array_tw_hit0_row[i].size(); ++j )
+				recoil_array_tw_hit0_row[i][j]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < recoil_array_tw_hit1_row.size(); ++i )
+			for( unsigned int j = 0; j < recoil_array_tw_hit1_row[i].size(); ++j )
+				recoil_array_tw_hit1_row[i][j]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < recoil_EdE.size(); ++i )
+			recoil_EdE[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < recoil_EdE_cut.size(); ++i )
+			recoil_EdE_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < recoil_bragg.size(); ++i )
+			recoil_bragg[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < recoil_dE_vs_T1.size(); ++i )
+			recoil_dE_vs_T1[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < recoil_dE_eloss.size(); ++i )
+			recoil_dE_eloss[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < recoil_E_eloss.size(); ++i )
+			recoil_E_eloss[i]->Reset("ICESM");
+
+	}
 	
-	for( unsigned int i = 0; i < recoil_EdE_cut.size(); ++i )
-		recoil_EdE_cut[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < recoil_bragg.size(); ++i )
-		recoil_bragg[i]->Reset("ICESM");
+	// Fission
+	if( react->IsFission() ) {
 
-	for( unsigned int i = 0; i < recoil_dE_vs_T1.size(); ++i )
-		recoil_dE_vs_T1[i]->Reset("ICESM");
+		ebis_td_fission->Reset("ICESM");
+		t1_td_fission->Reset("ICESM");
+		sc_td_fission->Reset("ICESM");
+		fission_array_tw_hit0->Reset("ICESM");
+		fission_array_tw_hit1->Reset("ICESM");
 
-	for( unsigned int i = 0; i < recoil_dE_eloss.size(); ++i )
-		recoil_dE_eloss[i]->Reset("ICESM");
+		for( unsigned int i = 0; i < fission_array_td.size(); ++i )
+				fission_array_td[i]->Reset("ICESM");
 
-	for( unsigned int i = 0; i < recoil_E_eloss.size(); ++i )
-		recoil_E_eloss[i]->Reset("ICESM");
+		for( unsigned int i = 0; i < fission_elum_td.size(); ++i )
+				fission_elum_td[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < fission_array_tw_hit0_row.size(); ++i )
+			for( unsigned int j = 0; j < fission_array_tw_hit0_row[i].size(); ++j )
+				fission_array_tw_hit0_row[i][j]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < fission_array_tw_hit1_row.size(); ++i )
+			for( unsigned int j = 0; j < fission_array_tw_hit1_row[i].size(); ++j )
+				fission_array_tw_hit1_row[i][j]->Reset("ICESM");
+
+		fission_EdE->Reset("ICESM");
+		fission_EdE_cut->Reset("ICESM");
+		fission_bragg->Reset("ICESM");
+		fission_dE_vs_T1->Reset("ICESM");
+		fission_dE_eloss->Reset("ICESM");
+		fission_E_eloss->Reset("ICESM");
+
+	}
 
 	// Array - E vs. z
 	E_vs_z->Reset("ICESM");
 	E_vs_z_ebis->Reset("ICESM");
 	E_vs_z_ebis_on->Reset("ICESM");
 	E_vs_z_ebis_off->Reset("ICESM");
-	E_vs_z_recoil->Reset("ICESM");
-	E_vs_z_recoilT->Reset("ICESM");
 	E_vs_z_T1->Reset("ICESM");
-
-	for( unsigned int i = 0; i < E_vs_z_recoil_cut.size(); ++i )
-		E_vs_z_recoil_cut[i]->Reset("ICESM");
 	
-	for( unsigned int i = 0; i < E_vs_z_recoilT_cut.size(); ++i )
-		E_vs_z_recoilT_cut[i]->Reset("ICESM");
+	if( !react->IsFission() ) {
+
+		E_vs_z_recoil->Reset("ICESM");
+		E_vs_z_recoilT->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_recoil_cut.size(); ++i )
+			E_vs_z_recoil_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_recoilT_cut.size(); ++i )
+			E_vs_z_recoilT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_recoil_mod.size(); ++i )
+			E_vs_z_recoil_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_recoilT_mod.size(); ++i )
+			E_vs_z_recoilT_mod[i]->Reset("ICESM");
+
+	}
+
+	if( react->IsFission() ) {
+
+		E_vs_z_fission->Reset("ICESM");
+		E_vs_z_fissionT->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_fission_cut.size(); ++i )
+			E_vs_z_fission_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_fissionT_cut.size(); ++i )
+			E_vs_z_fissionT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_fission_mod.size(); ++i )
+			E_vs_z_fission_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_fissionT_mod.size(); ++i )
+			E_vs_z_fissionT_mod[i]->Reset("ICESM");
+
+	}
 	
 	for( unsigned int i = 0; i < E_vs_z_T1_cut.size(); ++i )
 		E_vs_z_T1_cut[i]->Reset("ICESM");
@@ -1397,12 +2061,6 @@ void ISSHistogrammer::ResetHists() {
 	for( unsigned int i = 0; i < E_vs_z_ebis_off_mod.size(); ++i )
 		E_vs_z_ebis_off_mod[i]->Reset("ICESM");
 	
-	for( unsigned int i = 0; i < E_vs_z_recoil_mod.size(); ++i )
-		E_vs_z_recoil_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < E_vs_z_recoilT_mod.size(); ++i )
-		E_vs_z_recoilT_mod[i]->Reset("ICESM");
-	
 	for( unsigned int i = 0; i < E_vs_z_cut.size(); ++i )
 		E_vs_z_cut[i]->Reset("ICESM");
 	
@@ -1411,29 +2069,79 @@ void ISSHistogrammer::ResetHists() {
 	Ex_vs_theta_ebis->Reset("ICESM");
 	Ex_vs_theta_ebis_on->Reset("ICESM");
 	Ex_vs_theta_ebis_off->Reset("ICESM");
-	Ex_vs_theta_recoil->Reset("ICESM");
-	Ex_vs_theta_recoilT->Reset("ICESM");
-	Ex_vs_theta_recoil_random->Reset("ICESM");
-	Ex_vs_theta_recoilT_random->Reset("ICESM");
 	Ex_vs_theta_T1->Reset("ICESM");
+
+	if( !react->IsFission() ) {
+
+		Ex_vs_theta_recoil->Reset("ICESM");
+		Ex_vs_theta_recoilT->Reset("ICESM");
+		Ex_vs_theta_recoil_random->Reset("ICESM");
+		Ex_vs_theta_recoilT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_recoil_mod.size(); ++i )
+			Ex_vs_theta_recoil_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_recoilT_mod.size(); ++i )
+			Ex_vs_theta_recoilT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_recoil_random_mod.size(); ++i )
+			Ex_vs_theta_recoil_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_recoilT_random_mod.size(); ++i )
+			Ex_vs_theta_recoilT_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_recoil_cut.size(); ++i )
+			Ex_vs_theta_recoil_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_recoilT_cut.size(); ++i )
+			Ex_vs_theta_recoilT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_recoil_random_cut.size(); ++i )
+			Ex_vs_theta_recoil_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_recoilT_random_cut.size(); ++i )
+			Ex_vs_theta_recoilT_random_cut[i]->Reset("ICESM");
+
+	}
+
+	if( react->IsFission() ) {
+
+		Ex_vs_theta_fission->Reset("ICESM");
+		Ex_vs_theta_fissionT->Reset("ICESM");
+		Ex_vs_theta_fission_random->Reset("ICESM");
+		Ex_vs_theta_fissionT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fission_mod.size(); ++i )
+			Ex_vs_theta_fission_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fissionT_mod.size(); ++i )
+			Ex_vs_theta_fissionT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fission_random_mod.size(); ++i )
+			Ex_vs_theta_fission_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fissionT_random_mod.size(); ++i )
+			Ex_vs_theta_fissionT_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fission_cut.size(); ++i )
+			Ex_vs_theta_fission_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fissionT_cut.size(); ++i )
+			Ex_vs_theta_fissionT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fission_random_cut.size(); ++i )
+			Ex_vs_theta_fission_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fissionT_random_cut.size(); ++i )
+			Ex_vs_theta_fissionT_random_cut[i]->Reset("ICESM");
+
+	}
 
 	for( unsigned int i = 0; i < Ex_vs_theta_mod.size(); ++i )
 		Ex_vs_theta_mod[i]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < Ex_vs_theta_ebis_mod.size(); ++i )
 		Ex_vs_theta_ebis_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_vs_theta_recoil_mod.size(); ++i )
-		Ex_vs_theta_recoil_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_vs_theta_recoilT_mod.size(); ++i )
-		Ex_vs_theta_recoilT_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_vs_theta_recoil_random_mod.size(); ++i )
-		Ex_vs_theta_recoil_random_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_vs_theta_recoilT_random_mod.size(); ++i )
-		Ex_vs_theta_recoilT_random_mod[i]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < Ex_vs_theta_ebis_off_mod.size(); ++i )
 		Ex_vs_theta_ebis_off_mod[i]->Reset("ICESM");
@@ -1449,19 +2157,7 @@ void ISSHistogrammer::ResetHists() {
 	
 	for( unsigned int i = 0; i < Ex_vs_theta_cut.size(); ++i )
 		Ex_vs_theta_cut[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_vs_theta_recoil_cut.size(); ++i )
-		Ex_vs_theta_recoil_cut[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_vs_theta_recoilT_cut.size(); ++i )
-		Ex_vs_theta_recoilT_cut[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_vs_theta_recoil_random_cut.size(); ++i )
-		Ex_vs_theta_recoil_random_cut[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_vs_theta_recoilT_random_cut.size(); ++i )
-		Ex_vs_theta_recoilT_random_cut[i]->Reset("ICESM");
-	
+
 	for( unsigned int i = 0; i < Ex_vs_theta_T1_cut.size(); ++i )
 		Ex_vs_theta_T1_cut[i]->Reset("ICESM");
 	
@@ -1473,29 +2169,79 @@ void ISSHistogrammer::ResetHists() {
 	E_vs_theta_ebis->Reset("ICESM");
 	E_vs_theta_ebis_on->Reset("ICESM");
 	E_vs_theta_ebis_off->Reset("ICESM");
-	E_vs_theta_recoil->Reset("ICESM");
-	E_vs_theta_recoilT->Reset("ICESM");
-	E_vs_theta_recoil_random->Reset("ICESM");
-	E_vs_theta_recoilT_random->Reset("ICESM");
 	E_vs_theta_T1->Reset("ICESM");
+
+	if( !react->IsFission() ) {
+
+		E_vs_theta_recoil->Reset("ICESM");
+		E_vs_theta_recoilT->Reset("ICESM");
+		E_vs_theta_recoil_random->Reset("ICESM");
+		E_vs_theta_recoilT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_recoil_mod.size(); ++i )
+			E_vs_theta_recoil_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_recoilT_mod.size(); ++i )
+			E_vs_theta_recoilT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_recoil_random_mod.size(); ++i )
+			E_vs_theta_recoil_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_recoilT_random_mod.size(); ++i )
+			E_vs_theta_recoilT_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_recoil_cut.size(); ++i )
+			Ex_vs_theta_recoil_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_recoilT_cut.size(); ++i )
+			E_vs_theta_recoilT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_recoil_random_cut.size(); ++i )
+			E_vs_theta_recoil_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_recoilT_random_cut.size(); ++i )
+			E_vs_theta_recoilT_random_cut[i]->Reset("ICESM");
+
+	}
+
+	if( react->IsFission() ) {
+
+		E_vs_theta_fission->Reset("ICESM");
+		E_vs_theta_fissionT->Reset("ICESM");
+		E_vs_theta_fission_random->Reset("ICESM");
+		E_vs_theta_fissionT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fission_mod.size(); ++i )
+			E_vs_theta_fission_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fissionT_mod.size(); ++i )
+			E_vs_theta_fissionT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fission_random_mod.size(); ++i )
+			E_vs_theta_fission_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fissionT_random_mod.size(); ++i )
+			E_vs_theta_fissionT_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fission_cut.size(); ++i )
+			Ex_vs_theta_fission_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fissionT_cut.size(); ++i )
+			E_vs_theta_fissionT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fission_random_cut.size(); ++i )
+			E_vs_theta_fission_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fissionT_random_cut.size(); ++i )
+			E_vs_theta_fissionT_random_cut[i]->Reset("ICESM");
+
+	}
 
 	for( unsigned int i = 0; i < E_vs_theta_mod.size(); ++i )
 		E_vs_theta_mod[i]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < E_vs_theta_ebis_mod.size(); ++i )
 		E_vs_theta_ebis_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < E_vs_theta_recoil_mod.size(); ++i )
-		E_vs_theta_recoil_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < E_vs_theta_recoilT_mod.size(); ++i )
-		E_vs_theta_recoilT_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < E_vs_theta_recoil_random_mod.size(); ++i )
-		E_vs_theta_recoil_random_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < E_vs_theta_recoilT_random_mod.size(); ++i )
-		E_vs_theta_recoilT_random_mod[i]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < E_vs_theta_ebis_off_mod.size(); ++i )
 		E_vs_theta_ebis_off_mod[i]->Reset("ICESM");
@@ -1512,18 +2258,6 @@ void ISSHistogrammer::ResetHists() {
 	for( unsigned int i = 0; i < E_vs_theta_cut.size(); ++i )
 		E_vs_theta_cut[i]->Reset("ICESM");
 	
-	for( unsigned int i = 0; i < E_vs_theta_recoil_cut.size(); ++i )
-		Ex_vs_theta_recoil_cut[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < E_vs_theta_recoilT_cut.size(); ++i )
-		E_vs_theta_recoilT_cut[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < E_vs_theta_recoil_random_cut.size(); ++i )
-		E_vs_theta_recoil_random_cut[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < E_vs_theta_recoilT_random_cut.size(); ++i )
-		E_vs_theta_recoilT_random_cut[i]->Reset("ICESM");
-	
 	for( unsigned int i = 0; i < E_vs_theta_T1_cut.size(); ++i )
 		E_vs_theta_T1_cut[i]->Reset("ICESM");
 	
@@ -1535,23 +2269,73 @@ void ISSHistogrammer::ResetHists() {
 	Ex_vs_z_ebis->Reset("ICESM");
 	Ex_vs_z_ebis_on->Reset("ICESM");
 	Ex_vs_z_ebis_off->Reset("ICESM");
-	Ex_vs_z_recoil->Reset("ICESM");
-	Ex_vs_z_recoilT->Reset("ICESM");
-	Ex_vs_z_recoil_random->Reset("ICESM");
-	Ex_vs_z_recoilT_random->Reset("ICESM");
 	Ex_vs_z_T1->Reset("ICESM");
 
-	for( unsigned int i = 0; i < Ex_vs_z_recoil_cut.size(); ++i )
-		Ex_vs_z_recoil_cut[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_vs_z_recoilT_cut.size(); ++i )
-		Ex_vs_z_recoilT_cut[i]->Reset("ICESM");
+	if( !react->IsFission() ) {
 
-	for( unsigned int i = 0; i < Ex_vs_z_recoil_random_cut.size(); ++i )
-		Ex_vs_z_recoil_random_cut[i]->Reset("ICESM");
+		Ex_vs_z_recoil->Reset("ICESM");
+		Ex_vs_z_recoilT->Reset("ICESM");
+		Ex_vs_z_recoil_random->Reset("ICESM");
+		Ex_vs_z_recoilT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_recoil_mod.size(); ++i )
+			Ex_vs_z_recoil_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_recoilT_mod.size(); ++i )
+			Ex_vs_z_recoilT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_recoil_random_mod.size(); ++i )
+			Ex_vs_z_recoil_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_recoilT_random_mod.size(); ++i )
+			Ex_vs_z_recoilT_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_recoil_cut.size(); ++i )
+			Ex_vs_z_recoil_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_recoilT_cut.size(); ++i )
+			Ex_vs_z_recoilT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_recoil_random_cut.size(); ++i )
+			Ex_vs_z_recoil_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_recoilT_random_cut.size(); ++i )
+			Ex_vs_z_recoilT_random_cut[i]->Reset("ICESM");
+
+	}
 	
-	for( unsigned int i = 0; i < Ex_vs_z_recoilT_random_cut.size(); ++i )
-		Ex_vs_z_recoilT_random_cut[i]->Reset("ICESM");
+	if( react->IsFission() ) {
+
+		Ex_vs_z_fission->Reset("ICESM");
+		Ex_vs_z_fissionT->Reset("ICESM");
+		Ex_vs_z_fission_random->Reset("ICESM");
+		Ex_vs_z_fissionT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fission_mod.size(); ++i )
+			Ex_vs_z_fission_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fissionT_mod.size(); ++i )
+			Ex_vs_z_fissionT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fission_random_mod.size(); ++i )
+			Ex_vs_z_fission_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fissionT_random_mod.size(); ++i )
+			Ex_vs_z_fissionT_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fission_cut.size(); ++i )
+			Ex_vs_z_fission_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fissionT_cut.size(); ++i )
+			Ex_vs_z_fissionT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fission_random_cut.size(); ++i )
+			Ex_vs_z_fission_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fissionT_random_cut.size(); ++i )
+			Ex_vs_z_fissionT_random_cut[i]->Reset("ICESM");
+
+	}
 
 	for( unsigned int i = 0; i < Ex_vs_z_T1_cut.size(); ++i )
 		Ex_vs_z_T1_cut[i]->Reset("ICESM");
@@ -1567,18 +2351,6 @@ void ISSHistogrammer::ResetHists() {
 	
 	for( unsigned int i = 0; i < Ex_vs_z_ebis_off_mod.size(); ++i )
 		Ex_vs_z_ebis_off_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_vs_z_recoil_mod.size(); ++i )
-		Ex_vs_z_recoil_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_vs_z_recoilT_mod.size(); ++i )
-		Ex_vs_z_recoilT_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_vs_z_recoil_random_mod.size(); ++i )
-		Ex_vs_z_recoil_random_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_vs_z_recoilT_random_mod.size(); ++i )
-		Ex_vs_z_recoilT_random_mod[i]->Reset("ICESM");
 	
 	for( unsigned int i = 0; i < Ex_vs_z_cut.size(); ++i )
 		Ex_vs_z_cut[i]->Reset("ICESM");
@@ -1597,24 +2369,74 @@ void ISSHistogrammer::ResetHists() {
 	Ex_ebis->Reset("ICESM");
 	Ex_ebis_on->Reset("ICESM");
 	Ex_ebis_off->Reset("ICESM");
-	Ex_recoil->Reset("ICESM");
-	Ex_recoilT->Reset("ICESM");
-	Ex_recoil_random->Reset("ICESM");
-	Ex_recoilT_random->Reset("ICESM");
 	Ex_T1->Reset("ICESM");
 	Ex_vs_T1->Reset("ICESM");
 
-	for( unsigned int i = 0; i < Ex_recoil_cut.size(); ++i )
-		Ex_recoil_cut[i]->Reset("ICESM");
+	if( !react->IsFission() ) {
+
+		Ex_recoil->Reset("ICESM");
+		Ex_recoilT->Reset("ICESM");
+		Ex_recoil_random->Reset("ICESM");
+		Ex_recoilT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_recoil_cut.size(); ++i )
+			Ex_recoil_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_recoilT_cut.size(); ++i )
+			Ex_recoilT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_recoil_random_cut.size(); ++i )
+			Ex_recoil_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_recoilT_random_cut.size(); ++i )
+			Ex_recoilT_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_recoil_mod.size(); ++i )
+			Ex_recoil_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_recoilT_mod.size(); ++i )
+			Ex_recoilT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_recoil_random_mod.size(); ++i )
+			Ex_recoil_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_recoilT_random_mod.size(); ++i )
+			Ex_recoilT_random_mod[i]->Reset("ICESM");
+
+	}
 	
-	for( unsigned int i = 0; i < Ex_recoilT_cut.size(); ++i )
-		Ex_recoilT_cut[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_recoil_random_cut.size(); ++i )
-		Ex_recoil_random_cut[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_recoilT_random_cut.size(); ++i )
-		Ex_recoilT_random_cut[i]->Reset("ICESM");
+	if( react->IsFission() ) {
+
+		Ex_fission->Reset("ICESM");
+		Ex_fissionT->Reset("ICESM");
+		Ex_fission_random->Reset("ICESM");
+		Ex_fissionT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fission_cut.size(); ++i )
+			Ex_fission_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fissionT_cut.size(); ++i )
+			Ex_fissionT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fission_random_cut.size(); ++i )
+			Ex_fission_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fissionT_random_cut.size(); ++i )
+			Ex_fissionT_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fission_mod.size(); ++i )
+			Ex_fission_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fissionT_mod.size(); ++i )
+			Ex_fissionT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fission_random_mod.size(); ++i )
+			Ex_fission_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fissionT_random_mod.size(); ++i )
+			Ex_fissionT_random_mod[i]->Reset("ICESM");
+
+	}
 	
 	for( unsigned int i = 0; i < Ex_T1_cut.size(); ++i )
 		Ex_T1_cut[i]->Reset("ICESM");
@@ -1634,18 +2456,6 @@ void ISSHistogrammer::ResetHists() {
 	for( unsigned int i = 0; i < Ex_ebis_off_mod.size(); ++i )
 		Ex_ebis_off_mod[i]->Reset("ICESM");
 	
-	for( unsigned int i = 0; i < Ex_recoil_mod.size(); ++i )
-		Ex_recoil_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_recoilT_mod.size(); ++i )
-		Ex_recoilT_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_recoil_random_mod.size(); ++i )
-		Ex_recoil_random_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Ex_recoilT_random_mod.size(); ++i )
-		Ex_recoilT_random_mod[i]->Reset("ICESM");
-	
 	for( unsigned int i = 0; i < Ex_cut.size(); ++i )
 		Ex_cut[i]->Reset("ICESM");
 	
@@ -1663,23 +2473,73 @@ void ISSHistogrammer::ResetHists() {
 	Theta_ebis->Reset("ICESM");
 	Theta_ebis_on->Reset("ICESM");
 	Theta_ebis_off->Reset("ICESM");
-	Theta_recoil->Reset("ICESM");
-	Theta_recoilT->Reset("ICESM");
-	Theta_recoil_random->Reset("ICESM");
-	Theta_recoilT_random->Reset("ICESM");
 	Theta_T1->Reset("ICESM");
 
-	for( unsigned int i = 0; i < Theta_recoil_cut.size(); ++i )
-		Theta_recoil_cut[i]->Reset("ICESM");
+	if( !react->IsFission() ) {
+
+		Theta_recoil->Reset("ICESM");
+		Theta_recoilT->Reset("ICESM");
+		Theta_recoil_random->Reset("ICESM");
+		Theta_recoilT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_recoil_cut.size(); ++i )
+			Theta_recoil_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_recoilT_cut.size(); ++i )
+			Theta_recoilT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_recoil_random_cut.size(); ++i )
+			Theta_recoil_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_recoilT_random_cut.size(); ++i )
+			Theta_recoilT_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_recoil_mod.size(); ++i )
+			Theta_recoil_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_recoilT_mod.size(); ++i )
+			Theta_recoilT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_recoil_random_mod.size(); ++i )
+			Theta_recoil_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_recoilT_random_mod.size(); ++i )
+			Theta_recoilT_random_mod[i]->Reset("ICESM");
+
+	}
 	
-	for( unsigned int i = 0; i < Theta_recoilT_cut.size(); ++i )
-		Theta_recoilT_cut[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Theta_recoil_random_cut.size(); ++i )
-		Theta_recoil_random_cut[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Theta_recoilT_random_cut.size(); ++i )
-		Theta_recoilT_random_cut[i]->Reset("ICESM");
+	if( react->IsFission() ) {
+
+		Theta_fission->Reset("ICESM");
+		Theta_fissionT->Reset("ICESM");
+		Theta_fission_random->Reset("ICESM");
+		Theta_fissionT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fission_cut.size(); ++i )
+			Theta_fission_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fissionT_cut.size(); ++i )
+			Theta_fissionT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fission_random_cut.size(); ++i )
+			Theta_fission_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fissionT_random_cut.size(); ++i )
+			Theta_fissionT_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fission_mod.size(); ++i )
+			Theta_fission_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fissionT_mod.size(); ++i )
+			Theta_fissionT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fission_random_mod.size(); ++i )
+			Theta_fission_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fissionT_random_mod.size(); ++i )
+			Theta_fissionT_random_mod[i]->Reset("ICESM");
+
+	}
 	
 	for( unsigned int i = 0; i < Theta_T1_cut.size(); ++i )
 		Theta_T1_cut[i]->Reset("ICESM");
@@ -1696,18 +2556,6 @@ void ISSHistogrammer::ResetHists() {
 	for( unsigned int i = 0; i < Theta_ebis_off_mod.size(); ++i )
 		Theta_ebis_off_mod[i]->Reset("ICESM");
 	
-	for( unsigned int i = 0; i < Theta_recoil_mod.size(); ++i )
-		Theta_recoil_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Theta_recoilT_mod.size(); ++i )
-		Theta_recoilT_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Theta_recoil_random_mod.size(); ++i )
-		Theta_recoil_random_mod[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < Theta_recoilT_random_mod.size(); ++i )
-		Theta_recoilT_random_mod[i]->Reset("ICESM");
-	
 	for( unsigned int i = 0; i < Theta_cut.size(); ++i )
 		Theta_cut[i]->Reset("ICESM");
 	
@@ -1722,6 +2570,12 @@ void ISSHistogrammer::ResetHists() {
 	
 	
 	// ELUM
+	elum->Reset("ICESM");
+	elum_ebis->Reset("ICESM");
+	elum_ebis_on->Reset("ICESM");
+	elum_ebis_off->Reset("ICESM");
+	elum_vs_T1->Reset("ICESM");
+
 	for( unsigned int i = 0; i < elum_sec.size(); ++i )
 		elum_sec[i]->Reset("ICESM");
 	
@@ -1734,30 +2588,50 @@ void ISSHistogrammer::ResetHists() {
 	for( unsigned int i = 0; i < elum_ebis_off_sec.size(); ++i )
 		elum_ebis_off_sec[i]->Reset("ICESM");
 	
-	for( unsigned int i = 0; i < elum_recoil_sec.size(); ++i )
-		elum_recoil_sec[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < elum_recoilT_sec.size(); ++i )
-		elum_recoilT_sec[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < elum_recoil_random_sec.size(); ++i )
-		elum_recoil_random_sec[i]->Reset("ICESM");
-	
-	for( unsigned int i = 0; i < elum_recoilT_random_sec.size(); ++i )
-		elum_recoilT_random_sec[i]->Reset("ICESM");
-	
-	elum->Reset("ICESM");
-	elum_ebis->Reset("ICESM");
-	elum_ebis_on->Reset("ICESM");
-	elum_ebis_off->Reset("ICESM");
-	elum_recoil->Reset("ICESM");
-	elum_recoilT->Reset("ICESM");
-	elum_recoil_random->Reset("ICESM");
-	elum_recoilT_random->Reset("ICESM");
-	elum_vs_T1->Reset("ICESM");
+	if( !react->IsFission() ) {
 
-	//LUME (All vectors have the same size.)
-	for ( unsigned int i = 0; i < lume_det.size(); ++i ) {
+		elum_recoil->Reset("ICESM");
+		elum_recoilT->Reset("ICESM");
+		elum_recoil_random->Reset("ICESM");
+		elum_recoilT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < elum_recoil_sec.size(); ++i )
+			elum_recoil_sec[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < elum_recoilT_sec.size(); ++i )
+			elum_recoilT_sec[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < elum_recoil_random_sec.size(); ++i )
+			elum_recoil_random_sec[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < elum_recoilT_random_sec.size(); ++i )
+			elum_recoilT_random_sec[i]->Reset("ICESM");
+
+	}
+	
+	if( react->IsFission() ) {
+
+		elum_fission->Reset("ICESM");
+		elum_fissionT->Reset("ICESM");
+		elum_fission_random->Reset("ICESM");
+		elum_fissionT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < elum_fission_sec.size(); ++i )
+			elum_fission_sec[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < elum_fissionT_sec.size(); ++i )
+			elum_fissionT_sec[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < elum_fission_random_sec.size(); ++i )
+			elum_fission_random_sec[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < elum_fissionT_random_sec.size(); ++i )
+			elum_fissionT_random_sec[i]->Reset("ICESM");
+
+	}
+
+	// LUME (All vectors have the same size.)
+	for( unsigned int i = 0; i < lume_det.size(); ++i ) {
 		lume_det[i]->Reset("ICESM");
 		lume_ebis_det[i]->Reset("ICESM");
 		lume_ebis_on_det[i]->Reset("ICESM");
@@ -2044,102 +2918,79 @@ unsigned long ISSHistogrammer::FillHists() {
 				
 			} // off ebis
 			
-			// Loop over recoil events
+
+			// Loop over recoil or fission events
 			bool promptcheck = false;
 			bool randomcheck = false;
 			bool energycheck = false;
-			for( unsigned int k = 0; k < read_evts->GetRecoilMultiplicity(); ++k ){
-				
-				// Get recoil event
-				recoil_evt = read_evts->GetRecoilEvt(k);
-				
-				// Time differences
-				tdiff = recoil_evt->GetTime() - array_evt->GetTime();
-				recoil_array_td[recoil_evt->GetSector()][array_evt->GetModule()]->Fill( tdiff );
-				
-				if( array_evt->GetPHit() ) { // hit bit = true
-					
-					recoil_array_tw_hit1->Fill( tdiff, array_evt->GetEnergy() );
-					recoil_array_tw_hit1_prof->Fill( array_evt->GetEnergy(), tdiff );
-					recoil_array_tw_hit1_row[array_evt->GetModule()][array_evt->GetRow()]->Fill( tdiff, array_evt->GetEnergy() );
 
-				}
+			// If we have fission mode, rather than recoil mode
+			if( react->IsFission() ) {
 				
-				else { // hit bit = false
-					
-					recoil_array_tw_hit0->Fill( tdiff, array_evt->GetEnergy() );
-					recoil_array_tw_hit0_prof->Fill( array_evt->GetEnergy(), tdiff );
-					recoil_array_tw_hit0_row[array_evt->GetModule()][array_evt->GetRow()]->Fill( tdiff, array_evt->GetEnergy() );
+			} // fission mode finished
 
-				}
+			// Recoil mode
+			else {
 				
-				
-				// Check for prompt events with recoils
-				if( PromptCoincidence( recoil_evt, array_evt ) )
-					promptcheck = true;
-				
-				// Check for random events with recoils
-				if( RandomCoincidence( recoil_evt, array_evt ) )
-					randomcheck = true;
-				
-				// Check energy gate
-				if( RecoilCut( recoil_evt ) )
-					energycheck = true;
-				
-			} // k
-			
-			// Fill prompt hists
-			if( promptcheck == true ){
+				for( unsigned int k = 0; k < read_evts->GetRecoilMultiplicity(); ++k ){
 					
-				// Recoils in coincidence with an array event
-				recoil_EdE_array[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ), recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
-				
-				// Array histograms
-				E_vs_z_recoilT->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-				E_vs_z_recoilT_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-				Theta_recoilT->Fill( react->GetThetaCM() * TMath::RadToDeg() );
-				Theta_recoilT_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
-				Ex_recoilT->Fill( react->GetEx() );
-				Ex_recoilT_mod[array_evt->GetModule()]->Fill( react->GetEx() );
-				E_vs_theta_recoilT->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
-				E_vs_theta_recoilT_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
-				Ex_vs_theta_recoilT->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-				Ex_vs_theta_recoilT_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-				Ex_vs_z_recoilT->Fill( react->GetZmeasured(), react->GetEx() );
-				Ex_vs_z_recoilT_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
-				
-				// Check the E vs z cuts from the user
-				for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
+					// Get recoil event
+					recoil_evt = read_evts->GetRecoilEvt(k);
 					
-					// Is inside the cut
-					if( react->GetEvsZCut(l)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+					// Time differences
+					tdiff = recoil_evt->GetTime() - array_evt->GetTime();
+					recoil_array_td[recoil_evt->GetSector()][array_evt->GetModule()]->Fill( tdiff );
+
+					if( array_evt->GetPHit() ) { // hit bit = true
+
+						recoil_array_tw_hit1->Fill( tdiff, array_evt->GetEnergy() );
+						recoil_array_tw_hit1_prof->Fill( array_evt->GetEnergy(), tdiff );
+						recoil_array_tw_hit1_row[array_evt->GetModule()][array_evt->GetRow()]->Fill( tdiff, array_evt->GetEnergy() );
+
+					}
+
+					else { // hit bit = false
 						
-						E_vs_z_recoilT_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-						Theta_recoilT_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
-						Ex_recoilT_cut[l]->Fill( react->GetEx() );
-						E_vs_theta_recoilT_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
-						Ex_vs_theta_recoilT_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-						Ex_vs_z_recoilT_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
+						recoil_array_tw_hit0->Fill( tdiff, array_evt->GetEnergy() );
+						recoil_array_tw_hit0_prof->Fill( array_evt->GetEnergy(), tdiff );
+						recoil_array_tw_hit0_row[array_evt->GetModule()][array_evt->GetRow()]->Fill( tdiff, array_evt->GetEnergy() );
 						
-					} // inside cut
+					}
 					
-				} // loop over cuts
+
+					// Check for prompt events with recoils
+					if( PromptCoincidence( recoil_evt, array_evt ) )
+						promptcheck = true;
+
+					// Check for random events with recoils
+					if( RandomCoincidence( recoil_evt, array_evt ) )
+						randomcheck = true;
+
+					// Check energy gate
+					if( RecoilCut( recoil_evt ) )
+						energycheck = true;
+
+				} // k
 				
-				// Fill energy gate hists
-				if( energycheck == true ) {
+				// Fill prompt hists
+				if( promptcheck == true ){
 					
-					E_vs_z_recoil->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-					E_vs_z_recoil_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-					Theta_recoil->Fill( react->GetThetaCM() * TMath::RadToDeg() );
-					Theta_recoil_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
-					Ex_recoil->Fill( react->GetEx() );
-					Ex_recoil_mod[array_evt->GetModule()]->Fill( react->GetEx() );
-					E_vs_theta_recoil->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
-					E_vs_theta_recoil_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
-					Ex_vs_theta_recoil->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-					Ex_vs_theta_recoil_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-					Ex_vs_z_recoil->Fill( react->GetZmeasured(), react->GetEx() );
-					Ex_vs_z_recoil_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
+					// Recoils in coincidence with an array event
+					recoil_EdE_array[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ), recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+
+					// Array histograms
+					E_vs_z_recoilT->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+					E_vs_z_recoilT_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+					Theta_recoilT->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+					Theta_recoilT_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+					Ex_recoilT->Fill( react->GetEx() );
+					Ex_recoilT_mod[array_evt->GetModule()]->Fill( react->GetEx() );
+					E_vs_theta_recoilT->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+					E_vs_theta_recoilT_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+					Ex_vs_theta_recoilT->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+					Ex_vs_theta_recoilT_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+					Ex_vs_z_recoilT->Fill( react->GetZmeasured(), react->GetEx() );
+					Ex_vs_z_recoilT_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 					
 					// Check the E vs z cuts from the user
 					for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
@@ -2147,70 +2998,70 @@ unsigned long ISSHistogrammer::FillHists() {
 						// Is inside the cut
 						if( react->GetEvsZCut(l)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
 							
-							E_vs_z_recoil_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-							Theta_recoil_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
-							Ex_recoil_cut[l]->Fill( react->GetEx() );
-							E_vs_theta_recoil_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
-							Ex_vs_theta_recoil_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-							Ex_vs_z_recoil_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
+							E_vs_z_recoilT_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+							Theta_recoilT_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+							Ex_recoilT_cut[l]->Fill( react->GetEx() );
+							E_vs_theta_recoilT_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+							Ex_vs_theta_recoilT_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+							Ex_vs_z_recoilT_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
 							
 						} // inside cut
 						
 					} // loop over cuts
 					
-				} // energy cuts
-				
-			} // prompt
-				
-			// Fill random hists, but only if we didn't fill it already as a prompt hit
-			else if( randomcheck == true ){
-					
-				// Array histograms
-				E_vs_z_recoilT_random->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-				E_vs_z_recoilT_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-				Theta_recoilT_random->Fill( react->GetThetaCM() * TMath::RadToDeg() );
-				Theta_recoilT_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
-				Ex_recoilT_random->Fill( react->GetEx() );
-				Ex_recoilT_random_mod[array_evt->GetModule()]->Fill( react->GetEx() );
-				E_vs_theta_recoilT_random->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
-				E_vs_theta_recoilT_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
-				Ex_vs_theta_recoilT_random->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-				Ex_vs_theta_recoilT_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-				Ex_vs_z_recoilT_random->Fill( react->GetZmeasured(), react->GetEx() );
-				Ex_vs_z_recoilT_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
-				
-				// Check the E vs z cuts from the user
-				for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
-					
-					// Is inside the cut
-					if( react->GetEvsZCut(l)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+					// Fill energy gate hists
+					if( energycheck == true ) {
 						
-						E_vs_z_recoilT_random_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-						Theta_recoilT_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
-						Ex_recoilT_random_cut[l]->Fill( react->GetEx() );
-						E_vs_theta_recoilT_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
-						Ex_vs_theta_recoilT_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-						Ex_vs_z_recoilT_random_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
+						E_vs_z_recoil->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+						E_vs_z_recoil_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+						Theta_recoil->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+						Theta_recoil_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+						Ex_recoil->Fill( react->GetEx() );
+						Ex_recoil_mod[array_evt->GetModule()]->Fill( react->GetEx() );
+						E_vs_theta_recoil->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+						E_vs_theta_recoil_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+						Ex_vs_theta_recoil->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+						Ex_vs_theta_recoil_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+						Ex_vs_z_recoil->Fill( react->GetZmeasured(), react->GetEx() );
+						Ex_vs_z_recoil_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 						
-					} // inside cut
+						// Check the E vs z cuts from the user
+						for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
+
+							// Is inside the cut
+							if( react->GetEvsZCut(l)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+
+								E_vs_z_recoil_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+								Theta_recoil_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+								Ex_recoil_cut[l]->Fill( react->GetEx() );
+								E_vs_theta_recoil_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+								Ex_vs_theta_recoil_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+								Ex_vs_z_recoil_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
+
+							} // inside cut
+
+						} // loop over cuts
+
+					} // energy cuts
 					
-				} // loop over cuts
+				} // prompt
 				
-				// Fill energy gate hists
-				if( energycheck == true ) {
+				// Fill random hists, but only if we didn't fill it already as a prompt hit
+				else if( randomcheck == true ){
 					
-					E_vs_z_recoil_random->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-					E_vs_z_recoil_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-					Theta_recoil_random->Fill( react->GetThetaCM() * TMath::RadToDeg() );
-					Theta_recoil_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
-					Ex_recoil_random->Fill( react->GetEx() );
-					Ex_recoil_random_mod[array_evt->GetModule()]->Fill( react->GetEx() );
-					E_vs_theta_recoil_random->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
-					E_vs_theta_recoil_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
-					Ex_vs_theta_recoil_random->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-					Ex_vs_theta_recoil_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-					Ex_vs_z_recoil_random->Fill( react->GetZmeasured(), react->GetEx() );
-					Ex_vs_z_recoil_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
+					// Array histograms
+					E_vs_z_recoilT_random->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+					E_vs_z_recoilT_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+					Theta_recoilT_random->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+					Theta_recoilT_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+					Ex_recoilT_random->Fill( react->GetEx() );
+					Ex_recoilT_random_mod[array_evt->GetModule()]->Fill( react->GetEx() );
+					E_vs_theta_recoilT_random->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+					E_vs_theta_recoilT_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+					Ex_vs_theta_recoilT_random->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+					Ex_vs_theta_recoilT_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+					Ex_vs_z_recoilT_random->Fill( react->GetZmeasured(), react->GetEx() );
+					Ex_vs_z_recoilT_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 					
 					// Check the E vs z cuts from the user
 					for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
@@ -2218,20 +3069,55 @@ unsigned long ISSHistogrammer::FillHists() {
 						// Is inside the cut
 						if( react->GetEvsZCut(l)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
 							
-							E_vs_z_recoil_random_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-							Theta_recoil_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
-							Ex_recoil_random_cut[l]->Fill( react->GetEx() );
-							Ex_vs_theta_recoil_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
-							Ex_vs_theta_recoil_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
-							Ex_vs_z_recoil_random_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
+							E_vs_z_recoilT_random_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+							Theta_recoilT_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+							Ex_recoilT_random_cut[l]->Fill( react->GetEx() );
+							E_vs_theta_recoilT_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+							Ex_vs_theta_recoilT_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+							Ex_vs_z_recoilT_random_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
 							
 						} // inside cut
 						
 					} // loop over cuts
 					
-				} // energy cuts
+					// Fill energy gate hists
+					if( energycheck == true ) {
+
+						E_vs_z_recoil_random->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+						E_vs_z_recoil_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+						Theta_recoil_random->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+						Theta_recoil_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+						Ex_recoil_random->Fill( react->GetEx() );
+						Ex_recoil_random_mod[array_evt->GetModule()]->Fill( react->GetEx() );
+						E_vs_theta_recoil_random->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+						E_vs_theta_recoil_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+						Ex_vs_theta_recoil_random->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+						Ex_vs_theta_recoil_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+						Ex_vs_z_recoil_random->Fill( react->GetZmeasured(), react->GetEx() );
+						Ex_vs_z_recoil_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
+
+						// Check the E vs z cuts from the user
+						for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
+
+							// Is inside the cut
+							if( react->GetEvsZCut(l)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+
+								E_vs_z_recoil_random_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+								Theta_recoil_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+								Ex_recoil_random_cut[l]->Fill( react->GetEx() );
+								Ex_vs_theta_recoil_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+								Ex_vs_theta_recoil_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+								Ex_vs_z_recoil_random_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
+
+							} // inside cut
+
+						} // loop over cuts
+
+					} // energy cuts
+
+				} // random
 				
-			} // random
+			} // recoil mode finished
 				
 		} // array
 		

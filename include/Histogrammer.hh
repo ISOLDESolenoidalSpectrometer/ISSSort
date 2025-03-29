@@ -211,13 +211,19 @@ private:
 	// Timing
 	std::vector<std::vector<TH1F*>> recoil_array_td;
 	std::vector<std::vector<TH1F*>> recoil_elum_td;
+	std::vector<TH1F*> fission_array_td;
+	std::vector<TH1F*> fission_elum_td;
 	TH2F *recoil_array_tw_hit0, *recoil_array_tw_hit1;
 	std::vector<std::vector<TH2F*>> recoil_array_tw_hit0_row;
 	std::vector<std::vector<TH2F*>> recoil_array_tw_hit1_row;
 	TProfile *recoil_array_tw_hit0_prof, *recoil_array_tw_hit1_prof;
-	TH1F *ebis_td_recoil, *ebis_td_array, *ebis_td_elum;
+	TH2F *fission_array_tw_hit0, *fission_array_tw_hit1;
+	std::vector<std::vector<TH2F*>> fission_array_tw_hit0_row;
+	std::vector<std::vector<TH2F*>> fission_array_tw_hit1_row;
+	TProfile *fission_array_tw_hit0_prof, *fission_array_tw_hit1_prof;
+	TH1F *ebis_td_recoil, *ebis_td_fission, *ebis_td_array, *ebis_td_elum, *ebis_td_lume;
 	TH1F *t1_td_recoil, *sc_td_recoil;
-    TH1F *ebis_td_lume;
+	TH1F *t1_td_fission, *sc_td_fission;
 
 	// Recoils
 	std::vector<TH2F*> recoil_EdE;
@@ -228,6 +234,15 @@ private:
 	std::vector<TH1F*> recoil_dE_eloss;
 	std::vector<TH1F*> recoil_E_eloss;
 
+	// Fission fragments
+	TH2F* fission_EdE;
+	TH2F* fission_EdE_cut;
+	TH2F* fission_EdE_array;
+	TH2F* fission_bragg;
+	TH2F* fission_dE_vs_T1;
+	TH1F* fission_dE_eloss;
+	TH1F* fission_E_eloss;
+
 	// Array - E vs. z
 	std::vector<TH2F*> E_vs_z_mod;
 	std::vector<TH2F*> E_vs_z_ebis_mod;
@@ -237,6 +252,10 @@ private:
 	std::vector<TH2F*> E_vs_z_recoilT_mod;
 	std::vector<TH2F*> E_vs_z_recoil_random_mod;
 	std::vector<TH2F*> E_vs_z_recoilT_random_mod;
+	std::vector<TH2F*> E_vs_z_fission_mod;
+	std::vector<TH2F*> E_vs_z_fissionT_mod;
+	std::vector<TH2F*> E_vs_z_fission_random_mod;
+	std::vector<TH2F*> E_vs_z_fissionT_random_mod;
 	std::vector<TH2F*> E_vs_z_cut;
 	std::vector<TH2F*> E_vs_z_ebis_cut;
 	std::vector<TH2F*> E_vs_z_ebis_on_cut;
@@ -245,10 +264,16 @@ private:
 	std::vector<TH2F*> E_vs_z_recoilT_cut;
 	std::vector<TH2F*> E_vs_z_recoil_random_cut;
 	std::vector<TH2F*> E_vs_z_recoilT_random_cut;
+	std::vector<TH2F*> E_vs_z_fission_cut;
+	std::vector<TH2F*> E_vs_z_fissionT_cut;
+	std::vector<TH2F*> E_vs_z_fission_random_cut;
+	std::vector<TH2F*> E_vs_z_fissionT_random_cut;
 	std::vector<TH2F*> E_vs_z_T1_cut;
 	TH2F *E_vs_z, *E_vs_z_ebis, *E_vs_z_ebis_on, *E_vs_z_ebis_off;
 	TH2F *E_vs_z_recoil, *E_vs_z_recoilT, *E_vs_z_T1;
 	TH2F *E_vs_z_recoil_random, *E_vs_z_recoilT_random;
+	TH2F *E_vs_z_fission, *E_vs_z_fissionT;
+	TH2F *E_vs_z_fission_random, *E_vs_z_fissionT_random;
 
 	// Array - E vs. thetaCM
 	std::vector<TH2F*> E_vs_theta_mod;
@@ -259,6 +284,10 @@ private:
 	std::vector<TH2F*> E_vs_theta_recoilT_mod;
 	std::vector<TH2F*> E_vs_theta_recoil_random_mod;
 	std::vector<TH2F*> E_vs_theta_recoilT_random_mod;
+	std::vector<TH2F*> E_vs_theta_fission_mod;
+	std::vector<TH2F*> E_vs_theta_fissionT_mod;
+	std::vector<TH2F*> E_vs_theta_fission_random_mod;
+	std::vector<TH2F*> E_vs_theta_fissionT_random_mod;
 	std::vector<TH2F*> E_vs_theta_cut;
 	std::vector<TH2F*> E_vs_theta_ebis_cut;
 	std::vector<TH2F*> E_vs_theta_ebis_on_cut;
@@ -267,11 +296,17 @@ private:
 	std::vector<TH2F*> E_vs_theta_recoilT_cut;
 	std::vector<TH2F*> E_vs_theta_recoil_random_cut;
 	std::vector<TH2F*> E_vs_theta_recoilT_random_cut;
+	std::vector<TH2F*> E_vs_theta_fission_cut;
+	std::vector<TH2F*> E_vs_theta_fissionT_cut;
+	std::vector<TH2F*> E_vs_theta_fission_random_cut;
+	std::vector<TH2F*> E_vs_theta_fissionT_random_cut;
 	std::vector<TH2F*> E_vs_theta_T1_cut;
 	TH2F *E_vs_theta, *E_vs_theta_ebis, *E_vs_theta_ebis_on, *E_vs_theta_ebis_off;
 	TH2F *E_vs_theta_recoil, *E_vs_theta_recoilT, *E_vs_theta_T1;
 	TH2F *E_vs_theta_recoil_random, *E_vs_theta_recoilT_random;
-	
+	TH2F *E_vs_theta_fission, *E_vs_theta_fissionT;
+	TH2F *E_vs_theta_fission_random, *E_vs_theta_fissionT_random;
+
 	// Array - Ex vs. thetaCM
 	std::vector<TH2F*> Ex_vs_theta_mod;
 	std::vector<TH2F*> Ex_vs_theta_ebis_mod;
@@ -281,6 +316,10 @@ private:
 	std::vector<TH2F*> Ex_vs_theta_recoilT_mod;
 	std::vector<TH2F*> Ex_vs_theta_recoil_random_mod;
 	std::vector<TH2F*> Ex_vs_theta_recoilT_random_mod;
+	std::vector<TH2F*> Ex_vs_theta_fission_mod;
+	std::vector<TH2F*> Ex_vs_theta_fissionT_mod;
+	std::vector<TH2F*> Ex_vs_theta_fission_random_mod;
+	std::vector<TH2F*> Ex_vs_theta_fissionT_random_mod;
 	std::vector<TH2F*> Ex_vs_theta_cut;
 	std::vector<TH2F*> Ex_vs_theta_ebis_cut;
 	std::vector<TH2F*> Ex_vs_theta_ebis_on_cut;
@@ -289,11 +328,17 @@ private:
 	std::vector<TH2F*> Ex_vs_theta_recoilT_cut;
 	std::vector<TH2F*> Ex_vs_theta_recoil_random_cut;
 	std::vector<TH2F*> Ex_vs_theta_recoilT_random_cut;
+	std::vector<TH2F*> Ex_vs_theta_fission_cut;
+	std::vector<TH2F*> Ex_vs_theta_fissionT_cut;
+	std::vector<TH2F*> Ex_vs_theta_fission_random_cut;
+	std::vector<TH2F*> Ex_vs_theta_fissionT_random_cut;
 	std::vector<TH2F*> Ex_vs_theta_T1_cut;
 	TH2F *Ex_vs_theta, *Ex_vs_theta_ebis, *Ex_vs_theta_ebis_on, *Ex_vs_theta_ebis_off;
 	TH2F *Ex_vs_theta_recoil, *Ex_vs_theta_recoilT, *Ex_vs_theta_T1;
 	TH2F *Ex_vs_theta_recoil_random, *Ex_vs_theta_recoilT_random;
-		
+	TH2F *Ex_vs_theta_fission, *Ex_vs_theta_fissionT;
+	TH2F *Ex_vs_theta_fission_random, *Ex_vs_theta_fissionT_random;
+
 	// Array - Ex vs. z
 	std::vector<TH2F*> Ex_vs_z_mod;
 	std::vector<TH2F*> Ex_vs_z_ebis_mod;
@@ -303,6 +348,10 @@ private:
 	std::vector<TH2F*> Ex_vs_z_recoilT_mod;
 	std::vector<TH2F*> Ex_vs_z_recoil_random_mod;
 	std::vector<TH2F*> Ex_vs_z_recoilT_random_mod;
+	std::vector<TH2F*> Ex_vs_z_fission_mod;
+	std::vector<TH2F*> Ex_vs_z_fissionT_mod;
+	std::vector<TH2F*> Ex_vs_z_fission_random_mod;
+	std::vector<TH2F*> Ex_vs_z_fissionT_random_mod;
 	std::vector<TH2F*> Ex_vs_z_cut;
 	std::vector<TH2F*> Ex_vs_z_ebis_cut;
 	std::vector<TH2F*> Ex_vs_z_ebis_on_cut;
@@ -311,11 +360,17 @@ private:
 	std::vector<TH2F*> Ex_vs_z_recoilT_cut;
 	std::vector<TH2F*> Ex_vs_z_recoil_random_cut;
 	std::vector<TH2F*> Ex_vs_z_recoilT_random_cut;
+	std::vector<TH2F*> Ex_vs_z_fission_cut;
+	std::vector<TH2F*> Ex_vs_z_fissionT_cut;
+	std::vector<TH2F*> Ex_vs_z_fission_random_cut;
+	std::vector<TH2F*> Ex_vs_z_fissionT_random_cut;
 	std::vector<TH2F*> Ex_vs_z_T1_cut;
 	TH2F *Ex_vs_z, *Ex_vs_z_ebis, *Ex_vs_z_ebis_on, *Ex_vs_z_ebis_off;
 	TH2F *Ex_vs_z_recoil, *Ex_vs_z_recoilT, *Ex_vs_z_T1;
 	TH2F *Ex_vs_z_recoil_random, *Ex_vs_z_recoilT_random;
-		
+	TH2F *Ex_vs_z_fission, *Ex_vs_z_fissionT;
+	TH2F *Ex_vs_z_fission_random, *Ex_vs_z_fissionT_random;
+
 	// Array - Ex
 	std::vector<TH1F*> Ex_mod;
 	std::vector<TH1F*> Ex_ebis_mod;
@@ -325,6 +380,10 @@ private:
 	std::vector<TH1F*> Ex_recoilT_mod;
 	std::vector<TH1F*> Ex_recoil_random_mod;
 	std::vector<TH1F*> Ex_recoilT_random_mod;
+	std::vector<TH1F*> Ex_fission_mod;
+	std::vector<TH1F*> Ex_fissionT_mod;
+	std::vector<TH1F*> Ex_fission_random_mod;
+	std::vector<TH1F*> Ex_fissionT_random_mod;
 	std::vector<TH1F*> Ex_cut;
 	std::vector<TH1F*> Ex_ebis_cut;
 	std::vector<TH1F*> Ex_ebis_on_cut;
@@ -333,11 +392,17 @@ private:
 	std::vector<TH1F*> Ex_recoilT_cut;
 	std::vector<TH1F*> Ex_recoil_random_cut;
 	std::vector<TH1F*> Ex_recoilT_random_cut;
+	std::vector<TH1F*> Ex_fission_cut;
+	std::vector<TH1F*> Ex_fissionT_cut;
+	std::vector<TH1F*> Ex_fission_random_cut;
+	std::vector<TH1F*> Ex_fissionT_random_cut;
 	std::vector<TH1F*> Ex_T1_cut;
 	std::vector<TH2F*> Ex_vs_T1_cut;
 	TH1F *Ex, *Ex_ebis, *Ex_ebis_on, *Ex_ebis_off;
 	TH1F *Ex_recoil, *Ex_recoilT, *Ex_T1;
 	TH1F *Ex_recoil_random, *Ex_recoilT_random;
+	TH1F *Ex_fission, *Ex_fissionT;
+	TH1F *Ex_fission_random, *Ex_fissionT_random;
 	TH2F *Ex_vs_T1;
 
 	// Array - thetaCM
@@ -349,6 +414,10 @@ private:
 	std::vector<TH1F*> Theta_recoilT_mod;
 	std::vector<TH1F*> Theta_recoil_random_mod;
 	std::vector<TH1F*> Theta_recoilT_random_mod;
+	std::vector<TH1F*> Theta_fission_mod;
+	std::vector<TH1F*> Theta_fissionT_mod;
+	std::vector<TH1F*> Theta_fission_random_mod;
+	std::vector<TH1F*> Theta_fissionT_random_mod;
 	std::vector<TH1F*> Theta_cut;
 	std::vector<TH1F*> Theta_ebis_cut;
 	std::vector<TH1F*> Theta_ebis_on_cut;
@@ -357,10 +426,16 @@ private:
 	std::vector<TH1F*> Theta_recoilT_cut;
 	std::vector<TH1F*> Theta_recoil_random_cut;
 	std::vector<TH1F*> Theta_recoilT_random_cut;
+	std::vector<TH1F*> Theta_fission_cut;
+	std::vector<TH1F*> Theta_fissionT_cut;
+	std::vector<TH1F*> Theta_fission_random_cut;
+	std::vector<TH1F*> Theta_fissionT_random_cut;
 	std::vector<TH1F*> Theta_T1_cut;
 	TH1F *Theta, *Theta_ebis, *Theta_ebis_on, *Theta_ebis_off;
 	TH1F *Theta_recoil, *Theta_recoilT, *Theta_T1;
 	TH1F *Theta_recoil_random, *Theta_recoilT_random;
+	TH1F *Theta_fission, *Theta_fissionT;
+	TH1F *Theta_fission_random, *Theta_fissionT_random;
 	TH2F *Theta_vs_T1;
 		
 	// ELUM
@@ -372,9 +447,15 @@ private:
 	std::vector<TH1F*> elum_recoilT_sec;
 	std::vector<TH1F*> elum_recoil_random_sec;
 	std::vector<TH1F*> elum_recoilT_random_sec;
+	std::vector<TH1F*> elum_fission_sec;
+	std::vector<TH1F*> elum_fissionT_sec;
+	std::vector<TH1F*> elum_fission_random_sec;
+	std::vector<TH1F*> elum_fissionT_random_sec;
 	TH1F *elum, *elum_ebis, *elum_ebis_on, *elum_ebis_off;
 	TH1F *elum_recoil, *elum_recoilT;
 	TH1F *elum_recoil_random, *elum_recoilT_random;
+	TH1F *elum_fission, *elum_fissionT;
+	TH1F *elum_fission_random, *elum_fissionT_random;
 	TH2F *elum_vs_T1;
 
     // LUME
