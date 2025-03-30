@@ -178,9 +178,9 @@ void ISSSettings::ReadSettings() {
 			else {
 				
 				std::cerr << "Dodgy recoil settings:";
-				std::cerr << " crate = " << recoil_vme[i][j];
-				std::cerr << " module = " << recoil_mod[i][j];
-				std::cerr << " channel = " << recoil_ch[i][j] << std::endl;
+				std::cerr << " crate = " << (int)recoil_vme[i][j];
+				std::cerr << " module = " << (int)recoil_mod[i][j];
+				std::cerr << " channel = " << (int)recoil_ch[i][j] << std::endl;
 				
 			}
 			
@@ -241,9 +241,9 @@ void ISSSettings::ReadSettings() {
 			else {
 				
 				std::cerr << "Dodgy MWPC settings:";
-				std::cerr << " crate = " << mwpc_vme[i][j];
-				std::cerr << " module = " << mwpc_mod[i][j];
-				std::cerr << " channel = " << mwpc_ch[i][j] << std::endl;
+				std::cerr << " crate = " << (int)mwpc_vme[i][j];
+				std::cerr << " module = " << (int)mwpc_mod[i][j];
+				std::cerr << " channel = " << (int)mwpc_ch[i][j] << std::endl;
 				
 			}
 		}
@@ -283,9 +283,9 @@ void ISSSettings::ReadSettings() {
 		else {
 			
 			std::cerr << "Dodgy ELUM settings:";
-			std::cerr << " crate = " << elum_vme[i];
-			std::cerr << " module = " << elum_mod[i];
-			std::cerr << " channel = " << elum_ch[i] << std::endl;
+			std::cerr << " crate = " << (int)elum_vme[i];
+			std::cerr << " module = " << (int)elum_mod[i];
+			std::cerr << " channel = " << (int)elum_ch[i] << std::endl;
 			
 		}
 		
@@ -323,9 +323,9 @@ void ISSSettings::ReadSettings() {
 		else {
 			
 			std::cerr << "Dodgy ZeroDegree settings:";
-			std::cerr << " crate = " << zd_vme[i];
-			std::cerr << " module = " << zd_mod[i];
-			std::cerr << " channel = " << zd_ch[i] << std::endl;
+			std::cerr << " crate = " << (int)zd_vme[i];
+			std::cerr << " module = " << (int)zd_mod[i];
+			std::cerr << " channel = " << (int)zd_ch[i] << std::endl;
 			
 		}
 		
@@ -374,9 +374,9 @@ void ISSSettings::ReadSettings() {
 		else {
 			
 			std::cerr << "Dodgy ScintArray settings:";
-			std::cerr << " crate = " << scint_vme[i];
-			std::cerr << " module = " << scint_mod[i];
-			std::cerr << " channel = " << scint_ch[i] << std::endl;
+			std::cerr << " crate = " << (int)scint_vme[i];
+			std::cerr << " module = " << (int)scint_mod[i];
+			std::cerr << " channel = " << (int)scint_ch[i] << std::endl;
 			
 		}
 		
@@ -434,9 +434,9 @@ void ISSSettings::ReadSettings() {
 			else {
 				
 				std::cerr << "Dodgy LUME settings:";
-				std::cerr << " crate = " << lume_vme[i][j];
-				std::cerr << " module = " << lume_mod[i][j];
-				std::cerr << " channel = " << lume_ch[i][j] << std::endl;
+				std::cerr << " crate = " << (int)lume_vme[i][j];
+				std::cerr << " module = " << (int)lume_mod[i][j];
+				std::cerr << " channel = " << (int)lume_ch[i][j] << std::endl;
 				
 			}
 			

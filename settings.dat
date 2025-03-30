@@ -92,6 +92,7 @@
 #ArrayHitWindow.NN: 500		# in ns. Default is 500 ns
 #ZeroDegreeHitWindow: 500	# in ns. Default is 500 ns
 #GammaRayHitWindow: 500		# in ns. Default is 500 ns
+#LumeHitWindow: 500 # in ns. Default is 500 ns
 
 
 #-----------------#

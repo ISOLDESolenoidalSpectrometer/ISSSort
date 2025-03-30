@@ -303,7 +303,7 @@ private:
 	unsigned char n_zd_layer;									///< Number of ZeroDegree detector layers; always 2, because it's silicon dE-E
 	std::vector<unsigned char> zd_vme;							///< A list of VME crate numbers for each ZeroDegree detector layer
 	std::vector<unsigned char> zd_mod;							///< A list of module numbers for each ZeroDegree detector layer
-	std::vector<unsigned char> zd_ch;							///< A list of channel numbers for each ZeroDegree detector layor
+	std::vector<unsigned char> zd_ch;							///< A list of channel numbers for each ZeroDegree detector layer
 	std::vector<std::vector<std::vector<char>>> zd_layer;		///< A channel map for the ZeroDegree layers (-1 if not a ZeroDegree)
 
 	
