@@ -1622,8 +1622,14 @@ void ISSHistogrammer::MakeHists() {
 
 		hname = "fission_fission_dEdE";
 		htitle = "fission-fission dE-dE plot";
-		htitle += " - coincidence;Fragment 1 dE [keV];Fragment 2 dE [keV];Counts";
+		htitle += " - coincidence with each other;Fragment 1 dE [keV];Fragment 2 dE [keV];Counts";
 		fission_fission_dEdE = new TH2F( hname.data(), htitle.data(),
+										8000, 0, 800000, 8000, 0, 800000 );
+
+		hname = "fission_fission_dEdE_array";
+		htitle = "fission-fission dE-dE plot";
+		htitle += " - coincidence with each other and an array event;Fragment 1 dE [keV];Fragment 2 dE [keV];Counts";
+		fission_fission_dEdE_array = new TH2F( hname.data(), htitle.data(),
 										8000, 0, 800000, 8000, 0, 800000 );
 
 		// Timing plots
@@ -2020,6 +2026,7 @@ void ISSHistogrammer::ResetHists() {
 		fission_dE_eloss->Reset("ICESM");
 		fission_E_eloss->Reset("ICESM");
 		fission_fission_dEdE->Reset("ICESM");
+		fission_fission_dEdE_array->Reset("ICESM");
 
 	}
 
@@ -2957,7 +2964,209 @@ unsigned long ISSHistogrammer::FillHists() {
 
 			// If we have fission mode, rather than recoil mode
 			if( react->IsFission() ) {
-				
+
+				// Loop over CD events to check for random and prompt coincidences
+				for( unsigned int k = 0; k < read_evts->GetCDMultiplicity(); ++k ){
+
+					// Get CD event
+					cd_evt1 = read_evts->GetCDEvt(k);
+
+					// Time differences
+					tdiff = cd_evt1->GetTime() - array_evt->GetTime();
+					fission_array_td[array_evt->GetModule()]->Fill( tdiff );
+
+					if( array_evt->GetPHit() ) { // hit bit = true
+
+						fission_array_tw_hit1->Fill( tdiff, array_evt->GetEnergy() );
+						fission_array_tw_hit1_prof->Fill( array_evt->GetEnergy(), tdiff );
+						fission_array_tw_hit1_row[array_evt->GetModule()][array_evt->GetRow()]->Fill( tdiff, array_evt->GetEnergy() );
+
+					}
+
+					else { // hit bit = false
+
+						fission_array_tw_hit0->Fill( tdiff, array_evt->GetEnergy() );
+						fission_array_tw_hit0_prof->Fill( array_evt->GetEnergy(), tdiff );
+						fission_array_tw_hit0_row[array_evt->GetModule()][array_evt->GetRow()]->Fill( tdiff, array_evt->GetEnergy() );
+
+					}
+
+					// Loop over coincident CD events
+					for( unsigned int l = 0; l < read_evts->GetCDMultiplicity(); ++l ){
+
+						// Skip self-coincidences
+						if( k == l ) continue;
+
+						// Get CD event
+						cd_evt2 = read_evts->GetCDEvt(l);
+
+						// Check for prompt events with coincident fissions
+						if( PromptCoincidence( cd_evt1, array_evt ) && PromptCoincidence( cd_evt1, cd_evt2 ) )
+							promptcheck = true;
+
+						// Check for random events with coincident fissions
+						if( RandomCoincidence( cd_evt1, array_evt ) && PromptCoincidence( cd_evt1, cd_evt2 ) )
+							randomcheck = true;
+
+						// Check energy gate
+						if( FissionCutHeavy( cd_evt1 ) && FissionCutLight( cd_evt2 ) )
+							energycheck = true;
+
+					} // cd events 2
+
+				} // cd events 1
+
+				// Fill prompt hists
+				if( promptcheck == true ){
+
+					// Fission fragments in coincidence with an array event
+					fission_EdE_array->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
+											 cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+					fission_EdE_array->Fill( cd_evt2->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
+											 cd_evt2->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+					fission_fission_dEdE_array->Fill( cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ),
+													  cd_evt2->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+
+					// Array histograms
+					E_vs_z_fissionT->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+					E_vs_z_fissionT_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+					Theta_fissionT->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+					Theta_fissionT_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+					Ex_fissionT->Fill( react->GetEx() );
+					Ex_fissionT_mod[array_evt->GetModule()]->Fill( react->GetEx() );
+					E_vs_theta_fissionT->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+					E_vs_theta_fissionT_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+					Ex_vs_theta_fissionT->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+					Ex_vs_theta_fissionT_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+					Ex_vs_z_fissionT->Fill( react->GetZmeasured(), react->GetEx() );
+					Ex_vs_z_fissionT_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
+
+					// Check the E vs z cuts from the user
+					for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
+
+						// Is inside the cut
+						if( react->GetEvsZCut(l)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+
+							E_vs_z_fissionT_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+							Theta_fissionT_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+							Ex_fissionT_cut[l]->Fill( react->GetEx() );
+							E_vs_theta_fissionT_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+							Ex_vs_theta_fissionT_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+							Ex_vs_z_fissionT_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
+
+						} // inside cut
+
+					} // loop over cuts
+
+					// Fill energy gate hists
+					if( energycheck == true ) {
+
+						E_vs_z_fission->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+						E_vs_z_fission_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+						Theta_fission->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+						Theta_fission_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+						Ex_fission->Fill( react->GetEx() );
+						Ex_fission_mod[array_evt->GetModule()]->Fill( react->GetEx() );
+						E_vs_theta_fission->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+						E_vs_theta_fission_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+						Ex_vs_theta_fission->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+						Ex_vs_theta_fission_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+						Ex_vs_z_fission->Fill( react->GetZmeasured(), react->GetEx() );
+						Ex_vs_z_fission_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
+
+						// Check the E vs z cuts from the user
+						for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
+
+							// Is inside the cut
+							if( react->GetEvsZCut(l)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+
+								E_vs_z_fission_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+								Theta_fission_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+								Ex_fission_cut[l]->Fill( react->GetEx() );
+								E_vs_theta_fission_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+								Ex_vs_theta_fission_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+								Ex_vs_z_fission_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
+
+							} // inside cut
+
+						} // loop over cuts
+
+					} // energy cuts
+
+				} // prompt
+
+				// Fill random hists, but only if we didn't fill it already as a prompt hit
+				else if( randomcheck == true ){
+
+					// Array histograms
+					E_vs_z_fissionT_random->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+					E_vs_z_fissionT_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+					Theta_fissionT_random->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+					Theta_fissionT_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+					Ex_fissionT_random->Fill( react->GetEx() );
+					Ex_fissionT_random_mod[array_evt->GetModule()]->Fill( react->GetEx() );
+					E_vs_theta_fissionT_random->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+					E_vs_theta_fissionT_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+					Ex_vs_theta_fissionT_random->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+					Ex_vs_theta_fissionT_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+					Ex_vs_z_fissionT_random->Fill( react->GetZmeasured(), react->GetEx() );
+					Ex_vs_z_fissionT_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
+
+					// Check the E vs z cuts from the user
+					for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
+
+						// Is inside the cut
+						if( react->GetEvsZCut(l)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+
+							E_vs_z_fissionT_random_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+							Theta_fissionT_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+							Ex_fissionT_random_cut[l]->Fill( react->GetEx() );
+							E_vs_theta_fissionT_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+							Ex_vs_theta_fissionT_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+							Ex_vs_z_fissionT_random_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
+
+						} // inside cut
+
+					} // loop over cuts
+
+					// Fill energy gate hists
+					if( energycheck == true ) {
+
+						E_vs_z_fission_random->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+						E_vs_z_fission_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+						Theta_fission_random->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+						Theta_fission_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+						Ex_fission_random->Fill( react->GetEx() );
+						Ex_fission_random_mod[array_evt->GetModule()]->Fill( react->GetEx() );
+						E_vs_theta_fission_random->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+						E_vs_theta_fission_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+						Ex_vs_theta_fission_random->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+						Ex_vs_theta_fission_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+						Ex_vs_z_fission_random->Fill( react->GetZmeasured(), react->GetEx() );
+						Ex_vs_z_fission_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
+
+						// Check the E vs z cuts from the user
+						for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
+
+							// Is inside the cut
+							if( react->GetEvsZCut(l)->IsInside( react->GetZmeasured(), array_evt->GetEnergy() ) ){
+
+								E_vs_z_fission_random_cut[l]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
+								Theta_fission_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+								Ex_fission_random_cut[l]->Fill( react->GetEx() );
+								Ex_vs_theta_fission_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), array_evt->GetEnergy() );
+								Ex_vs_theta_fission_random_cut[l]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
+								Ex_vs_z_fission_random_cut[l]->Fill( react->GetZmeasured(), react->GetEx() );
+
+							} // inside cut
+
+						} // loop over cuts
+
+					} // energy cuts
+
+				} // random
+
+
 			} // fission mode finished
 
 			// Recoil mode
@@ -2985,9 +3194,8 @@ unsigned long ISSHistogrammer::FillHists() {
 						recoil_array_tw_hit0->Fill( tdiff, array_evt->GetEnergy() );
 						recoil_array_tw_hit0_prof->Fill( array_evt->GetEnergy(), tdiff );
 						recoil_array_tw_hit0_row[array_evt->GetModule()][array_evt->GetRow()]->Fill( tdiff, array_evt->GetEnergy() );
-						
+
 					}
-					
 
 					// Check for prompt events with recoils
 					if( PromptCoincidence( recoil_evt, array_evt ) )
@@ -3189,10 +3397,13 @@ unsigned long ISSHistogrammer::FillHists() {
 			// Coincidence with recoil/fission events
 			bool promptcheck = false;
 			bool randomcheck = false;
-			
+
 			// Fission mode
 			if( react->IsFission() ) {
-				
+
+				// Do nothing because we don't have ELUM and fission
+				// detectors in the same setup! TODO: remove histograms
+
 			} // end of fission mode
 
 			// Recoil mode
@@ -3270,11 +3481,11 @@ unsigned long ISSHistogrammer::FillHists() {
 
 				// Energy EdE plot, unconditioned
 				fission_EdE->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
-								  cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+								   cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 
 				// Energy dE versus T1 time
 				fission_dE_vs_T1->Fill( cd_evt1->GetTime() - read_evts->GetT1(),
-									   cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+									    cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 
 				// Bragg curve
 				for( unsigned int k = 0; k < cd_evt1->GetEnergies().size(); ++k )
@@ -3283,12 +3494,12 @@ unsigned long ISSHistogrammer::FillHists() {
 				// Energy EdE plot, after cut on heavy fragment
 				if( FissionCutHeavy( cd_evt1 ) )
 					fission_EdE_cutH->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
-										   cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+										    cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 
 				// Energy EdE plot, after cut on light fragment
 				if( FissionCutLight( cd_evt1 ) )
 					fission_EdE_cutL->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
-										   cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+										    cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 
 				fission_dE_eloss->Fill( cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 				fission_E_eloss->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
@@ -3309,10 +3520,13 @@ unsigned long ISSHistogrammer::FillHists() {
 
 					// Energy matrix
 					if( PromptCoincidence( cd_evt1, cd_evt2 ) )
-						fission_fission_dEdE->Fill( cd_evt1->GetEnergyLoss(), cd_evt2->GetEnergyLoss() );
+						fission_fission_dEdE->Fill( cd_evt1->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ),
+												    cd_evt2->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
 
 					else if( RandomCoincidence( cd_evt1, cd_evt2 ) )
-						fission_fission_dEdE->Fill( cd_evt1->GetEnergyLoss(), cd_evt2->GetEnergyLoss(), -1.0*react->GetFissionFissionFillRatio() );
+						fission_fission_dEdE->Fill( cd_evt1->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ),
+												    cd_evt2->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ),
+												   -1.0*react->GetFissionFissionFillRatio() );
 
 				} // cd events 2
 

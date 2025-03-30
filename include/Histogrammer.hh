@@ -75,7 +75,7 @@ public:
 	// Recoil - array coincidence
 	inline bool	PromptCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSArrayEvt> a ){
 		if( r->GetTime() - a->GetTime() > react->GetArrayRecoilPromptTime(0) &&
-		   r->GetTime() - a->GetTime() < react->GetArrayRecoilPromptTime(1) ) return true;
+		    r->GetTime() - a->GetTime() < react->GetArrayRecoilPromptTime(1) ) return true;
 		else return false;
 	};
 
@@ -232,15 +232,15 @@ public:
 	}
 
 	// Fission fragment energy gates
-	inline bool FissionCutHeavy( std::shared_ptr<ISSCDEvt> r ){
+	inline bool FissionCutHeavy( std::shared_ptr<ISSCDEvt> f ){
 		return react->GetFissionCutHeavy()
-		->IsInside( r->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
-				   r->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
+		->IsInside( f->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
+				    f->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
 	}
-	inline bool FissionCutLight( std::shared_ptr<ISSCDEvt> r ){
+	inline bool FissionCutLight( std::shared_ptr<ISSCDEvt> f ){
 		return react->GetFissionCutLight()
-		->IsInside( r->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
-				   r->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
+		->IsInside( f->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
+				    f->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
 	}
 
 
@@ -320,6 +320,7 @@ private:
 	TH1F* fission_dE_eloss;
 	TH1F* fission_E_eloss;
 	TH2F* fission_fission_dEdE;
+	TH2F* fission_fission_dEdE_array;
 
 	// Array - E vs. z
 	std::vector<TH2F*> E_vs_z_mod;
