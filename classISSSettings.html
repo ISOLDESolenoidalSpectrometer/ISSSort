@@ -239,6 +239,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5250a8d61d6016c8d6d4fd5e3835beba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a23b45a96c9d46f8d75bbeca0db230a" id="r_a1a23b45a96c9d46f8d75bbeca0db230a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a23b45a96c9d46f8d75bbeca0db230a">IsMesyOnly</a> ()</td></tr>
 <tr class="separator:a1a23b45a96c9d46f8d75bbeca0db230a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54504679fa86925847d858077b2b940e" id="r_a54504679fa86925847d858077b2b940e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54504679fa86925847d858077b2b940e">GetClippedRejection</a> ()</td></tr>
+<tr class="separator:a54504679fa86925847d858077b2b940e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4653f470db1903652a017818e1040325" id="r_a4653f470db1903652a017818e1040325"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4653f470db1903652a017818e1040325">GetOverflowRejection</a> ()</td></tr>
+<tr class="separator:a4653f470db1903652a017818e1040325"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae761968d7904b3bbc51163cc90bf3361" id="r_ae761968d7904b3bbc51163cc90bf3361"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae761968d7904b3bbc51163cc90bf3361">GetNumberOfRecoilSectors</a> ()</td></tr>
 <tr class="separator:ae761968d7904b3bbc51163cc90bf3361"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae5d004fe3118b5873f1926191779affb" id="r_ae5d004fe3118b5873f1926191779affb"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5d004fe3118b5873f1926191779affb">GetNumberOfRecoilLayers</a> ()</td></tr>
@@ -480,6 +484,12 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:afd06c44bf713c5582419a5b3c904ae23" id="r_afd06c44bf713c5582419a5b3c904ae23"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afd06c44bf713c5582419a5b3c904ae23">flag_mesy_only</a></td></tr>
 <tr class="memdesc:afd06c44bf713c5582419a5b3c904ae23"><td class="mdescLeft">&#160;</td><td class="mdescRight">when there is only Mesytec data in the file  <br /></td></tr>
 <tr class="separator:afd06c44bf713c5582419a5b3c904ae23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeda2760ec489d5923ca7f2d63803044a" id="r_aeda2760ec489d5923ca7f2d63803044a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeda2760ec489d5923ca7f2d63803044a">clipped_reject</a></td></tr>
+<tr class="memdesc:aeda2760ec489d5923ca7f2d63803044a"><td class="mdescLeft">&#160;</td><td class="mdescRight">reject events if firmware marks them as clipped signals  <br /></td></tr>
+<tr class="separator:aeda2760ec489d5923ca7f2d63803044a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22ed74a8301900d51703c51dd1a88680" id="r_a22ed74a8301900d51703c51dd1a88680"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a22ed74a8301900d51703c51dd1a88680">overflow_reject</a></td></tr>
+<tr class="memdesc:a22ed74a8301900d51703c51dd1a88680"><td class="mdescLeft">&#160;</td><td class="mdescRight">reject events if their energy is in the overflow  <br /></td></tr>
+<tr class="separator:a22ed74a8301900d51703c51dd1a88680"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebbe25a25e945e47573b1fc9a619a431" id="r_aebbe25a25e945e47573b1fc9a619a431"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aebbe25a25e945e47573b1fc9a619a431">n_recoil_sector</a></td></tr>
 <tr class="memdesc:aebbe25a25e945e47573b1fc9a619a431"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of recoil detector sectors or quadrants; 1 for gas and 4 for Si.  <br /></td></tr>
 <tr class="separator:aebbe25a25e945e47573b1fc9a619a431"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1089,6 +1099,33 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a54504679fa86925847d858077b2b940e" name="a54504679fa86925847d858077b2b940e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54504679fa86925847d858077b2b940e">&#9670;&#160;</a></span>GetClippedRejection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ISSSettings::GetClippedRejection </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00135">135</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+
+</div>
+</div>
 <a id="a175c17d75c17f56339590d31e88f776e" name="a175c17d75c17f56339590d31e88f776e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a175c17d75c17f56339590d31e88f776e">&#9670;&#160;</a></span>GetEBISChannel()</h2>
 
@@ -1222,7 +1259,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Return the sector or quadrant of a ELUM event by module and channel number</p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00620">620</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00625">625</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -1467,7 +1504,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Return ID of LUME t detector (total energy signal)</p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00727">727</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00732">732</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -1523,7 +1560,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Return the type of LUME detector signal by module and channel number</p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00707">707</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00712">712</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -1687,7 +1724,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Return the axis number of an MWPC event by module and channel number</p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00571">571</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00576">576</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -1716,7 +1753,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Return the TAC number of an MWPC event by module and channel number</p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00591">591</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00596">596</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -1959,7 +1996,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00158">158</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00162">162</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -1986,7 +2023,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00173">173</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00177">177</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -2067,7 +2104,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00152">152</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00156">156</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -2094,7 +2131,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00137">137</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00141">141</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -2121,7 +2158,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00136">136</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00140">140</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -2148,7 +2185,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00135">135</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00139">139</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -2175,7 +2212,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00168">168</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00172">172</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -2256,7 +2293,34 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00163">163</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00167">167</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+
+</div>
+</div>
+<a id="a4653f470db1903652a017818e1040325" name="a4653f470db1903652a017818e1040325"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4653f470db1903652a017818e1040325">&#9670;&#160;</a></span>GetOverflowRejection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ISSSettings::GetOverflowRejection </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00136">136</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -2306,7 +2370,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00546">546</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00551">551</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -2329,7 +2393,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00512">512</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00517">517</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -2356,7 +2420,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00138">138</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00142">142</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -2383,7 +2447,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00139">139</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00143">143</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -2410,7 +2474,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00140">140</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00144">144</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -2437,7 +2501,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00141">141</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00145">145</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -2464,7 +2528,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00142">142</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00146">146</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -2491,7 +2555,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00143">143</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00147">147</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -2547,7 +2611,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Return the sector or quadrant of a recoil event by module and channel number</p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00492">492</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00497">497</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -2570,7 +2634,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00529">529</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00534">534</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -2599,7 +2663,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Return the sector or quadrant of a recoil event by module and channel number</p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00472">472</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00477">477</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -2736,7 +2800,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Return the detector ID of a ScintArray event by module and channel number</p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00679">679</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00684">684</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -2954,7 +3018,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Return the layer of a ZeroDegree event by module and channel number</p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00649">649</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00654">654</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -3091,7 +3155,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Return true if this is an ELUM event</p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00611">611</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00616">616</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -3120,7 +3184,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Return true if this is an ScintArray event</p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00699">699</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00704">704</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -3176,7 +3240,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Return true if this is a MWPC event</p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00563">563</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00568">568</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -3205,7 +3269,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Return true if this is a recoil event</p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00464">464</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00469">469</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -3234,7 +3298,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Return true if this is an ScintArray event</p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00670">670</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00675">675</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -3263,7 +3327,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Return true if this is an ZeroDegree event</p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00640">640</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00645">645</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -3282,7 +3346,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00749">749</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8cc_source.html#l00754">754</a> of file <a class="el" href="Settings_8cc_source.html">Settings.cc</a>.</p>
 
 </div>
 </div>
@@ -3355,7 +3419,7 @@ Private Attributes</h2></td></tr>
 
 <p>Time window in ns for correlating n-n hits on the array. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00247">247</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00251">251</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3381,7 +3445,7 @@ Private Attributes</h2></td></tr>
 
 <p>Time window in ns for correlating p-n hits on the array. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00245">245</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00249">249</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3407,7 +3471,7 @@ Private Attributes</h2></td></tr>
 
 <p>Time window in ns for correlating p-p hits on the array. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00246">246</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00250">250</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3433,7 +3497,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the pulser in the ASIC frontends (asic) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00210">210</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00214">214</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3459,7 +3523,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the pulser in the ASIC frontends (asic) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00213">213</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00217">217</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3485,7 +3549,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the pulser in the ASIC frontends (channel) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00211">211</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00215">215</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3511,7 +3575,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the pulser in the ASIC frontends (channel) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00214">214</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00218">218</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3537,7 +3601,7 @@ Private Attributes</h2></td></tr>
 
 <p>Info code when we have a pulser event in InfoData packets from ASICs. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00212">212</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00216">216</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3563,7 +3627,7 @@ Private Attributes</h2></td></tr>
 
 <p>Info code when we have a pulser event in InfoData packets from ASICs. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00215">215</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00219">219</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3589,7 +3653,7 @@ Private Attributes</h2></td></tr>
 
 <p>Threshold on energy for the pulser event in InfoData packets from ASICs. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00216">216</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00220">220</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3615,7 +3679,7 @@ Private Attributes</h2></td></tr>
 
 <p>not yet implemented, needs C++ style reading of data files </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00254">254</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00258">258</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3641,7 +3705,7 @@ Private Attributes</h2></td></tr>
 
 <p>Build event using the timestamp only (default = true), or with time-walk correction (false) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00242">242</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00246">246</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3665,7 +3729,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00197">197</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00201">201</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3691,7 +3755,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the pulser in the CAEN system (channel) - Daresbury test. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00218">218</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00222">222</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3717,7 +3781,7 @@ Private Attributes</h2></td></tr>
 
 <p>Info code when we have a pulser event in InfoData packets from CAEN. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00219">219</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00223">223</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3743,7 +3807,33 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the pulser in the CAEN system (module) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00217">217</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00221">221</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+
+</div>
+</div>
+<a id="aeda2760ec489d5923ca7f2d63803044a" name="aeda2760ec489d5923ca7f2d63803044a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeda2760ec489d5923ca7f2d63803044a">&#9670;&#160;</a></span>clipped_reject</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ISSSettings::clipped_reject</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>reject events if firmware marks them as clipped signals </p>
+
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00265">265</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3769,7 +3859,7 @@ Private Attributes</h2></td></tr>
 
 <p>Info code when we have an EBIS event in InfoData packets. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00226">226</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00230">230</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3795,7 +3885,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of channel numbers for each ELUM detector sector. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00289">289</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00298">298</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3821,7 +3911,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of module numbers for each ELUM detector sector. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00288">288</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00297">297</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3847,7 +3937,7 @@ Private Attributes</h2></td></tr>
 
 <p>A channel map for the ELUM sectors (-1 if not an ELUM) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00290">290</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00299">299</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3873,7 +3963,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of VME crate numbers for each ELUM detector sector. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00287">287</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00296">296</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3899,7 +3989,7 @@ Private Attributes</h2></td></tr>
 
 <p>Event builder time window in ns. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00243">243</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00247">247</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3925,7 +4015,7 @@ Private Attributes</h2></td></tr>
 
 <p>Medium significant bits of the timestamp are here from the ASIC ADC. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00206">206</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00210">210</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3951,7 +4041,7 @@ Private Attributes</h2></td></tr>
 
 <p>This is the info code for the external timestamp, 5 before 2019 and 14 after 2019 (This is ISS == 14) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00204">204</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00208">208</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -3975,7 +4065,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00181">181</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00185">185</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4001,7 +4091,7 @@ Private Attributes</h2></td></tr>
 
 <p>when there is only CAEN data in the file </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00255">255</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00259">259</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4027,7 +4117,7 @@ Private Attributes</h2></td></tr>
 
 <p>when there is only CAEN data in the file </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00256">256</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00260">260</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4053,7 +4143,7 @@ Private Attributes</h2></td></tr>
 
 <p>when there is only Mesytec data in the file </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00257">257</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00261">261</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4079,7 +4169,7 @@ Private Attributes</h2></td></tr>
 
 <p>Time window in ns for correlating Gamma-Gamma hits (addback?) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00249">249</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00253">253</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4105,7 +4195,7 @@ Private Attributes</h2></td></tr>
 
 <p>Info code when we have a Laser/RILIS event in InfoData packets. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00238">238</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00242">242</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4131,7 +4221,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of channel numbers for the LUME detector and type. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00313">313</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00322">322</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4157,7 +4247,7 @@ Private Attributes</h2></td></tr>
 
 <p>A channel map for the LUME detector IDs. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00314">314</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00323">323</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4183,7 +4273,7 @@ Private Attributes</h2></td></tr>
 
 <p>Time window in ns for correlating hits in LUME detectors (be, ne, and fe signals) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00250">250</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00254">254</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4209,7 +4299,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of module numbers for the LUME detector and type. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00312">312</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00321">321</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4235,7 +4325,7 @@ Private Attributes</h2></td></tr>
 
 <p>A channel map for the LUME detector types (0= be, 1= ne, 2= fe) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00315">315</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00324">324</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4261,7 +4351,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of string types for the LUME signals. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00316">316</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00325">325</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4287,7 +4377,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of VME crate numbers for the LUME detector and type. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00311">311</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00320">320</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4313,7 +4403,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the pulser in the Mesytec system (channel) - Daresbury test. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00221">221</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00225">225</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4339,7 +4429,7 @@ Private Attributes</h2></td></tr>
 
 <p>Info code when we have a pulser event in InfoData packets from CAEN. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00222">222</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00226">226</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4365,7 +4455,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the pulser in the Mesytec system (module) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00220">220</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00224">224</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4391,7 +4481,7 @@ Private Attributes</h2></td></tr>
 
 <p>A channel map for the MWPC axes (-1 if not an MWPC) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00281">281</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00290">290</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4417,7 +4507,7 @@ Private Attributes</h2></td></tr>
 
 <p>Channel number of each TAC input of each axis of the MWPC. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00280">280</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00289">289</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4443,7 +4533,7 @@ Private Attributes</h2></td></tr>
 
 <p>Module number of each TAC input of each axis of the MWPC. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00279">279</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00288">288</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4469,7 +4559,7 @@ Private Attributes</h2></td></tr>
 
 <p>A channel map for the MWPC TACs (-1 if not an MWPC) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00282">282</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00291">291</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4495,7 +4585,7 @@ Private Attributes</h2></td></tr>
 
 <p>VME crate number of each TAC input of each axis of the MWPC. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00278">278</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00287">287</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4521,7 +4611,7 @@ Private Attributes</h2></td></tr>
 
 <p>4 p-side + 2 n-side per module </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00185">185</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00189">189</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4547,7 +4637,7 @@ Private Attributes</h2></td></tr>
 
 <p>128 channels per ASIC </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00186">186</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00190">190</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4573,7 +4663,7 @@ Private Attributes</h2></td></tr>
 
 <p>3 modules make a full array </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00184">184</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00188">188</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4599,7 +4689,7 @@ Private Attributes</h2></td></tr>
 
 <p>strip number of DSSSD </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00191">191</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00195">195</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4625,7 +4715,7 @@ Private Attributes</h2></td></tr>
 
 <p>number of p-side strips in each DSSSD </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00190">190</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00194">194</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4651,7 +4741,7 @@ Private Attributes</h2></td></tr>
 
 <p>4x2 DSSSDs per module, but paired; dE-E for recoil, gas cathodes (13?) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00189">189</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00193">193</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4675,7 +4765,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00196">196</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00200">200</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4699,7 +4789,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00195">195</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00199">199</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4725,7 +4815,7 @@ Private Attributes</h2></td></tr>
 
 <p>Number of ELUM detector sectors or quadrants; usually 4, maybe 6 in the future? </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00286">286</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00295">295</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4751,7 +4841,7 @@ Private Attributes</h2></td></tr>
 
 <p>Number of LUME detectors, should be 4. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00310">310</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00319">319</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4775,7 +4865,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00201">201</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00205">205</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4799,7 +4889,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00200">200</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00204">204</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4825,7 +4915,7 @@ Private Attributes</h2></td></tr>
 
 <p>Number of MWPC axes (usually 2: x and y). Two TACs per axis. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00277">277</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00286">286</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4851,7 +4941,7 @@ Private Attributes</h2></td></tr>
 
 <p>Number of recoil detector layers; 13 for gas and 2 for Si. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00262">262</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00271">271</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4877,7 +4967,7 @@ Private Attributes</h2></td></tr>
 
 <p>Number of recoil detector sectors or quadrants; 1 for gas and 4 for Si. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00261">261</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00270">270</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4903,7 +4993,7 @@ Private Attributes</h2></td></tr>
 
 <p>Number of ScintArray detectors. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00302">302</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00311">311</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4929,7 +5019,33 @@ Private Attributes</h2></td></tr>
 
 <p>Number of ZeroDegree detector layers; always 2, because it's silicon dE-E. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00294">294</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00303">303</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+
+</div>
+</div>
+<a id="a22ed74a8301900d51703c51dd1a88680" name="a22ed74a8301900d51703c51dd1a88680"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22ed74a8301900d51703c51dd1a88680">&#9670;&#160;</a></span>overflow_reject</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ISSSettings::overflow_reject</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>reject events if their energy is in the overflow </p>
+
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00266">266</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4955,7 +5071,7 @@ Private Attributes</h2></td></tr>
 
 <p>Info code when ISS acquisition has paused due to a full buffer. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00208">208</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00212">212</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -4981,7 +5097,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of channel numbers for each recoil detector sector and layer. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00271">271</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00280">280</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5007,7 +5123,7 @@ Private Attributes</h2></td></tr>
 
 <p>Start layer for integrating energy loss, 0 for Silicon, about 1 for gas. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00263">263</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00272">272</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5033,7 +5149,7 @@ Private Attributes</h2></td></tr>
 
 <p>Stop layer for integrating energy loss, 0 for Silicon, about 1 for gas. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00264">264</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00273">273</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5059,7 +5175,7 @@ Private Attributes</h2></td></tr>
 
 <p>Start layer for integrating energy rest, 1 for Silicon, about 5 for gas. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00265">265</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00274">274</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5085,7 +5201,7 @@ Private Attributes</h2></td></tr>
 
 <p>Stop layer for integrating energy rest, 1 for Silicon, about 5 for gas. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00266">266</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00275">275</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5111,7 +5227,7 @@ Private Attributes</h2></td></tr>
 
 <p>Start layer for integrating energy total, 0 for Silicon, 0 for gas. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00267">267</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00276">276</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5137,7 +5253,7 @@ Private Attributes</h2></td></tr>
 
 <p>Stop layer for integrating energy total, 1 for Silicon, about 8 for gas. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00268">268</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00277">277</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5163,7 +5279,7 @@ Private Attributes</h2></td></tr>
 
 <p>Time window in ns for correlating recoil E-dE hits. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00244">244</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00248">248</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5189,7 +5305,7 @@ Private Attributes</h2></td></tr>
 
 <p>A channel map for the recoil layers (-1 if not a recoil) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00273">273</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00282">282</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5215,7 +5331,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of module numbers for each recoil detector sector and layer. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00270">270</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00279">279</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5241,7 +5357,7 @@ Private Attributes</h2></td></tr>
 
 <p>A channel map for the recoil sectors (-1 if not a recoil) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00272">272</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00281">281</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5267,7 +5383,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of VME crate numbers for each recoil detector sector and layer. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00269">269</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00278">278</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5293,7 +5409,7 @@ Private Attributes</h2></td></tr>
 
 <p>Info code when ISS acquisition has resumed after a pause. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00209">209</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00213">213</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5319,7 +5435,7 @@ Private Attributes</h2></td></tr>
 
 <p>Info code when we have a SuperCycle event in InfoData packets. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00234">234</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00238">238</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5345,7 +5461,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of channel numbers for each ScintArray detectors. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00305">305</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00314">314</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5371,7 +5487,7 @@ Private Attributes</h2></td></tr>
 
 <p>A channel map for the ScintArray detectors (-1 if not an ScintArray detector) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00306">306</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00315">315</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5397,7 +5513,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of module numbers for each ScintArray detectors. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00304">304</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00313">313</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5423,7 +5539,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of VME crate numbers for each ScintArray detectors. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00303">303</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00312">312</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5449,7 +5565,7 @@ Private Attributes</h2></td></tr>
 
 <p>Medium significant bits of the timestamp are here. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00205">205</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00209">209</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5475,7 +5591,7 @@ Private Attributes</h2></td></tr>
 
 <p>Info code when we have a T1 event in InfoData packets. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00230">230</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00234">234</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5501,7 +5617,7 @@ Private Attributes</h2></td></tr>
 
 <p>Highest significant bits of the timestamp are here. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00207">207</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00211">211</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5527,7 +5643,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the EBIS signal in the VME system (channel) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00225">225</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00229">229</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5553,7 +5669,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the EBIS signal in the VME system (crate: 0 = CAEN; 1 = Mesytec) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00223">223</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00227">227</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5579,7 +5695,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the EBIS signal in the VME system (module) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00224">224</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00228">228</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5605,7 +5721,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the Laser/RILIS signal in the VME system (channel) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00237">237</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00241">241</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5631,7 +5747,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the Laser/RILIS signal in the VME system (crate: 0 = CAEN; 1 = Mesytec) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00235">235</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00239">239</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5657,7 +5773,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the Laser/RILIS signal in the VME system (module) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00236">236</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00240">240</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5683,7 +5799,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the SuperCycle signal in the VME system (channel) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00233">233</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00237">237</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5709,7 +5825,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the SuperCycle signal in the VME system (crate: 0 = CAEN; 1 = Mesytec) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00231">231</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00235">235</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5735,7 +5851,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the SuperCycle signal in the VME system (module) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00232">232</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00236">236</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5761,7 +5877,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the T1 signal in the VME system (channel) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00229">229</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00233">233</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5787,7 +5903,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the T1 signal in the VME system (crate: 0 = CAEN; 1 = Mesytec) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00227">227</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00231">231</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5813,7 +5929,7 @@ Private Attributes</h2></td></tr>
 
 <p>Location of the T1 signal in the VME system (module) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00228">228</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00232">232</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5839,7 +5955,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of channel numbers for each ZeroDegree detector layor. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00297">297</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00306">306</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5865,7 +5981,7 @@ Private Attributes</h2></td></tr>
 
 <p>Time window in ns for correlating ZeroDegree E-dE hits. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00248">248</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00252">252</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5891,7 +6007,7 @@ Private Attributes</h2></td></tr>
 
 <p>A channel map for the ZeroDegree layers (-1 if not a ZeroDegree) </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00298">298</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00307">307</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5917,7 +6033,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of module numbers for each ZeroDegree detector layer. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00296">296</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00305">305</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
@@ -5943,7 +6059,7 @@ Private Attributes</h2></td></tr>
 
 <p>A list of VME crate numbers for each ZeroDegree detector layer. </p>
 
-<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00295">295</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Settings_8hh_source.html#l00304">304</a> of file <a class="el" href="Settings_8hh_source.html">Settings.hh</a>.</p>
 
 </div>
 </div>
