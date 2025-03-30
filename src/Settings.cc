@@ -95,6 +95,7 @@ void ISSSettings::ReadSettings() {
 	
 	
 	// Event builder
+	build_by_tm_stp = config->GetValue( "BuildByTimeStamp", true );
 	event_window = config->GetValue( "EventWindow", 3e3 );
 	recoil_hit_window = config->GetValue( "RecoilHitWindow", 500 );
 	array_pn_hit_window = config->GetValue( "ArrayHitWindow.PN", 500 );
@@ -112,8 +113,13 @@ void ISSSettings::ReadSettings() {
 	flag_asic_only = config->GetValue( "ASICOnlyData", false );
 	flag_caen_only = config->GetValue( "CAENOnlyData", false );
 	flag_mesy_only = config->GetValue( "MesytecOnlyData", false );
-	
-	
+
+
+	// Event rejection
+	clipped_reject = config->GetValue( "ClippedRejection", true );
+	overflow_reject = config->GetValue( "OverflowRejection", true );
+
+
 	// Recoil detector
 	n_recoil_sector = config->GetValue( "NumberOfRecoilSectors", 4 );
 	n_recoil_layer  = config->GetValue( "NumberOfRecoilLayers", 2 );

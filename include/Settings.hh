@@ -113,6 +113,7 @@ public:
 
 
 	// Event builder
+	inline double BuildByTimeStamp(){ return build_by_tm_stp; };
 	inline double GetEventWindow(){ return event_window; };
 	inline double GetRecoilHitWindow(){ return recoil_hit_window; }
 	inline double GetArrayPNHitWindow(){ return array_pn_hit_window; }
@@ -130,6 +131,10 @@ public:
 	inline bool IsMesyOnly(){ return flag_mesy_only; };
 
 	
+	// Event rejection
+	inline bool GetClippedRejection(){ return clipped_reject; };
+	inline bool GetOverflowRejection(){ return overflow_reject; };
+
 	// Recoil detector
 	inline unsigned char GetNumberOfRecoilSectors(){ return n_recoil_sector; };
 	inline unsigned char GetNumberOfRecoilLayers(){ return n_recoil_layer; };
@@ -238,6 +243,7 @@ private:
 
 	
 	// Event builder
+	bool build_by_tm_stp;			///< Build event using the timestamp only (default = true), or with time-walk correction (false)
 	double event_window;			///< Event builder time window in ns
 	double recoil_hit_window;		///< Time window in ns for correlating recoil E-dE hits
 	double array_pn_hit_window;		///< Time window in ns for correlating p-n hits on the array
@@ -254,6 +260,11 @@ private:
 	bool flag_caen_only;			///< when there is only CAEN data in the file
 	bool flag_mesy_only;			///< when there is only Mesytec data in the file
 	
+
+	// Event rejection
+	bool clipped_reject;	///< reject events if firmware marks them as clipped signals
+	bool overflow_reject;	///< reject events if their energy is in the overflow
+
 
 	// Recoil detectors
 	unsigned char n_recoil_sector;								///< Number of recoil detector sectors or quadrants; 1 for gas and 4 for Si

@@ -468,13 +468,20 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	std::cout << " Event Building: number of entries in input tree = ";
 	std::cout << n_entries << std::endl;
 	
-	// Apply time-walk correction, i.e. get new time ordering
-	//std::cout << " Event Building: applying time walk-correction to event ordering" << std::endl;
-	//input_tree->BuildIndex( "GetTimeWithWalk()" );
-	input_tree->BuildIndex( "GetTimeStamp()" );
+	// Event building by timestamp only
+	if( set->BuildByTimeStamp() ) {
+		std::cout << " Event Building: using raw timestamp for event ordering" << std::endl;
+		input_tree->BuildIndex( "GetTimeStamp()" );
+	}
+	
+	// Or apply time-walk correction, i.e. get new time ordering
+	else {
+		std::cout << " Event Building: applying time walk-correction to event ordering" << std::endl;
+		input_tree->BuildIndex( "GetTimeWithWalk()" );
+	}
+	
+	// Get the index
 	TTreeIndex *att_index = (TTreeIndex*)input_tree->GetTreeIndex();
-
-	(void) att_index; // Avoid unused variable warning.
 
 	// ------------------------------------------------------------------------ //
 	// Main loop over TTree to find events
@@ -482,8 +489,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	for( unsigned long i = 0; i < n_entries; ++i ) {
 		
 		// Get time-ordered event index (with or without walk correction)
-		unsigned long long idx = i; // no correction
-		//unsigned long long idx = att_index->GetIndex()[i]; // with correction
+		unsigned long long idx = att_index->GetIndex()[i];
 
 		// Current event data
 		if( input_tree->MemoryFull(30e6) )
@@ -491,15 +497,15 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		if( i == 0 ) input_tree->GetEntry(idx);
 		
 		// Get the time of the event (with or without walk correction)
-		mytime = in_data->GetTime(); // no correction
-		//mytime = in_data->GetTimeWithWalk(); // with correction
+		if( set->BuildByTimeStamp() ) mytime = in_data->GetTime(); // no correction
+		else mytime = in_data->GetTimeWithWalk(); // with correction
 
 		//std::cout << std::setprecision(15) << i << "\t";
 		//std::cout << in_data->GetTimeStamp() << "\t" << mytime << std::endl;
 				
 		// check time stamp monotonically increases!
 		// but allow for the fine time of the CAEN system
-		if( (unsigned long long)time_prev > in_data->GetTimeStamp() + 5.0 ) {
+		if( (unsigned long long)time_prev > mytime + 5.0 ) {
 			
 			std::cout << "Out of order event in file ";
 			std::cout << input_tree->GetName() << std::endl;
@@ -553,9 +559,6 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// p-side event
 			if( myside == 0 && mythres ) {
 			
-			// test here about hit bit value
-			//if( myside == 0 && mythres && !asic_data->GetHitBit() ) {
-
 				mystrip = array_pid.at( myasic ).at( mych );
 				
 				// Only use if it is an event from a detector
@@ -563,7 +566,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 							
 					pen_list.push_back( myenergy );
 					ptd_list.push_back( mytime );
-					pwalk_list.push_back( mytime + mywalk );
+					if( set->BuildByTimeStamp() )
+						pwalk_list.push_back( mytime + mywalk );
+					else
+						pwalk_list.push_back( mytime );
 					pmod_list.push_back( mymod );
 					pid_list.push_back( mystrip );
 					prow_list.push_back( myrow );
@@ -579,9 +585,6 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// n-side event
 			else if( myside == 1 && mythres ) {
 
-			// test here about hit bit value
-			//else if( myside == 1 && mythres && asic_data->GetHitBit() ) {
-
 				mystrip = array_nid.at( asic_data->GetAsic() ).at( asic_data->GetChannel() );
 
 				// Only use if it is an event from a detector
@@ -589,7 +592,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 							
 					nen_list.push_back( myenergy );
                     ntd_list.push_back( mytime );
-                    nwalk_list.push_back( mytime + mywalk );
+					if( set->BuildByTimeStamp() )
+						nwalk_list.push_back( mytime + mywalk );
+					else
+						nwalk_list.push_back( mytime );
 					nmod_list.push_back( mymod );
 					nid_list.push_back( mystrip );
 					nrow_list.push_back( myrow );
@@ -636,15 +642,28 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			myvme = vme_data->GetCrate();
 			mymod = vme_data->GetModule();
 			mych = vme_data->GetChannel();
-			
+
+			// Check for clipped flags
+			myclipped = vme_data->IsClipped();
+
 			// New calibration supplied
 			if( overwrite_cal ) {
 				
 				std::string entype = cal->VmeType( myvme, mymod, mych );
 				unsigned short adc_value = 0;
-				if( entype == "Qlong" ) adc_value = vme_data->GetQlong();
-				else if( entype == "Qshort" ) adc_value = vme_data->GetQshort();
-				else if( entype == "Qdiff" ) adc_value = vme_data->GetQdiff();
+				if( entype == "Qlong" ) {
+					adc_value = vme_data->GetQlong();
+					myoverflow = vme_data->IsOverflowLong();
+				}
+				else if( entype == "Qshort" ){
+					adc_value = vme_data->GetQshort();
+					myoverflow = vme_data->IsOverflowShort();
+				}
+				else if( entype == "Qdiff" ){
+					adc_value = vme_data->GetQdiff();
+					myoverflow = vme_data->IsOverflowLong();
+					myoverflow |= vme_data->IsOverflowShort();
+				}
 				myenergy = cal->VmeEnergy( myvme, mymod, mych, adc_value );
 				
 				if( adc_value < cal->VmeThreshold( myvme, mymod, mych ) )
@@ -662,10 +681,13 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// If it's below threshold do not use as window opener
 			if( mythres ) event_open = true;
 
-			// DETERMINE WHICH TYPE OF CAEN EVENT THIS IS
+			// DETERMINE WHICH TYPE OF VME EVENT THIS IS
 			// Is it a recoil?
-			if( set->IsRecoil( myvme, mymod, mych ) && mythres ) {
-				
+			if( set->IsRecoil( myvme, mymod, mych ) &&
+			   mythres &&											// check threshold
+			   ( !myclipped || !set->GetClippedRejection() ) &&		// check clipped
+			   ( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
+
 				mysector = set->GetRecoilSector( myvme, mymod, mych );
 				mylayer = set->GetRecoilLayer( myvme, mymod, mych );
 				
@@ -679,7 +701,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			}
 			
 			// Is it an MWPC?
-			else if( set->IsMWPC( myvme, mymod, mych ) && mythres ) {
+			else if( set->IsMWPC( myvme, mymod, mych ) &&
+					mythres &&											// check threshold
+					( !myclipped || !set->GetClippedRejection() ) &&	// check clipped
+					( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
 				
 				mwpctac_list.push_back( myenergy );
 				mwpctd_list.push_back( mytime );
@@ -691,10 +716,13 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			}
 			
 			// Is it an ELUM?
-			else if( set->IsELUM( myvme, mymod, mych ) && mythres ) {
+			else if( set->IsELUM( myvme, mymod, mych ) &&
+					mythres &&											// check threshold
+					( !myclipped || !set->GetClippedRejection() ) &&	// check clipped
+					( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
 				
 				mysector = set->GetELUMSector( myvme, mymod, mych );
-				
+
 				een_list.push_back( myenergy );
 				etd_list.push_back( mytime );
 				esec_list.push_back( mysector );
@@ -704,7 +732,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			}
 
 			// Is it a ZeroDegree?
-			else if( set->IsZD( myvme, mymod, mych ) && mythres ) {
+			else if( set->IsZD( myvme, mymod, mych ) &&
+					mythres &&											// check threshold
+					( !myclipped || !set->GetClippedRejection() ) &&	// check clipped
+					( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
 				
 				mylayer = set->GetZDLayer( myvme, mymod, mych );
 				
@@ -717,7 +748,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			}
 			
 			// Is it a ScintArray?
-			else if( set->IsScintArray( myvme, mymod, mych ) && mythres ) {
+			else if( set->IsScintArray( myvme, mymod, mych ) &&
+					mythres &&											// check threshold
+					( !myclipped || !set->GetClippedRejection() ) &&	// check clipped
+					( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
 			
 				myid = set->GetScintArrayDetector( myvme, mymod, mych );
 				
@@ -729,13 +763,16 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 			}
 			// Is it a LUME?
-			else if( set->IsLUME( myvme, mymod, mych ) && mythres ) {
+			else if( set->IsLUME( myvme, mymod, mych ) &&
+					mythres &&											// check threshold
+					( !myclipped || !set->GetClippedRejection() ) &&	// check clipped
+					( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
 
 				// Get LUME signal type (0 = total energy, 1 = near side, 2 = far side)
 				mytype = set->GetLUMEType( myvme, mymod, mych );
 				myid = set->GetLUMEDetector( myvme, mymod, mych );
 
-				switch (mytype) {
+				switch( mytype ) {
 				case 0:
 					lbe_list.push_back( myenergy );
 					lbe_td_list.push_back( mytime );
@@ -1016,17 +1053,17 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		//------------------------------
 		//  check if last datum from this event and do some cleanup
 		//------------------------------
-		unsigned long long idx_next = i+1; // no correction
-		
-		// Comment out the two lines below to ignore time-walk correction
-		//if( i+1 == n_entries ) idx_next = n_entries; // with correction
-		//else idx_next = att_index->GetIndex()[i+1]; // with correction
+		unsigned long long idx_next;
+		if( i+1 == n_entries ) idx_next = n_entries;
+		else idx_next = att_index->GetIndex()[i+1];
 
 		if( input_tree->GetEntry(idx_next) ) {
 					
 			// Time difference to next event (with or without time walk correction)
-			time_diff = in_data->GetTime() - time_first; // no correction
-			//time_diff = in_data->GetTimeWithWalk() - time_first; // with correction
+			if( set->BuildByTimeStamp() )
+				time_diff = in_data->GetTime() - time_first; // no correction
+			else
+				time_diff = in_data->GetTimeWithWalk() - time_first; // with correction
 
 			// window = time_stamp_first + time_window
 			if( time_diff > build_window )
