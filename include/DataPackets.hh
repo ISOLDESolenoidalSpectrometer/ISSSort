@@ -75,7 +75,12 @@ public:
 	inline unsigned char	GetChannel() { return ch; };
 	inline unsigned short	GetQlong() { return Qlong; };
 	inline unsigned short	GetQshort() { return Qshort; };
-	inline unsigned short	GetQdiff() { return (int)Qlong-(int)Qshort; };
+	inline unsigned short	GetQdiff() {
+		if( overflow_long || overflow_short )
+			return 0xffff;
+		else
+			return (int)Qlong-(int)Qshort;
+	};
 	inline float			GetEnergy() { return energy; };
 	inline bool				IsOverThreshold() { return thres; };
 	inline bool				IsOverflowLong() { return overflow_long; };
