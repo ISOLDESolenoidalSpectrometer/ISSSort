@@ -72,6 +72,24 @@
 #ElumRecoil_RandomTime.Min: 600
 #ElumRecoil_RandomTime.Max: 1200
 
+## Array-Fission windows
+#ArrayFission_PromptTime.Min: -300
+#ArrayFission_PromptTime.Max: 300
+#ArrayFission_RandomTime.Min: 600
+#ArrayFission_RandomTime.Max: 1200
+
+## ELUM-Fission windows
+#ElumFission_PromptTime.Min: -300
+#ElumFission_PromptTime.Max: 300
+#ElumFission_RandomTime.Min: 600
+#ElumFission_RandomTime.Max: 1200
+
+## Fission-Fission windows
+#FissionFission_PromptTime.Min: -300
+#FissionFission_PromptTime.Max: 300
+#FissionFission_RandomTime.Min: 600
+#FissionFission_RandomTime.Max: 1200
+
 ## Recoil cut files
 #RecoilCut_0.File: NULL	# ROOT file containing the 2D recoil energy cut for sector 0
 #RecoilCut_0.Name: CUTG	# name of the TCutG object inside the ROOT file for sector 0

@@ -281,6 +281,28 @@ public:
 	};///< Getter for array-recoil fill ratio (unused?)
 	
 	
+	// Array-fission time difference
+	inline double GetArrayFissionPromptTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return array_fission_prompt[i];
+		else return 0;
+	};///< Getter for array-fission prompt time difference, used for defining coincidence windows
+
+	inline double GetArrayFissionRandomTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return array_fission_random[i];
+		else return 0;
+	};///< Getter for array-fission random time difference, used for defining coincidence windows
+
+	inline double GetArrayFissionTimeRatio(){
+		return ( array_fission_prompt[1] - array_fission_prompt[0] ) / ( array_fission_random[1] - array_fission_random[0] );
+	};///< Returns prompt window/random window
+
+	inline double GetArrayFissionFillRatio(){
+		return array_fission_ratio;
+	};///< Getter for array-fission fill ratio (unused?)
+
+
 	// ELUM-recoil time difference
 	inline double GetElumRecoilPromptTime( unsigned char i ){
 		// i = 0 for lower limit and i = 1 for upper limit
@@ -300,7 +322,51 @@ public:
 	
 	inline double GetElumRecoilFillRatio(){
 		return elum_recoil_ratio;
-	};///< Getter for array-recoil fill ratio (unused?)
+	};///< Getter for elum-recoil fill ratio (unused?)
+
+
+	// ELUM-fission time difference
+	inline double GetElumFissionPromptTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return elum_fission_prompt[i];
+		else return 0;
+	};///< Getter for elum-fission prompt time difference, used for defining coincidence windows
+
+	inline double GetElumFissionRandomTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return elum_fission_random[i];
+		else return 0;
+	};///< Getter for elum-fission random time difference, used for defining coincidence windows
+
+	inline double GetElumFissionTimeRatio(){
+		return ( elum_fission_prompt[1] - elum_fission_prompt[0] ) / ( elum_fission_random[1] - elum_fission_random[0] );
+	};///< Returns prompt window/random window
+
+	inline double GetElumFissionFillRatio(){
+		return elum_fission_ratio;
+	};///< Getter for elum-fission fill ratio (unused?)
+
+
+	// fission-fission time difference
+	inline double GetFissionFissionPromptTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return fission_fission_prompt[i];
+		else return 0;
+	};///< Getter for fission-fission prompt time difference, used for defining coincidence windows
+
+	inline double GetFissionFissionRandomTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return fission_fission_random[i];
+		else return 0;
+	};///< Getter for fission-fission random time difference, used for defining coincidence windows
+
+	inline double GetFissionFissionTimeRatio(){
+		return ( fission_fission_prompt[1] - fission_fission_prompt[0] ) / ( fission_fission_random[1] - fission_fission_random[0] );
+	};///< Returns prompt window/random window
+
+	inline double GetFissionFissionFillRatio(){
+		return fission_fission_ratio;
+	};///< Getter for fission-fission fill ratio (unused?)
 	
 	
 	// Setters
@@ -429,12 +495,21 @@ private:
 	bool rxtree_flag;
 	
 	// Coincidence windows
-	double array_recoil_prompt[2]; ///< Prompt time windows between recoil and array event
-	double array_recoil_random[2]; ///< Prompt time window between recoil and array event
-	double array_recoil_ratio; // fill ratios
-	double elum_recoil_prompt[2]; ///< Prompt time windows between recoil and elum event
-	double elum_recoil_random[2]; ///< Prompt time window between recoil and elum event
-	double elum_recoil_ratio; // fill ratios
+	double array_recoil_prompt[2];		///< Prompt time window between recoil and array event
+	double array_recoil_random[2];		///< Random time window between recoil and array event
+	double array_recoil_ratio;			///< scaling factor for the recoil-array random window
+	double array_fission_prompt[2]; 	///< Prompt time window between fission and array event
+	double array_fission_random[2]; 	///< Random time window between fission and array event
+	double array_fission_ratio;			///< scaling factor for the fission-array random window
+	double elum_recoil_prompt[2];		///< Prompt time window between recoil and elum event
+	double elum_recoil_random[2];		///< Random time window between recoil and elum event
+	double elum_recoil_ratio;			///< scaling factor for the recoil-elum random window
+	double elum_fission_prompt[2];		///< Prompt time window between fission and elum event
+	double elum_fission_random[2];		///< Random time window between fission and elum event
+	double elum_fission_ratio;			///< scaling factor for the fission-elum random window
+	double fission_fission_prompt[2];	///< Prompt time window between two fission events
+	double fission_fission_random[2];	///< Random time window between two fission events
+	double fission_fission_ratio;		///< scaling factor for the fission-fission random window
 
 	// Experimental info on the ejectile
 	double r_meas;		///< Measured radius of the ejectile when it interects the array

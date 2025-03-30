@@ -1619,15 +1619,36 @@ void ISSHistogrammer::MakeHists() {
 		htitle = "fission E energy loss";
 		htitle += ";Energy loss, E [keV];Counts";
 		fission_E_eloss = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
-		
+
+		hname = "fission_fission_dEdE";
+		htitle = "fission-fission dE-dE plot";
+		htitle += " - coincidence;Fragment 1 dE [keV];Fragment 2 dE [keV];Counts";
+		fission_fission_dEdE = new TH2F( hname.data(), htitle.data(),
+										8000, 0, 800000, 8000, 0, 800000 );
+
 		// Timing plots
 		output_file->cd( "Timing" );
 		fission_array_td.resize( set->GetNumberOfArrayModules() );
 		fission_elum_td.resize( set->GetNumberOfELUMSectors() );
 
+		// Fission-fission time difference
+		hname = "fission_fission_td";
+		htitle = "Time difference between two fission events";
+		htitle += ";#Deltat;Counts";
+		fission_fission_td = new TH1F( hname.data(), htitle.data(),
+									  1000, -1.0*set->GetEventWindow()-50, 1.0*set->GetEventWindow()+50 );
+
+		// Fission-fission time difference per sector
+		hname = "fission_fission_td_sec";
+		htitle = "Time difference between two fission events";
+		htitle += "CD sector of first hit;#Deltat (first hit - second hit);Counts";
+		fission_fission_td_sec = new TH2F( hname.data(), htitle.data(),
+										  set->GetNumberOfCDSectors(), -0.5, set->GetNumberOfCDSectors()-0.5,
+										  1000, -1.0*set->GetEventWindow()-50, 1.0*set->GetEventWindow()+50 );
+
 		// For array modules
 		for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
-			
+
 			hname = "td_fission_array_mod" + std::to_string(j);
 			htitle = "Time difference between fission detector ";
 			htitle += " and array module " + std::to_string(j);
@@ -1974,6 +1995,8 @@ void ISSHistogrammer::ResetHists() {
 		sc_td_fission->Reset("ICESM");
 		fission_array_tw_hit0->Reset("ICESM");
 		fission_array_tw_hit1->Reset("ICESM");
+		fission_fission_td->Reset("ICESM");
+		fission_fission_td_sec->Reset("ICESM");
 
 		for( unsigned int i = 0; i < fission_array_td.size(); ++i )
 			fission_array_td[i]->Reset("ICESM");
@@ -1996,6 +2019,7 @@ void ISSHistogrammer::ResetHists() {
 		fission_dE_vs_T1->Reset("ICESM");
 		fission_dE_eloss->Reset("ICESM");
 		fission_E_eloss->Reset("ICESM");
+		fission_fission_dEdE->Reset("ICESM");
 
 	}
 
@@ -3269,8 +3293,31 @@ unsigned long ISSHistogrammer::FillHists() {
 				fission_dE_eloss->Fill( cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 				fission_E_eloss->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
 
-			} // cd events
-			
+				// Loop over coincident CD events
+				for( unsigned int k = 0; k < read_evts->GetCDMultiplicity(); ++k ){
+
+					// Skip self-coincidences
+					if( j == k ) continue;
+
+					// Get CD event
+					cd_evt2 = read_evts->GetCDEvt(k);
+
+					// Time difference
+					double ff_td = cd_evt1->GetTime() - cd_evt2->GetTime();
+					fission_fission_td->Fill( ff_td );
+					fission_fission_td_sec->Fill( cd_evt1->GetSector(), ff_td );
+
+					// Energy matrix
+					if( PromptCoincidence( cd_evt1, cd_evt2 ) )
+						fission_fission_dEdE->Fill( cd_evt1->GetEnergyLoss(), cd_evt2->GetEnergyLoss() );
+
+					else if( RandomCoincidence( cd_evt1, cd_evt2 ) )
+						fission_fission_dEdE->Fill( cd_evt1->GetEnergyLoss(), cd_evt2->GetEnergyLoss(), -1.0*react->GetFissionFissionFillRatio() );
+
+				} // cd events 2
+
+			} // cd events 1
+
 		} // end of fission mode
 
 		// Recoil mode

@@ -72,31 +72,65 @@ public:
 		_prog_ = true;
 	};
 	
-	// Recoil - array coincidence (numbers to go to reaction file?)
+	// Recoil - array coincidence
 	inline bool	PromptCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSArrayEvt> a ){
 		if( r->GetTime() - a->GetTime() > react->GetArrayRecoilPromptTime(0) &&
-			r->GetTime() - a->GetTime() < react->GetArrayRecoilPromptTime(1) ) return true;
+		   r->GetTime() - a->GetTime() < react->GetArrayRecoilPromptTime(1) ) return true;
+		else return false;
+	};
+
+	// Fission - array coincidence
+	inline bool	PromptCoincidence( std::shared_ptr<ISSCDEvt> f, std::shared_ptr<ISSArrayEvt> a ){
+		if( f->GetTime() - a->GetTime() > react->GetArrayFissionPromptTime(0) &&
+		    f->GetTime() - a->GetTime() < react->GetArrayFissionPromptTime(1) ) return true;
 		else return false;
 	};
 	
 	// Recoil - elum coincidence
 	inline bool	PromptCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSElumEvt> e ){
 		if( r->GetTime() - e->GetTime() > react->GetElumRecoilPromptTime(0) &&
-			r->GetTime() - e->GetTime() < react->GetElumRecoilPromptTime(1) ) return true;
+		    r->GetTime() - e->GetTime() < react->GetElumRecoilPromptTime(1) ) return true;
 		else return false;
 	};
 	
+	// Fission - elum coincidence
+	inline bool	PromptCoincidence( std::shared_ptr<ISSCDEvt> f, std::shared_ptr<ISSElumEvt> e ){
+		if( f->GetTime() - e->GetTime() > react->GetElumFissionPromptTime(0) &&
+		    f->GetTime() - e->GetTime() < react->GetElumFissionPromptTime(1) ) return true;
+		else return false;
+	};
+
+	// Fission - Fission coincidence
+	inline bool	PromptCoincidence( std::shared_ptr<ISSCDEvt> f1, std::shared_ptr<ISSCDEvt> f2 ){
+		if( f1->GetTime() - f2->GetTime() > react->GetFissionFissionPromptTime(0) &&
+		    f1->GetTime() - f2->GetTime() < react->GetFissionFissionPromptTime(1) ) return true;
+		else return false;
+	};
+
 	inline bool	RandomCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSArrayEvt> a ){
 		if( r->GetTime() - a->GetTime() > react->GetArrayRecoilRandomTime(0) &&
 			r->GetTime() - a->GetTime() < react->GetArrayRecoilRandomTime(1) ) return true;
 		else return false;
 	};
 	
+	inline bool	RandomCoincidence( std::shared_ptr<ISSCDEvt> f, std::shared_ptr<ISSArrayEvt> a ){
+		if( f->GetTime() - a->GetTime() > react->GetArrayFissionRandomTime(0) &&
+		    f->GetTime() - a->GetTime() < react->GetArrayFissionRandomTime(1) ) return true;
+		else return false;
+	};
+
 	inline bool	RandomCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSElumEvt> e ){
 		if( r->GetTime() - e->GetTime() > react->GetElumRecoilRandomTime(0) &&
 			r->GetTime() - e->GetTime() < react->GetElumRecoilRandomTime(1) ) return true;
 		else return false;
 	};
+
+	inline bool	RandomCoincidence( std::shared_ptr<ISSCDEvt> f1, std::shared_ptr<ISSCDEvt> f2 ){
+		if( f1->GetTime() - f2->GetTime() > react->GetFissionFissionRandomTime(0) &&
+		    f1->GetTime() - f2->GetTime() < react->GetFissionFissionRandomTime(1) ) return true;
+		else return false;
+	};
+
 	inline bool	OnBeam( std::shared_ptr<ISSRecoilEvt> r ){
 		if( r->GetTime() - read_evts->GetEBIS() >= 0 &&
 			r->GetTime() - read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
@@ -117,9 +151,14 @@ public:
 			z->GetTime() - read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
-  	inline bool	OnBeam( std::shared_ptr<ISSLumeEvt> l ){
+	inline bool	OnBeam( std::shared_ptr<ISSLumeEvt> l ){
 		if( l->GetTime() - read_evts->GetEBIS() >= 0 &&
-			l->GetTime() - read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
+		    l->GetTime() - read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
+		else return false;
+	};
+	inline bool	OnBeam( std::shared_ptr<ISSCDEvt> f ){
+		if( f->GetTime() - read_evts->GetEBIS() >= 0 &&
+		    f->GetTime() - read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
 	inline bool	OffBeam( std::shared_ptr<ISSRecoilEvt> r ){
@@ -142,6 +181,16 @@ public:
 			z->GetTime() - read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
+	inline bool	OffBeam( std::shared_ptr<ISSLumeEvt> l ){
+		if( l->GetTime() - read_evts->GetEBIS() >= react->GetEBISOnTime() &&
+		    l->GetTime() - read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
+		else return false;
+	};
+	inline bool	OffBeam( std::shared_ptr<ISSCDEvt> f ){
+		if( f->GetTime() - read_evts->GetEBIS() >= react->GetEBISOnTime() &&
+		    f->GetTime() - read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
+		else return false;
+	};
 	inline bool	T1Cut( std::shared_ptr<ISSRecoilEvt> r ){
 		if( r->GetTime() - read_evts->GetT1() > react->GetT1MinTime() &&
 			r->GetTime() - read_evts->GetT1() < react->GetT1MaxTime() ) return true;
@@ -159,7 +208,17 @@ public:
 	};
 	inline bool	T1Cut( std::shared_ptr<ISSZeroDegreeEvt> z ){
 		if( z->GetTime() - read_evts->GetT1() > react->GetT1MinTime() &&
-			z->GetTime() - read_evts->GetT1() < react->GetT1MaxTime() ) return true;
+		    z->GetTime() - read_evts->GetT1() < react->GetT1MaxTime() ) return true;
+		else return false;
+	};
+	inline bool	T1Cut( std::shared_ptr<ISSLumeEvt> l ){
+		if( l->GetTime() - read_evts->GetT1() > react->GetT1MinTime() &&
+		    l->GetTime() - read_evts->GetT1() < react->GetT1MaxTime() ) return true;
+		else return false;
+	};
+	inline bool	T1Cut( std::shared_ptr<ISSCDEvt> f ){
+		if( f->GetTime() - read_evts->GetT1() > react->GetT1MinTime() &&
+		    f->GetTime() - read_evts->GetT1() < react->GetT1MaxTime() ) return true;
 		else return false;
 	};
 	inline bool	LaserOn(){ return read_evts->GetLaserStatus(); };
@@ -228,6 +287,8 @@ private:
 	std::vector<std::vector<TH1F*>> recoil_elum_td;
 	std::vector<TH1F*> fission_array_td;
 	std::vector<TH1F*> fission_elum_td;
+	TH1F *fission_fission_td;
+	TH2F *fission_fission_td_sec;
 	TH2F *recoil_array_tw_hit0, *recoil_array_tw_hit1;
 	std::vector<std::vector<TH2F*>> recoil_array_tw_hit0_row;
 	std::vector<std::vector<TH2F*>> recoil_array_tw_hit1_row;
@@ -258,6 +319,7 @@ private:
 	TH2F* fission_dE_vs_T1;
 	TH1F* fission_dE_eloss;
 	TH1F* fission_E_eloss;
+	TH2F* fission_fission_dEdE;
 
 	// Array - E vs. z
 	std::vector<TH2F*> E_vs_z_mod;
