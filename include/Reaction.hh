@@ -325,26 +325,26 @@ public:
 	};///< Getter for elum-recoil fill ratio (unused?)
 
 
-	// ELUM-fission time difference
-	inline double GetElumFissionPromptTime( unsigned char i ){
+	// Lume-fission time difference
+	inline double GetLumeFissionPromptTime( unsigned char i ){
 		// i = 0 for lower limit and i = 1 for upper limit
-		if( i < 2 ) return elum_fission_prompt[i];
+		if( i < 2 ) return lume_fission_prompt[i];
 		else return 0;
-	};///< Getter for elum-fission prompt time difference, used for defining coincidence windows
+	};///< Getter for lume-fission prompt time difference, used for defining coincidence windows
 
-	inline double GetElumFissionRandomTime( unsigned char i ){
+	inline double GetLumeFissionRandomTime( unsigned char i ){
 		// i = 0 for lower limit and i = 1 for upper limit
-		if( i < 2 ) return elum_fission_random[i];
+		if( i < 2 ) return lume_fission_random[i];
 		else return 0;
-	};///< Getter for elum-fission random time difference, used for defining coincidence windows
+	};///< Getter for lume-fission random time difference, used for defining coincidence windows
 
-	inline double GetElumFissionTimeRatio(){
-		return ( elum_fission_prompt[1] - elum_fission_prompt[0] ) / ( elum_fission_random[1] - elum_fission_random[0] );
+	inline double GetLumeFissionTimeRatio(){
+		return ( lume_fission_prompt[1] - lume_fission_prompt[0] ) / ( lume_fission_random[1] - lume_fission_random[0] );
 	};///< Returns prompt window/random window
 
-	inline double GetElumFissionFillRatio(){
-		return elum_fission_ratio;
-	};///< Getter for elum-fission fill ratio (unused?)
+	inline double GetLumeFissionFillRatio(){
+		return lume_fission_ratio;
+	};///< Getter for lume-fission fill ratio (unused?)
 
 
 	// fission-fission time difference
@@ -504,9 +504,9 @@ private:
 	double elum_recoil_prompt[2];		///< Prompt time window between recoil and elum event
 	double elum_recoil_random[2];		///< Random time window between recoil and elum event
 	double elum_recoil_ratio;			///< scaling factor for the recoil-elum random window
-	double elum_fission_prompt[2];		///< Prompt time window between fission and elum event
-	double elum_fission_random[2];		///< Random time window between fission and elum event
-	double elum_fission_ratio;			///< scaling factor for the fission-elum random window
+	double lume_fission_prompt[2];		///< Prompt time window between fission and lume event
+	double lume_fission_random[2];		///< Random time window between fission and lume event
+	double lume_fission_ratio;			///< scaling factor for the fission-lume random window
 	double fission_fission_prompt[2];	///< Prompt time window between two fission events
 	double fission_fission_random[2];	///< Random time window between two fission events
 	double fission_fission_ratio;		///< scaling factor for the fission-fission random window
@@ -524,9 +524,9 @@ private:
 	double y_offset;			///< Vertical offset of the target/beam position, with respect to the array in mm
 	
 	// ELUM geometry
-	double elum_z;		///< z position of the ELUM (usually positive, but if negative assumed not to exist in setup)
-	double elum_rin;	///< inner radius of the ELUM detector
-	double elum_rout;	///< outer radius of the ELUM detector
+	double elum_z;			///< z position of the ELUM (usually positive, but if negative assumed not to exist in setup)
+	double elum_rin;		///< inner radius of the ELUM detector
+	double elum_rout;		///< outer radius of the ELUM detector
 	double elum_deadlayer;	///< Dead layer on ELUM in mm of Si equivalent
 
 	// Cuts

@@ -1635,7 +1635,7 @@ void ISSHistogrammer::MakeHists() {
 		// Timing plots
 		output_file->cd( "Timing" );
 		fission_array_td.resize( set->GetNumberOfArrayModules() );
-		fission_elum_td.resize( set->GetNumberOfELUMSectors() );
+		fission_lume_td.resize( set->GetNumberOfELUMSectors() );
 
 		// Fission-fission time difference
 		hname = "fission_fission_td";
@@ -1666,13 +1666,13 @@ void ISSHistogrammer::MakeHists() {
 		
 		// For ELUM sectors
 		for( unsigned int j = 0; j < set->GetNumberOfELUMSectors(); ++j ) {
-			
-			hname = "td_fission_elum_mod" + std::to_string(j);
+
+			hname = "td_fission_lume_det" + std::to_string(j);
 			htitle = "Time difference between fission detector ";
-			htitle += " and ELUM sector " + std::to_string(j);
+			htitle += " and LUME detector " + std::to_string(j);
 			htitle += ";#Deltat;Counts";
-			fission_elum_td[j] = new TH1F( hname.data(), htitle.data(),
-										  1000, -1.0*set->GetEventWindow()-50, 1.0*set->GetEventWindow()+50 );
+			fission_lume_td[j] = new TH1F( hname.data(), htitle.data(),
+											  1000, -1.0*set->GetEventWindow()-50, 1.0*set->GetEventWindow()+50 );
 
 		}
 
@@ -1757,12 +1757,6 @@ void ISSHistogrammer::MakeHists() {
 		elum_recoil_random = new TH1F( "elum_recoil_random", "ELUM with time-random gate on recoils;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
 		elum_recoilT_random = new TH1F( "elum_recoilT_random", "ELUM with random time gate on all recoils;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
 	}
-	else {
-		elum_fission = new TH1F( "elum_fission", "ELUM gated on fission fragments;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
-		elum_fissionT = new TH1F( "elum_fissionT", "ELUM with prompt time gate on all fission fragments;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
-		elum_fission_random = new TH1F( "elum_fission_random", "ELUM with time-random gate on fission fragments;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
-		elum_fissionT_random = new TH1F( "elum_fissionT_random", "ELUM with random time gate on all fission fragments;Energy (keV);Counts per 5 keV", 10000, 0, 50000 );
-	}
 
 	elum_sec.resize( set->GetNumberOfELUMSectors() );
 	elum_ebis_sec.resize( set->GetNumberOfELUMSectors() );
@@ -1775,15 +1769,9 @@ void ISSHistogrammer::MakeHists() {
 		elum_recoil_random_sec.resize( set->GetNumberOfELUMSectors() );
 		elum_recoilT_random_sec.resize( set->GetNumberOfELUMSectors() );
 	}
-	else {
-		elum_fission_sec.resize( set->GetNumberOfELUMSectors() );
-		elum_fissionT_sec.resize( set->GetNumberOfELUMSectors() );
-		elum_fission_random_sec.resize( set->GetNumberOfELUMSectors() );
-		elum_fissionT_random_sec.resize( set->GetNumberOfELUMSectors() );
-	}
 
 	for( unsigned int j = 0; j < set->GetNumberOfELUMSectors(); ++j ) {
-		
+
 		dirname = "ElumDetector/sector_" + std::to_string(j);
 		output_file->mkdir( dirname.data() );
 		output_file->cd( dirname.data() );
@@ -1832,31 +1820,6 @@ void ISSHistogrammer::MakeHists() {
 			elum_recoilT_random_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
 
 		}
-		
-		// Fission
-		else {
-
-			hname = "elum_fission_sec" + std::to_string(j);
-			htitle = "ELUM singles for sector " + std::to_string(j);
-			htitle += " gated on fission fragments;Energy [keV];Counts 5 keV";
-			elum_fission_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
-
-			hname = "elum_fissionT_sec" + std::to_string(j);
-			htitle = "ELUM singles for sector " + std::to_string(j);
-			htitle += " with a prompt time gate on all fission fragments;Energy [keV];Counts 5 keV";
-			elum_fissionT_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
-
-			hname = "elum_fission_random_sec" + std::to_string(j);
-			htitle = "ELUM singles for sector " + std::to_string(j);
-			htitle += " time-random gated on fission fragments;Energy [keV];Counts 5 keV";
-			elum_fission_random_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
-
-			hname = "elum_fissionT_random_sec" + std::to_string(j);
-			htitle = "ELUM singles for sector " + std::to_string(j);
-			htitle += " with a random time gate on all fission fragments;Energy [keV];Counts 5 keV";
-			elum_fissionT_random_sec[j] = new TH1F( hname.data(), htitle.data(), 10000, 0, 50000 );
-
-		}
 
 	} // ELUM
 
@@ -1869,6 +1832,10 @@ void ISSHistogrammer::MakeHists() {
 	lume_ebis = new TH1F( "lume_ebis", "LUME gated by EBIS and off beam subtracted;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
 	lume_ebis_on = new TH1F( "lume_ebis_on", "LUME gated on EBIS;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
 	lume_ebis_off = new TH1F( "lume_ebis_off", "LUME gated off EBIS;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
+	lume_fission = new TH1F( "lume_fission", "LUME in prompt time coincidence with an energy-gated fission event;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
+	lume_elastic = new TH1F( "lume_elastic", "LUME in prompt time coincidence with an event in the CD;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
+	lume_fission_random = new TH1F( "lume_fission_random", "LUME in random time coincidence with an energy-gated fission event;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
+	lume_elastic_random = new TH1F( "lume_elastic_random", "LUME in random time coincidence with an event in the CD;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
 	lume_vs_T1 = new TH2F( "lume_vs_T1", "LUME energy versus T1 time (gated on EBIS);Energy (keV);Counts per 5 keV", 5000, 0, 50e9, 10100, -200, 50000 );
 	lume_E_vs_x = new TH2F( "lume_E_vs_x", "LUME energy versus position;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
 	lume_E_vs_x_ebis = new TH2F( "lume_E_vs_x_ebis", "LUME energy versus position gated by EBIS and off beam subtracted;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
@@ -1880,6 +1847,10 @@ void ISSHistogrammer::MakeHists() {
 	lume_ebis_det.resize( set->GetNumberOfLUMEDetectors() );
 	lume_ebis_on_det.resize( set->GetNumberOfLUMEDetectors() );
 	lume_ebis_off_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_fission_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_elastic_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_fission_random_det.resize( set->GetNumberOfLUMEDetectors() );
+	lume_elastic_random_det.resize( set->GetNumberOfLUMEDetectors() );
 	lume_E_vs_x_det.resize( set->GetNumberOfLUMEDetectors() );
 	lume_E_vs_x_ebis_det.resize( set->GetNumberOfLUMEDetectors() );
 	lume_E_vs_x_ebis_on_det.resize( set->GetNumberOfLUMEDetectors() );
@@ -1911,6 +1882,30 @@ void ISSHistogrammer::MakeHists() {
 		htitle = "LUME events for detector " + std::to_string(i);
 		htitle += " gated off EBIS ;Energy (keV);Counts per 5 keV";
 		lume_ebis_off_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
+
+		hname = "lume_fission_det_" + std::to_string(i);
+		htitle = "LUME energy spectrum for detector " + std::to_string(i);
+		htitle += " in prompt time coincidence with an energy-gated fission event;";
+		htitle += "Energy [keV];Counts per 5 keV";
+		lume_fission_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000);
+
+		hname = "lume_elastic_det_" + std::to_string(i);
+		htitle = "LUME energy spectrum for detector " + std::to_string(i);
+		htitle += " in prompt time coincidence with an event in the CD;";
+		htitle += "Energy [keV];Counts per 5 keV";
+		lume_elastic_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000);
+
+		hname = "lume_fission_random_det_" + std::to_string(i);
+		htitle = "LUME energy spectrum for detector " + std::to_string(i);
+		htitle += " in random time coincidence with an energy-gated fission event;";
+		htitle += "Energy [keV];Counts per 5 keV";
+		lume_fission_random_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000);
+
+		hname = "lume_elastic_random_det_" + std::to_string(i);
+		htitle = "LUME energy spectrum for detector " + std::to_string(i);
+		htitle += " in random time coincidence with an event in the CD;";
+		htitle += "Energy [keV];Counts per 5 keV";
+		lume_elastic_random_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000);
 
 		hname = "lume_E_vs_x_det_" + std::to_string(i);
 		htitle = "LUME energy vs position spectrum for detecor " + std::to_string(i);
@@ -2007,8 +2002,8 @@ void ISSHistogrammer::ResetHists() {
 		for( unsigned int i = 0; i < fission_array_td.size(); ++i )
 			fission_array_td[i]->Reset("ICESM");
 
-		for( unsigned int i = 0; i < fission_elum_td.size(); ++i )
-			fission_elum_td[i]->Reset("ICESM");
+		for( unsigned int i = 0; i < fission_lume_td.size(); ++i )
+			fission_lume_td[i]->Reset("ICESM");
 
 		for( unsigned int i = 0; i < fission_array_tw_hit0_row.size(); ++i )
 			for( unsigned int j = 0; j < fission_array_tw_hit0_row[i].size(); ++j )
@@ -2646,25 +2641,25 @@ void ISSHistogrammer::ResetHists() {
 			elum_recoilT_random_sec[i]->Reset("ICESM");
 
 	}
-	
+
 	if( react->IsFission() ) {
 
-		elum_fission->Reset("ICESM");
-		elum_fissionT->Reset("ICESM");
-		elum_fission_random->Reset("ICESM");
-		elum_fissionT_random->Reset("ICESM");
+		lume_fission->Reset("ICESM");
+		lume_elastic->Reset("ICESM");
+		lume_fission_random->Reset("ICESM");
+		lume_elastic_random->Reset("ICESM");
 
-		for( unsigned int i = 0; i < elum_fission_sec.size(); ++i )
-			elum_fission_sec[i]->Reset("ICESM");
+		for( unsigned int i = 0; i < lume_fission_det.size(); ++i )
+			lume_fission_det[i]->Reset("ICESM");
 
-		for( unsigned int i = 0; i < elum_fissionT_sec.size(); ++i )
-			elum_fissionT_sec[i]->Reset("ICESM");
+		for( unsigned int i = 0; i < lume_elastic_det.size(); ++i )
+			lume_elastic_det[i]->Reset("ICESM");
 
-		for( unsigned int i = 0; i < elum_fission_random_sec.size(); ++i )
-			elum_fission_random_sec[i]->Reset("ICESM");
+		for( unsigned int i = 0; i < lume_fission_random_det.size(); ++i )
+			lume_fission_random_det[i]->Reset("ICESM");
 
-		for( unsigned int i = 0; i < elum_fissionT_random_sec.size(); ++i )
-			elum_fissionT_random_sec[i]->Reset("ICESM");
+		for( unsigned int i = 0; i < lume_elastic_random_det.size(); ++i )
+			lume_elastic_random_det[i]->Reset("ICESM");
 
 	}
 
@@ -2674,6 +2669,10 @@ void ISSHistogrammer::ResetHists() {
 		lume_ebis_det[i]->Reset("ICESM");
 		lume_ebis_on_det[i]->Reset("ICESM");
 		lume_ebis_off_det[i]->Reset("ICESM");
+		lume_fission_det[i]->Reset("ICESM");
+		lume_elastic_det[i]->Reset("ICESM");
+		lume_fission_random_det[i]->Reset("ICESM");
+		lume_elastic_random_det[i]->Reset("ICESM");
 		lume_E_vs_x_det[i]->Reset("ICESM");
 		lume_E_vs_x_ebis_det[i]->Reset("ICESM");
 		lume_E_vs_x_ebis_on_det[i]->Reset("ICESM");
@@ -2686,6 +2685,10 @@ void ISSHistogrammer::ResetHists() {
 	lume_ebis->Reset("ICESM");
 	lume_ebis_on->Reset("ICESM");
 	lume_ebis_off->Reset("ICESM");
+	lume_fission->Reset("ICESM");
+	lume_elastic->Reset("ICESM");
+	lume_fission_random->Reset("ICESM");
+	lume_elastic_random->Reset("ICESM");
 	lume_vs_T1->Reset("ICESM");
 	lume_E_vs_x_ebis->Reset("ICESM");
 	lume_E_vs_x_ebis_on->Reset("ICESM");
@@ -2806,8 +2809,8 @@ unsigned long ISSHistogrammer::FillHists() {
 				E_vs_z_ebis_on->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 				E_vs_z_ebis_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 				E_vs_z_ebis_on_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
-				Theta_ebis->Fill(react->GetThetaCM() * TMath::RadToDeg());
-				Theta_ebis_on->Fill(react->GetThetaCM() * TMath::RadToDeg());
+				Theta_ebis->Fill( react->GetThetaCM() * TMath::RadToDeg() );
+				Theta_ebis_on->Fill( react->GetThetaCM() * TMath::RadToDeg() );
 				Theta_ebis_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
 				Theta_ebis_on_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg() );
 				Ex_ebis->Fill( react->GetEx() );
@@ -3166,7 +3169,6 @@ unsigned long ISSHistogrammer::FillHists() {
 
 				} // random
 
-
 			} // fission mode finished
 
 			// Recoil mode
@@ -3398,17 +3400,9 @@ unsigned long ISSHistogrammer::FillHists() {
 			bool promptcheck = false;
 			bool randomcheck = false;
 
-			// Fission mode
-			if( react->IsFission() ) {
+			// Only have ELUM when in recoil mode, i.e. not fission mode
+			if( !react->IsFission() ) {
 
-				// Do nothing because we don't have ELUM and fission
-				// detectors in the same setup! TODO: remove histograms
-
-			} // end of fission mode
-
-			// Recoil mode
-			else {
-				
 				for( unsigned int k = 0; k < read_evts->GetRecoilMultiplicity(); ++k ){
 
 					// Get recoil event
@@ -3463,7 +3457,6 @@ unsigned long ISSHistogrammer::FillHists() {
 			} // end of recoil mode
 			
 		} // ELUM
-		
 		
 		// Fission mode
 		if( react->IsFission() ) {
@@ -3622,6 +3615,83 @@ unsigned long ISSHistogrammer::FillHists() {
 				lume_E_vs_x_ebis_off_det[det_id]->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
 
 			} // ebis
+
+			// Loop over fission events
+			bool promptcheck = false;
+			bool randomcheck = false;
+			bool energycheck = false;
+
+			// If we have fission mode, rather than recoil mode
+			if( react->IsFission() ) {
+
+				// Loop over CD events to check for random and prompt coincidences
+				for( unsigned int k = 0; k < read_evts->GetCDMultiplicity(); ++k ){
+
+					// Get CD event
+					cd_evt1 = read_evts->GetCDEvt(k);
+
+					// Time differences
+					tdiff = cd_evt1->GetTime() - lume_evt->GetTime();
+					fission_lume_td[det_id]->Fill( tdiff );
+
+					// Loop over coincident CD events
+					for( unsigned int l = 0; l < read_evts->GetCDMultiplicity(); ++l ){
+
+						// Skip self-coincidences
+						if( k == l ) continue;
+
+						// Get CD event
+						cd_evt2 = read_evts->GetCDEvt(l);
+
+						// Check for prompt events with coincident fissions
+						if( PromptCoincidence( cd_evt1, lume_evt ) && PromptCoincidence( cd_evt1, cd_evt2 ) )
+							promptcheck = true;
+
+						// Check for random events with coincident fissions
+						if( RandomCoincidence( cd_evt1, lume_evt ) && PromptCoincidence( cd_evt1, cd_evt2 ) )
+							randomcheck = true;
+
+						// Check energy gate
+						if( FissionCutHeavy( cd_evt1 ) && FissionCutLight( cd_evt2 ) )
+							energycheck = true;
+
+					} // cd events 2
+
+				} // cd events 1
+
+				// Fill prompt hists
+				if( promptcheck == true && randomcheck == false ){
+
+					lume_elastic->Fill( lume_evt->GetBE() );
+					lume_elastic_det[det_id]->Fill( lume_evt->GetBE() );
+
+					// Fill energy gate hists
+					if( energycheck == true ) {
+
+						lume_fission->Fill( lume_evt->GetBE() );
+						lume_fission_det[det_id]->Fill( lume_evt->GetBE() );
+
+					} // energy cuts
+
+				} // prompt
+
+				// Fill random hists, but only if we didn't fill it already as a prompt hit
+				else if( randomcheck == true && promptcheck == false ){
+
+					lume_elastic_random->Fill( lume_evt->GetBE() );
+					lume_elastic_random_det[det_id]->Fill( lume_evt->GetBE() );
+
+					// Fill energy gate hists
+					if( energycheck == true ) {
+
+						lume_fission_random->Fill( lume_evt->GetBE() );
+						lume_fission_random_det[det_id]->Fill( lume_evt->GetBE() );
+
+					} // energy cuts
+
+				} // random
+
+			} // fission mode finished
 
 		}
 

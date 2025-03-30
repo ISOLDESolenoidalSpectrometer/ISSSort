@@ -92,11 +92,11 @@ public:
 		    r->GetTime() - e->GetTime() < react->GetElumRecoilPromptTime(1) ) return true;
 		else return false;
 	};
-	
-	// Fission - elum coincidence
-	inline bool	PromptCoincidence( std::shared_ptr<ISSCDEvt> f, std::shared_ptr<ISSElumEvt> e ){
-		if( f->GetTime() - e->GetTime() > react->GetElumFissionPromptTime(0) &&
-		    f->GetTime() - e->GetTime() < react->GetElumFissionPromptTime(1) ) return true;
+
+	// Fission - lume coincidence
+	inline bool	PromptCoincidence( std::shared_ptr<ISSCDEvt> f, std::shared_ptr<ISSLumeEvt> l ){
+		if( f->GetTime() - l->GetTime() > react->GetLumeFissionPromptTime(0) &&
+		    f->GetTime() - l->GetTime() < react->GetLumeFissionPromptTime(1) ) return true;
 		else return false;
 	};
 
@@ -122,6 +122,12 @@ public:
 	inline bool	RandomCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSElumEvt> e ){
 		if( r->GetTime() - e->GetTime() > react->GetElumRecoilRandomTime(0) &&
 			r->GetTime() - e->GetTime() < react->GetElumRecoilRandomTime(1) ) return true;
+		else return false;
+	};
+
+	inline bool	RandomCoincidence( std::shared_ptr<ISSCDEvt> f, std::shared_ptr<ISSLumeEvt> l ){
+		if( f->GetTime() - l->GetTime() > react->GetLumeFissionRandomTime(0) &&
+		    f->GetTime() - l->GetTime() < react->GetLumeFissionRandomTime(1) ) return true;
 		else return false;
 	};
 
@@ -286,7 +292,7 @@ private:
 	std::vector<std::vector<TH1F*>> recoil_array_td;
 	std::vector<std::vector<TH1F*>> recoil_elum_td;
 	std::vector<TH1F*> fission_array_td;
-	std::vector<TH1F*> fission_elum_td;
+	std::vector<TH1F*> fission_lume_td;
 	TH1F *fission_fission_td;
 	TH2F *fission_fission_td_sec;
 	TH2F *recoil_array_tw_hit0, *recoil_array_tw_hit1;
@@ -515,7 +521,6 @@ private:
 	TH1F *Theta_recoil_random, *Theta_recoilT_random;
 	TH1F *Theta_fission, *Theta_fissionT;
 	TH1F *Theta_fission_random, *Theta_fissionT_random;
-	TH2F *Theta_vs_T1;
 		
 	// ELUM
 	std::vector<TH1F*> elum_sec;
@@ -526,15 +531,9 @@ private:
 	std::vector<TH1F*> elum_recoilT_sec;
 	std::vector<TH1F*> elum_recoil_random_sec;
 	std::vector<TH1F*> elum_recoilT_random_sec;
-	std::vector<TH1F*> elum_fission_sec;
-	std::vector<TH1F*> elum_fissionT_sec;
-	std::vector<TH1F*> elum_fission_random_sec;
-	std::vector<TH1F*> elum_fissionT_random_sec;
 	TH1F *elum, *elum_ebis, *elum_ebis_on, *elum_ebis_off;
 	TH1F *elum_recoil, *elum_recoilT;
 	TH1F *elum_recoil_random, *elum_recoilT_random;
-	TH1F *elum_fission, *elum_fissionT;
-	TH1F *elum_fission_random, *elum_fissionT_random;
 	TH2F *elum_vs_T1;
 
     // LUME
@@ -542,6 +541,10 @@ private:
 	std::vector<TH1F*> lume_ebis_det;
 	std::vector<TH1F*> lume_ebis_on_det;
 	std::vector<TH1F*> lume_ebis_off_det;
+	std::vector<TH1F*> lume_fission_det;
+	std::vector<TH1F*> lume_elastic_det;
+	std::vector<TH1F*> lume_fission_random_det;
+	std::vector<TH1F*> lume_elastic_random_det;
 	std::vector<TH2F*> lume_E_vs_x_det;
 	std::vector<TH2F*> lume_E_vs_x_ebis_det;
 	std::vector<TH2F*> lume_E_vs_x_ebis_on_det;
@@ -550,6 +553,8 @@ private:
     TH2F *lume_E_vs_x, *lume_vs_T1, *lume_E_vs_x_ebis;
     TH2F *lume_E_vs_x_ebis_on, *lume_E_vs_x_ebis_off;
     TH2F *lume_E_vs_x_wide;
+	TH1F *lume_fission, *lume_elastic;
+	TH1F *lume_fission_random, *lume_elastic_random;
 
 };
 

@@ -615,10 +615,10 @@ void ISSReaction::ReadReaction() {
 	array_recoil_ratio = config->GetValue( "ArrayRecoil_FillRatio", GetArrayRecoilTimeRatio() );
 	
 	// ELUM-Recoil time windows
-	elum_recoil_prompt[0] = config->GetValue( "ElumRecoil_PromptTime.Min", -300 );	// lower limit for array-recoil prompt time difference
-	elum_recoil_prompt[1] = config->GetValue( "ElumRecoil_PromptTime.Max", 300 );	// upper limit for array-recoil prompt time difference
-	elum_recoil_random[0] = config->GetValue( "ElumRecoil_RandomTime.Min", 600 );	// lower limit for array-recoil random time difference
-	elum_recoil_random[1] = config->GetValue( "ElumRecoil_RandomTime.Max", 1200 );	// upper limit for array-recoil random time difference
+	elum_recoil_prompt[0] = config->GetValue( "ElumRecoil_PromptTime.Min", -300 );	// lower limit for elum-recoil prompt time difference
+	elum_recoil_prompt[1] = config->GetValue( "ElumRecoil_PromptTime.Max", 300 );	// upper limit for elum-recoil prompt time difference
+	elum_recoil_random[0] = config->GetValue( "ElumRecoil_RandomTime.Min", 600 );	// lower limit for elum-recoil random time difference
+	elum_recoil_random[1] = config->GetValue( "ElumRecoil_RandomTime.Max", 1200 );	// upper limit for elum-recoil random time difference
 	
 	// ELUM-Recoil fill ratios
 	elum_recoil_ratio = config->GetValue( "ElumRecoil_FillRatio", GetElumRecoilTimeRatio() );
@@ -632,14 +632,14 @@ void ISSReaction::ReadReaction() {
 	// Array-Fission fill ratios
 	array_fission_ratio = config->GetValue( "ArrayFission_FillRatio", GetArrayFissionTimeRatio() );
 
-	// ELUM-Fission time windows
-	elum_fission_prompt[0] = config->GetValue( "ElumFission_PromptTime.Min", -300 );	// lower limit for array-fission prompt time difference
-	elum_fission_prompt[1] = config->GetValue( "ElumFission_PromptTime.Max", 300 );	// upper limit for array-fission prompt time difference
-	elum_fission_random[0] = config->GetValue( "ElumFission_RandomTime.Min", 600 );	// lower limit for array-fission random time difference
-	elum_fission_random[1] = config->GetValue( "ElumFission_RandomTime.Max", 1200 );	// upper limit for array-fission random time difference
+	// Lume-Fission time windows
+	lume_fission_prompt[0] = config->GetValue( "LumeFission_PromptTime.Min", -300 );	// lower limit for lume-fission prompt time difference
+	lume_fission_prompt[1] = config->GetValue( "LumeFission_PromptTime.Max", 300 );		// upper limit for lume-fission prompt time difference
+	lume_fission_random[0] = config->GetValue( "LumeFission_RandomTime.Min", 600 );		// lower limit for lume-fission random time difference
+	lume_fission_random[1] = config->GetValue( "LumeFission_RandomTime.Max", 1200 );	// upper limit for lume-fission random time difference
 
 	// ELUM-Fission fill ratios
-	elum_fission_ratio = config->GetValue( "ElumFission_FillRatio", GetElumFissionTimeRatio() );
+	lume_fission_ratio = config->GetValue( "LumeFission_FillRatio", GetLumeFissionTimeRatio() );
 
 	// Fission-Fission time windows
 	fission_fission_prompt[0] = config->GetValue( "FissionFission_PromptTime.Min", -300 );	// lower limit for fission-fission prompt time difference
