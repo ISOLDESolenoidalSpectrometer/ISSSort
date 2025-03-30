@@ -95,6 +95,7 @@ void ISSSettings::ReadSettings() {
 	
 	
 	// Event builder
+	build_by_tm_stp = config->GetValue( "BuildByTimeStamp", true );
 	event_window = config->GetValue( "EventWindow", 3e3 );
 	recoil_hit_window = config->GetValue( "RecoilHitWindow", 500 );
 	array_pn_hit_window = config->GetValue( "ArrayHitWindow.PN", 500 );

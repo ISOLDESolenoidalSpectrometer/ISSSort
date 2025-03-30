@@ -761,7 +761,7 @@ double ISSReaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGrap
 		if( eloss > E && eloss > 0 ) eloss = E; // incase we are "stopped"
 
 		E -= eloss;
-		if( E < 100. && eloss > 0  ) break; // when we fall below 100 keV we assume maximum energy loss
+		if( E < 100. && eloss > 0 ) break; // when we fall below 100 keV we assume maximum energy loss
 
 	}
 
@@ -1046,7 +1046,7 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 		dEdx_e = splineStoppingPower->Eval(E);
 		
 		// Calculate the nuclear stopping
-		// NB: this is inefficient, but still only takes a couple of seconds
+		// TODO: this is inefficient, but still only takes a couple of seconds
 		// ideally the integrated nuclear energy loss versus energy would be
 		// calculated only once and stored as a TGraph or something. Who cares?
 		dEdx_n = GetNuclearEnergyLoss( E, range, gStopping[4], gStopping[5] );
