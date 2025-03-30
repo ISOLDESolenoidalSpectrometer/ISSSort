@@ -3017,7 +3017,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				} // cd events 1
 
 				// Fill prompt hists
-				if( promptcheck == true ){
+				if( promptcheck == true && randomcheck == false ){
 
 					// Fission fragments in coincidence with an array event
 					fission_EdE_array->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
@@ -3096,7 +3096,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				} // prompt
 
 				// Fill random hists, but only if we didn't fill it already as a prompt hit
-				else if( randomcheck == true ){
+				else if( randomcheck == true && promptcheck == false ){
 
 					// Array histograms
 					E_vs_z_fissionT_random->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
