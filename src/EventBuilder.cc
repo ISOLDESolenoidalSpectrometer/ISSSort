@@ -642,15 +642,28 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			myvme = vme_data->GetCrate();
 			mymod = vme_data->GetModule();
 			mych = vme_data->GetChannel();
-			
+
+			// Check for clipped flags
+			myclipped = vme_data->IsClipped();
+
 			// New calibration supplied
 			if( overwrite_cal ) {
 				
 				std::string entype = cal->VmeType( myvme, mymod, mych );
 				unsigned short adc_value = 0;
-				if( entype == "Qlong" ) adc_value = vme_data->GetQlong();
-				else if( entype == "Qshort" ) adc_value = vme_data->GetQshort();
-				else if( entype == "Qdiff" ) adc_value = vme_data->GetQdiff();
+				if( entype == "Qlong" ) {
+					adc_value = vme_data->GetQlong();
+					myoverflow = vme_data->IsOverflowLong();
+				}
+				else if( entype == "Qshort" ){
+					adc_value = vme_data->GetQshort();
+					myoverflow = vme_data->IsOverflowShort();
+				}
+				else if( entype == "Qdiff" ){
+					adc_value = vme_data->GetQdiff();
+					myoverflow = vme_data->IsOverflowLong();
+					myoverflow |= vme_data->IsOverflowShort();
+				}
 				myenergy = cal->VmeEnergy( myvme, mymod, mych, adc_value );
 				
 				if( adc_value < cal->VmeThreshold( myvme, mymod, mych ) )
@@ -668,10 +681,13 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// If it's below threshold do not use as window opener
 			if( mythres ) event_open = true;
 
-			// DETERMINE WHICH TYPE OF CAEN EVENT THIS IS
+			// DETERMINE WHICH TYPE OF VME EVENT THIS IS
 			// Is it a recoil?
-			if( set->IsRecoil( myvme, mymod, mych ) && mythres ) {
-				
+			if( set->IsRecoil( myvme, mymod, mych ) &&
+			   mythres &&											// check threshold
+			   ( !myclipped || !set->GetClippedRejection() ) &&		// check clipped
+			   ( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
+
 				mysector = set->GetRecoilSector( myvme, mymod, mych );
 				mylayer = set->GetRecoilLayer( myvme, mymod, mych );
 				
@@ -685,7 +701,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			}
 			
 			// Is it an MWPC?
-			else if( set->IsMWPC( myvme, mymod, mych ) && mythres ) {
+			else if( set->IsMWPC( myvme, mymod, mych ) &&
+					mythres &&											// check threshold
+					( !myclipped || !set->GetClippedRejection() ) &&	// check clipped
+					( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
 				
 				mwpctac_list.push_back( myenergy );
 				mwpctd_list.push_back( mytime );
@@ -697,10 +716,13 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			}
 			
 			// Is it an ELUM?
-			else if( set->IsELUM( myvme, mymod, mych ) && mythres ) {
+			else if( set->IsELUM( myvme, mymod, mych ) &&
+					mythres &&											// check threshold
+					( !myclipped || !set->GetClippedRejection() ) &&	// check clipped
+					( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
 				
 				mysector = set->GetELUMSector( myvme, mymod, mych );
-				
+
 				een_list.push_back( myenergy );
 				etd_list.push_back( mytime );
 				esec_list.push_back( mysector );
@@ -710,7 +732,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			}
 
 			// Is it a ZeroDegree?
-			else if( set->IsZD( myvme, mymod, mych ) && mythres ) {
+			else if( set->IsZD( myvme, mymod, mych ) &&
+					mythres &&											// check threshold
+					( !myclipped || !set->GetClippedRejection() ) &&	// check clipped
+					( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
 				
 				mylayer = set->GetZDLayer( myvme, mymod, mych );
 				
@@ -723,7 +748,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			}
 			
 			// Is it a ScintArray?
-			else if( set->IsScintArray( myvme, mymod, mych ) && mythres ) {
+			else if( set->IsScintArray( myvme, mymod, mych ) &&
+					mythres &&											// check threshold
+					( !myclipped || !set->GetClippedRejection() ) &&	// check clipped
+					( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
 			
 				myid = set->GetScintArrayDetector( myvme, mymod, mych );
 				
@@ -735,7 +763,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 			}
 			// Is it a LUME?
-			else if( set->IsLUME( myvme, mymod, mych ) && mythres ) {
+			else if( set->IsLUME( myvme, mymod, mych ) &&
+					mythres &&											// check threshold
+					( !myclipped || !set->GetClippedRejection() ) &&	// check clipped
+					( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
 
 				// Get LUME signal type (0 = total energy, 1 = near side, 2 = far side)
 				mytype = set->GetLUMEType( myvme, mymod, mych );

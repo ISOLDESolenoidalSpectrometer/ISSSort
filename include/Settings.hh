@@ -131,6 +131,10 @@ public:
 	inline bool IsMesyOnly(){ return flag_mesy_only; };
 
 	
+	// Event rejection
+	inline bool GetClippedRejection(){ return clipped_reject; };
+	inline bool GetOverflowRejection(){ return overflow_reject; };
+
 	// Recoil detector
 	inline unsigned char GetNumberOfRecoilSectors(){ return n_recoil_sector; };
 	inline unsigned char GetNumberOfRecoilLayers(){ return n_recoil_layer; };
@@ -256,6 +260,11 @@ private:
 	bool flag_caen_only;			///< when there is only CAEN data in the file
 	bool flag_mesy_only;			///< when there is only Mesytec data in the file
 	
+
+	// Event rejection
+	bool clipped_reject;	///< reject events if firmware marks them as clipped signals
+	bool overflow_reject;	///< reject events if their energy is in the overflow
+
 
 	// Recoil detectors
 	unsigned char n_recoil_sector;								///< Number of recoil detector sectors or quadrants; 1 for gas and 4 for Si

@@ -226,6 +226,8 @@ private:
 	float 				myenergy;	///< calibrated energy
 	int 				mywalk;		///< time walk correction
 	bool				mythres;	///< above threshold?
+	bool				myoverflow;	///< energy in overflow
+	bool				myclipped;	///< signal clipped in firmware
 
 	// Data variables - Array
 	unsigned char		myasic;		///< ASIC number

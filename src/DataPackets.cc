@@ -202,6 +202,9 @@ void ISSVmeData::ClearData(){
 	ch = 255;
 	energy = -999.;
 	thres = true;
+	clipped = false;
+	overflow_long = false;
+	overflow_short = false;
 	
 	return;
 	
