@@ -815,7 +815,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00761" name="l00761"></a><span class="lineno">  761</span>        <span class="keywordflow">if</span>( eloss &gt; E &amp;&amp; eloss &gt; 0 ) eloss = E; <span class="comment">// incase we are &quot;stopped&quot;</span></div>
 <div class="line"><a id="l00762" name="l00762"></a><span class="lineno">  762</span> </div>
 <div class="line"><a id="l00763" name="l00763"></a><span class="lineno">  763</span>        E -= eloss;</div>
-<div class="line"><a id="l00764" name="l00764"></a><span class="lineno">  764</span>        <span class="keywordflow">if</span>( E &lt; 100. &amp;&amp; eloss &gt; 0  ) <span class="keywordflow">break</span>; <span class="comment">// when we fall below 100 keV we assume maximum energy loss</span></div>
+<div class="line"><a id="l00764" name="l00764"></a><span class="lineno">  764</span>        <span class="keywordflow">if</span>( E &lt; 100. &amp;&amp; eloss &gt; 0 ) <span class="keywordflow">break</span>; <span class="comment">// when we fall below 100 keV we assume maximum energy loss</span></div>
 <div class="line"><a id="l00765" name="l00765"></a><span class="lineno">  765</span> </div>
 <div class="line"><a id="l00766" name="l00766"></a><span class="lineno">  766</span>    }</div>
 <div class="line"><a id="l00767" name="l00767"></a><span class="lineno">  767</span> </div>
@@ -1078,7 +1078,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l01046" name="l01046"></a><span class="lineno"> 1046</span>        dEdx_e = splineStoppingPower-&gt;Eval(E);</div>
 <div class="line"><a id="l01047" name="l01047"></a><span class="lineno"> 1047</span>        </div>
 <div class="line"><a id="l01048" name="l01048"></a><span class="lineno"> 1048</span>        <span class="comment">// Calculate the nuclear stopping</span></div>
-<div class="line"><a id="l01049" name="l01049"></a><span class="lineno"> 1049</span>        <span class="comment">// NB: this is inefficient, but still only takes a couple of seconds</span></div>
+<div class="line"><a id="l01049" name="l01049"></a><span class="lineno"> 1049</span>        <span class="comment">// TODO: this is inefficient, but still only takes a couple of seconds</span></div>
 <div class="line"><a id="l01050" name="l01050"></a><span class="lineno"> 1050</span>        <span class="comment">// ideally the integrated nuclear energy loss versus energy would be</span></div>
 <div class="line"><a id="l01051" name="l01051"></a><span class="lineno"> 1051</span>        <span class="comment">// calculated only once and stored as a TGraph or something. Who cares?</span></div>
 <div class="line"><a id="l01052" name="l01052"></a><span class="lineno"> 1052</span>        dEdx_n = <a class="code hl_function" href="classISSReaction.html#adcc8a162077804557bb31ebae606c3ad">GetNuclearEnergyLoss</a>( E, range, <a class="code hl_variable" href="classISSReaction.html#aa4d5668b2abdd62b03825bfc655f6287">gStopping</a>[4], <a class="code hl_variable" href="classISSReaction.html#aa4d5668b2abdd62b03825bfc655f6287">gStopping</a>[5] );</div>
