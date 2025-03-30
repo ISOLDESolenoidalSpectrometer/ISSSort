@@ -8,9 +8,8 @@ on:
 
 permissions:
   contents: write
-
-notifications:
-  email: false
+  deployments: write
+  pages: write
 
 jobs:
   deploy:
