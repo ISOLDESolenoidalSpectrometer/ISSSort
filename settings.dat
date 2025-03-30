@@ -93,6 +93,8 @@
 #ZeroDegreeHitWindow: 500	# in ns. Default is 500 ns
 #GammaRayHitWindow: 500		# in ns. Default is 500 ns
 #LumeHitWindow: 500 # in ns. Default is 500 ns
+#CDHitWindow.RS: 500 # in ns. Default is 500 ns (ring-strip combinations)
+#CDHitWindow.DD: 500 # in ns. Default is 500 ns (detector-detector combinations)
 
 
 #-----------------#
@@ -210,3 +212,22 @@
 #LUME_0_fe.Module: 2		#
 #LUME_0_fe.Channel: 2		#
 
+
+##------------------------------#
+## CD Fission Fragment Detector #
+##------------------------------#
+#NumberOfCDLayers: 0 		# 0 is default to turn off the CD, but usually 2 layers of Si in the dE-E configuration
+#NumberOfCDRings: 16 		# number of rings (p-side) in the S1 detector, usually 16
+#NumberOfCDSectors: 8 		# number of sectors (n-side) in the S1 detector, usually 8
+#CDEnergyLossStart: 0		# Start layer for integrating energy loss
+#CDEnergyLossStop: 0		# Stop layer for integrating energy loss
+#CDEnergyRestStart: 1		# Start layer for integrating energy rest
+#CDEnergyRestStop: 1		# Stop layer for integrating energy rest
+#CDEnergyTotalStart: 0		# Start layer for integrating energy total
+#CDEnergyTotalStop: 1		# Stop layer for integrating energy total
+#CD_0_0.R.Crate: 1			# should be in the Mesytec system
+#CD_0_0.R.Module: 0			# mapped by <layer>_<ring>.<R> for rings
+#CD_0_0.R.Channel: 0		#
+#CD_0_0.S.Crate: 1			# mapped by <layer>_<sector>.<S> for sectors
+#CD_0_0.S.Module: 1			#
+#CD_0_0.S.Channel: 0		#
