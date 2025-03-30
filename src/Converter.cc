@@ -1212,8 +1212,6 @@ void ISSConverter::ProcessCAENData(){
 		// Overflow flag
 		if( ( my_adc_data & 0xFFFF ) == 0xFFFF )
 			caen_data->SetOverflowLong( true );
-		else
-			caen_data->SetOverflowLong( false );
 
 		// Energy
 		hcaen_qlong[my_mod_id][my_ch_id]->Fill( my_adc_data );
@@ -1234,8 +1232,6 @@ void ISSConverter::ProcessCAENData(){
 		// Overflow flag
 		if( ( my_adc_data & 0x7FFF ) == 0x7FFF )
 			caen_data->SetOverflowShort( true );
-		else
-			caen_data->SetOverflowShort( false );
 
 		// Energy
 		my_adc_data = my_adc_data & 0x7FFF; // 15 bits from 0
@@ -1520,25 +1516,39 @@ void ISSConverter::ProcessMesytecData(){
 	
 	// Qlong
 	if( my_data_id == 0 ) {
+
+		// Overflow flag
+		if( ( my_adc_data & 0xFFFF ) == 0xFFFF )
+			mesy_data->SetOverflowLong( true );
 		
-		// Fill histograms
+		// Energy
 		hmesy_qlong[my_mod_id][my_ch_id]->Fill( my_adc_data );
-		if( my_adc_data == 0xFFFF ) mesy_data->SetQlong( 0 );
-		else mesy_data->SetQlong( my_adc_data );
+		mesy_data->SetQlong( my_adc_data );
+		
+		// Mark data received
 		flag_mesy_data0 = true;
 		
 	}
 	
 	// Qshort
 	if( my_data_id == 1 ) {
+
+		// Clipped flag
+		bool myclipped = (my_adc_data >> 15) & 0x1; // 1 bit from 15
+		mesy_data->SetClipped( myclipped );
 		
-		// Fill histograms
+		// Overflow flag
+		if( ( my_adc_data & 0x7FFF ) == 0x7FFF )
+			mesy_data->SetOverflowShort( true );
+		
+		// Energy
 		my_adc_data = my_adc_data & 0x7FFF; // 15 bits from 0
 		hmesy_qshort[my_mod_id][my_ch_id]->Fill( my_adc_data );
-		if( my_adc_data == 0x7FFF ) mesy_data->SetQshort( 0 );
-		else mesy_data->SetQshort( my_adc_data );
-		flag_mesy_data1 = true;
+		mesy_data->SetQshort( my_adc_data );
 		
+		// Mark data received
+		flag_mesy_data1 = true;
+
 	}
 	
 	// Fine timing
