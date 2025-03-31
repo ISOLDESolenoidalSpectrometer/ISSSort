@@ -286,12 +286,6 @@ public:
 	
 protected:
 	
-	std::vector<float>			energy;	///< differential energy list, i.e. Silicon dE-E length = 2
-	std::vector<unsigned char>	id;		///< differential id list, i.e. dE = 0, E = 1, for example
-	unsigned char				sec;	///< sector or quandrant of the ZeroDegree detector, i.e. 0 because we just have one
-	double						detime;	///< time stamp of ZeroDegree event
-	double						etime;	///< time stamp of ZeroDegree event
-	
 	ClassDef( ISSZeroDegreeEvt, 5 )
 	
 };
