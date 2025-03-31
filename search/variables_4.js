@@ -25,7 +25,7 @@ var searchData=
   ['default_5ffit_5fsigma_5flb_22',['default_fit_sigma_lb',['../classISSAutoCalibrator.html#a848af2491ce472fc115c01952127a71a',1,'ISSAutoCalibrator']]],
   ['default_5ffit_5fsigma_5fub_23',['default_fit_sigma_ub',['../classISSAutoCalibrator.html#a44ad78eb0a4d110e94dcb5d83f17b35f',1,'ISSAutoCalibrator']]],
   ['default_5fmissing_5fpeak_5fis_5flast_24',['default_missing_peak_is_last',['../classISSAutoCalibrator.html#ae0759fb8c29d18f2f9b53972c5da46f3',1,'ISSAutoCalibrator']]],
-  ['detime_25',['detime',['../classISSMultiLayerDetectorEvt.html#a30cfff372095786b221106d8ba36e99e',1,'ISSMultiLayerDetectorEvt::detime'],['../classISSRecoilEvt.html#a72f1beedcf2b5064662e97776acd8f06',1,'ISSRecoilEvt::detime'],['../classISSZeroDegreeEvt.html#ad6353df913bcce00412187a5a1b35f33',1,'ISSZeroDegreeEvt::detime']]],
+  ['detime_25',['detime',['../classISSMultiLayerDetectorEvt.html#a30cfff372095786b221106d8ba36e99e',1,'ISSMultiLayerDetectorEvt']]],
   ['dialog_5fmsg_26',['dialog_msg',['../classISSDialog.html#ab75fa059fbc05c8306ef0f5c8c8f5dd8',1,'ISSDialog']]],
   ['dsim_27',['dsim',['../classISSReaction.html#ac1f129ae2c5512d6d05073d3f9e27b6a',1,'ISSReaction']]]
 ];

@@ -88,8 +88,8 @@ $(function(){ initResizable(false); });
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pri-methods">Private Member Functions</a> &#124;
-<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classISSGammaRayEvt-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">ISSGammaRayEvt Class Reference</div></div>
 </div><!--header-->
@@ -100,8 +100,11 @@ $(function(){ initResizable(false); });
 Inheritance diagram for ISSGammaRayEvt:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classISSGammaRayEvt.png" alt=""/>
- </div></div>
+  <img src="classISSGammaRayEvt.png" usemap="#ISSGammaRayEvt_map" alt=""/>
+  <map id="ISSGammaRayEvt_map" name="ISSGammaRayEvt_map">
+<area href="classISSSingleLayerDetectorEvt.html" alt="ISSSingleLayerDetectorEvt" shape="rect" coords="0,56,165,80"/>
+  </map>
+</div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -109,48 +112,66 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a5f8228aa5ebca45dd27c8280da73e000"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae19d9113a68ab9650d96e483fb7d315" id="r_aae19d9113a68ab9650d96e483fb7d315"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aae19d9113a68ab9650d96e483fb7d315">~ISSGammaRayEvt</a> ()</td></tr>
 <tr class="separator:aae19d9113a68ab9650d96e483fb7d315"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7702918017d8b4a26771aa5a9731f29e" id="r_a7702918017d8b4a26771aa5a9731f29e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7702918017d8b4a26771aa5a9731f29e">SetEvent</a> (float myenergy, unsigned char myid, unsigned char mytype, double mytime)</td></tr>
-<tr class="separator:a7702918017d8b4a26771aa5a9731f29e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32ba5e7e015bd6a68e10ed2a3fd72266" id="r_a32ba5e7e015bd6a68e10ed2a3fd72266"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a32ba5e7e015bd6a68e10ed2a3fd72266">SetEnergy</a> (float e)</td></tr>
-<tr class="separator:a32ba5e7e015bd6a68e10ed2a3fd72266"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4254a792bd6c00f880f9cf76e2167b8a" id="r_a4254a792bd6c00f880f9cf76e2167b8a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4254a792bd6c00f880f9cf76e2167b8a">SetID</a> (unsigned char i)</td></tr>
-<tr class="separator:a4254a792bd6c00f880f9cf76e2167b8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a284c1875bdde2783b5c21a51f7d98a9d" id="r_a284c1875bdde2783b5c21a51f7d98a9d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a284c1875bdde2783b5c21a51f7d98a9d">SetEvent</a> (float myenergy, unsigned char myid, unsigned char mysec, unsigned char mytype, double mytime)</td></tr>
+<tr class="separator:a284c1875bdde2783b5c21a51f7d98a9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa542179f1a7581e2b22df0908518864a" id="r_aa542179f1a7581e2b22df0908518864a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa542179f1a7581e2b22df0908518864a">SetType</a> (unsigned char t)</td></tr>
 <tr class="separator:aa542179f1a7581e2b22df0908518864a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d870a1b57b9cc32da00f9e0dd32ad63" id="r_a7d870a1b57b9cc32da00f9e0dd32ad63"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7d870a1b57b9cc32da00f9e0dd32ad63">SetTime</a> (double t)</td></tr>
-<tr class="separator:a7d870a1b57b9cc32da00f9e0dd32ad63"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74a75ab3b26511ccab752be183ca1b47" id="r_a74a75ab3b26511ccab752be183ca1b47"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a74a75ab3b26511ccab752be183ca1b47">GetEnergy</a> ()</td></tr>
-<tr class="separator:a74a75ab3b26511ccab752be183ca1b47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a049b021d09519305991a90c29b6fb422" id="r_a049b021d09519305991a90c29b6fb422"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a049b021d09519305991a90c29b6fb422">GetID</a> ()</td></tr>
-<tr class="separator:a049b021d09519305991a90c29b6fb422"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c6d9059aadf060aa9b2ef7959cbbe2c" id="r_a7c6d9059aadf060aa9b2ef7959cbbe2c"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7c6d9059aadf060aa9b2ef7959cbbe2c">GetType</a> ()</td></tr>
 <tr class="separator:a7c6d9059aadf060aa9b2ef7959cbbe2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0900de91ce16dd307432a80aeaefee9c" id="r_a0900de91ce16dd307432a80aeaefee9c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0900de91ce16dd307432a80aeaefee9c">GetTime</a> ()</td></tr>
-<tr class="separator:a0900de91ce16dd307432a80aeaefee9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classISSSingleLayerDetectorEvt"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classISSSingleLayerDetectorEvt')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classISSSingleLayerDetectorEvt.html">ISSSingleLayerDetectorEvt</a></td></tr>
+<tr class="memitem:a457174a4d254a3341ead06ea972e0149 inherit pub_methods_classISSSingleLayerDetectorEvt" id="r_a457174a4d254a3341ead06ea972e0149"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#a457174a4d254a3341ead06ea972e0149">ISSSingleLayerDetectorEvt</a> ()</td></tr>
+<tr class="separator:a457174a4d254a3341ead06ea972e0149 inherit pub_methods_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a775dd2ad9fb175401983f00e11f09d44 inherit pub_methods_classISSSingleLayerDetectorEvt" id="r_a775dd2ad9fb175401983f00e11f09d44"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#a775dd2ad9fb175401983f00e11f09d44">~ISSSingleLayerDetectorEvt</a> ()</td></tr>
+<tr class="separator:a775dd2ad9fb175401983f00e11f09d44 inherit pub_methods_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cf66a5e61eba97e87742b9b7a355aeb inherit pub_methods_classISSSingleLayerDetectorEvt" id="r_a6cf66a5e61eba97e87742b9b7a355aeb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#a6cf66a5e61eba97e87742b9b7a355aeb">SetEvent</a> (float myenergy, unsigned char myid, unsigned char mysec, double mytime)</td></tr>
+<tr class="separator:a6cf66a5e61eba97e87742b9b7a355aeb inherit pub_methods_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0951c711ef1851873779d8ed2474a80b inherit pub_methods_classISSSingleLayerDetectorEvt" id="r_a0951c711ef1851873779d8ed2474a80b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#a0951c711ef1851873779d8ed2474a80b">SetEnergy</a> (float e)</td></tr>
+<tr class="separator:a0951c711ef1851873779d8ed2474a80b inherit pub_methods_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed85c4a97cb3dd403a2086daad320056 inherit pub_methods_classISSSingleLayerDetectorEvt" id="r_aed85c4a97cb3dd403a2086daad320056"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#aed85c4a97cb3dd403a2086daad320056">SetSector</a> (unsigned char s)</td></tr>
+<tr class="separator:aed85c4a97cb3dd403a2086daad320056 inherit pub_methods_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4972fef8c0dac0ad0cfb26ea81421a22 inherit pub_methods_classISSSingleLayerDetectorEvt" id="r_a4972fef8c0dac0ad0cfb26ea81421a22"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#a4972fef8c0dac0ad0cfb26ea81421a22">SetID</a> (unsigned char i)</td></tr>
+<tr class="separator:a4972fef8c0dac0ad0cfb26ea81421a22 inherit pub_methods_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38bc044001b015942930bcdd7c21614d inherit pub_methods_classISSSingleLayerDetectorEvt" id="r_a38bc044001b015942930bcdd7c21614d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#a38bc044001b015942930bcdd7c21614d">SetTime</a> (double t)</td></tr>
+<tr class="separator:a38bc044001b015942930bcdd7c21614d inherit pub_methods_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2b0b8eae37bd15371a1aa75c3b5f69c inherit pub_methods_classISSSingleLayerDetectorEvt" id="r_ad2b0b8eae37bd15371a1aa75c3b5f69c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#ad2b0b8eae37bd15371a1aa75c3b5f69c">GetEnergy</a> ()</td></tr>
+<tr class="separator:ad2b0b8eae37bd15371a1aa75c3b5f69c inherit pub_methods_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1c8f4822f9fdd0ae503cb7302eeaa99 inherit pub_methods_classISSSingleLayerDetectorEvt" id="r_aa1c8f4822f9fdd0ae503cb7302eeaa99"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#aa1c8f4822f9fdd0ae503cb7302eeaa99">GetID</a> ()</td></tr>
+<tr class="separator:aa1c8f4822f9fdd0ae503cb7302eeaa99 inherit pub_methods_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5853043dc8f55cf694cbadd4ed44722 inherit pub_methods_classISSSingleLayerDetectorEvt" id="r_af5853043dc8f55cf694cbadd4ed44722"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#af5853043dc8f55cf694cbadd4ed44722">GetSector</a> ()</td></tr>
+<tr class="separator:af5853043dc8f55cf694cbadd4ed44722 inherit pub_methods_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb7cd4391a59dec226aa26bd9a4e0655 inherit pub_methods_classISSSingleLayerDetectorEvt" id="r_abb7cd4391a59dec226aa26bd9a4e0655"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#abb7cd4391a59dec226aa26bd9a4e0655">GetTime</a> ()</td></tr>
+<tr class="separator:abb7cd4391a59dec226aa26bd9a4e0655 inherit pub_methods_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
-Private Member Functions</h2></td></tr>
-<tr class="memitem:a18c85d0a3dffc3083d05a99811306fb2" id="r_a18c85d0a3dffc3083d05a99811306fb2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a18c85d0a3dffc3083d05a99811306fb2">ClassDef</a> (<a class="el" href="classISSGammaRayEvt.html">ISSGammaRayEvt</a>, 2)</td></tr>
-<tr class="separator:a18c85d0a3dffc3083d05a99811306fb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:ad72ba2273352c43628787e9a96d08939" id="r_ad72ba2273352c43628787e9a96d08939"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad72ba2273352c43628787e9a96d08939">ClassDef</a> (<a class="el" href="classISSGammaRayEvt.html">ISSGammaRayEvt</a>, 3)</td></tr>
+<tr class="separator:ad72ba2273352c43628787e9a96d08939"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_classISSSingleLayerDetectorEvt"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classISSSingleLayerDetectorEvt')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classISSSingleLayerDetectorEvt.html">ISSSingleLayerDetectorEvt</a></td></tr>
+<tr class="memitem:af7386755f47bfecf62e420f85a5b5577 inherit pro_methods_classISSSingleLayerDetectorEvt" id="r_af7386755f47bfecf62e420f85a5b5577"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#af7386755f47bfecf62e420f85a5b5577">ClassDef</a> (<a class="el" href="classISSSingleLayerDetectorEvt.html">ISSSingleLayerDetectorEvt</a>, 1)</td></tr>
+<tr class="separator:af7386755f47bfecf62e420f85a5b5577 inherit pro_methods_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
-Private Attributes</h2></td></tr>
-<tr class="memitem:aacd5bd2a48fcd597e50f48ea98ea2eb1" id="r_aacd5bd2a48fcd597e50f48ea98ea2eb1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aacd5bd2a48fcd597e50f48ea98ea2eb1">energy</a></td></tr>
-<tr class="memdesc:aacd5bd2a48fcd597e50f48ea98ea2eb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Energy in the detector.  <br /></td></tr>
-<tr class="separator:aacd5bd2a48fcd597e50f48ea98ea2eb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae58b4b76cc60f85daed031e6f942ff55" id="r_ae58b4b76cc60f85daed031e6f942ff55"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae58b4b76cc60f85daed031e6f942ff55">id</a></td></tr>
-<tr class="memdesc:ae58b4b76cc60f85daed031e6f942ff55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detector ID.  <br /></td></tr>
-<tr class="separator:ae58b4b76cc60f85daed031e6f942ff55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
 <tr class="memitem:ae916f8083fb460f9d9f1687756fbb8c1" id="r_ae916f8083fb460f9d9f1687756fbb8c1"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae916f8083fb460f9d9f1687756fbb8c1">type</a></td></tr>
 <tr class="memdesc:ae916f8083fb460f9d9f1687756fbb8c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detector type: 0 - ScintArray, 1 - ... HPGe?  <br /></td></tr>
 <tr class="separator:ae916f8083fb460f9d9f1687756fbb8c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7aa0a4880fff7370545936d47a8a1ad" id="r_ac7aa0a4880fff7370545936d47a8a1ad"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac7aa0a4880fff7370545936d47a8a1ad">time</a></td></tr>
-<tr class="memdesc:ac7aa0a4880fff7370545936d47a8a1ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">time stamp of the event  <br /></td></tr>
-<tr class="separator:ac7aa0a4880fff7370545936d47a8a1ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classISSSingleLayerDetectorEvt"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classISSSingleLayerDetectorEvt')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classISSSingleLayerDetectorEvt.html">ISSSingleLayerDetectorEvt</a></td></tr>
+<tr class="memitem:ab2694b73c4fab218f604a5babb4f45aa inherit pro_attribs_classISSSingleLayerDetectorEvt" id="r_ab2694b73c4fab218f604a5babb4f45aa"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#ab2694b73c4fab218f604a5babb4f45aa">energy</a></td></tr>
+<tr class="memdesc:ab2694b73c4fab218f604a5babb4f45aa inherit pro_attribs_classISSSingleLayerDetectorEvt"><td class="mdescLeft">&#160;</td><td class="mdescRight">Energy in the detector.  <br /></td></tr>
+<tr class="separator:ab2694b73c4fab218f604a5babb4f45aa inherit pro_attribs_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9129aedff3649812656ede3e7acd6c9e inherit pro_attribs_classISSSingleLayerDetectorEvt" id="r_a9129aedff3649812656ede3e7acd6c9e"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#a9129aedff3649812656ede3e7acd6c9e">id</a></td></tr>
+<tr class="memdesc:a9129aedff3649812656ede3e7acd6c9e inherit pro_attribs_classISSSingleLayerDetectorEvt"><td class="mdescLeft">&#160;</td><td class="mdescRight">ID list, example: many CeBr detectors of the ScintArray all have different IDs.  <br /></td></tr>
+<tr class="separator:a9129aedff3649812656ede3e7acd6c9e inherit pro_attribs_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acac037c9214275bfd804a1ff1b83c22a inherit pro_attribs_classISSSingleLayerDetectorEvt" id="r_acac037c9214275bfd804a1ff1b83c22a"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#acac037c9214275bfd804a1ff1b83c22a">sec</a></td></tr>
+<tr class="memdesc:acac037c9214275bfd804a1ff1b83c22a inherit pro_attribs_classISSSingleLayerDetectorEvt"><td class="mdescLeft">&#160;</td><td class="mdescRight">sector or quandrant, example: ELUM detector, i.e. 0-3 when split into 4  <br /></td></tr>
+<tr class="separator:acac037c9214275bfd804a1ff1b83c22a inherit pro_attribs_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51e10963efc547b886ac9e5828ffc9af inherit pro_attribs_classISSSingleLayerDetectorEvt" id="r_a51e10963efc547b886ac9e5828ffc9af"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSSingleLayerDetectorEvt.html#a51e10963efc547b886ac9e5828ffc9af">time</a></td></tr>
+<tr class="memdesc:a51e10963efc547b886ac9e5828ffc9af inherit pro_attribs_classISSSingleLayerDetectorEvt"><td class="mdescLeft">&#160;</td><td class="mdescRight">time stamp of the event  <br /></td></tr>
+<tr class="separator:a51e10963efc547b886ac9e5828ffc9af inherit pro_attribs_classISSSingleLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00445">445</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00293">293</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a5f8228aa5ebca45dd27c8280da73e000" name="a5f8228aa5ebca45dd27c8280da73e000"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5f8228aa5ebca45dd27c8280da73e000">&#9670;&#160;</a></span>ISSGammaRayEvt()</h2>
@@ -167,7 +188,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8cc_source.html#l00609">609</a> of file <a class="el" href="ISSEvts_8cc_source.html">ISSEvts.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8cc_source.html#l00553">553</a> of file <a class="el" href="ISSEvts_8cc_source.html">ISSEvts.cc</a>.</p>
 
 </div>
 </div>
@@ -186,13 +207,13 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8cc_source.html#l00610">610</a> of file <a class="el" href="ISSEvts_8cc_source.html">ISSEvts.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8cc_source.html#l00554">554</a> of file <a class="el" href="ISSEvts_8cc_source.html">ISSEvts.cc</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a18c85d0a3dffc3083d05a99811306fb2" name="a18c85d0a3dffc3083d05a99811306fb2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a18c85d0a3dffc3083d05a99811306fb2">&#9670;&#160;</a></span>ClassDef()</h2>
+<a id="ad72ba2273352c43628787e9a96d08939" name="ad72ba2273352c43628787e9a96d08939"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad72ba2273352c43628787e9a96d08939">&#9670;&#160;</a></span>ClassDef()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -208,96 +229,15 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">2</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
+          <td class="paramtype">3</td>          <td class="paramname"><span class="paramname"><em></em></span>&#160;)</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a id="a74a75ab3b26511ccab752be183ca1b47" name="a74a75ab3b26511ccab752be183ca1b47"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a74a75ab3b26511ccab752be183ca1b47">&#9670;&#160;</a></span>GetEnergy()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">float ISSGammaRayEvt::GetEnergy </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00461">461</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
-
-</div>
-</div>
-<a id="a049b021d09519305991a90c29b6fb422" name="a049b021d09519305991a90c29b6fb422"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a049b021d09519305991a90c29b6fb422">&#9670;&#160;</a></span>GetID()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">unsigned char ISSGammaRayEvt::GetID </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00462">462</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
-
-</div>
-</div>
-<a id="a0900de91ce16dd307432a80aeaefee9c" name="a0900de91ce16dd307432a80aeaefee9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0900de91ce16dd307432a80aeaefee9c">&#9670;&#160;</a></span>GetTime()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double ISSGammaRayEvt::GetTime </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00464">464</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
 
 </div>
 </div>
@@ -324,39 +264,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00463">463</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00306">306</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
 
 </div>
 </div>
-<a id="a32ba5e7e015bd6a68e10ed2a3fd72266" name="a32ba5e7e015bd6a68e10ed2a3fd72266"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a32ba5e7e015bd6a68e10ed2a3fd72266">&#9670;&#160;</a></span>SetEnergy()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void ISSGammaRayEvt::SetEnergy </td>
-          <td>(</td>
-          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>e</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00456">456</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
-
-</div>
-</div>
-<a id="a7702918017d8b4a26771aa5a9731f29e" name="a7702918017d8b4a26771aa5a9731f29e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7702918017d8b4a26771aa5a9731f29e">&#9670;&#160;</a></span>SetEvent()</h2>
+<a id="a284c1875bdde2783b5c21a51f7d98a9d" name="a284c1875bdde2783b5c21a51f7d98a9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a284c1875bdde2783b5c21a51f7d98a9d">&#9670;&#160;</a></span>SetEvent()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -374,6 +287,11 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">unsigned char</td>          <td class="paramname"><span class="paramname"><em>mysec</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">unsigned char</td>          <td class="paramname"><span class="paramname"><em>mytype</em></span>, </td>
         </tr>
         <tr>
@@ -384,61 +302,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8cc_source.html#l00612">612</a> of file <a class="el" href="ISSEvts_8cc_source.html">ISSEvts.cc</a>.</p>
-
-</div>
-</div>
-<a id="a4254a792bd6c00f880f9cf76e2167b8a" name="a4254a792bd6c00f880f9cf76e2167b8a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4254a792bd6c00f880f9cf76e2167b8a">&#9670;&#160;</a></span>SetID()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void ISSGammaRayEvt::SetID </td>
-          <td>(</td>
-          <td class="paramtype">unsigned char</td>          <td class="paramname"><span class="paramname"><em>i</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00457">457</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
-
-</div>
-</div>
-<a id="a7d870a1b57b9cc32da00f9e0dd32ad63" name="a7d870a1b57b9cc32da00f9e0dd32ad63"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7d870a1b57b9cc32da00f9e0dd32ad63">&#9670;&#160;</a></span>SetTime()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void ISSGammaRayEvt::SetTime </td>
-          <td>(</td>
-          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>t</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00459">459</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8cc_source.html#l00556">556</a> of file <a class="el" href="ISSEvts_8cc_source.html">ISSEvts.cc</a>.</p>
 
 </div>
 </div>
@@ -465,89 +329,11 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00458">458</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00305">305</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="aacd5bd2a48fcd597e50f48ea98ea2eb1" name="aacd5bd2a48fcd597e50f48ea98ea2eb1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aacd5bd2a48fcd597e50f48ea98ea2eb1">&#9670;&#160;</a></span>energy</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">float ISSGammaRayEvt::energy</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Energy in the detector. </p>
-
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00469">469</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
-
-</div>
-</div>
-<a id="ae58b4b76cc60f85daed031e6f942ff55" name="ae58b4b76cc60f85daed031e6f942ff55"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae58b4b76cc60f85daed031e6f942ff55">&#9670;&#160;</a></span>id</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">unsigned char ISSGammaRayEvt::id</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Detector ID. </p>
-
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00470">470</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
-
-</div>
-</div>
-<a id="ac7aa0a4880fff7370545936d47a8a1ad" name="ac7aa0a4880fff7370545936d47a8a1ad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac7aa0a4880fff7370545936d47a8a1ad">&#9670;&#160;</a></span>time</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double ISSGammaRayEvt::time</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>time stamp of the event </p>
-
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00472">472</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
-
-</div>
-</div>
 <a id="ae916f8083fb460f9d9f1687756fbb8c1" name="ae916f8083fb460f9d9f1687756fbb8c1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae916f8083fb460f9d9f1687756fbb8c1">&#9670;&#160;</a></span>type</h2>
 
@@ -563,14 +349,14 @@ Private Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Detector type: 0 - ScintArray, 1 - ... HPGe? </p>
 
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00471">471</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00312">312</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
 
 </div>
 </div>
