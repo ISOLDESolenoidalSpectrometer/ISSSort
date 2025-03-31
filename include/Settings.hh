@@ -121,7 +121,7 @@ public:
 	inline double GetArrayNNHitWindow(){ return array_nn_hit_window; }
 	inline double GetZeroDegreeHitWindow(){ return zd_hit_window; }
 	inline double GetGammaRayHitWindow(){ return gamma_hit_window; }
-        inline double GetLumeHitWindow(){ return lume_hit_window; }
+	inline double GetLumeHitWindow(){ return lume_hit_window; }
 	inline double GetCDRSHitWindow(){ return cd_rs_hit_window; }
 	inline double GetCDDDHitWindow(){ return cd_dd_hit_window; }
 

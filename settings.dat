@@ -218,7 +218,7 @@
 ##------------------------------#
 #NumberOfCDLayers: 0 		# 0 is default to turn off the CD, but usually 2 layers of Si in the dE-E configuration
 #NumberOfCDRings: 16 		# number of rings (p-side) in the S1 detector, usually 16
-#NumberOfCDSectors: 8 		# number of sectors (n-side) in the S1 detector, usually 8
+#NumberOfCDSectors: 8 		# number of sectors (n-side) in the S1 detector, usually 8 (maximum 255)
 #CDEnergyLossStart: 0		# Start layer for integrating energy loss
 #CDEnergyLossStop: 0		# Stop layer for integrating energy loss
 #CDEnergyRestStart: 1		# Start layer for integrating energy rest

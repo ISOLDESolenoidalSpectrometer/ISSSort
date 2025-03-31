@@ -131,7 +131,37 @@ void ISSSettings::ReadSettings() {
 	recoil_erest_stop  = config->GetValue( "RecoilEnergyRestStop", 1 );
 	recoil_etot_start  = config->GetValue( "RecoilEnergyTotalStart", 0 );
 	recoil_etot_stop   = config->GetValue( "RecoilEnergyTotalStop", 1 );
-	
+	if( recoil_eloss_start >= n_recoil_layer ){
+		std::cerr << "RecoilEnergyLossStart must be less than NumberOfRecoilLayers" << std::endl;
+		std::cerr << "Reverting RecoilEnergyLossStart to default value of 0" << std::endl;
+		recoil_eloss_start = 0;
+	}
+	if( recoil_eloss_stop >= n_recoil_layer ){
+		std::cerr << "RecoilEnergyLossStop must be less than NumberOfRecoilLayers" << std::endl;
+		std::cerr << "Reverting RecoilEnergyLossStop to default value of 0" << std::endl;
+		recoil_eloss_stop = 0;
+	}
+	if( recoil_erest_start >= n_recoil_layer ){
+		std::cerr << "RecoilEnergyRestStart must be less than NumberOfRecoilLayers" << std::endl;
+		std::cerr << "Reverting RecoilEnergyRestStart to default value of 1" << std::endl;
+		recoil_erest_start = 1;
+	}
+	if( recoil_erest_stop >= n_recoil_layer ){
+		std::cerr << "RecoilEnergyRestStop must be less than NumberOfRecoilLayers" << std::endl;
+		std::cerr << "Reverting RecoilEnergyRestStop to default value of 1" << std::endl;
+		recoil_erest_stop = 1;
+	}
+	if( recoil_etot_start >= n_recoil_layer ){
+		std::cerr << "RecoilEnergyTotalStart must be less than NumberOfRecoilLayers" << std::endl;
+		std::cerr << "Reverting RecoilEnergyTotalStart to default value of 0" << std::endl;
+		recoil_etot_start = 0;
+	}
+	if( recoil_etot_stop >= n_recoil_layer ){
+		std::cerr << "RecoilEnergyTotalStop must be less than NumberOfRecoilLayers" << std::endl;
+		std::cerr << "Reverting RecoilEnergyTotalStop to default value of 1" << std::endl;
+		recoil_etot_stop = 1;
+	}
+
 	recoil_vme.resize( n_recoil_sector );
 	recoil_mod.resize( n_recoil_sector );
 	recoil_ch.resize( n_recoil_sector );
@@ -457,7 +487,36 @@ void ISSSettings::ReadSettings() {
 	cd_erest_stop  = config->GetValue( "CDEnergyRestStop", 1 );
 	cd_etot_start  = config->GetValue( "CDEnergyTotalStart", 0 );
 	cd_etot_stop   = config->GetValue( "CDEnergyTotalStop", 1 );
-
+	if( cd_eloss_start >= n_cd_layer ){
+		std::cerr << "CDEnergyLossStart must be less than NumberOfRecoilLayers" << std::endl;
+		std::cerr << "Reverting CDEnergyLossStart to default value of 0" << std::endl;
+		cd_eloss_start = 0;
+	}
+	if( cd_eloss_stop >= n_cd_layer ){
+		std::cerr << "CDEnergyLossStop must be less than NumberOfRecoilLayers" << std::endl;
+		std::cerr << "Reverting CDEnergyLossStop to default value of 0" << std::endl;
+		cd_eloss_stop = 0;
+	}
+	if( cd_erest_start >= n_cd_layer ){
+		std::cerr << "CDEnergyRestStart must be less than NumberOfRecoilLayers" << std::endl;
+		std::cerr << "Reverting CDEnergyRestStart to default value of 1" << std::endl;
+		cd_erest_start = 1;
+	}
+	if( cd_erest_stop >= n_cd_layer ){
+		std::cerr << "CDEnergyRestStop must be less than NumberOfRecoilLayers" << std::endl;
+		std::cerr << "Reverting CDEnergyRestStop to default value of 1" << std::endl;
+		cd_erest_stop = 1;
+	}
+	if( cd_etot_start >= n_cd_layer ){
+		std::cerr << "CDEnergyTotalStart must be less than NumberOfRecoilLayers" << std::endl;
+		std::cerr << "Reverting CDEnergyTotalStart to default value of 0" << std::endl;
+		cd_etot_start = 0;
+	}
+	if( cd_etot_stop >= n_cd_layer ){
+		std::cerr << "CDEnergyTotalStop must be less than NumberOfRecoilLayers" << std::endl;
+		std::cerr << "Reverting CDEnergyTotalStop to default value of 1" << std::endl;
+		cd_etot_stop = 1;
+	}
 	cd_vme.resize( n_cd_layer );
 	cd_mod.resize( n_cd_layer );
 	cd_ch.resize( n_cd_layer );
