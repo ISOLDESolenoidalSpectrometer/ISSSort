@@ -15,15 +15,16 @@
 
 
 ## Reaction definition
-#BeamA: 30		# mass number
-#BeamZ: 12		# atomic number
-#BeamE: 8500.	# the laboratory beam energy in keV/u (note, not the usual MeV/u)
-#TargetA: 2		#
-#TargetZ: 1		#  
-#EjectileA: 1	# in (d,p) the ejectile is the proton
-#EjectileZ: 1	# we keep this language even though we have inverse kinematics
-#RecoilA: 31	# the recoil is the heavy ion
-#RecoilZ: 12	# not the target-like product as in normal kinematics
+#BeamA: 30				# mass number
+#BeamZ: 12				# atomic number
+#BeamE: 8500.			# the laboratory beam energy in keV/u (note, not the usual MeV/u)
+#TargetA: 2				#
+#TargetZ: 1				#
+#EjectileA: 1			# in (d,p) the ejectile is the proton
+#EjectileZ: 1			# we keep this language even though we have inverse kinematics
+#RecoilA: 31			# the recoil is the heavy ion
+#RecoilZ: 12			# not the target-like product as in normal kinematics
+#RecoilFission: false	# set to true if you are studying fission of the recoiling nucleus
 
 
 ## Magnetic field settings
@@ -71,6 +72,24 @@
 #ElumRecoil_RandomTime.Min: 600
 #ElumRecoil_RandomTime.Max: 1200
 
+## Array-Fission windows
+#ArrayFission_PromptTime.Min: -300
+#ArrayFission_PromptTime.Max: 300
+#ArrayFission_RandomTime.Min: 600
+#ArrayFission_RandomTime.Max: 1200
+
+## ELUM-Fission windows
+#ElumFission_PromptTime.Min: -300
+#ElumFission_PromptTime.Max: 300
+#ElumFission_RandomTime.Min: 600
+#ElumFission_RandomTime.Max: 1200
+
+## Fission-Fission windows
+#FissionFission_PromptTime.Min: -300
+#FissionFission_PromptTime.Max: 300
+#FissionFission_RandomTime.Min: 600
+#FissionFission_RandomTime.Max: 1200
+
 ## Recoil cut files
 #RecoilCut_0.File: NULL	# ROOT file containing the 2D recoil energy cut for sector 0
 #RecoilCut_0.Name: CUTG	# name of the TCutG object inside the ROOT file for sector 0
@@ -81,6 +100,12 @@
 #RecoilCut_3.File: NULL	# sector 3
 #RecoilCut_3.Name: CUTG	# sector 3
 
+## Fission cut files
+FissionCut.Heavy.File: NULL
+FissionCut.Heavy.Name: CUTG
+FissionCut.Light.File: NULL
+FissionCut.Light.Name: CUTG
+
 
 ## E vs Z cut files
 #NumberOfEvsZCuts: 1		# default is 1, but you can have as many as your RAM will handle
@@ -90,4 +115,4 @@
 
 ## Histogramming options
 #Hists.ArrayMode: 0			# 0 - demand p/n coincidences, 1 - p-side only
-#Hists.OutputTree: 0			# 0 - off, 1 - reaction data output to tree
+#Hists.OutputTree: 0		# 0 - off, 1 - reaction data output to tree
