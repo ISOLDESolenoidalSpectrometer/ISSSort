@@ -51,13 +51,14 @@ var searchData=
   ['rf_48',['rf',['../classISSCalibration.html#a9c92e1284079bcb41d7d30d651f09396',1,'ISSCalibration::rf'],['../classISSReaction.html#a843c40e11d87b4f692be73d940c71399',1,'ISSReaction::rf']]],
   ['rfsim_49',['rfsim',['../classISSReaction.html#ad10963ba32970b7ff3c303bdd0c7d642',1,'ISSReaction']]],
   ['rid_5flist_50',['rid_list',['../classISSEventBuilder.html#a5e16e7234b96b8a8f0ad87db9357a48a',1,'ISSEventBuilder']]],
-  ['root_51',['root',['../Reaction_8cc.html#adec064332fb7f7c5788d798dafbd9c7d',1,'Reaction.cc']]],
-  ['row_52',['row',['../classISSArrayEvt.html#abbaf6332446f1ea1ddec8cfc975d57c2',1,'ISSArrayEvt::row'],['../classISSRxEvent.html#a247fb210ec58035945eca23051ff2dcc',1,'ISSRxEvent::row']]],
-  ['rsec_5flist_53',['rsec_list',['../classISSEventBuilder.html#af291ddf99525c8a1fccac09213588b04',1,'ISSEventBuilder']]],
-  ['rtd_5flist_54',['rtd_list',['../classISSEventBuilder.html#ad68e3874be12b536c146d305f1a670bc',1,'ISSEventBuilder']]],
-  ['run_5flist_5fbox_55',['run_list_box',['../classISSGUI.html#a87a1152abd52f32ab030e9206cdf9471',1,'ISSGUI']]],
-  ['run_5fselected_56',['run_selected',['../classISSGUI.html#a42a9922680baac3ba0f2a0195917f910',1,'ISSGUI']]],
-  ['rx_5fevts_57',['rx_evts',['../classISSHistogrammer.html#a7726922a2ea4de6cd9374fa8dd2519ca',1,'ISSHistogrammer']]],
-  ['rx_5finfo_58',['rx_info',['../classISSHistogrammer.html#a2b04d1954d6d8b575c530a0ceb2ba7e3',1,'ISSHistogrammer']]],
-  ['rxtree_5fflag_59',['rxtree_flag',['../classISSReaction.html#a3e37d91233f4c426a6a2ced39c6f5632',1,'ISSReaction']]]
+  ['ring_51',['ring',['../classISSCDEvt.html#af83e75b3848a1139c2b1baa96025ef63',1,'ISSCDEvt']]],
+  ['root_52',['root',['../Reaction_8cc.html#adec064332fb7f7c5788d798dafbd9c7d',1,'Reaction.cc']]],
+  ['row_53',['row',['../classISSArrayEvt.html#abbaf6332446f1ea1ddec8cfc975d57c2',1,'ISSArrayEvt::row'],['../classISSRxEvent.html#a247fb210ec58035945eca23051ff2dcc',1,'ISSRxEvent::row']]],
+  ['rsec_5flist_54',['rsec_list',['../classISSEventBuilder.html#af291ddf99525c8a1fccac09213588b04',1,'ISSEventBuilder']]],
+  ['rtd_5flist_55',['rtd_list',['../classISSEventBuilder.html#ad68e3874be12b536c146d305f1a670bc',1,'ISSEventBuilder']]],
+  ['run_5flist_5fbox_56',['run_list_box',['../classISSGUI.html#a87a1152abd52f32ab030e9206cdf9471',1,'ISSGUI']]],
+  ['run_5fselected_57',['run_selected',['../classISSGUI.html#a42a9922680baac3ba0f2a0195917f910',1,'ISSGUI']]],
+  ['rx_5fevts_58',['rx_evts',['../classISSHistogrammer.html#a7726922a2ea4de6cd9374fa8dd2519ca',1,'ISSHistogrammer']]],
+  ['rx_5finfo_59',['rx_info',['../classISSHistogrammer.html#a2b04d1954d6d8b575c530a0ceb2ba7e3',1,'ISSHistogrammer']]],
+  ['rxtree_5fflag_60',['rxtree_flag',['../classISSReaction.html#a3e37d91233f4c426a6a2ced39c6f5632',1,'ISSReaction']]]
 ];
