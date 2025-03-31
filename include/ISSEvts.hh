@@ -359,6 +359,32 @@ protected:
 	
 };
 
+class ISSCDEvt : public ISSMultiLayerDetectorEvt {
+
+public:
+
+	ISSCDEvt();
+	~ISSCDEvt();
+
+	void SetEvent( std::vector<float> myenergy,
+		       std::vector<unsigned char> myid,
+		       unsigned char mysec, unsigned char myring,
+		       double mydetime, double myetime );
+
+	inline void 			SetRing( unsigned char s ){ ring = s; };
+	inline unsigned char	GetRing(){ return ring; };
+
+protected:
+
+	// extra variables for CD events
+	unsigned char				ring;	///< ring of the CD detector
+
+	ClassDef( ISSCDEvt, 3 );
+
+};
+
+
+
 class ISSEvts : public TObject {
 	
 public:
@@ -375,7 +401,8 @@ public:
 	void AddEvt( std::shared_ptr<ISSZeroDegreeEvt> event );
 	void AddEvt( std::shared_ptr<ISSGammaRayEvt> event );
 	void AddEvt( std::shared_ptr<ISSLumeEvt> event );
-	
+	void AddEvt( std::shared_ptr<ISSCDEvt> event );
+
 	inline unsigned int GetArrayMultiplicity(){ return array_event.size(); };
 	inline unsigned int GetArrayPMultiplicity(){ return arrayp_event.size(); };
 	inline unsigned int GetRecoilMultiplicity(){ return recoil_event.size(); };
@@ -384,7 +411,8 @@ public:
 	inline unsigned int GetZeroDegreeMultiplicity(){ return zd_event.size(); };
 	inline unsigned int GetGammaRayMultiplicity(){ return gamma_event.size(); };
 	inline unsigned int GetLumeMultiplicity(){ return lume_event.size(); };
-	
+	inline unsigned int GetCDMultiplicity(){ return cd_event.size(); };
+
 	inline std::shared_ptr<ISSArrayEvt> GetArrayEvt( unsigned int i ){
 		if( i < array_event.size() ) return std::make_shared<ISSArrayEvt>( array_event.at(i) );
 		else return nullptr;
@@ -417,7 +445,11 @@ public:
 		if( i < lume_event.size() ) return std::make_shared<ISSLumeEvt>( lume_event.at(i) );
 		else return nullptr;
 	};
-	
+	inline std::shared_ptr<ISSCDEvt> GetCDEvt( unsigned int i ){
+		if( i < cd_event.size() ) return std::make_shared<ISSCDEvt>( cd_event.at(i) );
+		else return nullptr;
+	};
+
 	void ClearEvt();
 	
 	// ISOLDE timestamping
@@ -450,6 +482,7 @@ protected:
 	std::vector<ISSZeroDegreeEvt> zd_event;
 	std::vector<ISSGammaRayEvt> gamma_event;
 	std::vector<ISSLumeEvt> lume_event;
+	std::vector<ISSCDEvt> cd_event;
 
 	ClassDef( ISSEvts, 9 )
 	
