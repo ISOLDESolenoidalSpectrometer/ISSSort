@@ -462,6 +462,60 @@ void ISSReaction::ReadReaction() {
 	}
 	Recoil.SetBindingEnergy( ame_be.at( Recoil.GetIsotope() ) );
 	
+	// Fission?
+	fission = config->GetValue( "RecoilFission", false );
+
+	// Get fission energy cuts
+	fissioncutHfile = config->GetValue( "FissionCut.Heavy.File", "NULL" );
+	fissioncutHname = config->GetValue( "FissionCut.Heavy.Name", "CUTG" );
+	fissioncutLfile = config->GetValue( "FissionCut.Light.File", "NULL" );
+	fissioncutLname = config->GetValue( "FissionCut.Light.Name", "CUTG" );
+
+	// Check if heavy cut is given by the user
+	if( fissioncutHfile != "NULL" ) {
+
+		TFile *fission_file = new TFile( fissioncutHfile.data(), "READ" );
+		if( fission_file->IsZombie() )
+			std::cout << "Couldn't open " << fissioncutHfile << " correctly" << std::endl;
+
+		else {
+
+			if( !fission_file->GetListOfKeys()->Contains( fissioncutHname.data() ) )
+				std::cout << "Couldn't find " << fissioncutHname << " in " << fissioncutHfile << std::endl;
+			else
+				fission_cutH = std::make_shared<TCutG>( *static_cast<TCutG*>( fission_file->Get( fissioncutHname.data() )->Clone() ) );
+
+		}
+
+		fission_file->Close();
+
+	}
+
+	// Check if light cut is given by the user
+	if( fissioncutLfile != "NULL" ) {
+
+		TFile *fission_file = new TFile( fissioncutLfile.data(), "READ" );
+		if( fission_file->IsZombie() )
+			std::cout << "Couldn't open " << fissioncutLfile << " correctly" << std::endl;
+
+		else {
+
+			if( !fission_file->GetListOfKeys()->Contains( fissioncutLname.data() ) )
+				std::cout << "Couldn't find " << fissioncutLname << " in " << fissioncutLfile << std::endl;
+			else
+				fission_cutL = std::make_shared<TCutG>( *static_cast<TCutG*>( fission_file->Get( fissioncutLname.data() )->Clone() ) );
+
+		}
+
+		fission_file->Close();
+
+	}
+
+	// Assign an empty cut file if none is given, so the code doesn't crash
+	if( !fission_cutH ) fission_cutH = std::make_shared<TCutG>();
+	if( !fission_cutL ) fission_cutL = std::make_shared<TCutG>();
+
+
 	// Get recoil energy cut
 	nrecoilcuts = set->GetNumberOfRecoilSectors();
 	recoil_cut.resize( nrecoilcuts );
@@ -561,14 +615,41 @@ void ISSReaction::ReadReaction() {
 	array_recoil_ratio = config->GetValue( "ArrayRecoil_FillRatio", GetArrayRecoilTimeRatio() );
 	
 	// ELUM-Recoil time windows
-	elum_recoil_prompt[0] = config->GetValue( "ElumRecoil_PromptTime.Min", -300 );	// lower limit for array-recoil prompt time difference
-	elum_recoil_prompt[1] = config->GetValue( "ElumRecoil_PromptTime.Max", 300 );		// upper limit for array-recoil prompt time difference
-	elum_recoil_random[0] = config->GetValue( "ElumRecoil_RandomTime.Min", 600 );		// lower limit for array-recoil random time difference
-	elum_recoil_random[1] = config->GetValue( "ElumRecoil_RandomTime.Max", 1200 );	// upper limit for array-recoil random time difference
+	elum_recoil_prompt[0] = config->GetValue( "ElumRecoil_PromptTime.Min", -300 );	// lower limit for elum-recoil prompt time difference
+	elum_recoil_prompt[1] = config->GetValue( "ElumRecoil_PromptTime.Max", 300 );	// upper limit for elum-recoil prompt time difference
+	elum_recoil_random[0] = config->GetValue( "ElumRecoil_RandomTime.Min", 600 );	// lower limit for elum-recoil random time difference
+	elum_recoil_random[1] = config->GetValue( "ElumRecoil_RandomTime.Max", 1200 );	// upper limit for elum-recoil random time difference
 	
 	// ELUM-Recoil fill ratios
 	elum_recoil_ratio = config->GetValue( "ElumRecoil_FillRatio", GetElumRecoilTimeRatio() );
 	
+	// Array-Fission time windows
+	array_fission_prompt[0] = config->GetValue( "ArrayFission_PromptTime.Min", -300 );	// lower limit for array-fission prompt time difference
+	array_fission_prompt[1] = config->GetValue( "ArrayFission_PromptTime.Max", 300 );	// upper limit for array-fission prompt time difference
+	array_fission_random[0] = config->GetValue( "ArrayFission_RandomTime.Min", 600 );	// lower limit for array-fission random time difference
+	array_fission_random[1] = config->GetValue( "ArrayFission_RandomTime.Max", 1200 );	// upper limit for array-fission random time difference
+
+	// Array-Fission fill ratios
+	array_fission_ratio = config->GetValue( "ArrayFission_FillRatio", GetArrayFissionTimeRatio() );
+
+	// Lume-Fission time windows
+	lume_fission_prompt[0] = config->GetValue( "LumeFission_PromptTime.Min", -300 );	// lower limit for lume-fission prompt time difference
+	lume_fission_prompt[1] = config->GetValue( "LumeFission_PromptTime.Max", 300 );		// upper limit for lume-fission prompt time difference
+	lume_fission_random[0] = config->GetValue( "LumeFission_RandomTime.Min", 600 );		// lower limit for lume-fission random time difference
+	lume_fission_random[1] = config->GetValue( "LumeFission_RandomTime.Max", 1200 );	// upper limit for lume-fission random time difference
+
+	// ELUM-Fission fill ratios
+	lume_fission_ratio = config->GetValue( "LumeFission_FillRatio", GetLumeFissionTimeRatio() );
+
+	// Fission-Fission time windows
+	fission_fission_prompt[0] = config->GetValue( "FissionFission_PromptTime.Min", -300 );	// lower limit for fission-fission prompt time difference
+	fission_fission_prompt[1] = config->GetValue( "FissionFission_PromptTime.Max", 300 );	// upper limit for fission-fission prompt time difference
+	fission_fission_random[0] = config->GetValue( "FissionFission_RandomTime.Min", 600 );	// lower limit for fission-fission random time difference
+	fission_fission_random[1] = config->GetValue( "FissionFission_RandomTime.Max", 1200 );	// upper limit for fission-fission random time difference
+
+	// Fission-Fission fill ratios
+	fission_fission_ratio = config->GetValue( "FissionFission_FillRatio", GetFissionFissionTimeRatio() );
+
 	// Target thickness and offsets
 	target_thickness = config->GetValue( "TargetThickness", 0.200 ); // units of mg/cm^2
 	x_offset = config->GetValue( "TargetOffset.X", 0.0 );	// of course this should be 0.0 if you centre the beam! Units of mm, vertical

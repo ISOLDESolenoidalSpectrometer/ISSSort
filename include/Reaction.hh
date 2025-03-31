@@ -197,6 +197,7 @@ public:
 	double	SimulateEmission( double en, double theta_lab, double phi_lab, int detector = 0 );///< Called during the simulation of particle emission
 
 	// Getters
+	inline bool   IsFission(){ return fission; }; ///< returns true/false if we are studying fission of the recoiling nucleus
 	inline double GetField(){ return Mfield; };///< Getter for the magnetic field strength
 	inline double GetField_corr(){ return Mfield*T_to_mm; };///< Calculates magnetic field strength in MeV/ e*mm*c
 	inline double GetArrayDistance(){ return z0; };///< Getter for the distance between the array and first silicon wafer
@@ -280,6 +281,28 @@ public:
 	};///< Getter for array-recoil fill ratio (unused?)
 	
 	
+	// Array-fission time difference
+	inline double GetArrayFissionPromptTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return array_fission_prompt[i];
+		else return 0;
+	};///< Getter for array-fission prompt time difference, used for defining coincidence windows
+
+	inline double GetArrayFissionRandomTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return array_fission_random[i];
+		else return 0;
+	};///< Getter for array-fission random time difference, used for defining coincidence windows
+
+	inline double GetArrayFissionTimeRatio(){
+		return ( array_fission_prompt[1] - array_fission_prompt[0] ) / ( array_fission_random[1] - array_fission_random[0] );
+	};///< Returns prompt window/random window
+
+	inline double GetArrayFissionFillRatio(){
+		return array_fission_ratio;
+	};///< Getter for array-fission fill ratio (unused?)
+
+
 	// ELUM-recoil time difference
 	inline double GetElumRecoilPromptTime( unsigned char i ){
 		// i = 0 for lower limit and i = 1 for upper limit
@@ -299,7 +322,51 @@ public:
 	
 	inline double GetElumRecoilFillRatio(){
 		return elum_recoil_ratio;
-	};///< Getter for array-recoil fill ratio (unused?)
+	};///< Getter for elum-recoil fill ratio (unused?)
+
+
+	// Lume-fission time difference
+	inline double GetLumeFissionPromptTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return lume_fission_prompt[i];
+		else return 0;
+	};///< Getter for lume-fission prompt time difference, used for defining coincidence windows
+
+	inline double GetLumeFissionRandomTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return lume_fission_random[i];
+		else return 0;
+	};///< Getter for lume-fission random time difference, used for defining coincidence windows
+
+	inline double GetLumeFissionTimeRatio(){
+		return ( lume_fission_prompt[1] - lume_fission_prompt[0] ) / ( lume_fission_random[1] - lume_fission_random[0] );
+	};///< Returns prompt window/random window
+
+	inline double GetLumeFissionFillRatio(){
+		return lume_fission_ratio;
+	};///< Getter for lume-fission fill ratio (unused?)
+
+
+	// fission-fission time difference
+	inline double GetFissionFissionPromptTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return fission_fission_prompt[i];
+		else return 0;
+	};///< Getter for fission-fission prompt time difference, used for defining coincidence windows
+
+	inline double GetFissionFissionRandomTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return fission_fission_random[i];
+		else return 0;
+	};///< Getter for fission-fission random time difference, used for defining coincidence windows
+
+	inline double GetFissionFissionTimeRatio(){
+		return ( fission_fission_prompt[1] - fission_fission_prompt[0] ) / ( fission_fission_random[1] - fission_fission_random[0] );
+	};///< Returns prompt window/random window
+
+	inline double GetFissionFissionFillRatio(){
+		return fission_fission_ratio;
+	};///< Getter for fission-fission fill ratio (unused?)
 	
 	
 	// Setters
@@ -323,14 +390,22 @@ public:
 	double GetPulseHeightCorrection( double Ei, bool detected ); ///< Returns the pulse height correction from the relevant TGraph
 	void CalculatePulseHeightCorrection( std::string isotope ); ///< This function generates all neccessary pulse-height correction plots
 
-	// Get cuts
+	// Get recoil cuts
 	inline unsigned int GetNumberOfRecoilCuts(){ return nrecoilcuts; };///< Getter for the number of recoil cuts
 	inline std::shared_ptr<TCutG> GetRecoilCut( unsigned int i ){
 		if( i < nrecoilcuts ) return recoil_cut.at(i);
 		else return nullptr;
 	};///< Getter for particular recoil cuts
 	
-	// Get cuts
+	// Get fission fragmnet cuts
+	inline std::shared_ptr<TCutG> GetFissionCutHeavy(){
+		return fission_cutH;
+	};///< Getter for the heavy fission fragment cut
+	inline std::shared_ptr<TCutG> GetFissionCutLight(){
+		return fission_cutL;
+	};///< Getter for the light fission fragment cut
+
+	// Get array cuts
 	inline unsigned int GetNumberOfEvsZCuts(){ return nevszcuts; };///< Getter for the number of E vs z cuts
 	inline std::shared_ptr<TCutG> GetEvsZCut( unsigned int i ){
 		if( i < nevszcuts ) return e_vs_z_cut.at(i);
@@ -383,6 +458,7 @@ private:
 	
 	// Initial properties from file
 	double Eb;		///< Laboratory beam energy in keV/u
+	bool fission;	///< True if we are studying the fission of the recoiling nucleus
 	
 	// Stuff for the Ex calculation
 	std::unique_ptr<ROOT::Math::RootFinder> rf;		///< Pointer to a root finder object
@@ -419,12 +495,21 @@ private:
 	bool rxtree_flag;
 	
 	// Coincidence windows
-	double array_recoil_prompt[2]; ///< Prompt time windows between recoil and array event
-	double array_recoil_random[2]; ///< Prompt time window between recoil and array event
-	double array_recoil_ratio; // fill ratios
-	double elum_recoil_prompt[2]; ///< Prompt time windows between recoil and elum event
-	double elum_recoil_random[2]; ///< Prompt time window between recoil and elum event
-	double elum_recoil_ratio; // fill ratios
+	double array_recoil_prompt[2];		///< Prompt time window between recoil and array event
+	double array_recoil_random[2];		///< Random time window between recoil and array event
+	double array_recoil_ratio;			///< scaling factor for the recoil-array random window
+	double array_fission_prompt[2]; 	///< Prompt time window between fission and array event
+	double array_fission_random[2]; 	///< Random time window between fission and array event
+	double array_fission_ratio;			///< scaling factor for the fission-array random window
+	double elum_recoil_prompt[2];		///< Prompt time window between recoil and elum event
+	double elum_recoil_random[2];		///< Random time window between recoil and elum event
+	double elum_recoil_ratio;			///< scaling factor for the recoil-elum random window
+	double lume_fission_prompt[2];		///< Prompt time window between fission and lume event
+	double lume_fission_random[2];		///< Random time window between fission and lume event
+	double lume_fission_ratio;			///< scaling factor for the fission-lume random window
+	double fission_fission_prompt[2];	///< Prompt time window between two fission events
+	double fission_fission_random[2];	///< Random time window between two fission events
+	double fission_fission_ratio;		///< scaling factor for the fission-fission random window
 
 	// Experimental info on the ejectile
 	double r_meas;		///< Measured radius of the ejectile when it interects the array
@@ -439,22 +524,26 @@ private:
 	double y_offset;			///< Vertical offset of the target/beam position, with respect to the array in mm
 	
 	// ELUM geometry
-	double elum_z;		///< z position of the ELUM (usually positive, but if negative assumed not to exist in setup)
-	double elum_rin;	///< inner radius of the ELUM detector
-	double elum_rout;	///< outer radius of the ELUM detector
+	double elum_z;			///< z position of the ELUM (usually positive, but if negative assumed not to exist in setup)
+	double elum_rin;		///< inner radius of the ELUM detector
+	double elum_rout;		///< outer radius of the ELUM detector
 	double elum_deadlayer;	///< Dead layer on ELUM in mm of Si equivalent
 
 	// Cuts
-	unsigned int nrecoilcuts;					///< The number of recoil cuts
-	unsigned int nevszcuts;						///< The number of E vs z cuts
-	std::vector<std::string> recoilcutfile;		///< The location of the recoil cut files
-	std::vector<std::string> recoilcutname;		///< The names of the recoil cuts
-	std::vector<std::string> evszcutfile;		///< The location of the E vs z cut files
-	std::vector<std::string> evszcutname;		///< The names of the E vs z cuts
+	unsigned int nrecoilcuts;						///< The number of recoil cuts
+	unsigned int nevszcuts;							///< The number of E vs z cuts
+	std::vector<std::string> recoilcutfile;			///< The location of the recoil cut files
+	std::vector<std::string> recoilcutname;			///< The names of the recoil cuts
+	std::vector<std::string> evszcutfile;			///< The location of the E vs z cut files
+	std::vector<std::string> evszcutname;			///< The names of the E vs z cuts
+	std::string fissioncutHfile, fissioncutLfile;
+	std::string fissioncutHname, fissioncutLname;
 	//TFile *recoil_file;							///< Pointer for opening the recoil cut files (??? could this be a local variable)
 	//TFile *e_vs_z_file;							///< Pointer for the E vs z cut file names (??? could this be a local variable)
-	std::vector<std::shared_ptr<TCutG>> recoil_cut;				///< Vector containing the recoil cuts
-	std::vector<std::shared_ptr<TCutG>> e_vs_z_cut;				///< Vector containing the E vs z cuts
+	std::vector<std::shared_ptr<TCutG>> recoil_cut;	///< Vector containing the recoil cuts
+	std::vector<std::shared_ptr<TCutG>> e_vs_z_cut;	///< Vector containing the E vs z cuts
+	std::shared_ptr<TCutG> fission_cutH;			///< Heavy fission fragment cut
+	std::shared_ptr<TCutG> fission_cutL;			///< Light fission fragment cut
 
 	// Stopping powers
 	std::vector<std::unique_ptr<TGraph>> gStopping;	///< Vector of pointer to relevant stopping-power TGraphs relevant to the reaction of study

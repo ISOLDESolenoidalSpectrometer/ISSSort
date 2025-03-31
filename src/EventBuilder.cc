@@ -179,6 +179,7 @@ void ISSEventBuilder::StartFile(){
 	lume_ctr	= 0;
 	cd_ctr		= 0;
 
+
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 
 		n_fpga_pulser[i] = 0;
@@ -973,7 +974,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 			// If we have a pulser event from the CAEN DAQs, fill time difference
 			if( flag_caen_pulser ) {
-
+        
 				for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
 
 					double fpga_tdiff = caen_time - fpga_time[j];
@@ -1550,6 +1551,7 @@ void ISSEventBuilder::ArrayFinder() {
 										nhit_list.at( nindex.at(0) ),
 										i, j );
 
+
 					write_evts->AddEvt( array_evt );
 					array_ctr++;
 
@@ -1678,6 +1680,7 @@ void ISSEventBuilder::ArrayFinder() {
 											phit_list.at( pindex.at(0) ),
 											nhit_list.at( nindex.at(0) ),
 											i, j );
+
 
 						write_evts->AddEvt( array_evt );
 						array_ctr++;
