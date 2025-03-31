@@ -151,7 +151,10 @@ private:
 	std::shared_ptr<ISSZeroDegreeEvt> zd_evt;
 	std::shared_ptr<ISSGammaRayEvt> gamma_evt;
 	std::shared_ptr<ISSLumeEvt> lume_evt;
-	std::shared_ptr<ISSCDEvt> cd_evt;
+
+	/// Special case of the CD, because we need to handle multiple event simultaneously
+	/// This is because the detector is a single wafer, we need multiple hits and we have to check charge-sharing (chaos!)
+	std::vector<std::shared_ptr<ISSCDEvt>> cd_evt;
 
 	/// Outputs
 	TFile *output_file; ///< Pointer to the output ROOT file containing events
@@ -301,14 +304,12 @@ private:
 	std::vector<char>		lfe_id_list;	///< list of LUME detectors
 
 	// CD variables
-	std::vector<float>		cdren_list;	///< list of CD ring energies for CdFinder
-	std::vector<double>		cdrtd_list;	///< list of CD ring time differences  for CdFinder
-	std::vector<char>		cdrid_list;	///< list of CD layer ids for CdFinder
-	std::vector<char>		cdrxx_list;	///< list of CD rings for CdFinder
-	std::vector<float>		cdsen_list;	///< list of CD sector energies for CdFinder
-	std::vector<double>		cdstd_list;	///< list of CD sector time differences for CdFinder
-	std::vector<char>		cdsid_list;	///< list of CD layer ids for CdFinder
-	std::vector<char>		cdsxx_list;	///< list of CD sectors for CdFinder
+	std::vector<std::vector<float>>		cdren_list;	///< list of CD ring energies for CdFinder
+	std::vector<std::vector<double>>	cdrtd_list;	///< list of CD ring time differences  for CdFinder
+	std::vector<std::vector<char>>		cdrid_list;	///< list of CD ring ids for CdFinder
+	std::vector<std::vector<float>>		cdsen_list;	///< list of CD sector energies for CdFinder
+	std::vector<std::vector<double>>	cdstd_list;	///< list of CD sector time differences for CdFinder
+	std::vector<std::vector<char>>		cdsid_list;	///< list of CD ring ids for CdFinder
 
 	// Counters
 	unsigned int		hit_ctr;		///< Counts the number of hits that make up an event within a given file
