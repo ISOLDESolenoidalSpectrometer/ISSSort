@@ -102,6 +102,123 @@ private:
 	
 };
 
+class ISSSingleLayerDetectorEvt : public TObject {
+
+public:
+
+	// setup functions
+	ISSSingleLayerDetectorEvt();
+	~ISSSingleLayerDetectorEvt();
+
+	void SetEvent( float myenergy, unsigned char myid,
+				  unsigned char mysec, double mytime );
+
+	inline void SetEnergy( float e ){ energy = e; };
+	inline void SetSector( unsigned char s ){ sec = s; };
+	inline void SetID( unsigned char i ){ id = i; };
+	inline void SetTime( double t ){ time = t; };
+
+	inline float			GetEnergy(){ return energy; };
+	inline unsigned char	GetID(){ return id; };
+	inline unsigned char	GetSector(){ return sec; };
+	inline double			GetTime(){ return time; };
+
+
+protected:
+
+	float			energy;	///< Energy in the  detector
+	unsigned char	id;		///< ID list, example: many CeBr detectors of the ScintArray all have different IDs
+	unsigned char	sec;	///< sector or quandrant, example: ELUM detector, i.e. 0-3 when split into 4
+	double			time;	///< time stamp of the  event
+
+	ClassDef( ISSSingleLayerDetectorEvt, 1 );
+
+};
+
+
+
+class ISSMultiLayerDetectorEvt : public TObject {
+
+public:
+
+	// setup functions
+	ISSMultiLayerDetectorEvt();
+	~ISSMultiLayerDetectorEvt();
+
+	void SetEvent( std::vector<float> myenergy,
+				  std::vector<unsigned char> myid, unsigned char mysec,
+				  double mydetime, double myetime );
+
+	void ClearEvent();
+
+	inline void AddFragment( float myenergy, unsigned char myid ){
+		energy.push_back( myenergy );
+		id.push_back( myid );
+	};
+
+	inline void SetSector( unsigned char s ){ sec = s; };
+	inline void SetdETime( double t ){ detime = t; };
+	inline void SetETime( double t ){ etime = t; };
+
+
+	inline unsigned char	GetDepth(){ return energy.size(); };
+	inline unsigned char	GetSector(){ return sec; };
+	inline double			GetTime(){ return detime; };
+	inline double			GetdETime(){ return detime; };
+	inline double			GetETime(){ return etime; };
+
+	inline std::vector<float>			GetEnergies(){ return energy; };
+	inline std::vector<unsigned char>	GetIDs(){ return id; };
+
+
+	inline float GetEnergy( unsigned char i ){
+		if( i < energy.size() ) return energy.at(i);
+		else return 0;
+	};
+
+	inline float GetEnergyLoss( unsigned char start = 0, unsigned char stop = 0 ){
+		float total = 0;
+		for( unsigned int j = 0; j < energy.size(); ++j )
+			if( GetID(j) >= start && GetID(j) <= stop )
+				total += energy.at(j);
+		return total;
+	};
+
+	inline float GetEnergyRest( unsigned char start = 1, unsigned char stop = 1 ){
+		float total = 0;
+		for( unsigned int j = 0; j < energy.size(); ++j )
+			if( GetID(j) >= start && GetID(j) <= stop )
+				total += energy.at(j);
+		return total;
+	};
+
+	inline float GetEnergyTotal( unsigned char start = 0, unsigned char stop = 1 ){
+		float total = 0;
+		for( unsigned int j = 0; j < energy.size(); ++j )
+			if( GetID(j) >= start && GetID(j) <= stop )
+				total += energy.at(j);
+		return total;
+	};
+
+	inline unsigned char GetID( unsigned char i ){
+		if( i < id.size() ) return id.at(i);
+		else return -1;
+	};
+
+
+protected:
+
+	// variables for recoil events
+	std::vector<float>			energy;	///< differential energy list, i.e. Silicon dE-E length = 2
+	std::vector<unsigned char>	id;		///< differential id list, i.e. dE = 0, E = 1, for example
+	unsigned char				sec;	///< sector of the recoil detector, i.e 0-3 for QQQ1 quadrants
+	double						detime;	///< time stamp of dE event
+	double						etime;	///< time stamp of E event
+
+	ClassDef( ISSMultiLayerDetectorEvt, 1 )
+
+};
+
 class ISSRecoilEvt : public TObject {
 	
 public:

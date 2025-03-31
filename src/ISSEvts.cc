@@ -1,5 +1,7 @@
 #include "ISSEvts.hh"
 
+ClassImp(ISSSingleLayerDetectorEvt)
+ClassImp(ISSMultiLayerDetectorEvt)
 ClassImp(ISSArrayEvt)
 ClassImp(ISSArrayPEvt)
 ClassImp(ISSRecoilEvt)
@@ -160,6 +162,57 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSLumeEvt> event ) {
 	
 	lume_event.push_back( fill_evt );
 	
+}
+
+// ----------------------- //
+// Generic detector events //
+// ----------------------- //
+ISSSingleLayerDetectorEvt::ISSSingleLayerDetectorEvt(){}
+ISSSingleLayerDetectorEvt::~ISSSingleLayerDetectorEvt(){}
+
+void ISSSingleLayerDetectorEvt::SetEvent( float myenergy, unsigned char myid,
+										 unsigned char mysec, double mytime ) {
+
+	energy = myenergy;
+	id = myid;
+	sec = mysec;
+	time = mytime;
+
+	return;
+
+}
+
+ISSMultiLayerDetectorEvt::ISSMultiLayerDetectorEvt(){}
+ISSMultiLayerDetectorEvt::~ISSMultiLayerDetectorEvt(){}
+
+void ISSMultiLayerDetectorEvt::SetEvent( std::vector<float> myenergy,
+										std::vector<unsigned char> myid, unsigned char mysec,
+										double mydetime, double myetime ) {
+
+	if( myenergy.size() != myid.size() ) {
+
+		std::cerr << __PRETTY_FUNCTION__;
+		std::cerr << " error: The vectors for energy and id must have the same size!";
+		std::cerr << std::endl;
+		return;
+
+	}
+
+	energy = myenergy;
+	id = myid;
+	sec = mysec;
+	detime = mydetime;
+	etime = myetime;
+
+	return;
+
+}
+
+void ISSMultiLayerDetectorEvt::ClearEvent(){
+
+	std::vector<float>().swap(energy);
+	std::vector<unsigned char>().swap(id);
+
 }
 
 // ------------ //
