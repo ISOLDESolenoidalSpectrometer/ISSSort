@@ -391,10 +391,10 @@ void ISSEventBuilder::Initialise(){
 	std::vector<char>().swap(lfe_id_list);
 
 	cdren_list.resize( set->GetNumberOfCDLayers(), std::vector<float>() );
-	cdrtd_list.resize( set->GetNumberOfCDLayers(), std::vector<float>() );
-	cdrid_list.resize( set->GetNumberOfCDLayers(), std::vector<double>() );
-	cdsen_list.resize( set->GetNumberOfCDLayers(), std::vector<double>() );
-	cdstd_list.resize( set->GetNumberOfCDLayers(), std::vector<char>() );
+	cdrtd_list.resize( set->GetNumberOfCDLayers(), std::vector<double>() );
+	cdrid_list.resize( set->GetNumberOfCDLayers(), std::vector<char>() );
+	cdsen_list.resize( set->GetNumberOfCDLayers(), std::vector<float>() );
+	cdstd_list.resize( set->GetNumberOfCDLayers(), std::vector<double>() );
 	cdsid_list.resize( set->GetNumberOfCDLayers(), std::vector<char>() );
 
 	std::vector<std::shared_ptr<ISSCDEvt>>().swap( cd_evt );
@@ -2860,7 +2860,6 @@ void ISSEventBuilder::CdFinder() {
 					if( skip_flag ) continue;
 
 					// Check if they are really neighbours
-					float	sec_en_diff = cdsen_list[i][j] - cdsen_list[i][k];
 					int		sec_id_diff = cdsid_list[i][j] - cdsid_list[i][k];
 					double	sec_td_diff = cdstd_list[i][j] - cdstd_list[i][k];
 					if( ( TMath::Abs( sec_id_diff ) == 1 ||
