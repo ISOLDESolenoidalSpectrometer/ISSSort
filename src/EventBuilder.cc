@@ -2691,6 +2691,9 @@ void ISSEventBuilder::CdFinder() {
 
 	//std::cout << __PRETTY_FUNCTION__ << std::endl;
 
+	// Quick check that we have a CD at all
+	if( set->GetNumberOfCDLayers() == 0 ) return;
+
 	// Multiplicity matrix
 	for( unsigned int i = 0; i < set->GetNumberOfCDLayers(); ++i )
 		if( cdren_list[i].size() || cdsen_list[i].size() )

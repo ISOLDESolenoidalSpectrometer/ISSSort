@@ -487,32 +487,32 @@ void ISSSettings::ReadSettings() {
 	cd_erest_stop  = config->GetValue( "CDEnergyRestStop", 1 );
 	cd_etot_start  = config->GetValue( "CDEnergyTotalStart", 0 );
 	cd_etot_stop   = config->GetValue( "CDEnergyTotalStop", 1 );
-	if( cd_eloss_start >= n_cd_layer ){
+	if( cd_eloss_start >= n_cd_layer && n_cd_layer != 0 ){
 		std::cerr << "CDEnergyLossStart must be less than NumberOfRecoilLayers" << std::endl;
 		std::cerr << "Reverting CDEnergyLossStart to default value of 0" << std::endl;
 		cd_eloss_start = 0;
 	}
-	if( cd_eloss_stop >= n_cd_layer ){
+	if( cd_eloss_stop >= n_cd_layer && n_cd_layer != 0 ){
 		std::cerr << "CDEnergyLossStop must be less than NumberOfRecoilLayers" << std::endl;
 		std::cerr << "Reverting CDEnergyLossStop to default value of 0" << std::endl;
 		cd_eloss_stop = 0;
 	}
-	if( cd_erest_start >= n_cd_layer ){
+	if( cd_erest_start >= n_cd_layer && n_cd_layer != 0 ){
 		std::cerr << "CDEnergyRestStart must be less than NumberOfRecoilLayers" << std::endl;
 		std::cerr << "Reverting CDEnergyRestStart to default value of 1" << std::endl;
 		cd_erest_start = 1;
 	}
-	if( cd_erest_stop >= n_cd_layer ){
+	if( cd_erest_stop >= n_cd_layer && n_cd_layer != 0 ){
 		std::cerr << "CDEnergyRestStop must be less than NumberOfRecoilLayers" << std::endl;
 		std::cerr << "Reverting CDEnergyRestStop to default value of 1" << std::endl;
 		cd_erest_stop = 1;
 	}
-	if( cd_etot_start >= n_cd_layer ){
+	if( cd_etot_start >= n_cd_layer && n_cd_layer != 0 ){
 		std::cerr << "CDEnergyTotalStart must be less than NumberOfRecoilLayers" << std::endl;
 		std::cerr << "Reverting CDEnergyTotalStart to default value of 0" << std::endl;
 		cd_etot_start = 0;
 	}
-	if( cd_etot_stop >= n_cd_layer ){
+	if( cd_etot_stop >= n_cd_layer && n_cd_layer != 0 ){
 		std::cerr << "CDEnergyTotalStop must be less than NumberOfRecoilLayers" << std::endl;
 		std::cerr << "Reverting CDEnergyTotalStop to default value of 1" << std::endl;
 		cd_etot_stop = 1;
