@@ -21,7 +21,7 @@ void elum_energy_calculator( std::string reaction_file ){
 	// Make a reaction instance
 	myset = std::make_shared<ISSSettings>( "dummy" );
 	myreact = std::make_shared<ISSReaction>( reaction_file, myset, true );
-	
+
 	// Centre of the ELUM
 	double elum_z = myreact->GetELUMDistance();
 	double elum_rin = myreact->GetELUMInnerRadius();
@@ -39,11 +39,11 @@ void elum_energy_calculator( std::string reaction_file ){
 	std::cout << std::endl << "ELUM at " << elum_z << " mm" << std::endl;
 	std::cout << "Alpha energy\tEnergy loss" << std::endl;
 	for( unsigned int i = 0; i < alphas.size(); i++ ) {
-		
+
 		double det_en = myreact->SimulateDecay( elum_hit, alphas[i], 1 );
 		double enloss = alphas[i] - det_en;
 		std::cout << alphas[i] << " keV \t" << enloss << " keV" << std::endl;
-	
+
 	}
-	
+
 }

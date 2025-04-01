@@ -21,15 +21,15 @@ std::shared_ptr<ISSReaction> myreact;
 
 void plot_from_rxtree( std::string rootfile = "myhists.root",
 					   std::string reaction_file = "dummy" ) {
-	
+
 	// Open file and get tree
 	TFile *f = new TFile( rootfile.data() );
 	TTree *t = (TTree*)f->Get("rxtree");
-	
+
 	// Make a reaction instance, etc
 	myset = std::make_shared<ISSSettings>( "dummy" );
 	myreact = std::make_shared<ISSReaction>( reaction_file, myset, false );
-	
+
 	// Set branches
 	ISSRxEvent *myrxevt = new ISSRxEvent();
 	ISSRxInfo *myrxinfo = new ISSRxInfo();
@@ -43,10 +43,10 @@ void plot_from_rxtree( std::string rootfile = "myhists.root",
 
 	// Loop over events
 	for( unsigned int i = 0; i < t->GetEntries(); i++ ){
-		
+
 		// Get entry
 		t->GetEntry(i);
-		
+
 		// Calculate module number
 		double z = myrxevt->GetDistance();
 		double phi = myrxevt->GetPhi();
@@ -61,7 +61,7 @@ void plot_from_rxtree( std::string rootfile = "myhists.root",
 		pnmap->Fill( myrow*128 + mypid, mymod*88 + mynid );
 
 	}
-	
+
 	return;
-	
+
 }

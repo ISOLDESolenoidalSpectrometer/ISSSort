@@ -47,11 +47,11 @@
 #
 # Ignore channel
 #   Ignore_<mod>_<asic>_<ch>:	# 1 = ignore this channel for all fitting; 0 = keep it in (the default!)
-# 
+#
 #
 ## Autocal manual fitting options
-## Use this to set manual calibration parameters on particular modules, asics, 
-## and channels. This will to replace the "FindPeaks" function in the Autocal 
+## Use this to set manual calibration parameters on particular modules, asics,
+## and channels. This will to replace the "FindPeaks" function in the Autocal
 ## part of ISSSort, and gives a bit more fine tuning as to what the fitting does.
 #
 # The different parameters are:
@@ -67,7 +67,7 @@
 #   man_<mod>_<asic>_<ch>.MissingPeakIsLast:			# If spectrum has a missing peak, say whether it is the last or first alpha particle
 #
 ## Using any of these switches will turn on the manual fitting boolean. This
-## behaviour can also be controlled/override any behaviour here by using the 
+## behaviour can also be controlled/override any behaviour here by using the
 ## switch:
 #   man_<mod>_<asic>_<ch>:			# 1 = turn on manual fitting; 0 = turn off, even if we have specified fitting parameters!
 

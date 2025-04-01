@@ -12,7 +12,7 @@
 *
 * A class to read in the settings file in ROOT's TConfig format. The ISSSettings class contains all the information about detector layout, data settings, and defines which detector is which. These can be changed directly in the settings file that is fed into ISSSort using the "-s" flag.
 *
-*/ 
+*/
 
 class ISSSettings {
 
@@ -20,7 +20,7 @@ public:
 
 	ISSSettings( std::string filename );
 	inline virtual ~ISSSettings() {};
-	
+
 	void ReadSettings();
 	void PrintSettings();
 	void SetFile( std::string filename ){
@@ -29,7 +29,7 @@ public:
 	const std::string InputFile(){
 		return fInputFile;
 	}
-	
+
 	// Array settings
 	inline unsigned int GetNumberOfArrayModules(){ return n_array_mod; };
 	inline unsigned int GetNumberOfArrayASICs(){ return n_array_asic; };
@@ -39,7 +39,7 @@ public:
 	inline unsigned int GetNumberOfArrayPstrips(){ return n_array_pstrip; };
 	inline unsigned int GetNumberOfArrayNstrips(){ return n_array_nstrip; };
 
-	
+
 	// CAEN settings
 	inline unsigned char GetNumberOfCAENModules(){ return n_caen_mod; };
 	inline unsigned char GetNumberOfCAENChannels(){ return n_caen_ch; };
@@ -48,11 +48,11 @@ public:
 			return caen_model[i];
 		else return 1725;
 	};
-	
+
 	// Mesytec settings
 	inline unsigned char GetNumberOfMesytecModules(){ return n_mesy_mod; };
 	inline unsigned char GetNumberOfMesytecChannels(){ return n_mesy_ch; };
-	
+
 	// VME totals
 	inline unsigned int GetNumberOfVmeCrates(){ return 2; }; // fixed: CAEN + Mesytec
 	inline unsigned int GetNumberOfVmeModules(){ return n_caen_mod + n_mesy_mod; };
@@ -65,7 +65,7 @@ public:
 		else return n_mesy_ch;
 	};
 
-	
+
 	// Info settings
 	inline unsigned char GetExternalTriggerCode(){ return extt_code; };
 	inline unsigned char GetSyncCode(){ return sync_code; };
@@ -86,11 +86,11 @@ public:
 	inline unsigned char GetCAENPulserModule(){ return caen_pulser_mod; };
 	inline unsigned char GetCAENPulserChannel(){ return caen_pulser_ch; };
 	inline unsigned char GetCAENPulserCode(){ return caen_pulser_code; };
-	
+
 	inline unsigned char GetMesytecPulserModule(){ return mesy_pulser_mod; };
 	inline unsigned char GetMesytecPulserChannel(){ return mesy_pulser_ch; };
 	inline unsigned char GetMesytecPulserCode(){ return mesy_pulser_code; };
-	
+
 	inline unsigned char GetEBISCrate(){ return vme_ebis_crate; };
 	inline unsigned char GetEBISModule(){ return vme_ebis_mod; };
 	inline unsigned char GetEBISChannel(){ return vme_ebis_ch; };
@@ -132,7 +132,7 @@ public:
 	inline bool IsCAENOnly(){ return flag_caen_only; };
 	inline bool IsMesyOnly(){ return flag_mesy_only; };
 
-	
+
 	// Event rejection
 	inline bool GetClippedRejection(){ return clipped_reject; };
 	inline bool GetOverflowRejection(){ return overflow_reject; };
@@ -153,7 +153,7 @@ public:
 	char GetRecoilModule( unsigned char sec, unsigned char layer );
 	char GetRecoilChannel( unsigned char sec, unsigned char layer );
 	bool IsRecoil( unsigned char vme, unsigned char mod, unsigned char ch );
-	
+
 	// MWPC
 	inline unsigned char GetNumberOfMWPCAxes(){ return n_mwpc_axes; };
 	char GetMWPCAxis( unsigned char vme, unsigned char mod, unsigned char ch );
@@ -208,7 +208,7 @@ private:
 	unsigned char n_array_mod;	///< 3 modules make a full array
 	unsigned char n_array_asic;	///< 4 p-side + 2 n-side per module
 	unsigned char n_array_ch;	///< 128 channels per ASIC
-	
+
 	// Array geometry
 	unsigned char n_array_row;		///< 4x2 DSSSDs per module, but paired; dE-E for recoil, gas cathodes (13?)
 	unsigned char n_array_pstrip;	///< number of p-side strips in each DSSSD
@@ -219,7 +219,7 @@ private:
 	unsigned char n_caen_mod;
 	unsigned char n_caen_ch;
 	std::vector<unsigned int> caen_model;
-	
+
 	// Mesytec settings
 	unsigned char n_mesy_mod;
 	unsigned char n_mesy_ch;
@@ -261,7 +261,7 @@ private:
 	unsigned char vme_laser_ch;			///< Location of the Laser/RILIS signal in the VME system (channel)
 	unsigned char laser_code;			///< Info code when we have a Laser/RILIS  event in InfoData packets
 
-	
+
 	// Event builder
 	bool build_by_tm_stp;			///< Build event using the timestamp only (default = true), or with time-walk correction (false)
 	double event_window;			///< Event builder time window in ns
@@ -275,13 +275,13 @@ private:
 	double cd_rs_hit_window;		///< Time window in ns for correlating CD hits in rings and sectors of one detector
 	double cd_dd_hit_window;		///< Time window in ns for correlating CD dE-E hits
 
-	
+
 	// Data format
 	unsigned int block_size;		///< not yet implemented, needs C++ style reading of data files
 	bool flag_asic_only;			///< when there is only CAEN data in the file
 	bool flag_caen_only;			///< when there is only CAEN data in the file
 	bool flag_mesy_only;			///< when there is only Mesytec data in the file
-	
+
 
 	// Event rejection
 	bool clipped_reject;	///< reject events if firmware marks them as clipped signals
@@ -303,7 +303,7 @@ private:
 	std::vector<std::vector<std::vector<char>>> recoil_sector;	///< A channel map for the recoil sectors (-1 if not a recoil)
 	std::vector<std::vector<std::vector<char>>> recoil_layer;	///< A channel map for the recoil layers (-1 if not a recoil)
 
-	
+
 	// MWPC
 	unsigned char n_mwpc_axes;									///< Number of MWPC axes (usually 2: x and y). Two TACs per axis
 	std::vector<std::vector<unsigned char>> mwpc_vme;			///< VME crate number  of each TAC input of each axis of the MWPC
@@ -312,7 +312,7 @@ private:
 	std::vector<std::vector<std::vector<char>>> mwpc_axis;		///< A channel map for the MWPC axes (-1 if not an MWPC)
 	std::vector<std::vector<std::vector<char>>> mwpc_tac;		///< A channel map for the MWPC TACs (-1 if not an MWPC)
 
-	
+
 	// ELUM detector
 	unsigned char n_elum_sector;								///< Number of ELUM detector sectors or quadrants; usually 4, maybe 6 in the future?
 	std::vector<unsigned char> elum_vme;						///< A list of VME crate numbers for each ELUM detector sector
@@ -320,7 +320,7 @@ private:
 	std::vector<unsigned char> elum_ch;							///< A list of channel numbers for each ELUM detector sector
 	std::vector<std::vector<std::vector<char>>> elum_sector;	///< A channel map for the ELUM sectors (-1 if not an ELUM)
 
-	
+
 	// ZeroDegree detector
 	unsigned char n_zd_layer;									///< Number of ZeroDegree detector layers; always 2, because it's silicon dE-E
 	std::vector<unsigned char> zd_vme;							///< A list of VME crate numbers for each ZeroDegree detector layer
@@ -328,7 +328,7 @@ private:
 	std::vector<unsigned char> zd_ch;							///< A list of channel numbers for each ZeroDegree detector layer
 	std::vector<std::vector<std::vector<char>>> zd_layer;		///< A channel map for the ZeroDegree layers (-1 if not a ZeroDegree)
 
-	
+
 	// ELUM detector
 	unsigned char n_scint_detector;								///< Number of ScintArray detectors
 	std::vector<unsigned char> scint_vme;						///< A list of VME crate numbers for each ScintArray detectors
@@ -336,7 +336,7 @@ private:
 	std::vector<unsigned char> scint_ch;						///< A list of channel numbers for each ScintArray detectors
 	std::vector<std::vector<std::vector<char>>> scint_detector;	///< A channel map for the ScintArray detectors (-1 if not an ScintArray detector)
 
-	
+
 	// LUME detectors, each of them has 3 outputs - total energy (read out from the back side), near (read out from one edge), and far (from the other edge), total energy gives energy information, near and far side give position of hit
 	unsigned char n_lume;										///< Number of LUME detectors, should be 4
 	std::vector<std::vector<unsigned char>> lume_vme;			///< A list of VME crate numbers for the LUME detector and type

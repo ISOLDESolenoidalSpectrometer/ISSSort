@@ -56,7 +56,7 @@
 /*!
 * \brief Builds physics events after all hits have been time sorted.
 *
-* \details The ISSEventBuilder Class takes a list of time-sorted events from all of the detectors, and packages them up into a series of physics events. The time-sorted events are looped over, and each different data type (ASIC/CAEN/INFO) is dealt with appropriately, and stored as their respective different data types. Any ASIC or CAEN hit above threshold is able to open an event window (specified by the user in the settings file which goes with the ISSSettings class). The next entry in the tree is probed in order to work out whether the event window should be closed. 
+* \details The ISSEventBuilder Class takes a list of time-sorted events from all of the detectors, and packages them up into a series of physics events. The time-sorted events are looped over, and each different data type (ASIC/CAEN/INFO) is dealt with appropriately, and stored as their respective different data types. Any ASIC or CAEN hit above threshold is able to open an event window (specified by the user in the settings file which goes with the ISSSettings class). The next entry in the tree is probed in order to work out whether the event window should be closed.
 *
 * When the event window closes, each detector has its own "finder function": ISSEventBuilder::ArrayFinder, ISSEventBuilder::RecoilFinder, ISSEventBuilder::MwpcFinder, ISSEventBuilder::ElumFinder, and ISSEventBuilder::ZeroDegreeFinder. These functions process the events on each detector, imposing prompt coincidence conditions amongst other sanity checks. Once processed, all of these hits on the different detectors are packaged up into a single event in an ISSEvts tree.
 * The constructor for this class requires an ISSSettings object, which allows it to use parameters defined in the "settings.dat" file. This includes:
@@ -67,9 +67,9 @@
 */
 
 class ISSEventBuilder {
-	
+
 public:
-	
+
 	ISSEventBuilder( std::shared_ptr<ISSSettings> myset ); ///< Constructor
 	virtual ~ISSEventBuilder(){}; /// Destructor (currently empty)
 
@@ -92,7 +92,7 @@ public:
 		cal = mycal;
 		overwrite_cal = true;
 	};
-	
+
 	unsigned long	BuildEvents(); ///< The heart of this class
 	unsigned long	BuildSimulatedEvents(); ///< The heart of this class
 
@@ -105,10 +105,10 @@ public:
 	void GammaRayFinder(); ///< Processes hits in the ScintArray and maybe HPGe in the future
 	void LumeFinder(); ///< Processes all hits on the LUME that fall within the build window
 	void CdFinder();	///< Processes all hits on the CD that fall within the build window
-		
+
 	inline TFile* GetFile(){ return output_file; }; ///< Getter for the output_file pointer
 	inline TTree* GetTree(){ return output_tree; }; ///< Getter for the output tree pointer
-	
+
 	inline void CloseOutput(){
 		output_tree->ResetBranchAddresses();
 		PurgeOutput();
@@ -131,7 +131,7 @@ public:
 
 
 private:
-	
+
 	/// Input treze
 	TFile *input_file;							///< Pointer to the time-sorted input ROOT file
 	TTree *input_tree;							///< Pointer to the TTree in the data input file
@@ -160,30 +160,30 @@ private:
 	TFile *output_file; ///< Pointer to the output ROOT file containing events
 	TTree *output_tree; ///< Pointer to the output ROOT tree containing events
 	std::unique_ptr<ISSEvts> write_evts; ///< Container for storing hits on all detectors in order to construct events
-	
+
 	// Do calibration
 	std::shared_ptr<ISSCalibration> cal; ///< Pointer to an ISSCalibration object, used for accessing gain-matching parameters and thresholds
 	bool overwrite_cal; ///< Boolean determining whether an energy calibration should be used (true) or not (false). Set in the ISSEventBuilder::AddCalibration function
-	
+
 	// Settings file
 	std::shared_ptr<ISSSettings> set; ///< Pointer to the settings object. Assigned in constructor
-	
+
 	// Progress bar
 	bool _prog_; ///< Boolean determining if there is a progress bar (in the GUI)
 	std::shared_ptr<TGProgressBar> prog; ///< Progress bar for the GUI
 
 	// Log file
 	std::ofstream log_file; ///< Log file for recording the results of the ISSEventBuilder
-	
+
 	// Flag to know we've opened a file on disk
 	bool flag_input_file;
-	
+
 	// Flag to know that we have simulation data from NPTool
 	bool flag_nptool = false;
 
 	// These things are in the settings file
 	long build_window;  ///< Length of build window in ns
-	
+
 	// Some more things that should be in a settings file
 	std::vector<unsigned char> asic_side; ///< Vector containing 0 for p-side and 1 for n-side where the index is the asic number
 	std::vector<unsigned char> asic_row; ///< Vector containing the smallest row number for a given p/n-side asic where the index is the asic number
@@ -270,7 +270,7 @@ private:
 	std::vector<double>			rtd_list;	///< list of recoil time differences for RecoilFinder
 	std::vector<char>			rid_list;	///< list of recoil IDs/layers for RecoilFinder
 	std::vector<char>			rsec_list;	///< list of recoil sectors for RecoilFinder
-	
+
 	// MWPC variables
 	std::vector<unsigned short>	mwpctac_list;	///< TAC time from the MWPC
 	std::vector<double>			mwpctd_list;	///< list of ELUM time differences for ELUMFinder
@@ -355,7 +355,7 @@ private:
     std::vector<std::vector<TH2F*>> pn_td_Ep_uncorrected;	///< Vector of vector of 2D histograms pn-time difference vs p-side energy
     std::vector<std::vector<TH2F*>> pn_td_En_uncorrected;	///< Vector of vector of 2D histograms pn-time difference vs n-side energy
 	std::vector<std::vector<TH2F*>> pn_mult;				///< Vector of vector of 2D histograms p-side vs n-side multiplicity
-	
+
 	// Timing histograms
 	TH1F *tdiff;					///< Histogram containing the time difference between each real (not infodata) signal in the file
 	TH1F *tdiff_clean;				///< Histogram containing the time difference between the real signals *above threshold* (mythres)
@@ -366,7 +366,7 @@ private:
 	TH1F *laser_period;				///< Histogram containg the period of Laser status signals
 	TH1F *supercycle;				///< Histogram of T1 - SuperCycle time to get the super cycle structure
 	std::vector<TH1F*> fpga_td; 	///<
-	
+
 	std::vector<TH1F*> asic_td; 				///< Histogram containing the time difference between ASIC signals for a given module of the array
 	std::vector<TProfile*> fpga_pulser_loss;	///< TProfile counting the difference between the number of FPGA pulses and CAEN pulses as a function of FPGA time for a given module of the array
 	std::vector<TH1F*> fpga_period; 			///<  Histogram containing the FPGA period as a function of FPGA time for a given module of the array

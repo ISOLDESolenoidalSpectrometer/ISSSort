@@ -75,7 +75,7 @@ public:
 	unsigned int MesytecThreshold( unsigned int mod, unsigned int chan );
 	long double MesytecTime( unsigned int mod, unsigned int chan );
 	std::string MesytecType( unsigned int mod, unsigned int chan );
-	
+
 	// Generic VME getters
 	inline float VmeEnergy( unsigned int vme, unsigned int mod, unsigned int chan, int raw ){
 		if( vme == 0 ) return CaenEnergy( mod, chan, raw );
@@ -212,7 +212,7 @@ public:
 		   chan < set->GetNumberOfCAENChannels() )
 			fCaenType[mod][chan] = type;
 	};
-	
+
 	/// Setter for the Mesytec energy calibration parameters
 	/// \param[in] mod The module in the Mesytec DAQ
 	/// \param[in] chan The channel number of the Mesytec module
@@ -228,7 +228,7 @@ public:
 			fMesyGainQuadr[mod][chan] = gainquadr;
 		}
 	};
-	
+
 	/// Setter for the Mesytec threshold
 	/// \param[in] mod The module in the Mesytec DAQ
 	/// \param[in] chan The channel number of the Mesytec module
@@ -239,7 +239,7 @@ public:
 		   chan < set->GetNumberOfMesytecChannels() )
 			fMesyThreshold[mod][chan] = thres;
 	};
-	
+
 	/// Setter for the Mesytec time
 	/// \param[in] mod The module in the Mesytec DAQ
 	/// \param[in] chan The channel number of the Mesytec module
@@ -250,7 +250,7 @@ public:
 		   chan < set->GetNumberOfMesytecChannels() )
 			fMesyTime[mod][chan] = time;
 	};
-	
+
 	/// Setter for the Mesytec type
 	/// \param[in] mod The module in the Mesytec DAQ
 	/// \param[in] chan The channel number of the Mesytec module
@@ -261,15 +261,15 @@ public:
 		   chan < set->GetNumberOfMesytecChannels() )
 			fMesyType[mod][chan] = type;
 	};
-	
+
 
 
 private:
 
 	std::string fInputFile;///< The location of the calibration input file
-	
+
 	std::shared_ptr<ISSSettings> set;///< Pointer to the ISSSettings object
-	
+
 	TRandom *fRand;///< Used to eliminate binning issues
 
 	// Calibration file value storage
@@ -289,7 +289,7 @@ private:
 	std::vector< std::vector<unsigned int> > fCaenThreshold;///< Threshold for raw signals from detectors in the CAEN DAQ
 	std::vector< std::vector<long double> > fCaenTime;///< Time offset for signals on a given detector in the CAEN DAQ
 	std::vector< std::vector<std::string> > fCaenType;///< The type assigned to the CAEN signal
-	
+
 	std::vector< std::vector<float> > fMesyOffset;///< Constant in Mesytec energy calculation
 	std::vector< std::vector<float> > fMesyGain;///< Linear term in Mesytec energy calculation
 	std::vector< std::vector<float> > fMesyGainQuadr;///< Quadratic term in Mesytec energy calibration
@@ -321,7 +321,7 @@ private:
 
 
 	//ClassDef(ISSCalibration, 1)
-   
+
 };
 
 #endif

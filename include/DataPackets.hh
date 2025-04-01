@@ -7,12 +7,12 @@
 #include "TObject.h"
 
 class ISSAsicData : public TObject {
-	
+
 public:
 
 	ISSAsicData();
 	~ISSAsicData();
-	
+
 	inline double					GetTime() { return (double)timestamp; };
 	inline unsigned long long		GetTimeStamp() { return timestamp; };
 	inline unsigned short			GetAdcValue() { return adc_value; };
@@ -33,11 +33,11 @@ public:
 	inline void SetHitBit( bool h ){ hit_bit = h; };
 	inline void SetEnergy( float e ){ energy = e; };
 	inline void SetThreshold( bool t ){ thres = t; };
-	
+
 	void ClearData();
 
 protected:
-	
+
 	unsigned long long		timestamp;
 	unsigned short			adc_value;
 	unsigned char			mod;
@@ -48,18 +48,18 @@ protected:
 	float					energy;
 	double					walk;
 
-	
+
 	ClassDef( ISSAsicData, 4 )
-	
+
 };
 
 class ISSVmeData : public TObject {
-	
+
 public:
-	
+
 	ISSVmeData();
 	~ISSVmeData();
-	
+
 	inline double			GetTime() { return (double)timestamp + finetime; };
 	inline unsigned long	GetTimeStamp() { return timestamp; };
 	inline float			GetFineTime() { return finetime; };
@@ -105,9 +105,9 @@ public:
 
 	inline void ClearTrace() { trace.clear(); };
 	void ClearData();
-	
+
 protected:
-	
+
 	unsigned long long			timestamp;
 	float						finetime;
 	float						baseline;
@@ -123,7 +123,7 @@ protected:
 	bool						overflow_short;
 	float						energy;
 
-	
+
 	ClassDef( ISSVmeData, 2 )
 
 };
@@ -131,41 +131,41 @@ protected:
 
 
 class ISSCaenData : public ISSVmeData {
-	
+
 public:
-	
+
 	ISSCaenData();
 	~ISSCaenData();
 
 	ClassDef( ISSCaenData, 7 )
-	
+
 };
 
 
 class ISSMesyData : public ISSVmeData {
-	
+
 public:
-	
+
 	ISSMesyData();
 	~ISSMesyData();
 
 	ClassDef( ISSMesyData, 1 )
-	
+
 };
 
 class ISSInfoData : public TObject {
-	
+
 public:
 
 	ISSInfoData();
 	ISSInfoData( unsigned long long t, unsigned char c, unsigned char m );
 	~ISSInfoData();
-	
+
 	inline double	 			GetTime(){ return (double)timestamp; };
 	inline unsigned long long	GetTimeStamp(){ return timestamp; };
 	inline unsigned char 		GetCode(){ return code; };
 	inline unsigned char 		GetModule(){ return mod; };
-	
+
 	inline void SetTimeStamp( unsigned long long t ){ timestamp = t; };
 	inline void SetCode( unsigned char c ){ code = c; };
 	inline void SetModule( unsigned char m ){ mod = m; };
@@ -173,7 +173,7 @@ public:
 	void ClearData();
 
 protected:
-	
+
 	unsigned long long		timestamp;	///< timestamp of info event
 	unsigned char			code;	///< code here represents which information timestamp we have
 	unsigned char			mod;	///< module ID of the event
@@ -183,21 +183,21 @@ protected:
 	/// code = 21 is EBIS proton timestamp
 	/// code = 22 is T1 timestamp
 
-	
+
 	ClassDef( ISSInfoData, 2 )
-	
+
 };
 
 class ISSDataPackets : public TObject {
-	
+
 public:
-	
+
 	inline bool	IsAsic() { return asic_packets.size(); };
 	inline bool	IsVme() { return caen_packets.size() + mesy_packets.size(); };
 	inline bool	IsCaen() { return caen_packets.size(); };
 	inline bool	IsMesy() { return mesy_packets.size(); };
 	inline bool	IsInfo() { return info_packets.size(); };
-	
+
 	void SetData( std::shared_ptr<ISSAsicData> data );
 	void SetData( std::shared_ptr<ISSCaenData> data );
 	void SetData( std::shared_ptr<ISSMesyData> data );
@@ -208,7 +208,7 @@ public:
 	inline std::shared_ptr<ISSCaenData> GetCaenData() { return std::make_shared<ISSCaenData>( caen_packets.at(0) ); };
 	inline std::shared_ptr<ISSMesyData> GetMesyData() { return std::make_shared<ISSMesyData>( mesy_packets.at(0) ); };
 	inline std::shared_ptr<ISSInfoData> GetInfoData() { return std::make_shared<ISSInfoData>( info_packets.at(0) ); };
-	
+
 	// Complicated way to get the time...
 	double GetTime();
 	double GetTimeWithWalk();
@@ -219,7 +219,7 @@ public:
 	void ClearData();
 
 protected:
-	
+
 	std::vector<ISSAsicData> asic_packets;
 	std::vector<ISSCaenData> caen_packets;
 	std::vector<ISSMesyData> mesy_packets;

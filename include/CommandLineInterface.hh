@@ -17,14 +17,14 @@ using namespace std;
 *
 */
 class CommandLineInterface {
-	
+
 public:
 	CommandLineInterface();		///< Constructor
 	~CommandLineInterface(){};	///< Destructor (currently does nothing)
-	
+
 	//main functions to check all flags from command line
 	bool CheckFlags( unsigned int, char*[], const bool& Debug = false );
-	
+
 	//functions to add flags
 	void Add(const char*); ///< Add flag function [just comments]
 	void Add(const char*, const char*, bool*);///< Add flag function [boolean]
@@ -40,9 +40,9 @@ public:
 	void Add(const char*, const char*, vector<int>*);///< Add flag function [vector<int>]
 	void Add(const char*, const char*, vector<long long>*);///< Add flag function [vector<long long>]
 	void Add(const char*, const char*, vector<double>*, double factor = 1.);///< Add flag function [vector<double>]
-	
+
 	friend ostream& operator <<(ostream &,const CommandLineInterface &);///< Overloaded << operator
-	
+
 private:
 	unsigned int fMaximumFlagLength;///< Stores the maximum length of the flags (for printing purposes)
 	vector<string> fFlags;///< Holds the defined flags for the CommandLineInterface
@@ -52,7 +52,7 @@ private:
 	unsigned int fMaximumCommentLength;///< Stores the maximum length of the comments (for printing purposes)
 	vector<string> fComments;///< Holds the list of comments pertinent to each flag
 	vector<double> fFactors;///< Holds the factors pertinent to each flag
-	
+
 };
 
 #endif

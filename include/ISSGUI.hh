@@ -74,40 +74,40 @@
 
 
 class ISSDialog {
-	
+
 	RQ_OBJECT( "ISSDialog" )
-	
+
 private:
-	
+
 	// Popup dialogs
 	TGTransientFrame    *fDialog;
 	TGTextButton        *but_yes, *but_no;
 	TGLabel				*dialog_msg;
 	TGHorizontalFrame   *frame_button;
-	
+
 	// Answer
 	bool answer;
-	
+
 public:
-	
+
 	// Popup dialogs
 	ISSDialog( const TGWindow *p, const TGWindow *main, TString msg, bool &ans );
 	virtual ~ISSDialog();
-	
+
 	// Do the answer
 	void SayYes();
 	void SayNo();
-	
+
 	ClassDef( ISSDialog, 0 )
-	
+
 };
 
 class ISSGUI {
-	
+
 	RQ_OBJECT( "ISSGUI" )
-	
+
 protected:
-	
+
 	// Frames
 	TGMainFrame	        *main_frame;		// main frame
 	TGVerticalFrame     *left_frame;		// left frame
@@ -137,11 +137,11 @@ protected:
 	TGLabel				*lab_cal_file;		// label for calibration file
 	TGLabel				*lab_rea_file;		// label for reaction file
 	TGLabel				*lab_out_file;		// label for output file
-	
+
 	// Run list box
 	TGListBox           *run_list_box;
 	TList				*run_selected;
-	
+
 	// Text entries
 	TGTextEntry         *text_add_file;		// text entry for adding a file
 	TGTextEntry         *text_set_file;		// text entry for settings file
@@ -167,12 +167,12 @@ protected:
 	TGTextButton        *but_rea;			// button to open reaction file
 	TGTextButton        *but_out;			// button to open output file
 
-	
+
 	// Files
 	std::shared_ptr<ISSSettings> myset;
 	std::shared_ptr<ISSCalibration> mycal;
 	std::shared_ptr<ISSReaction> myrea;
-	
+
 	// select what steps of the analysis to be forced
 	std::vector<bool> force_convert;
 	bool force_sort;
@@ -182,12 +182,12 @@ protected:
 	bool flag_source;
 	bool flag_autocal;
 
-	
+
 public:
 
 	ISSGUI();				// constructor
 	virtual ~ISSGUI();		// destructor
-	
+
 	// Analysis steps
 	void gui_convert();
 	void gui_sort();
@@ -215,11 +215,11 @@ public:
 	// File list
 	std::vector<TString> filelist;
 	std::vector<bool> filestatus;
-	
+
 
 
 	ClassDef( ISSGUI, 0 )
-	
+
 };
 
 #endif

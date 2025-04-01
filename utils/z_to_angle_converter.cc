@@ -32,33 +32,33 @@ void z_to_angle_conveter( std::string reaction_file ){
 }
 
 double get_theta_cm( double z_det, double E_x ){
-	
+
 	// Make a vector for the interaction position
 	TVector3 pos( radius, 0.0, z_det );
 
 	// Set excitation energy
 	myreact->GetRecoil()->SetEx(E_x);
-	
+
 	// Get theta_cm
 	myreact->SimulateReaction( pos );
 	double theta_cm = myreact->GetThetaCM();
-	
+
 	// Print the result
 	std::cout << "z_det = " << z_det << ", E_x = " << E_x;
 	std::cout << ", θ_cm = " << theta_cm << std::endl;
 
 	return theta_cm;
-	
+
 }
 
 double get_theta_cm_debug( double z_det, double E_x ){
-	
+
 	// Make a vector for the interaction position
 	TVector3 pos( radius, 0.0, z_det );
 
 	// Set excitation energy
 	myreact->GetRecoil()->SetEx(E_x);
-	
+
 	// Simulate the reaction and get all values
 	myreact->SimulateReaction( pos );
 	double theta_cm = myreact->GetThetaCM();
@@ -76,7 +76,7 @@ double get_theta_cm_debug( double z_det, double E_x ){
 	double KE_recoil = myreact->GetRecoil()->GetEnergyLab();
 	double theta_recoil = myreact->GetRecoil()->GetThetaLab();
 
-    
+
 	double mass_beam_u = myreact->GetBeam()->GetMass_u();
 	double mass_target_u = myreact->GetTarget()->GetMass_u();
     double mass_ejectile_u = myreact->GetEjectile()->GetMass_u();
@@ -112,5 +112,5 @@ double get_theta_cm_debug( double z_det, double E_x ){
 	//std::cout << "Kinetic energy recoil lab = " << KE_recoil << " keV" << ", theta lab recoil = " << theta_recoil << " radian" << std::endl;
 
 	return theta_cm;
-	
+
 }

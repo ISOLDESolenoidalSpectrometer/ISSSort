@@ -45,13 +45,13 @@ void z_to_angle_simulator( std::string reaction_file ){
 
 	// Do the reaction for a range of proton energies
 	for( unsigned int i = 0; i < ncalcs+1; ++i ){
-		
+
 		// Calculate the proton energy
 		double en = min_energy + ( max_energy - min_energy ) / ncalcs * (double)i;
-		
+
 		// Do the reaction for a range of z positions
 		for( unsigned int j = 0; j < ncalcs+1; ++j ){
-			
+
 			// Calculate the z position
 			double z_det = min_z + ( max_z - min_z ) / ncalcs * (double)j;
 			double z_meas = z_det + z_0; // forward
@@ -62,13 +62,13 @@ void z_to_angle_simulator( std::string reaction_file ){
 
 			// Make the reaction (this should be actually the simulation function)
 			myreact->MakeReaction( pos, en );
-			
+
 			std::cout << en << "\t" << z_det << "\t";
 			std::cout << z_0 << "\t" << z_meas << "\t";
 			std::cout << myreact->GetDistance() << "\t";
 			std::cout << myreact->GetEx() << "\t";
 			std::cout << myreact->GetThetaCM() << std::endl;
-			
+
 			// Common sense checks
 			if( TMath::IsNaN( myreact->GetEx() ) || TMath::IsNaN( myreact->GetThetaCM() ) ) continue;
 			if( myreact->GetEx() < -100 || myreact->GetEx() > 1e6 ) continue;
@@ -77,22 +77,22 @@ void z_to_angle_simulator( std::string reaction_file ){
 			g->SetPoint( g->GetN(), z_meas, myreact->GetEx(), myreact->GetThetaCM() );
 
 		}
-		
+
 	}
-	
+
 	// Draw the graph
 	g->Draw("colz");
-	
+
 }
 
 double get_theta_cm( double z_det, double E_x ){
-	
+
 	double theta_cm = g->Interpolate( z_det, E_x );
-	
+
 	// Print the result
 	std::cout << "z_det = " << z_det << ", E_x = " << E_x;
 	std::cout << ", θ_cm = " << theta_cm << std::endl;
 
 	return theta_cm;
-	
+
 }

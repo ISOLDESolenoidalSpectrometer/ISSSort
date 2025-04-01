@@ -1,4 +1,4 @@
-# Calibration file example for ISSSort 
+# Calibration file example for ISSSort
 #
 # Liam Gaffney - July 2021
 # liam.gaffney@liverpool.ac.uk
@@ -1515,7 +1515,7 @@ asic_1_2_98.Offset:	-3726.94
 asic_1_2_98.Gain:	16.01
 asic_1_2_99.Offset:	-3790.3
 asic_1_2_99.Gain:	16.0176
-asic_1_2_100.Offset:	-3901.59 
+asic_1_2_100.Offset:	-3901.59
 asic_1_2_100.Gain:	15.9867
 asic_1_2_101.Offset:	-3827.88
 asic_1_2_101.Gain:	16.0251
@@ -1977,7 +1977,7 @@ asic_1_5_73.Offset:	-3625.22
 asic_1_5_73.Gain:	15.7742
 asic_1_5_74.Offset:	-3305.81
 asic_1_5_74.Gain:	15.8017
-asic_1_5_75.Offset:	-3621.11 
+asic_1_5_75.Offset:	-3621.11
 asic_1_5_75.Gain:	15.8478
 asic_1_5_76.Offset:	-3772.33
 asic_1_5_76.Gain:	15.8521
@@ -2005,7 +2005,7 @@ asic_1_5_87.Offset:	-3548.75
 asic_1_5_87.Gain:	15.7617
 asic_1_5_88.Offset:	-3569.25
 asic_1_5_88.Gain:	15.8387
-asic_1_5_89.Offset:	-3724.97 
+asic_1_5_89.Offset:	-3724.97
 asic_1_5_89.Gain:	15.7991
 asic_1_5_90.Offset:	-3502.52
 asic_1_5_90.Gain:	15.7636

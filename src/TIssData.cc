@@ -25,7 +25,7 @@
 ClassImp(TIssData)
 
 TIssData::TIssData() {
-	
+
 	// Default constructor
 	Clear();
 
@@ -34,7 +34,7 @@ TIssData::TIssData() {
 TIssData::~TIssData() {}
 
 void TIssData::Clear() {
-	
+
 	// DSSD
 	fIss_StripFront_DetectorNbr.clear();
 	fIss_StripFront_StripNbr.clear();
@@ -49,14 +49,14 @@ void TIssData::Clear() {
 	std::vector<double>().swap(fIss_StripFront_TimeCFD);
 	std::vector<double>().swap(fIss_StripFront_TimeLED);
 	std::vector<double>().swap(fIss_StripFront_Time);
-	
+
 	fIss_StripBack_DetectorNbr.clear();
 	fIss_StripBack_StripNbr.clear();
 	fIss_StripBack_Energy.clear();
 	fIss_StripBack_TimeCFD.clear();
 	fIss_StripBack_TimeLED.clear();
 	fIss_StripBack_Time.clear();
-	
+
 	std::vector<unsigned short>().swap(fIss_StripBack_DetectorNbr);
 	std::vector<unsigned short>().swap(fIss_StripBack_StripNbr);
 	std::vector<double>().swap(fIss_StripBack_Energy);
@@ -69,9 +69,9 @@ void TIssData::Clear() {
 
 
 void TIssData::Dump() const {
-	
+
 	std::cout << "XXXXXXXXXXXXXXXXXXXXXXXX New Event XXXXXXXXXXXXXXXXX" << std::endl;
-	
+
 	// DSSD
 	// Front
 	std::cout << "Iss Strip Front Mult = " << fIss_StripFront_DetectorNbr.size() << std::endl;
@@ -82,7 +82,7 @@ void TIssData::Dump() const {
 		<< "   Time CFD: " << fIss_StripFront_TimeCFD[i]
 		<< "   Time LED: " << fIss_StripFront_TimeLED[i] << std::endl;
 	}
-	
+
 	// Back
 	std::cout << "Iss Strip Back Mult  = " << fIss_StripBack_DetectorNbr.size() << std::endl;
 	for( unsigned short i = 0; i < fIss_StripBack_DetectorNbr.size(); i++ ){
