@@ -62,37 +62,37 @@ typedef struct s_buffer_header {
 
 
 class DataSpy {
-	
+
 public:
-	
+
 	DataSpy(){};
 	~DataSpy(){};
-	
+
 	inline void Verbose( int opt ) { verbose = opt; }
-	
+
 	int Open( int id );
 	int Close( int id );
 	int ReadWithSeq( int id, char *data, unsigned int length, int *seq );
 	int Read( int id, char *data, unsigned int length );
-	
+
 #if( defined SOLARIS || defined POSIX )
 	int shmkey = SHM_KEY;
 	char object_name[16];
 #else
 	key_t shmkey = SHM_KEY;
 #endif
-	
+
 	void * shm_bufferarea[MAX_ID];
 	int shmid[MAX_ID];
 	BUFFER_HEADER * baseaddress;
-	
+
 	int number_of_buffers[MAX_ID];
 	int buffers_offset[MAX_ID];
 	int next_index[MAX_ID];
 	unsigned long long current_age[MAX_ID];
-	
+
 	int verbose;
-	
+
 };
 
 

@@ -39,16 +39,16 @@
 
 
 class ISSHistogrammer {
-	
+
 public:
 
 	ISSHistogrammer( std::shared_ptr<ISSReaction> myreact, std::shared_ptr<ISSSettings> myset );
 	virtual ~ISSHistogrammer(){};
-	
+
 	void MakeHists();
 	void ResetHists();
 	unsigned long FillHists();
-	
+
 	void SetInputFile( std::vector<std::string> input_file_names );
 	void SetInputFile( std::string input_file_name );
 	void SetInputTree( TTree* user_tree );
@@ -66,12 +66,12 @@ public:
 	inline void PurgeOutput(){ output_file->Purge(2); }
 
 	inline TFile* GetFile(){ return output_file; };
-	
+
 	inline void AddProgressBar( std::shared_ptr<TGProgressBar> myprog ){
 		prog = myprog;
 		_prog_ = true;
 	};
-	
+
 	// Recoil - array coincidence
 	inline bool	PromptCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSArrayEvt> a ){
 		if( r->GetTime() - a->GetTime() > react->GetArrayRecoilPromptTime(0) &&
@@ -85,7 +85,7 @@ public:
 		    f->GetTime() - a->GetTime() < react->GetArrayFissionPromptTime(1) ) return true;
 		else return false;
 	};
-	
+
 	// Recoil - elum coincidence
 	inline bool	PromptCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSElumEvt> e ){
 		if( r->GetTime() - e->GetTime() > react->GetElumRecoilPromptTime(0) &&
@@ -112,7 +112,7 @@ public:
 			r->GetTime() - a->GetTime() < react->GetArrayRecoilRandomTime(1) ) return true;
 		else return false;
 	};
-	
+
 	inline bool	RandomCoincidence( std::shared_ptr<ISSCDEvt> f, std::shared_ptr<ISSArrayEvt> a ){
 		if( f->GetTime() - a->GetTime() > react->GetArrayFissionRandomTime(0) &&
 		    f->GetTime() - a->GetTime() < react->GetArrayFissionRandomTime(1) ) return true;
@@ -251,13 +251,13 @@ public:
 
 
 private:
-	
+
 	// Reaction
 	std::shared_ptr<ISSReaction> react;
-	
+
 	// Settings file
 	std::shared_ptr<ISSSettings> set;
-	
+
 	/// Input tree
 	TChain *input_tree;
 	ISSEvts *read_evts = nullptr;
@@ -276,18 +276,18 @@ private:
 	std::unique_ptr<ISSRxEvent> rx_evts; ///< Container for event-by-event reaction data
 	std::unique_ptr<ISSRxInfo> rx_info; ///< Container for reaction info (doesn't change for each event)
 
-	
+
 	// Progress bar
 	bool _prog_;
 	std::shared_ptr<TGProgressBar> prog;
 
 	// Counters
 	unsigned long n_entries;
-	
+
 	//------------//
 	// Histograms //
 	//------------//
-	
+
 	// Timing
 	std::vector<std::vector<TH1F*>> recoil_array_td;
 	std::vector<std::vector<TH1F*>> recoil_elum_td;
@@ -521,7 +521,7 @@ private:
 	TH1F *Theta_recoil_random, *Theta_recoilT_random;
 	TH1F *Theta_fission, *Theta_fissionT;
 	TH1F *Theta_fission_random, *Theta_fissionT_random;
-		
+
 	// ELUM
 	std::vector<TH1F*> elum_sec;
 	std::vector<TH1F*> elum_ebis_sec;

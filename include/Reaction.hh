@@ -49,7 +49,7 @@ const double p_mass  = 938272.08816;	///< mass of the proton in keV/c^2
 const double n_mass  = 939565.42052;	///< mass of the neutron in keV/c^2
 const double u_mass  = 931494.10242;	///< atomic mass unit in keV/c^2
 const double T_to_mm =   299.792458;	///< in units of 1/mm
-const double k_Si 	 =     2.88e-10;	///< k value - mm/e-h pair for PHD in silicon 
+const double k_Si 	 =     2.88e-10;	///< k value - mm/e-h pair for PHD in silicon
 const double e0_Si 	 =     3.67e-03;	///< epsilon_0 for silicon for PHD in keV
 
 // Element names
@@ -71,15 +71,15 @@ const std::vector<std::string> gElName = {
 /*!
 * \brief Stores information about individual particles in a given reaction
 *
-* Storage class primarily for information particular to a given particle. A 
-* number of these come together to give information as part of the ISSReaction 
+* Storage class primarily for information particular to a given particle. A
+* number of these come together to give information as part of the ISSReaction
 * class.
 *
 */
 class ISSParticle : public TObject {
-	
+
 public:
-	
+
 	// setup functions
 	ISSParticle() {};///< Constructor
 	~ISSParticle() {};///< Destructor
@@ -94,7 +94,7 @@ public:
 	inline double	GetThetaCM(){ return ThetaCM; };///< Getter for ThetaCM
 	inline double	GetThetaLab(){ return ThetaLab; };///< Getter for ThetaLab
 	inline double	GetEx(){ return Ex; };///< Getter for Ex
-	
+
 	// Setters
 	inline void		SetA( int myA ){ A = myA; };///< Setter for A
 	inline void		SetZ( int myZ ){ Z = myZ; };///< Setter for Z
@@ -104,7 +104,7 @@ public:
 	inline void		SetThetaCM( double mytheta ){ ThetaCM = mytheta; };///< Setter for ThetaCM
 	inline void		SetThetaLab( double mytheta ){ ThetaLab = mytheta; };///< Setter for ThetaLab
 	inline void		SetEx( double myEx ){ Ex = myEx; };///< Setter for Ex
-	
+
 	// Calculate/produce properties of the particle
 	inline double		GetMass_u(){
 		return GetMass() / u_mass;
@@ -125,26 +125,26 @@ public:
 		return GetMass() + GetEnergyLab();
 	};///< Calculates the total energy in the lab frame: Etot = Ek + m0 = γm0
 
-	
+
 	inline double		GetMomentumLab(){
 		return TMath::Sqrt( TMath::Power( GetEnergyTotLab(), 2.0 ) - TMath::Power( GetMass(), 2.0 ) );
 	};///< Calculates the total momentum in the Lab frame
-	
+
 	inline double		GetMomentumCM(){
 		return TMath::Sqrt( TMath::Power( GetEnergyTotCM(), 2.0 ) - TMath::Power( GetMass(), 2.0 ) );
 	};///< Calculates the total momentum in the CM frame
-	
-	inline double		GetGamma(){ 
+
+	inline double		GetGamma(){
 		return GetEnergyTotLab() / GetMass();
 	};///< Calculates the gamma factor: Etot = γm0
-	
+
 	inline double GetBeta(){
 		return TMath::Sqrt( 1.0 - 1.0 / TMath::Power( GetGamma(), 2.0 ) );
 	};///< Calculates the beta factor
 
 
 private:
-	
+
 	// Properties of reaction particles
 	int		A;			///< Mass number, A, of the particle
 	int		Z; 			///< Proton number, Z, of the particle
@@ -156,7 +156,7 @@ private:
 	double	Ex=0;		///< Excitation energy in keV
 
 	ClassDef( ISSParticle, 1 )
-	
+
 };
 
 
@@ -164,32 +164,32 @@ private:
 /*!
 * \brief Reads in the reaction file in ROOT's TConfig format. And also to do the physics stuff for the reaction.
 *
-* Holds all the physics information about a given reaction. Calculates relevant 
+* Holds all the physics information about a given reaction. Calculates relevant
 * kinematic quantities and is accessed for plotting histograms.
 *
 */
 class ISSReaction {
-	
+
 public:
-	
+
 	// setup functions
 	ISSReaction( std::string filename, std::shared_ptr<ISSSettings> myset, bool source );///< Constructor
 	//ISSReaction( ISSReaction &t ); ///< TODO: Copy constructor
 	~ISSReaction(){};///< Destructor
-	
+
 	// Main functions
 	void AddBindingEnergy( short Ai, short Zi, TString ame_be_str );///< Add a binding energy to the ame_be mass-table map
 	void ReadMassTables();///< Reads the AME2020 mass tables
 	void ReadReaction();///< Reads the reaction input file
-	
+
 	void SetFile( std::string filename ){
 		fInputFile = filename;
 	}///< Setter for the reaction file location
-	
+
 	const std::string InputFile(){
 		return fInputFile;
 	}///< Getter for the reaction file location
-	
+
 	// This is the function called event-by-event
 	void	MakeReaction( TVector3 vec, double en );///< Called event-by-event for transfer reactions
 	void	SimulateReaction( TVector3 vec );///< Setup your particles, then call this with the ejectile detection position
@@ -227,22 +227,22 @@ public:
 	inline double GetT1MaxTime(){ return t1_max_time; };///< Getter for the T1 time cut maximum
 
 	inline unsigned char GetLaserMode(){ return laser_mode; }; ///< Getter for LaserMode value
-	
+
 	inline bool GetArrayHistMode(){ return array_hist_mode; }; ///< array mode, p-side only data or demand p/n coincidences
 	inline bool RxTreeEnabled(){ return rxtree_flag; }; ///< if the user output tree is enabled
 
 	inline double GetZmeasured(){ return z_meas; };///< Getter for the measured z (where the particle lands on the array)
 	inline double GetZprojected(){ return z; };///< Getter for the projected z (where the particle would intersect with the beam axis)
-	
+
 	inline double GetQvalue(){
 		return Beam.GetMass() + Target.GetMass() -
 			Ejectile.GetMass() - Recoil.GetMass();
 	};///< Calculates the Q value for the reaction
-	
+
 	inline double GetEnergyTotLab(){
 		return Beam.GetEnergyTotLab() + Target.GetEnergyTotLab();
 	};///< Calculates the total energy in the lab frame
-	
+
 	inline double GetEnergyTotCM(){
 		double etot = TMath::Power( Beam.GetMass(), 2.0 );
 		etot += TMath::Power( Target.GetMass(), 2.0 );
@@ -250,37 +250,37 @@ public:
 		etot = TMath::Sqrt( etot );
 		return etot;
 	};///< Calculates the total energy in the CM frame
-	
+
 	inline double		GetGamma(){
 		return GetEnergyTotLab() / GetEnergyTotCM();
 	};///< Calculates the gamma factor for going between lab and CM frames
-	
+
 	inline double GetBeta(){
 		return TMath::Sqrt( 1.0 - 1.0 / TMath::Power( GetGamma(), 2.0 ) );
 	};///< Calculates the beta factor for going between lab and CM frames
-	
+
 	// Array-recoil time difference
 	inline double GetArrayRecoilPromptTime( unsigned char i ){
 		// i = 0 for lower limit and i = 1 for upper limit
 		if( i < 2 ) return array_recoil_prompt[i];
 		else return 0;
 	};///< Getter for array-recoil prompt time difference, used for defining coincidence windows
-	
+
 	inline double GetArrayRecoilRandomTime( unsigned char i ){
 		// i = 0 for lower limit and i = 1 for upper limit
 		if( i < 2 ) return array_recoil_random[i];
 		else return 0;
 	};///< Getter for array-recoil random time difference, used for defining coincidence windows
-	
+
 	inline double GetArrayRecoilTimeRatio(){
 		return ( array_recoil_prompt[1] - array_recoil_prompt[0] ) / ( array_recoil_random[1] - array_recoil_random[0] );
 	};///< Returns prompt window/random window
-	
+
 	inline double GetArrayRecoilFillRatio(){
 		return array_recoil_ratio;
 	};///< Getter for array-recoil fill ratio (unused?)
-	
-	
+
+
 	// Array-fission time difference
 	inline double GetArrayFissionPromptTime( unsigned char i ){
 		// i = 0 for lower limit and i = 1 for upper limit
@@ -309,17 +309,17 @@ public:
 		if( i < 2 ) return elum_recoil_prompt[i];
 		else return 0;
 	};///< Getter for elum-recoil prompt time difference, used for defining coincidence windows
-	
+
 	inline double GetElumRecoilRandomTime( unsigned char i ){
 		// i = 0 for lower limit and i = 1 for upper limit
 		if( i < 2 ) return elum_recoil_random[i];
 		else return 0;
 	};///< Getter for elum-recoil random time difference, used for defining coincidence windows
-	
+
 	inline double GetElumRecoilTimeRatio(){
 		return ( elum_recoil_prompt[1] - elum_recoil_prompt[0] ) / ( elum_recoil_random[1] - elum_recoil_random[0] );
 	};///< Returns prompt window/random window
-	
+
 	inline double GetElumRecoilFillRatio(){
 		return elum_recoil_ratio;
 	};///< Getter for elum-recoil fill ratio (unused?)
@@ -367,8 +367,8 @@ public:
 	inline double GetFissionFissionFillRatio(){
 		return fission_fission_ratio;
 	};///< Getter for fission-fission fill ratio (unused?)
-	
-	
+
+
 	// Setters
 	inline void	SetField( double m ){ Mfield = m; };					///< Setter for the magnetic field strength
 	inline void	SetArrayDistance( double d ){ z0 = d; };				///< Setter for the distance between the target and first silicon wafer of the array
@@ -396,7 +396,7 @@ public:
 		if( i < nrecoilcuts ) return recoil_cut.at(i);
 		else return nullptr;
 	};///< Getter for particular recoil cuts
-	
+
 	// Get fission fragmnet cuts
 	inline std::shared_ptr<TCutG> GetFissionCutHeavy(){
 		return fission_cutH;
@@ -415,7 +415,7 @@ public:
 	// It's a source only measurement
 	inline void SourceOnly(){ flag_source = true; };///< Flags the measurement as source only
 	inline bool IsSource(){ return flag_source; };
-	
+
 	// Get filename and other copy stuff
 	inline std::string GetFileName(){ return fInputFile; };
 	inline std::shared_ptr<ISSSettings> GetSettings(){ return set; };
@@ -438,10 +438,10 @@ public:
 private:
 
 	std::string fInputFile;///< The directory location of the input reaction file
-	
+
 	// Settings file
 	std::shared_ptr<ISSSettings> set;///< Smart pointer to the ISSSettings object
-	
+
 	// Mass tables
 	std::map< std::string, double > ame_be;///< List of binding energies from AME2020
 
@@ -455,11 +455,11 @@ private:
 	ISSParticle Target;		///< Target particle
 	ISSParticle Ejectile;	///< Ejectile particle
 	ISSParticle Recoil;		///< Recoil particle
-	
+
 	// Initial properties from file
 	double Eb;		///< Laboratory beam energy in keV/u
 	bool fission;	///< True if we are studying the fission of the recoiling nucleus
-	
+
 	// Stuff for the Ex calculation
 	std::unique_ptr<ROOT::Math::RootFinder> rf;		///< Pointer to a root finder object
 	std::unique_ptr<ROOT::Math::RootFinder> rfsim;	///< Pointer to a root finder object for the simulation of the reaction
@@ -477,11 +477,11 @@ private:
 	double EBIS_On;		///< Beam on max time in ns
 	double EBIS_Off;	///< Beam off max time in ns
 	double EBIS_ratio;	///< Ratio of ebis on/off as measured
-	
+
 	// T1 time window
 	double t1_max_time;	///< T1 pulse max time
 	double t1_min_time;	///< T1 pulse min time
-	
+
 	// Laser mode
 	unsigned char laser_mode;	///< user can select which laser data to sort, with values:
 								///< 0 = laser off NOT on
@@ -490,10 +490,10 @@ private:
 
 	// Array mode - p-side only or demand p/n coincidence
 	bool array_hist_mode;
-	
+
 	// Flag for enabling the output tree
 	bool rxtree_flag;
-	
+
 	// Coincidence windows
 	double array_recoil_prompt[2];		///< Prompt time window between recoil and array event
 	double array_recoil_random[2];		///< Random time window between recoil and array event
@@ -522,7 +522,7 @@ private:
 	double target_thickness;	///< Target thickness in units of mg/cm^2
 	double x_offset;			///< Horizontal offset of the target/beam position, with respect to the array in mm
 	double y_offset;			///< Vertical offset of the target/beam position, with respect to the array in mm
-	
+
 	// ELUM geometry
 	double elum_z;			///< z position of the ELUM (usually positive, but if negative assumed not to exist in setup)
 	double elum_rin;		///< inner radius of the ELUM detector
@@ -554,19 +554,19 @@ private:
 	bool phcurves;									///< Flag to indicate whether pulse height correction data was read successfully
 	std::vector<double> alpha_energies;				///< Energies of the alphas for calibration in a source run
 
-	
+
 	// Flag in case it's an alpha source
 	bool flag_source;	///< Flag in case it's an alpha source run
 
 };
 
 class ISSRxEvent : public TObject {
-	
+
 public:
-	
+
 	ISSRxEvent() {}; ///< Constructor
 	~ISSRxEvent() {}; ///< Destructor
-	
+
 	// Set function
 	inline void SetRxEvent( std::shared_ptr<ISSReaction> react, double E, double ebistime, double t1time, bool laserflag ){
 		theta_cm = react->GetThetaCM();
@@ -584,7 +584,7 @@ public:
 		ebis_td = ebistime;
 		t1_td = t1time;
 		laser = laserflag;
-		
+
 		// Hit information is derived, depends on array orientation
 		if( z_meas < 0 ) {
 			mod = ISSArrayEvt::FindModule( -1.0 * phi_meas );
@@ -600,7 +600,7 @@ public:
 		}
 
 	};
-	
+
 	// Getters
 	inline double 	GetThetaCM(){ return theta_cm; };
 	inline double 	GetThetaLab(){ return theta_lab; };
@@ -623,7 +623,7 @@ public:
 	inline bool		GetLaserStatus(){ return laser; };
 
 private:
-	
+
 	// Members of the class
 	double theta_cm, theta_lab;
 	double z_meas, z, phi_meas, phi, r_meas;
@@ -632,19 +632,19 @@ private:
 	double ebis_td, t1_td;
 	int mod, row, pid, nid;
 	bool laser;
-	
+
 	ClassDef( ISSRxEvent, 2 )
-	
+
 };
 
 
 class ISSRxInfo : public TObject {
-	
+
 public:
-	
+
 	ISSRxInfo() {}; ///< Constructor
 	~ISSRxInfo() {}; ///< Destructor
-	
+
 	// Set function
 	inline void SetRxInfo( std::shared_ptr<ISSReaction> react ){
 		Mfield = react->GetField();
@@ -654,7 +654,7 @@ public:
 		gamma = react->GetGamma();
 		beta = react->GetBeta();
 	};
-	
+
 	// Getters
 	inline double GetField(){ return Mfield; };
 	inline double GetEnergyTotalLab(){ return Etot_lab; };
@@ -662,16 +662,16 @@ public:
 	inline double GetGamma(){ return gamma; };
 	inline double GetBeta(){ return beta; };
 
-	
+
 private:
-	
+
 	// Members of the class
 	double Mfield, ArrayDistance;
 	double Etot_lab, Etot_cm;
 	double gamma, beta;
-	
+
 	ClassDef( ISSRxInfo, 2 )
-	
+
 };
 
 

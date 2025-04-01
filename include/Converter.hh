@@ -39,10 +39,10 @@
 class ISSConverter {
 
 public:
-	
+
 	ISSConverter( std::shared_ptr<ISSSettings> myset );
 	virtual ~ISSConverter(){};
-	
+
 
 	int ConvertFile( std::string input_file_name,
 					 unsigned long start_block = 0,
@@ -71,7 +71,7 @@ public:
 	void GetVMEChanID();
 
 	void SetOutput( std::string output_file_name );
-	
+
 	inline void CloseOutput(){
 		std::cout << "\n Writing data and closing the file" << std::endl;
 		//output_tree->SetDirectory(0);
@@ -112,14 +112,14 @@ private:
 			   ((datum & 0x0000FF00) <<  8) |
 			   ((datum & 0x000000FF) << 24));
 	};
-	
+
 	// Swap the two halves of a 64-bit integer 0x0123456789ABCDEF ->
 	// 0x89ABCDEF01234567
 	inline ULong64_t SwapWords(ULong64_t datum) {
 		return(((datum & 0xFFFFFFFF00000000LL) >> 32) |
 			   ((datum & 0x00000000FFFFFFFFLL) << 32));
 	};
-	
+
 	// Swap endianness of a 64-bit integer 0x0123456789ABCDEF ->
 	// 0xEFCDAB8967452301
 	inline ULong64_t Swap64(ULong64_t datum) {
@@ -132,7 +132,7 @@ private:
 			   ((datum & 0x000000000000FF00LL) << 40) |
 			   ((datum & 0x00000000000000FFLL) << 56));
 	};
-	
+
 	// Get nth word
 	inline ULong64_t GetWord( UInt_t n = 0 ){
 
@@ -144,17 +144,17 @@ private:
 		if (swap & SWAP_ENDIAN) result = Swap64(result);
 		if (swap & SWAP_WORDS)  result = SwapWords(result);
 		return(result);
-		
+
 	};
 
-	
+
 	// Flag for source run
 	bool flag_source;
 
 	// Logs
 	std::stringstream sslogs;
 
-	
+
 	// Set the size of the block and its components.
 	static const int HEADER_SIZE = 24; // Size of header in bytes
 	//static const int DATA_BLOCK_SIZE = 0x20000; // Block size for CAEN data = 128 kB prior to June 2021
@@ -165,17 +165,17 @@ private:
 	// Set the arrays for the block components.
 	char block_header[HEADER_SIZE];
 	char block_data[MAIN_SIZE];
-	
+
 	// Data words - 1 word of 64 bits (8 bytes)
 	ULong64_t word;
-	
+
 	// Data words - 2 words of 32 bits (4 byte).
 	UInt_t word_0;
 	UInt_t word_1;
-	
+
 	// Pointer to the data words
 	ULong64_t *data;
-	
+
 	// End of data in  a block looks like:
 	// word_0 = 0xFFFFFFFF, word_1 = 0xFFFFFFFF.
 	// This flag is set true when we hit that point
@@ -204,7 +204,7 @@ private:
 	UShort_t header_MyEndian; // 2 byte. If 1 then correct endianess.
 	UShort_t header_DataEndian; // 2 byte.
 	UInt_t header_DataLen; // 4 byte.
-	
+
 	// Interpretated variables
 	unsigned long long my_tm_stp;
 	unsigned long my_tm_stp_lsb;
@@ -232,7 +232,7 @@ private:
 	std::shared_ptr<ISSCaenData> caen_data;
 	std::shared_ptr<ISSMesyData> mesy_data;
 	std::shared_ptr<ISSInfoData> info_data;
-	
+
 	// Output stuff
 	TFile *output_file;
 	TTree *output_tree;
@@ -274,7 +274,7 @@ private:
 
 	std::vector<TH1F*> hpside;
 	std::vector<TH1F*> hnside;
-	
+
 	// 	Settings file
 	std::shared_ptr<ISSSettings> set;
 

@@ -84,19 +84,19 @@ struct ISSAutoCalModAsicChan{
 };
 
 class ISSAutoCalibrator {
-	
+
 public:
 
 	ISSAutoCalibrator( std::shared_ptr<ISSSettings> myset, std::shared_ptr<ISSReaction> myreact, const std::string& autocal_file ); ///< Constructor
 	virtual ~ISSAutoCalibrator(){}; ///< Destructor (currently empty)
-	
+
 	void ReadAutocalSettings(); ///< Read the autocal settings from the input file
 	inline void SetFile( const std::string& filename ){
 		autocal_settings_input_file = filename;
 	} ///< Sets the name of the autocal input file in the class
 
 	int	SetOutputFile( const std::string& output_file_name ); ///< Sets the name of the output root file produced by the autocal hadd-ing process
-	
+
 	void DoFits() const; ///< The heart of this class, moving from alpha spectra to a calibration
 	void DoChannelFit( TH2F*h, const ISSAutoCalModAsicChan& mac ) const; ///< The insides of the DoFits() function that calibrates for a given channel
 	void FindPeaks( TH1F *h, std::vector<float> &centroids, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt ) const; ///< Finds the desired number of alpha peaks
@@ -112,7 +112,7 @@ public:
 		prog = myprog;
 		_prog_ = true;
 	}; ///< Adds a progress bar to the GUI
-	
+
 	inline bool GetDebugStatus() const { return _debug_; } ///< Returns the debug status of the ISSAutoCalibrator
 	inline bool OnlyManualFitStatus() const { return _only_manual_fits_; } ///< Returns the manual fit status of the ISSAutoCalibrator
 	inline std::string GetFitShapeName() const {
@@ -122,10 +122,10 @@ public:
 	} ///< Returns the name of the assigned fit shape used in the ISSAutoCalibrator
 
 private:
-	
+
 	// Output file
 	std::unique_ptr<TFile> output_file; ///< The output file resulting from the hadd process of all the input files to iss_sort
-		
+
 	// Settings file
 	std::shared_ptr<ISSSettings> set; ///< Pointer to the settings object
 
@@ -138,10 +138,10 @@ private:
 	// Progress bar
 	bool _prog_;							///< True if the GUI is being used
 	std::shared_ptr<TGProgressBar> prog;	///< A progress bar for this stage in the GUI
-	
+
 	// Autocal settings options
 	std::string autocal_settings_input_file;	///< The name of the autocal file used to control the fits
-	
+
 	// Global control options
 	bool _debug_;					///< Allows the printing of more information to the console and more images to disk
 	bool _only_manual_fits_;		///< Constrains fitting to only those specified in the autocal input file
@@ -149,7 +149,7 @@ private:
 	int rebin_factor;				///< Factor by which to rebin the ADC value that makes up the alpha particle spectrum
 	std::string image_file_type;	///< The file format to print the autocal images. Must be supported by ROOT!
 	bool _print_bad_calibrations_;	///< Decide whether to print calibrations for fits that failed
-	
+
 	// Default parameters
 	float default_fit_bg;								///< Initial guess for background of alpha spectrum
 	float default_fit_bg_lb;							///< Lower limit for background of alpha spectrum
@@ -171,7 +171,7 @@ private:
 	float default_fit_peak_channel_threshold_lb;		///< Puts a lower limit on the channel number where peaks can be identified and fit
 	float default_fit_peak_channel_threshold_ub;		///< Puts an upper limit on the channel number where peaks can be identified and fit
 	bool default_missing_peak_is_last;					///< Set by the user to say that IF a peak is missing, THEN it will guess whether it is the first or last peak
-	
+
 	// Manual fits
 	std::vector< std::vector< std::vector<float> > > my_bg;							///< Vector used to store background guesses for the fits
 	std::vector< std::vector< std::vector<float> > > my_bg_lb;						///< Vector used to store background lower bound limits for the fits

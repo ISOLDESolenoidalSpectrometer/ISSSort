@@ -19,23 +19,23 @@ const double nstrip_pitch = 2.0;	///< pitch of a single n-side strip (mm)
 const double array_radius = 27.0;	///< radius to top surface of silicon (mm)
 
 class ISSArrayEvt : public TObject {
-	
+
 public:
-	
+
 	// setup functions
 	ISSArrayEvt();
 	~ISSArrayEvt();
-	
+
 	// Event reconstruction
 	void SetEvent( float mypen, float mynen,
 				  unsigned char mypid, unsigned char mynid,
 				  double myptime, double myntime,
 				  bool myphit, bool mynhit,
 				  unsigned char mymod, unsigned char myrow );
-	
+
 	// Copy event
 	void CopyEvent( std::shared_ptr<ISSArrayEvt> in );
-	
+
 	// Return functions
 	inline float 			GetEnergy(){ return pen; };
 	inline float 			GetPEnergy(){ return pen; };
@@ -50,14 +50,14 @@ public:
 	inline bool 			GetNHit(){ return nhit; };
 	inline unsigned char	GetModule(){ return mod; };
 	inline unsigned char	GetRow(){ return row; };
-	
+
 	float		GetX();
 	float		GetY();
 	float		GetZ();
 	float		GetPhi();
 	TVector2	GetPhiXY();
 	TVector3	GetPosition();
-	
+
 	static int	FindPID( double z );
 	static int	FindNID( double phi );
 	static int	FindModule( double phi );
@@ -66,10 +66,10 @@ public:
 	static int	FindRow( unsigned short detNo );
 	static int	FindAsicP( unsigned short detNo );
 	static int	FindAsicN( unsigned short detNo );
-	
-	
+
+
 protected:
-	
+
 	// variables for particle event
 	bool			phit;	///< hit bit value for p-side event
 	bool			nhit;	///< hit bit value for n-side event
@@ -81,24 +81,24 @@ protected:
 	unsigned char	nid;	///< n-side strip id, from 0 - 65, i.e. around all 6 sides
 	double			ptime;	///< p-side timestamp
 	double			ntime;	///< n-side timestamp
-	
-	
+
+
 	ClassDef( ISSArrayEvt, 5 )
-	
+
 };
 
 class ISSArrayPEvt : public ISSArrayEvt {
-	
+
 public:
-	
+
 	// setup functions
 	ISSArrayPEvt();
 	~ISSArrayPEvt();
-	
+
 protected:
-	
+
 	ClassDef( ISSArrayPEvt, 1 )
-	
+
 };
 
 class ISSSingleLayerDetectorEvt : public TObject {
@@ -229,134 +229,134 @@ public:
 protected:
 
 	ClassDef( ISSRecoilEvt, 5 )
-	
+
 };
 
 class ISSMwpcEvt : public TObject {
-	
+
 public:
-	
+
 	// setup functions
 	ISSMwpcEvt();
 	~ISSMwpcEvt();
-	
+
 	void SetEvent( int mytacdiff, unsigned char myaxis,
 				  double mytime );
-	
+
 	inline void SetTacDiff( int t ){ tacdiff = t; };
 	inline void SetAxis( unsigned char a ){ axis = a; };
 	inline void SetTime( double t ){ time = t; };
-	
+
 	inline int				GetTacDiff(){ return tacdiff; };
 	inline unsigned char	GetAxis(){ return axis; };
 	inline double			GetTime(){ return time; };
-	
-	
+
+
 protected:
-	
+
 	int				tacdiff;	///< TAC differences
 	unsigned char	axis;		///< axis ID, usually just x=0 and y=1
 	double			time;		///< time stamp of the MWPC event
-	
+
 	ClassDef( ISSMwpcEvt, 2 );
-	
+
 };
 
 class ISSElumEvt : public ISSSingleLayerDetectorEvt {
-	
+
 public:
-	
+
 	// setup functions
 	ISSElumEvt();
 	~ISSElumEvt();
-	
+
 protected:
-	
+
 	ClassDef( ISSElumEvt, 4 );
-	
+
 };
 
 class ISSZeroDegreeEvt : public ISSMultiLayerDetectorEvt {
-	
+
 public:
-	
+
 	// setup functions
 	ISSZeroDegreeEvt();
 	~ISSZeroDegreeEvt();
-	
+
 protected:
-	
+
 	ClassDef( ISSZeroDegreeEvt, 5 )
-	
+
 };
 
 class ISSGammaRayEvt : public ISSSingleLayerDetectorEvt {
-	
+
 public:
-	
+
 	// setup functions
 	ISSGammaRayEvt();
 	~ISSGammaRayEvt();
-	
+
 	void SetEvent( float myenergy, unsigned char myid,
 				  unsigned char mysec, unsigned char mytype,
 				  double mytime );
-	
+
 	inline void				SetType( unsigned char t ){ type = t; };
 	inline unsigned char	GetType(){ return type; };
-	
-	
+
+
 protected:
-	
+
 	// Extra variables for gamma-ray events
 	unsigned char	type;	///< Detector type: 0 - ScintArray, 1 - ... HPGe?
-	
+
 	ClassDef( ISSGammaRayEvt, 3 );
-	
+
 };
 
 class ISSLumeEvt : public TObject {
-	
+
 public:
-	
+
 	// setup information
 	ISSLumeEvt();
 	~ISSLumeEvt();
-	
+
 	void SetEvent( float myenergy, unsigned char myid,
 				  double mytime, float myn, float myf );
-	
+
 	inline void SetID( unsigned char i ){ id = i; };
-	
+
 	inline void SetBE( float e ){ be = e; }
 	inline void SetNE( float n ){ ne = n; }
 	inline void SetFE( float f ){ fe = f; }
-	
+
 	inline void SetTime( double t ){ time = t; };
 	inline void SetX( float xx ){ x = xx; }
-	
+
 	inline unsigned char	GetID(){ return id; };
-	
+
 	inline float			GetBE(){ return be; };
 	inline float			GetNE(){ return ne; };
 	inline float			GetFE(){ return fe; };
-	
+
 	inline double			GetTime(){ return time; };
 	inline float			GetX(){ return x; };
-	
+
 protected:
 	unsigned char id;		///< Detector ID
-	
+
 	float be;			///< Energy in the detector (from the back-plane)
 	float ne;			///< near-side energy
 	float fe;			///< far-side energy
-	
-	
+
+
 	float x;			///< position along the detector
 	double time;			///< time stamp of the event
-	
+
 	ClassDef( ISSLumeEvt, 2 );
-	
+
 };
 
 class ISSCDEvt : public ISSMultiLayerDetectorEvt {
@@ -386,13 +386,13 @@ protected:
 
 
 class ISSEvts : public TObject {
-	
+
 public:
-	
+
 	// setup functions
 	ISSEvts();
 	~ISSEvts();
-	
+
 	void AddEvt( std::shared_ptr<ISSArrayEvt> event );
 	void AddEvt( std::shared_ptr<ISSArrayPEvt> event );
 	void AddEvt( std::shared_ptr<ISSRecoilEvt> event );
@@ -451,29 +451,29 @@ public:
 	};
 
 	void ClearEvt();
-	
+
 	// ISOLDE timestamping
 	inline void SetEBIS( double t ){ ebis = t; return; };
 	inline void SetT1( double t ){ t1 = t; return; };
 	inline void SetSC( double t ){ sc = t; return; };
 	inline void SetLaserStatus( bool l ){ laser = l; return; };
-	
+
 	inline double GetEBIS(){ return ebis; };
 	inline double GetT1(){ return t1; };
 	inline double GetSC(){ return sc; };
 	inline bool GetLaserStatus(){ return laser; };
-	
+
 	double GetTime();
-	
-	
+
+
 protected:
-	
+
 	// variables for timestamping
 	double ebis;		///< absolute EBIS pulse time
 	double t1;			///< absolute proton pulse time
 	double sc;			///< absolute SuperCycle pulse time
 	bool laser;			///< laser status, true = ON, false = OFF
-	
+
 	std::vector<ISSArrayEvt> array_event;
 	std::vector<ISSArrayPEvt> arrayp_event;
 	std::vector<ISSRecoilEvt> recoil_event;
@@ -485,7 +485,7 @@ protected:
 	std::vector<ISSCDEvt> cd_event;
 
 	ClassDef( ISSEvts, 9 )
-	
+
 };
 
 #endif

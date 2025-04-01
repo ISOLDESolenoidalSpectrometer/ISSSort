@@ -27,7 +27,7 @@ ISSGUI::ISSGUI() {
 	left_frame = new TGVerticalFrame( main_frame, 150, 300 );
 	left_frame->SetName( "left_frame" );
 	main_frame->AddFrame( left_frame, new TGLayoutHints( kLHintsLeft ) );
-	
+
 	// File button box
 	fbut_frame = new TGHorizontalFrame( left_frame, 150, 20 );
 	fbut_frame->SetName( "fbut_frame" );
@@ -37,7 +37,7 @@ ISSGUI::ISSGUI() {
 	fVertical_0 = new TGVertical3DLine( main_frame, 8, 300 );
 	fVertical_0->SetName( "fVertical_0" );
 	main_frame->AddFrame( fVertical_0, new TGLayoutHints( kLHintsLeft | kLHintsTop, 2, 2, 2, 2 ) );
-	
+
 	// Centre frame - Files, directories, buttons, etc
 	centre_frame = new TGVerticalFrame( main_frame, 600, 300 );
 	centre_frame->SetName( "centre_frame" );
@@ -88,7 +88,7 @@ ISSGUI::ISSGUI() {
 	but_open->SetWrapLength( -1 );
 	but_open->Resize( 25, 30 );
 	left_frame->AddFrame( but_open, new TGLayoutHints( kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2 ) );
-	
+
 	// Setup file save
 	but_save = new TGTextButton( left_frame, "Save setup", -1, TGTextButton::GetDefaultGC()(),
 									TGTextButton::GetDefaultFontStruct(), kRaisedFrame );
@@ -97,12 +97,12 @@ ISSGUI::ISSGUI() {
 	but_save->SetWrapLength( -1 );
 	but_save->Resize( 25, 30 );
 	left_frame->AddFrame( but_save, new TGLayoutHints( kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2 ) );
-	
+
 
 	//---------------//
 	// Create labels //
 	//---------------//
-	
+
 	// Run files
 	lab_run_files = new TGLabel( left_frame, "List of file names" );
 	lab_run_files->SetTextJustify( 36 );
@@ -111,7 +111,7 @@ ISSGUI::ISSGUI() {
 	lab_run_files->Resize( 80, lab_run_files->GetDefaultHeight() );
 	main_frame->AddFrame( lab_run_files,
 						 new TGLayoutHints( kLHintsCenterX | kLHintsTop, 2, 2, 2, 2 ) );
-	
+
 	// Settings file
 	lab_set_file = new TGLabel( centre_label, "Settings file" );
 	lab_set_file->SetTextJustify( 36 );
@@ -129,7 +129,7 @@ ISSGUI::ISSGUI() {
 	lab_cal_file->Resize( 80, lab_cal_file->GetDefaultHeight() );
 	centre_label->AddFrame( lab_cal_file,
 						 new TGLayoutHints( kLHintsCenterX | kLHintsTop, 2, 2, 5, 5 ) );
-	
+
 	// Reaction file
 	lab_rea_file = new TGLabel( centre_label, "Reaction file" );
 	lab_rea_file->SetTextJustify( 36 );
@@ -152,13 +152,13 @@ ISSGUI::ISSGUI() {
 	//-----------------//
 	// Create list box //
 	//-----------------//
-	
+
 	// Run files
 	run_list_box = new TGListBox( left_frame, -1, kSunkenFrame );
 	run_list_box->SetName( "run_list_box" );
 	run_list_box->Resize( 300, 256 );
 	left_frame->AddFrame( run_list_box, new TGLayoutHints( kLHintsLeft | kLHintsTop | kLHintsExpandY, 2, 2, 2, 2 ) );
-	
+
 	run_selected = new TList;
 	run_list_box->SetMultipleSelections( true );
 
@@ -172,7 +172,7 @@ ISSGUI::ISSGUI() {
 	text_add_file->SetAlignment( kTextLeft );
 	text_add_file->Resize( 300, text_add_file->GetDefaultHeight() );
 	left_frame->AddFrame( text_add_file, new TGLayoutHints( kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2 ) );
-	
+
 	// Settings file
 	text_set_file = new TGTextEntry( centre_text );
 	text_set_file->SetMaxLength( 4096 );
@@ -193,14 +193,14 @@ ISSGUI::ISSGUI() {
 	text_rea_file->SetAlignment( kTextLeft );
 	text_rea_file->Resize( 400, text_rea_file->GetDefaultHeight() );
 	centre_text->AddFrame( text_rea_file, new TGLayoutHints( kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2 ) );
-	
+
 	// Output file
 	text_out_file = new TGTextEntry( centre_text );
 	text_out_file->SetMaxLength( 4096 );
 	text_out_file->SetAlignment( kTextLeft );
 	text_out_file->Resize( 400, text_out_file->GetDefaultHeight() );
 	centre_text->AddFrame( text_out_file, new TGLayoutHints( kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2 ) );
-	
+
 	//----------------------//
 	// Create check buttons //
 	//----------------------//
@@ -230,7 +230,7 @@ ISSGUI::ISSGUI() {
 	but_sel->SetWrapLength( -1 );
 	but_sel->Resize( 65, 46 );
 	fbut_frame->AddFrame( but_sel, new TGLayoutHints( kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2 ) );
-	
+
 	// Add files
 	but_add = new TGTextButton( fbut_frame, "Add", -1, TGTextButton::GetDefaultGC()(),
 							   TGTextButton::GetDefaultFontStruct(), kRaisedFrame );
@@ -239,7 +239,7 @@ ISSGUI::ISSGUI() {
 	but_add->SetWrapLength( -1 );
 	but_add->Resize( 65, 46 );
 	fbut_frame->AddFrame( but_add, new TGLayoutHints( kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2 ) );
-	
+
 	// Remove files
 	but_del = new TGTextButton( fbut_frame, "Remove", -1, TGTextButton::GetDefaultGC()(),
 							   TGTextButton::GetDefaultFontStruct(), kRaisedFrame );
@@ -296,7 +296,7 @@ ISSGUI::ISSGUI() {
 	but_sort->SetBackgroundColor( TColor::Number2Pixel( kGreen+1 ) );
 	centre_go->AddFrame( but_sort, new TGLayoutHints( kLHintsRight | kLHintsExpandX ) );
 
-	
+
 	//---------------//
 	// Progress bars //
 	//---------------//
@@ -324,24 +324,24 @@ ISSGUI::ISSGUI() {
 
 	// Set a name to the main frame
 	main_frame->SetWindowName( "iss_sort" );
-	
+
 	// Map all sub windows
 	main_frame->MapSubwindows();
-	
+
 	// Initialize the layout algorithm via Resize()
 	main_frame->Resize( main_frame->GetDefaultSize() );
-	
+
 	// Map windows
 	main_frame->MapWindow();
 	//main_frame->Print();
-	
-	
+
+
 	//----------//
 	// Defaults //
 	//----------//
 	text_add_file->SetText( "R1_0" );
 
-	
+
 	//----------------//
 	// Button presses //
 	//----------------//
@@ -357,15 +357,15 @@ ISSGUI::ISSGUI() {
 	but_rea->Connect( "Clicked()", "ISSGUI", this, "on_rea_clicked()" );
 	but_out->Connect( "Clicked()", "ISSGUI", this, "on_out_clicked()" );
 
-	
+
 	//clean up
 	filelist.clear();
 	filestatus.clear();
-	
+
 }
 
 ISSGUI::~ISSGUI() {
-	
+
 	// Clean up main frame...
 	main_frame->Cleanup();
 	delete main_frame;
@@ -373,18 +373,18 @@ ISSGUI::~ISSGUI() {
 }
 
 TString ISSGUI::get_filename() {
-	
+
 	// Configure file dialog
 	TGFileInfo fi;
 	fi.SetMultipleSelection( false );
 	TString dir(".");
 	fi.fIniDir = StrDup(dir);
-	
+
 	// Open a file dialog
 	new TGFileDialog( gClient->GetRoot(), main_frame, kFDOpen, &fi );
-	
+
 	return fi.fFilename;
-	
+
 }
 
 void ISSGUI::on_sel_clicked() {
@@ -468,7 +468,7 @@ void ISSGUI::SaveSetup( TString setupfile ) {
 	fSetup->SetValue( "source", check_source->IsOn() );
 	fSetup->SetValue( "force", check_force->IsOn() );
 	fSetup->SetValue( "events", check_event->IsOn() );
-	
+
 	fSetup->SetValue( "settings", text_set_file->GetText() );
 	fSetup->SetValue( "calibration", text_cal_file->GetText() );
 	fSetup->SetValue( "reaction", text_rea_file->GetText() );
@@ -518,7 +518,7 @@ void ISSGUI::LoadSetup( TString setupfile ) {
 }
 
 void ISSGUI::gui_convert(){
-	
+
 	//------------------------//
 	// Run conversion to ROOT //
 	//------------------------//
@@ -533,7 +533,7 @@ void ISSGUI::gui_convert(){
 	std::ifstream ftest;
 	TString name_input_file;
 	TString name_output_file;
-	
+
 	// Check each file
 	for( unsigned int i = 0; i < filelist.size(); i++ ){
 
@@ -542,40 +542,40 @@ void ISSGUI::gui_convert(){
 		else name_output_file = filelist.at(i) + ".root";
 
 		force_convert.push_back( false );
-		
+
 		// Skip the file if it's deleted
 		if( !filestatus.at(i) ) continue;
 
 		// If input doesn't exist, skip it
 		ftest.open( name_input_file.Data() );
 		if( !ftest.is_open() ) {
-			
+
 			std::cerr << name_input_file << " does not exist" << std::endl;
 			continue;
-			
+
 		}
 		else ftest.close();
-		
+
 		// If output doesn't exist, we have to convert it anyway
 		// The convert flag will force it to be converted
 		ftest.open( name_output_file );
 		if( !ftest.is_open() ) force_convert.at(i) = true;
 		else {
-			
+
 			ftest.close();
 			rtest = new TFile( name_output_file );
 			if( rtest->IsZombie() ) force_convert.at(i) = true;
 			if( !flag_convert && !force_convert.at(i) )
 				std::cout << name_output_file << " already converted" << std::endl;
 			rtest->Close();
-			
+
 		}
 
 		if( flag_convert || force_convert.at(i) ) {
-			
+
 			std::cout << name_input_file << " --> ";
 			std::cout << name_output_file << std::endl;
-			
+
 			prog_format  = "Converting ";
 			prog_format += name_input_file( name_input_file.Last('/') + 1,
 					name_input_file.Length() - name_input_file.Last('/') ).Data();
@@ -601,9 +601,9 @@ void ISSGUI::gui_convert(){
 				prog_sort->ShowPosition( true, false, prog_format.data() );
 				conv.AddProgressBar( prog_sort );
 				conv.SortTree();
-				
+
 			}
-			
+
 			conv.CloseOutput();
 
 			prog_format  = "Time ordering complete";
@@ -613,15 +613,15 @@ void ISSGUI::gui_convert(){
 
 		// Update everything
 		gSystem->ProcessEvents();
-		
+
 	}
-	
+
 	return;
-	
+
 }
 
 void ISSGUI::gui_build(){
-	
+
 	//-----------------------//
 	// Physics event builder //
 	//-----------------------//
@@ -638,7 +638,7 @@ void ISSGUI::gui_build(){
 	std::ifstream ftest;
 	TString name_input_file;
 	TString name_output_file;
-	
+
 	// Update calibration file if given
 	if( mycal->InputFile() != "dummy" )
 		eb.AddCalibration( mycal );
@@ -704,11 +704,11 @@ void ISSGUI::gui_build(){
 
 	}
 	return;
-	
+
 }
 
 void ISSGUI::gui_hist(){
-	
+
 	//------------------------------//
 	// Finally make some histograms //
 	//------------------------------//
@@ -723,10 +723,10 @@ void ISSGUI::gui_hist(){
 	std::string prog_format;
 	TString name_input_file;
 	TString name_output_file;
-	
+
 	prog_format = "Histogramming: %.0f%%";
 	prog_hist->ShowPosition( true, false, prog_format.data() );
-	
+
 	name_output_file = text_out_file->GetText();
 	if( name_output_file == "" ) name_output_file = "output.root";
 	hist.SetOutput( name_output_file.Data() );
@@ -737,7 +737,7 @@ void ISSGUI::gui_hist(){
 
 		// Skip the file if it's deleted
 		if( !filestatus.at(i) ) continue;
-		
+
 		name_input_file = filelist.at(i) + "_events.root";
 		name_hist_files.push_back( name_input_file.Data() );
 
@@ -746,15 +746,15 @@ void ISSGUI::gui_hist(){
 	hist.SetInputFile( name_hist_files );
 	hist.FillHists();
 	hist.CloseOutput();
-	
+
 	prog_format  = "Histogramming complete";
 	prog_hist->ShowPosition( true, false, prog_format.data() );
 
-	
+
 	// Update everything
 	gSystem->ProcessEvents();
 	return;
-	
+
 }
 
 void ISSGUI::gui_autocal(){
@@ -790,13 +790,13 @@ void ISSGUI::gui_autocal(){
 
 	// Check each file
 	for( unsigned int i = 0; i < filelist.size(); i++ ){
-			
+
 		name_input_file = filelist.at(i) + "_source.root";
 
 		// Add to list if the converted file exists
 		ftest.open( name_input_file.data() );
 		if( ftest.is_open() ) {
-		
+
 			ftest.close();
 			rtest = new TFile( name_input_file.data() );
 			if( !rtest->IsZombie() ) {
@@ -807,27 +807,27 @@ void ISSGUI::gui_autocal(){
 				std::cout << ", it's broken" << std::endl;
 			}
 			rtest->Close();
-			
+
 		}
-		
+
 		else {
 			std::cout << "Skipping " << name_input_file;
 			std::cout << ", file does not exist" << std::endl;
 		}
 
 	}
-	
+
 	// Perform the hadd (doesn't work on Windows)
 	std::string cmd = "hadd -k -T -v 0 -f ";
 	cmd += name_output_file;
 	cmd += hadd_file_list;
 	gSystem->Exec( cmd.data() );
-	
+
 	// Give this file to the autocalibrator
 	if( autocal.SetOutputFile( name_output_file ) ) return;
 	autocal.DoFits();
 	autocal.SaveCalFile( name_results_file );
-	
+
 	prog_format  = "AutoCalibrator complete";
 	prog_sort->ShowPosition( true, false, prog_format.data() );
 
@@ -860,7 +860,7 @@ void ISSGUI::on_sort_clicked() {
 	myset = std::make_shared<ISSSettings>( name_set_file );
 	mycal = std::make_shared<ISSCalibration>( name_cal_file, myset );
 	myrea = std::make_shared<ISSReaction>( name_rea_file, myset, flag_source );
-	
+
 	//------------------//
 	// Run the analysis //
 	//------------------//
@@ -873,42 +873,42 @@ void ISSGUI::on_sort_clicked() {
 	else if( flag_autocal )
 		gui_autocal();
 	std::cout << "\n\nFinished!\n";
-	
+
 }
 
 ISSDialog::ISSDialog( const TGWindow *p, const TGWindow *main, TString msg, bool &ans ) {
-	
+
 	// Default answer is false
 	answer = false;
-	
+
 	fDialog = new TGTransientFrame( p, main, 800, 100, kVerticalFrame );
 	frame_button = new TGHorizontalFrame( fDialog, 240, 60 );
-	
+
 	dialog_msg = new TGLabel( fDialog, msg );
 	fDialog->AddFrame( dialog_msg, new TGLayoutHints( kLHintsTop | kLHintsExpandY, 5, 5, 5, 5) );
-	
+
 	but_yes = new TGTextButton( frame_button, " &Yes ", 1 );
 	but_yes->Connect( "Clicked()", "ISSDialog", this, "SayYes()" );
 	but_yes->Associate( fDialog );
 	frame_button->AddFrame( but_yes, new TGLayoutHints( kLHintsLeft | kLHintsExpandX, 4, 4, 4, 4 ) );
-	
+
 	but_no = new TGTextButton( frame_button, " &No ", 1 );
 	but_no->Connect( "Clicked()", "ISSDialog", this, "SayNo()" );
 	but_no->Associate( fDialog );
 	frame_button->AddFrame( but_no, new TGLayoutHints( kLHintsLeft | kLHintsExpandX, 4, 4, 4, 4 ) );
-	
+
 	frame_button->Resize( 100, but_no->GetDefaultHeight() + 4 );
 	fDialog->AddFrame( frame_button, new TGLayoutHints( kLHintsBottom | kLHintsCenterX | kLHintsExpandY, 5, 5, 5, 5 ) );
 
 	fDialog->MapSubwindows();
 	fDialog->Resize( fDialog->GetDefaultSize() );
-	
+
 	fDialog->MapWindow();
 
 	gClient->WaitFor( fDialog );
 
 	ans = answer;
-	
+
 }
 
 ISSDialog::~ISSDialog() {
@@ -918,22 +918,22 @@ ISSDialog::~ISSDialog() {
 	delete but_no;
 	delete dialog_msg;
 	delete frame_button;
-	
+
 	delete fDialog;
-	
+
 }
 
 void ISSDialog::SayYes() {
-	
+
 	answer = true;
 	fDialog->SendCloseMessage();
-	
+
 }
 
 void ISSDialog::SayNo() {
-	
+
 	answer = false;
 	fDialog->SendCloseMessage();
-	
+
 }
 

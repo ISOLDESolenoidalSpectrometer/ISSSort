@@ -429,19 +429,19 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 	std::cout << " Event Building: number of entries in input tree = ";
 	std::cout << n_entries << std::endl;
-	
+
 	// Event building by timestamp only
 	if( set->BuildByTimeStamp() ) {
 		std::cout << " Event Building: using raw timestamp for event ordering" << std::endl;
 		input_tree->BuildIndex( "GetTimeStamp()" );
 	}
-	
+
 	// Or apply time-walk correction, i.e. get new time ordering
 	else {
 		std::cout << " Event Building: applying time walk-correction to event ordering" << std::endl;
 		input_tree->BuildIndex( "GetTimeWithWalk()" );
 	}
-	
+
 	// Get the index
 	TTreeIndex *att_index = (TTreeIndex*)input_tree->GetTreeIndex();
 
@@ -468,7 +468,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		// check time stamp monotonically increases!
 		// but allow for the fine time of the CAEN system
 		if( (unsigned long long)time_prev > mytime + 5.0 ) {
-			
+
 			std::cout << "Out of order event in file ";
 			std::cout << input_tree->GetName() << std::endl;
 
@@ -520,7 +520,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 			// p-side event
 			if( myside == 0 && mythres ) {
-			
+
 				mystrip = array_pid.at( myasic ).at( mych );
 
 				// Only use if it is an event from a detector
@@ -667,7 +667,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 					mythres &&											// check threshold
 					( !myclipped || !set->GetClippedRejection() ) &&	// check clipped
 					( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
-				
+
 				mwpctac_list.push_back( myenergy );
 				mwpctd_list.push_back( mytime );
 				mwpcaxis_list.push_back( set->GetMWPCAxis( myvme, mymod, mych ) );
@@ -682,7 +682,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 					mythres &&											// check threshold
 					( !myclipped || !set->GetClippedRejection() ) &&	// check clipped
 					( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
-				
+
 				mysector = set->GetELUMSector( myvme, mymod, mych );
 
 				een_list.push_back( myenergy );
@@ -698,7 +698,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 					mythres &&											// check threshold
 					( !myclipped || !set->GetClippedRejection() ) &&	// check clipped
 					( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
-				
+
 				mylayer = set->GetZDLayer( myvme, mymod, mych );
 
 				zen_list.push_back( myenergy );
@@ -714,7 +714,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 					mythres &&											// check threshold
 					( !myclipped || !set->GetClippedRejection() ) &&	// check clipped
 					( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
-			
+
 				myid = set->GetScintArrayDetector( myvme, mymod, mych );
 
 				saen_list.push_back( myenergy );
@@ -974,7 +974,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 			// If we have a pulser event from the CAEN DAQs, fill time difference
 			if( flag_caen_pulser ) {
-        
+
 				for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
 
 					double fpga_tdiff = caen_time - fpga_time[j];
