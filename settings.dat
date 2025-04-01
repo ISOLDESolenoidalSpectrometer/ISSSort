@@ -37,8 +37,8 @@
 ##------------------------#
 ## Triggers, pulsers, etc #
 ##------------------------#
-#ExternalTriggerCode: 14 
-#SyncCode: 4 
+#ExternalTriggerCode: 14
+#SyncCode: 4
 #TimestampCode: 5
 #PulserAsicArray_0: 1
 #PulserChannelArray_0: 63
