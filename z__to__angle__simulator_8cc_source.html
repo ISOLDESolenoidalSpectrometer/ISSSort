@@ -141,13 +141,13 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="comment">// Do the reaction for a range of proton energies</span></div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#af2a5f64cdf49ab96a3f217b4bd1d4bd1">ncalcs</a>+1; ++i ){</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="comment">// Calculate the proton energy</span></div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordtype">double</span> en = <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#ad9735ded510e1a8222aa714dabba0822">min_energy</a> + ( <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#a843fcd090443c5712b0f8c30b300a9aa">max_energy</a> - <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#ad9735ded510e1a8222aa714dabba0822">min_energy</a> ) / <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#af2a5f64cdf49ab96a3f217b4bd1d4bd1">ncalcs</a> * (<span class="keywordtype">double</span>)i;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="comment">// Do the reaction for a range of z positions</span></div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j = 0; j &lt; <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#af2a5f64cdf49ab96a3f217b4bd1d4bd1">ncalcs</a>+1; ++j ){</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <span class="comment">// Calculate the z position</span></div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <span class="keywordtype">double</span> z_det = <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#a34c6e1f335dc7b00e557b015a59be5c9">min_z</a> + ( <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#a03912236cb6cc1df6329b781d5031121">max_z</a> - <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#a34c6e1f335dc7b00e557b015a59be5c9">min_z</a> ) / <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#af2a5f64cdf49ab96a3f217b4bd1d4bd1">ncalcs</a> * (<span class="keywordtype">double</span>)j;</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            <span class="keywordtype">double</span> z_meas = z_det + z_0; <span class="comment">// forward</span></div>
@@ -158,13 +158,13 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="comment">// Make the reaction (this should be actually the simulation function)</span></div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a>-&gt;MakeReaction( pos, en );</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            std::cout &lt;&lt; en &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> &lt;&lt; z_det &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            std::cout &lt;&lt; z_0 &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> &lt;&lt; z_meas &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            std::cout &lt;&lt; <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a>-&gt;GetDistance() &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            std::cout &lt;&lt; <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a>-&gt;GetEx() &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span>;</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            std::cout &lt;&lt; <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a>-&gt;GetThetaCM() &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            <span class="comment">// Common sense checks</span></div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keywordflow">if</span>( TMath::IsNaN( <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a>-&gt;GetEx() ) || TMath::IsNaN( <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a>-&gt;GetThetaCM() ) ) <span class="keywordflow">continue</span>;</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordflow">if</span>( <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a>-&gt;GetEx() &lt; -100 || <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a>-&gt;GetEx() &gt; 1e6 ) <span class="keywordflow">continue</span>;</div>
@@ -173,26 +173,26 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#ab17935dd73a49ff6d8a06026a1950a0a">g</a>-&gt;SetPoint( <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#ab17935dd73a49ff6d8a06026a1950a0a">g</a>-&gt;GetN(), z_meas, <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a>-&gt;GetEx(), <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a>-&gt;GetThetaCM() );</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        }</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    }</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="comment">// Draw the graph</span></div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#ab17935dd73a49ff6d8a06026a1950a0a">g</a>-&gt;Draw(<span class="stringliteral">&quot;colz&quot;</span>);</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}</div>
 </div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
 <div class="foldopen" id="foldopen00088" data-start="{" data-end="}">
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="z__to__angle__simulator_8cc.html#abddc26c6cff916a7802871c9c47af573">   88</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="z__to__angle__simulator_8cc.html#abddc26c6cff916a7802871c9c47af573">get_theta_cm</a>( <span class="keywordtype">double</span> z_det, <span class="keywordtype">double</span> E_x ){</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">double</span> theta_cm = <a class="code hl_variable" href="z__to__angle__simulator_8cc.html#ab17935dd73a49ff6d8a06026a1950a0a">g</a>-&gt;Interpolate( z_det, E_x );</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="comment">// Print the result</span></div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::cout &lt;&lt; <span class="stringliteral">&quot;z_det = &quot;</span> &lt;&lt; z_det &lt;&lt; <span class="stringliteral">&quot;, E_x = &quot;</span> &lt;&lt; E_x;</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    std::cout &lt;&lt; <span class="stringliteral">&quot;, θ_cm = &quot;</span> &lt;&lt; theta_cm &lt;&lt; std::endl;</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">return</span> theta_cm;</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>}</div>
 </div>
 <div class="ttc" id="az__to__angle__simulator_8cc_html_a03912236cb6cc1df6329b781d5031121"><div class="ttname"><a href="z__to__angle__simulator_8cc.html#a03912236cb6cc1df6329b781d5031121">max_z</a></div><div class="ttdeci">const double max_z</div><div class="ttdef"><b>Definition</b> <a href="#l00025">z_to_angle_simulator.cc:25</a></div></div>

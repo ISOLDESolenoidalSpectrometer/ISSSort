@@ -123,7 +123,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_variable" href="classISSGUI.html#ab72a5a049fb15b625de97a04a6a9a4c6">left_frame</a> = <span class="keyword">new</span> TGVerticalFrame( <a class="code hl_variable" href="classISSGUI.html#a7cd459d2ab7eb73950b496daba77f3f2">main_frame</a>, 150, 300 );</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <a class="code hl_variable" href="classISSGUI.html#ab72a5a049fb15b625de97a04a6a9a4c6">left_frame</a>-&gt;SetName( <span class="stringliteral">&quot;left_frame&quot;</span> );</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_variable" href="classISSGUI.html#a7cd459d2ab7eb73950b496daba77f3f2">main_frame</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSGUI.html#ab72a5a049fb15b625de97a04a6a9a4c6">left_frame</a>, <span class="keyword">new</span> TGLayoutHints( kLHintsLeft ) );</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="comment">// File button box</span></div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_variable" href="classISSGUI.html#adab70fb1d81ef02ec864d501c23a7276">fbut_frame</a> = <span class="keyword">new</span> TGHorizontalFrame( <a class="code hl_variable" href="classISSGUI.html#ab72a5a049fb15b625de97a04a6a9a4c6">left_frame</a>, 150, 20 );</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_variable" href="classISSGUI.html#adab70fb1d81ef02ec864d501c23a7276">fbut_frame</a>-&gt;SetName( <span class="stringliteral">&quot;fbut_frame&quot;</span> );</div>
@@ -133,7 +133,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_variable" href="classISSGUI.html#a7a524530f47007f46f998fe02444242c">fVertical_0</a> = <span class="keyword">new</span> TGVertical3DLine( <a class="code hl_variable" href="classISSGUI.html#a7cd459d2ab7eb73950b496daba77f3f2">main_frame</a>, 8, 300 );</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <a class="code hl_variable" href="classISSGUI.html#a7a524530f47007f46f998fe02444242c">fVertical_0</a>-&gt;SetName( <span class="stringliteral">&quot;fVertical_0&quot;</span> );</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_variable" href="classISSGUI.html#a7cd459d2ab7eb73950b496daba77f3f2">main_frame</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSGUI.html#a7a524530f47007f46f998fe02444242c">fVertical_0</a>, <span class="keyword">new</span> TGLayoutHints( kLHintsLeft | kLHintsTop, 2, 2, 2, 2 ) );</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="comment">// Centre frame - Files, directories, buttons, etc</span></div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_variable" href="classISSGUI.html#a8572eb7b08df38d3d74580afbc30c902">centre_frame</a> = <span class="keyword">new</span> TGVerticalFrame( <a class="code hl_variable" href="classISSGUI.html#a7cd459d2ab7eb73950b496daba77f3f2">main_frame</a>, 600, 300 );</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_variable" href="classISSGUI.html#a8572eb7b08df38d3d74580afbc30c902">centre_frame</a>-&gt;SetName( <span class="stringliteral">&quot;centre_frame&quot;</span> );</div>
@@ -184,7 +184,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_variable" href="classISSGUI.html#a5483f3e412986505c20a32903d91ab87">but_open</a>-&gt;SetWrapLength( -1 );</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <a class="code hl_variable" href="classISSGUI.html#a5483f3e412986505c20a32903d91ab87">but_open</a>-&gt;Resize( 25, 30 );</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <a class="code hl_variable" href="classISSGUI.html#ab72a5a049fb15b625de97a04a6a9a4c6">left_frame</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSGUI.html#a5483f3e412986505c20a32903d91ab87">but_open</a>, <span class="keyword">new</span> TGLayoutHints( kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2 ) );</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="comment">// Setup file save</span></div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <a class="code hl_variable" href="classISSGUI.html#a85e3e120f791528bf4c61ee183196011">but_save</a> = <span class="keyword">new</span> TGTextButton( <a class="code hl_variable" href="classISSGUI.html#ab72a5a049fb15b625de97a04a6a9a4c6">left_frame</a>, <span class="stringliteral">&quot;Save setup&quot;</span>, -1, TGTextButton::GetDefaultGC()(),</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                                    TGTextButton::GetDefaultFontStruct(), kRaisedFrame );</div>
@@ -193,12 +193,12 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <a class="code hl_variable" href="classISSGUI.html#a85e3e120f791528bf4c61ee183196011">but_save</a>-&gt;SetWrapLength( -1 );</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <a class="code hl_variable" href="classISSGUI.html#a85e3e120f791528bf4c61ee183196011">but_save</a>-&gt;Resize( 25, 30 );</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <a class="code hl_variable" href="classISSGUI.html#ab72a5a049fb15b625de97a04a6a9a4c6">left_frame</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSGUI.html#a85e3e120f791528bf4c61ee183196011">but_save</a>, <span class="keyword">new</span> TGLayoutHints( kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2 ) );</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="comment">//---------------//</span></div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="comment">// Create labels //</span></div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="comment">//---------------//</span></div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="comment">// Run files</span></div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <a class="code hl_variable" href="classISSGUI.html#aa559fa2f7f905748b4c231a52a7c5048">lab_run_files</a> = <span class="keyword">new</span> TGLabel( <a class="code hl_variable" href="classISSGUI.html#ab72a5a049fb15b625de97a04a6a9a4c6">left_frame</a>, <span class="stringliteral">&quot;List of file names&quot;</span> );</div>
 <div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_variable" href="classISSGUI.html#aa559fa2f7f905748b4c231a52a7c5048">lab_run_files</a>-&gt;SetTextJustify( 36 );</div>
@@ -207,7 +207,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <a class="code hl_variable" href="classISSGUI.html#aa559fa2f7f905748b4c231a52a7c5048">lab_run_files</a>-&gt;Resize( 80, <a class="code hl_variable" href="classISSGUI.html#aa559fa2f7f905748b4c231a52a7c5048">lab_run_files</a>-&gt;GetDefaultHeight() );</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <a class="code hl_variable" href="classISSGUI.html#a7cd459d2ab7eb73950b496daba77f3f2">main_frame</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSGUI.html#aa559fa2f7f905748b4c231a52a7c5048">lab_run_files</a>,</div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                         <span class="keyword">new</span> TGLayoutHints( kLHintsCenterX | kLHintsTop, 2, 2, 2, 2 ) );</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="comment">// Settings file</span></div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <a class="code hl_variable" href="classISSGUI.html#a8e7a67940889056031ba44ed902a466e">lab_set_file</a> = <span class="keyword">new</span> TGLabel( <a class="code hl_variable" href="classISSGUI.html#aa53c7e8f9645103db5d08a023b798ad7">centre_label</a>, <span class="stringliteral">&quot;Settings file&quot;</span> );</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <a class="code hl_variable" href="classISSGUI.html#a8e7a67940889056031ba44ed902a466e">lab_set_file</a>-&gt;SetTextJustify( 36 );</div>
@@ -225,7 +225,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <a class="code hl_variable" href="classISSGUI.html#a452f41893f0bf68e6dc2e34bf9c786e6">lab_cal_file</a>-&gt;Resize( 80, <a class="code hl_variable" href="classISSGUI.html#a452f41893f0bf68e6dc2e34bf9c786e6">lab_cal_file</a>-&gt;GetDefaultHeight() );</div>
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <a class="code hl_variable" href="classISSGUI.html#aa53c7e8f9645103db5d08a023b798ad7">centre_label</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSGUI.html#a452f41893f0bf68e6dc2e34bf9c786e6">lab_cal_file</a>,</div>
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                         <span class="keyword">new</span> TGLayoutHints( kLHintsCenterX | kLHintsTop, 2, 2, 5, 5 ) );</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="comment">// Reaction file</span></div>
 <div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <a class="code hl_variable" href="classISSGUI.html#ad88fff7b39fd3d69282ae48c27bc0f94">lab_rea_file</a> = <span class="keyword">new</span> TGLabel( <a class="code hl_variable" href="classISSGUI.html#aa53c7e8f9645103db5d08a023b798ad7">centre_label</a>, <span class="stringliteral">&quot;Reaction file&quot;</span> );</div>
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <a class="code hl_variable" href="classISSGUI.html#ad88fff7b39fd3d69282ae48c27bc0f94">lab_rea_file</a>-&gt;SetTextJustify( 36 );</div>
@@ -248,13 +248,13 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="comment">//-----------------//</span></div>
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="comment">// Create list box //</span></div>
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="comment">//-----------------//</span></div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
 <div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="comment">// Run files</span></div>
 <div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <a class="code hl_variable" href="classISSGUI.html#a87a1152abd52f32ab030e9206cdf9471">run_list_box</a> = <span class="keyword">new</span> TGListBox( <a class="code hl_variable" href="classISSGUI.html#ab72a5a049fb15b625de97a04a6a9a4c6">left_frame</a>, -1, kSunkenFrame );</div>
 <div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <a class="code hl_variable" href="classISSGUI.html#a87a1152abd52f32ab030e9206cdf9471">run_list_box</a>-&gt;SetName( <span class="stringliteral">&quot;run_list_box&quot;</span> );</div>
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <a class="code hl_variable" href="classISSGUI.html#a87a1152abd52f32ab030e9206cdf9471">run_list_box</a>-&gt;Resize( 300, 256 );</div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <a class="code hl_variable" href="classISSGUI.html#ab72a5a049fb15b625de97a04a6a9a4c6">left_frame</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSGUI.html#a87a1152abd52f32ab030e9206cdf9471">run_list_box</a>, <span class="keyword">new</span> TGLayoutHints( kLHintsLeft | kLHintsTop | kLHintsExpandY, 2, 2, 2, 2 ) );</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
 <div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <a class="code hl_variable" href="classISSGUI.html#a42a9922680baac3ba0f2a0195917f910">run_selected</a> = <span class="keyword">new</span> TList;</div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <a class="code hl_variable" href="classISSGUI.html#a87a1152abd52f32ab030e9206cdf9471">run_list_box</a>-&gt;SetMultipleSelections( <span class="keyword">true</span> );</div>
 <div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
@@ -268,7 +268,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <a class="code hl_variable" href="classISSGUI.html#ad9bcd037bc995921c3c5f7c2a383fdb8">text_add_file</a>-&gt;SetAlignment( kTextLeft );</div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <a class="code hl_variable" href="classISSGUI.html#ad9bcd037bc995921c3c5f7c2a383fdb8">text_add_file</a>-&gt;Resize( 300, <a class="code hl_variable" href="classISSGUI.html#ad9bcd037bc995921c3c5f7c2a383fdb8">text_add_file</a>-&gt;GetDefaultHeight() );</div>
 <div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <a class="code hl_variable" href="classISSGUI.html#ab72a5a049fb15b625de97a04a6a9a4c6">left_frame</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSGUI.html#ad9bcd037bc995921c3c5f7c2a383fdb8">text_add_file</a>, <span class="keyword">new</span> TGLayoutHints( kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2 ) );</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="comment">// Settings file</span></div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <a class="code hl_variable" href="classISSGUI.html#a94ab579da0e6e79880f8a4076cfb3628">text_set_file</a> = <span class="keyword">new</span> TGTextEntry( <a class="code hl_variable" href="classISSGUI.html#a4d2416cd2cfe9cab10acb10111590db1">centre_text</a> );</div>
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <a class="code hl_variable" href="classISSGUI.html#a94ab579da0e6e79880f8a4076cfb3628">text_set_file</a>-&gt;SetMaxLength( 4096 );</div>
@@ -289,14 +289,14 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <a class="code hl_variable" href="classISSGUI.html#a258e50e7b4796f64e5ac2c5e907881ff">text_rea_file</a>-&gt;SetAlignment( kTextLeft );</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <a class="code hl_variable" href="classISSGUI.html#a258e50e7b4796f64e5ac2c5e907881ff">text_rea_file</a>-&gt;Resize( 400, <a class="code hl_variable" href="classISSGUI.html#a258e50e7b4796f64e5ac2c5e907881ff">text_rea_file</a>-&gt;GetDefaultHeight() );</div>
 <div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <a class="code hl_variable" href="classISSGUI.html#a4d2416cd2cfe9cab10acb10111590db1">centre_text</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSGUI.html#a258e50e7b4796f64e5ac2c5e907881ff">text_rea_file</a>, <span class="keyword">new</span> TGLayoutHints( kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2 ) );</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    </div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
 <div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="comment">// Output file</span></div>
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <a class="code hl_variable" href="classISSGUI.html#ae2fcb1311d31488701521e1ab2f11e68">text_out_file</a> = <span class="keyword">new</span> TGTextEntry( <a class="code hl_variable" href="classISSGUI.html#a4d2416cd2cfe9cab10acb10111590db1">centre_text</a> );</div>
 <div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <a class="code hl_variable" href="classISSGUI.html#ae2fcb1311d31488701521e1ab2f11e68">text_out_file</a>-&gt;SetMaxLength( 4096 );</div>
 <div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <a class="code hl_variable" href="classISSGUI.html#ae2fcb1311d31488701521e1ab2f11e68">text_out_file</a>-&gt;SetAlignment( kTextLeft );</div>
 <div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <a class="code hl_variable" href="classISSGUI.html#ae2fcb1311d31488701521e1ab2f11e68">text_out_file</a>-&gt;Resize( 400, <a class="code hl_variable" href="classISSGUI.html#ae2fcb1311d31488701521e1ab2f11e68">text_out_file</a>-&gt;GetDefaultHeight() );</div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <a class="code hl_variable" href="classISSGUI.html#a4d2416cd2cfe9cab10acb10111590db1">centre_text</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSGUI.html#ae2fcb1311d31488701521e1ab2f11e68">text_out_file</a>, <span class="keyword">new</span> TGLayoutHints( kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2 ) );</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    </div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="comment">//----------------------//</span></div>
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="comment">// Create check buttons //</span></div>
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="comment">//----------------------//</span></div>
@@ -326,7 +326,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    <a class="code hl_variable" href="classISSGUI.html#a12df8051a8c7cb9f6bf84f27552f4093">but_sel</a>-&gt;SetWrapLength( -1 );</div>
 <div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    <a class="code hl_variable" href="classISSGUI.html#a12df8051a8c7cb9f6bf84f27552f4093">but_sel</a>-&gt;Resize( 65, 46 );</div>
 <div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <a class="code hl_variable" href="classISSGUI.html#adab70fb1d81ef02ec864d501c23a7276">fbut_frame</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSGUI.html#a12df8051a8c7cb9f6bf84f27552f4093">but_sel</a>, <span class="keyword">new</span> TGLayoutHints( kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2 ) );</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    </div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
 <div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    <span class="comment">// Add files</span></div>
 <div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <a class="code hl_variable" href="classISSGUI.html#a965ad563d43e480096bbdf1adad56a96">but_add</a> = <span class="keyword">new</span> TGTextButton( <a class="code hl_variable" href="classISSGUI.html#adab70fb1d81ef02ec864d501c23a7276">fbut_frame</a>, <span class="stringliteral">&quot;Add&quot;</span>, -1, TGTextButton::GetDefaultGC()(),</div>
 <div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>                               TGTextButton::GetDefaultFontStruct(), kRaisedFrame );</div>
@@ -335,7 +335,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <a class="code hl_variable" href="classISSGUI.html#a965ad563d43e480096bbdf1adad56a96">but_add</a>-&gt;SetWrapLength( -1 );</div>
 <div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <a class="code hl_variable" href="classISSGUI.html#a965ad563d43e480096bbdf1adad56a96">but_add</a>-&gt;Resize( 65, 46 );</div>
 <div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <a class="code hl_variable" href="classISSGUI.html#adab70fb1d81ef02ec864d501c23a7276">fbut_frame</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSGUI.html#a965ad563d43e480096bbdf1adad56a96">but_add</a>, <span class="keyword">new</span> TGLayoutHints( kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2 ) );</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    </div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
 <div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    <span class="comment">// Remove files</span></div>
 <div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <a class="code hl_variable" href="classISSGUI.html#af4f9e80afadfaf12870a103399ee4484">but_del</a> = <span class="keyword">new</span> TGTextButton( <a class="code hl_variable" href="classISSGUI.html#adab70fb1d81ef02ec864d501c23a7276">fbut_frame</a>, <span class="stringliteral">&quot;Remove&quot;</span>, -1, TGTextButton::GetDefaultGC()(),</div>
 <div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>                               TGTextButton::GetDefaultFontStruct(), kRaisedFrame );</div>
@@ -392,7 +392,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    <a class="code hl_variable" href="classISSGUI.html#ada165a1e6ffcd3bdb84f60328e86315f">but_sort</a>-&gt;SetBackgroundColor( TColor::Number2Pixel( kGreen+1 ) );</div>
 <div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    <a class="code hl_variable" href="classISSGUI.html#aefde5a5405ce485a2668621b1814ad01">centre_go</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSGUI.html#ada165a1e6ffcd3bdb84f60328e86315f">but_sort</a>, <span class="keyword">new</span> TGLayoutHints( kLHintsRight | kLHintsExpandX ) );</div>
 <div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span> </div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    </div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span> </div>
 <div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    <span class="comment">//---------------//</span></div>
 <div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    <span class="comment">// Progress bars //</span></div>
 <div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    <span class="comment">//---------------//</span></div>
@@ -420,24 +420,24 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span> </div>
 <div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    <span class="comment">// Set a name to the main frame</span></div>
 <div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    <a class="code hl_variable" href="classISSGUI.html#a7cd459d2ab7eb73950b496daba77f3f2">main_frame</a>-&gt;SetWindowName( <span class="stringliteral">&quot;iss_sort&quot;</span> );</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>    </div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span> </div>
 <div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    <span class="comment">// Map all sub windows</span></div>
 <div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>    <a class="code hl_variable" href="classISSGUI.html#a7cd459d2ab7eb73950b496daba77f3f2">main_frame</a>-&gt;MapSubwindows();</div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    </div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span> </div>
 <div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>    <span class="comment">// Initialize the layout algorithm via Resize()</span></div>
 <div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>    <a class="code hl_variable" href="classISSGUI.html#a7cd459d2ab7eb73950b496daba77f3f2">main_frame</a>-&gt;Resize( <a class="code hl_variable" href="classISSGUI.html#a7cd459d2ab7eb73950b496daba77f3f2">main_frame</a>-&gt;GetDefaultSize() );</div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>    </div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span> </div>
 <div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>    <span class="comment">// Map windows</span></div>
 <div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    <a class="code hl_variable" href="classISSGUI.html#a7cd459d2ab7eb73950b496daba77f3f2">main_frame</a>-&gt;MapWindow();</div>
 <div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>    <span class="comment">//main_frame-&gt;Print();</span></div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>    </div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>    </div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span> </div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span> </div>
 <div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>    <span class="comment">//----------//</span></div>
 <div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>    <span class="comment">// Defaults //</span></div>
 <div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>    <span class="comment">//----------//</span></div>
 <div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>    <a class="code hl_variable" href="classISSGUI.html#ad9bcd037bc995921c3c5f7c2a383fdb8">text_add_file</a>-&gt;SetText( <span class="stringliteral">&quot;R1_0&quot;</span> );</div>
 <div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span> </div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>    </div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span> </div>
 <div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>    <span class="comment">//----------------//</span></div>
 <div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>    <span class="comment">// Button presses //</span></div>
 <div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>    <span class="comment">//----------------//</span></div>
@@ -453,17 +453,17 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>    <a class="code hl_variable" href="classISSGUI.html#a5dd330fd574b4ef0d563c40b36638549">but_rea</a>-&gt;Connect( <span class="stringliteral">&quot;Clicked()&quot;</span>, <span class="stringliteral">&quot;ISSGUI&quot;</span>, <span class="keyword">this</span>, <span class="stringliteral">&quot;on_rea_clicked()&quot;</span> );</div>
 <div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>    <a class="code hl_variable" href="classISSGUI.html#a100708651ef4f5d90f154e4a5f392d68">but_out</a>-&gt;Connect( <span class="stringliteral">&quot;Clicked()&quot;</span>, <span class="stringliteral">&quot;ISSGUI&quot;</span>, <span class="keyword">this</span>, <span class="stringliteral">&quot;on_out_clicked()&quot;</span> );</div>
 <div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span> </div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>    </div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span> </div>
 <div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>    <span class="comment">//clean up</span></div>
 <div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>    <a class="code hl_variable" href="classISSGUI.html#ab8bbb3e5641668f279aa4e0222e55641">filelist</a>.clear();</div>
 <div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>    <a class="code hl_variable" href="classISSGUI.html#ae9ee2798bdeba594db71f5b2c84739d8">filestatus</a>.clear();</div>
-<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>    </div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span> </div>
 <div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>}</div>
 </div>
 <div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span> </div>
 <div class="foldopen" id="foldopen00367" data-start="{" data-end="}">
 <div class="line"><a id="l00367" name="l00367"></a><span class="lineno"><a class="line" href="classISSGUI.html#a7bb42047734b724febebfe0680c67c99">  367</a></span><a class="code hl_function" href="classISSGUI.html#a7bb42047734b724febebfe0680c67c99">ISSGUI::~ISSGUI</a>() {</div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    </div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span> </div>
 <div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>    <span class="comment">// Clean up main frame...</span></div>
 <div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>    <a class="code hl_variable" href="classISSGUI.html#a7cd459d2ab7eb73950b496daba77f3f2">main_frame</a>-&gt;Cleanup();</div>
 <div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>    <span class="keyword">delete</span> <a class="code hl_variable" href="classISSGUI.html#a7cd459d2ab7eb73950b496daba77f3f2">main_frame</a>;</div>
@@ -473,18 +473,18 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span> </div>
 <div class="foldopen" id="foldopen00375" data-start="{" data-end="}">
 <div class="line"><a id="l00375" name="l00375"></a><span class="lineno"><a class="line" href="classISSGUI.html#a68ab16e7b09536fe3ab8e5ac3b0913cc">  375</a></span>TString <a class="code hl_function" href="classISSGUI.html#a68ab16e7b09536fe3ab8e5ac3b0913cc">ISSGUI::get_filename</a>() {</div>
-<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>    </div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span> </div>
 <div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>    <span class="comment">// Configure file dialog</span></div>
 <div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>    TGFileInfo fi;</div>
 <div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    fi.SetMultipleSelection( <span class="keyword">false</span> );</div>
 <div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>    TString dir(<span class="stringliteral">&quot;.&quot;</span>);</div>
 <div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>    fi.fIniDir = StrDup(dir);</div>
-<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>    </div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span> </div>
 <div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>    <span class="comment">// Open a file dialog</span></div>
 <div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>    <span class="keyword">new</span> TGFileDialog( gClient-&gt;GetRoot(), <a class="code hl_variable" href="classISSGUI.html#a7cd459d2ab7eb73950b496daba77f3f2">main_frame</a>, kFDOpen, &amp;fi );</div>
-<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>    </div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span> </div>
 <div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>    <span class="keywordflow">return</span> fi.fFilename;</div>
-<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>    </div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span> </div>
 <div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>}</div>
 </div>
 <div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span> </div>
@@ -576,7 +576,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00468" name="l00468"></a><span class="lineno">  468</span>    fSetup-&gt;SetValue( <span class="stringliteral">&quot;source&quot;</span>, <a class="code hl_variable" href="classISSGUI.html#a85fa0a2ce238bf57445156ea5996a53e">check_source</a>-&gt;IsOn() );</div>
 <div class="line"><a id="l00469" name="l00469"></a><span class="lineno">  469</span>    fSetup-&gt;SetValue( <span class="stringliteral">&quot;force&quot;</span>, <a class="code hl_variable" href="classISSGUI.html#a559a01bc5b4de06215c52fbaec0bf95f">check_force</a>-&gt;IsOn() );</div>
 <div class="line"><a id="l00470" name="l00470"></a><span class="lineno">  470</span>    fSetup-&gt;SetValue( <span class="stringliteral">&quot;events&quot;</span>, <a class="code hl_variable" href="classISSGUI.html#a4bc9bfe4e8316c42915793cd99caeba7">check_event</a>-&gt;IsOn() );</div>
-<div class="line"><a id="l00471" name="l00471"></a><span class="lineno">  471</span>    </div>
+<div class="line"><a id="l00471" name="l00471"></a><span class="lineno">  471</span> </div>
 <div class="line"><a id="l00472" name="l00472"></a><span class="lineno">  472</span>    fSetup-&gt;SetValue( <span class="stringliteral">&quot;settings&quot;</span>, <a class="code hl_variable" href="classISSGUI.html#a94ab579da0e6e79880f8a4076cfb3628">text_set_file</a>-&gt;GetText() );</div>
 <div class="line"><a id="l00473" name="l00473"></a><span class="lineno">  473</span>    fSetup-&gt;SetValue( <span class="stringliteral">&quot;calibration&quot;</span>, <a class="code hl_variable" href="classISSGUI.html#aa1a0a528267eb1035833a732521377d5">text_cal_file</a>-&gt;GetText() );</div>
 <div class="line"><a id="l00474" name="l00474"></a><span class="lineno">  474</span>    fSetup-&gt;SetValue( <span class="stringliteral">&quot;reaction&quot;</span>, <a class="code hl_variable" href="classISSGUI.html#a258e50e7b4796f64e5ac2c5e907881ff">text_rea_file</a>-&gt;GetText() );</div>
@@ -630,7 +630,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span> </div>
 <div class="foldopen" id="foldopen00520" data-start="{" data-end="}">
 <div class="line"><a id="l00520" name="l00520"></a><span class="lineno"><a class="line" href="classISSGUI.html#a5bb1e45c6676bf9c3fab95d003ceb186">  520</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSGUI.html#a5bb1e45c6676bf9c3fab95d003ceb186">ISSGUI::gui_convert</a>(){</div>
-<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span>    </div>
+<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span> </div>
 <div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>    <span class="comment">//------------------------//</span></div>
 <div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span>    <span class="comment">// Run conversion to ROOT //</span></div>
 <div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span>    <span class="comment">//------------------------//</span></div>
@@ -645,7 +645,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span>    std::ifstream ftest;</div>
 <div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span>    TString name_input_file;</div>
 <div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>    TString name_output_file;</div>
-<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span>    </div>
+<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span> </div>
 <div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>    <span class="comment">// Check each file</span></div>
 <div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>    <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="classISSGUI.html#ab8bbb3e5641668f279aa4e0222e55641">filelist</a>.size(); i++ ){</div>
 <div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span> </div>
@@ -654,40 +654,40 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>        <span class="keywordflow">else</span> name_output_file = <a class="code hl_variable" href="classISSGUI.html#ab8bbb3e5641668f279aa4e0222e55641">filelist</a>.at(i) + <span class="stringliteral">&quot;.root&quot;</span>;</div>
 <div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span> </div>
 <div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>        <a class="code hl_variable" href="classISSGUI.html#ac1fc02856af087e23ae05fd82bdefda7">force_convert</a>.push_back( <span class="keyword">false</span> );</div>
-<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>        </div>
+<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span> </div>
 <div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>        <span class="comment">// Skip the file if it&#39;s deleted</span></div>
 <div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span>        <span class="keywordflow">if</span>( !<a class="code hl_variable" href="classISSGUI.html#ae9ee2798bdeba594db71f5b2c84739d8">filestatus</a>.at(i) ) <span class="keywordflow">continue</span>;</div>
 <div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span> </div>
 <div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>        <span class="comment">// If input doesn&#39;t exist, skip it</span></div>
 <div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>        ftest.open( name_input_file.Data() );</div>
 <div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>        <span class="keywordflow">if</span>( !ftest.is_open() ) {</div>
-<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span>            </div>
+<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span> </div>
 <div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>            std::cerr &lt;&lt; name_input_file &lt;&lt; <span class="stringliteral">&quot; does not exist&quot;</span> &lt;&lt; std::endl;</div>
 <div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span>            <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>            </div>
+<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span> </div>
 <div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>        }</div>
 <div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>        <span class="keywordflow">else</span> ftest.close();</div>
-<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>        </div>
+<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span> </div>
 <div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>        <span class="comment">// If output doesn&#39;t exist, we have to convert it anyway</span></div>
 <div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>        <span class="comment">// The convert flag will force it to be converted</span></div>
 <div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span>        ftest.open( name_output_file );</div>
 <div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>        <span class="keywordflow">if</span>( !ftest.is_open() ) <a class="code hl_variable" href="classISSGUI.html#ac1fc02856af087e23ae05fd82bdefda7">force_convert</a>.at(i) = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>        <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span>            </div>
+<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span> </div>
 <div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>            ftest.close();</div>
 <div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>            rtest = <span class="keyword">new</span> TFile( name_output_file );</div>
 <div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>            <span class="keywordflow">if</span>( rtest-&gt;IsZombie() ) <a class="code hl_variable" href="classISSGUI.html#ac1fc02856af087e23ae05fd82bdefda7">force_convert</a>.at(i) = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>            <span class="keywordflow">if</span>( !<a class="code hl_variable" href="classISSGUI.html#ac2d95eb0b5c057ac7d2d0faa6ea4baeb">flag_convert</a> &amp;&amp; !<a class="code hl_variable" href="classISSGUI.html#ac1fc02856af087e23ae05fd82bdefda7">force_convert</a>.at(i) )</div>
 <div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>                std::cout &lt;&lt; name_output_file &lt;&lt; <span class="stringliteral">&quot; already converted&quot;</span> &lt;&lt; std::endl;</div>
 <div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span>            rtest-&gt;Close();</div>
-<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>            </div>
+<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span> </div>
 <div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>        }</div>
 <div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span> </div>
 <div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>        <span class="keywordflow">if</span>( <a class="code hl_variable" href="classISSGUI.html#ac2d95eb0b5c057ac7d2d0faa6ea4baeb">flag_convert</a> || <a class="code hl_variable" href="classISSGUI.html#ac1fc02856af087e23ae05fd82bdefda7">force_convert</a>.at(i) ) {</div>
-<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>            </div>
+<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span> </div>
 <div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span>            std::cout &lt;&lt; name_input_file &lt;&lt; <span class="stringliteral">&quot; --&gt; &quot;</span>;</div>
 <div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span>            std::cout &lt;&lt; name_output_file &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span>            </div>
+<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span> </div>
 <div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span>            prog_format  = <span class="stringliteral">&quot;Converting &quot;</span>;</div>
 <div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>            prog_format += name_input_file( name_input_file.Last(<span class="charliteral">&#39;/&#39;</span>) + 1,</div>
 <div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span>                    name_input_file.Length() - name_input_file.Last(<span class="charliteral">&#39;/&#39;</span>) ).Data();</div>
@@ -713,9 +713,9 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>                <a class="code hl_variable" href="classISSGUI.html#ae438d0ec1c38ae27ce13801e1822142b">prog_sort</a>-&gt;ShowPosition( <span class="keyword">true</span>, <span class="keyword">false</span>, prog_format.data() );</div>
 <div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>                conv.<a class="code hl_function" href="classISSConverter.html#a60b1bcc21cc1eee15a0e93078653d6da">AddProgressBar</a>( <a class="code hl_variable" href="classISSGUI.html#ae438d0ec1c38ae27ce13801e1822142b">prog_sort</a> );</div>
 <div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>                conv.<a class="code hl_function" href="classISSConverter.html#a4107a50443bd2929af73a924296c678c">SortTree</a>();</div>
-<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>                </div>
+<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span> </div>
 <div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>            }</div>
-<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span>            </div>
+<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span> </div>
 <div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span>            conv.<a class="code hl_function" href="classISSConverter.html#a7082018e292291dd2f2c6d8aa4246866">CloseOutput</a>();</div>
 <div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span> </div>
 <div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span>            prog_format  = <span class="stringliteral">&quot;Time ordering complete&quot;</span>;</div>
@@ -725,17 +725,17 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span> </div>
 <div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span>        <span class="comment">// Update everything</span></div>
 <div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>        gSystem-&gt;ProcessEvents();</div>
-<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>        </div>
+<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span> </div>
 <div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span>    }</div>
-<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span>    </div>
+<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span> </div>
 <div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span>    </div>
+<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span> </div>
 <div class="line"><a id="l00621" name="l00621"></a><span class="lineno">  621</span>}</div>
 </div>
 <div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span> </div>
 <div class="foldopen" id="foldopen00623" data-start="{" data-end="}">
 <div class="line"><a id="l00623" name="l00623"></a><span class="lineno"><a class="line" href="classISSGUI.html#ad18d44de981a0bd2eb7d360024375675">  623</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSGUI.html#ad18d44de981a0bd2eb7d360024375675">ISSGUI::gui_build</a>(){</div>
-<div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span>    </div>
+<div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span> </div>
 <div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>    <span class="comment">//-----------------------//</span></div>
 <div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span>    <span class="comment">// Physics event builder //</span></div>
 <div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span>    <span class="comment">//-----------------------//</span></div>
@@ -752,7 +752,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00638" name="l00638"></a><span class="lineno">  638</span>    std::ifstream ftest;</div>
 <div class="line"><a id="l00639" name="l00639"></a><span class="lineno">  639</span>    TString name_input_file;</div>
 <div class="line"><a id="l00640" name="l00640"></a><span class="lineno">  640</span>    TString name_output_file;</div>
-<div class="line"><a id="l00641" name="l00641"></a><span class="lineno">  641</span>    </div>
+<div class="line"><a id="l00641" name="l00641"></a><span class="lineno">  641</span> </div>
 <div class="line"><a id="l00642" name="l00642"></a><span class="lineno">  642</span>    <span class="comment">// Update calibration file if given</span></div>
 <div class="line"><a id="l00643" name="l00643"></a><span class="lineno">  643</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="classISSGUI.html#a3598e0bc1e6aea691033ebfc73d57072">mycal</a>-&gt;InputFile() != <span class="stringliteral">&quot;dummy&quot;</span> )</div>
 <div class="line"><a id="l00644" name="l00644"></a><span class="lineno">  644</span>        eb.<a class="code hl_function" href="classISSEventBuilder.html#a84304ee1150316403e1cd5cf569488db">AddCalibration</a>( <a class="code hl_variable" href="classISSGUI.html#a3598e0bc1e6aea691033ebfc73d57072">mycal</a> );</div>
@@ -818,13 +818,13 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00704" name="l00704"></a><span class="lineno">  704</span> </div>
 <div class="line"><a id="l00705" name="l00705"></a><span class="lineno">  705</span>    }</div>
 <div class="line"><a id="l00706" name="l00706"></a><span class="lineno">  706</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00707" name="l00707"></a><span class="lineno">  707</span>    </div>
+<div class="line"><a id="l00707" name="l00707"></a><span class="lineno">  707</span> </div>
 <div class="line"><a id="l00708" name="l00708"></a><span class="lineno">  708</span>}</div>
 </div>
 <div class="line"><a id="l00709" name="l00709"></a><span class="lineno">  709</span> </div>
 <div class="foldopen" id="foldopen00710" data-start="{" data-end="}">
 <div class="line"><a id="l00710" name="l00710"></a><span class="lineno"><a class="line" href="classISSGUI.html#a3ac1ae308b74c6876b321d0bad92215a">  710</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSGUI.html#a3ac1ae308b74c6876b321d0bad92215a">ISSGUI::gui_hist</a>(){</div>
-<div class="line"><a id="l00711" name="l00711"></a><span class="lineno">  711</span>    </div>
+<div class="line"><a id="l00711" name="l00711"></a><span class="lineno">  711</span> </div>
 <div class="line"><a id="l00712" name="l00712"></a><span class="lineno">  712</span>    <span class="comment">//------------------------------//</span></div>
 <div class="line"><a id="l00713" name="l00713"></a><span class="lineno">  713</span>    <span class="comment">// Finally make some histograms //</span></div>
 <div class="line"><a id="l00714" name="l00714"></a><span class="lineno">  714</span>    <span class="comment">//------------------------------//</span></div>
@@ -839,10 +839,10 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00723" name="l00723"></a><span class="lineno">  723</span>    std::string prog_format;</div>
 <div class="line"><a id="l00724" name="l00724"></a><span class="lineno">  724</span>    TString name_input_file;</div>
 <div class="line"><a id="l00725" name="l00725"></a><span class="lineno">  725</span>    TString name_output_file;</div>
-<div class="line"><a id="l00726" name="l00726"></a><span class="lineno">  726</span>    </div>
+<div class="line"><a id="l00726" name="l00726"></a><span class="lineno">  726</span> </div>
 <div class="line"><a id="l00727" name="l00727"></a><span class="lineno">  727</span>    prog_format = <span class="stringliteral">&quot;Histogramming: %.0f%%&quot;</span>;</div>
 <div class="line"><a id="l00728" name="l00728"></a><span class="lineno">  728</span>    <a class="code hl_variable" href="classISSGUI.html#a82182d3f2a97021b0401c71dd56ce398">prog_hist</a>-&gt;ShowPosition( <span class="keyword">true</span>, <span class="keyword">false</span>, prog_format.data() );</div>
-<div class="line"><a id="l00729" name="l00729"></a><span class="lineno">  729</span>    </div>
+<div class="line"><a id="l00729" name="l00729"></a><span class="lineno">  729</span> </div>
 <div class="line"><a id="l00730" name="l00730"></a><span class="lineno">  730</span>    name_output_file = <a class="code hl_variable" href="classISSGUI.html#ae2fcb1311d31488701521e1ab2f11e68">text_out_file</a>-&gt;GetText();</div>
 <div class="line"><a id="l00731" name="l00731"></a><span class="lineno">  731</span>    <span class="keywordflow">if</span>( name_output_file == <span class="stringliteral">&quot;&quot;</span> ) name_output_file = <span class="stringliteral">&quot;output.root&quot;</span>;</div>
 <div class="line"><a id="l00732" name="l00732"></a><span class="lineno">  732</span>    hist.<a class="code hl_function" href="classISSHistogrammer.html#a086cf6e3099f9a7c0cf7f359fe6d1c92">SetOutput</a>( name_output_file.Data() );</div>
@@ -853,7 +853,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00737" name="l00737"></a><span class="lineno">  737</span> </div>
 <div class="line"><a id="l00738" name="l00738"></a><span class="lineno">  738</span>        <span class="comment">// Skip the file if it&#39;s deleted</span></div>
 <div class="line"><a id="l00739" name="l00739"></a><span class="lineno">  739</span>        <span class="keywordflow">if</span>( !<a class="code hl_variable" href="classISSGUI.html#ae9ee2798bdeba594db71f5b2c84739d8">filestatus</a>.at(i) ) <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00740" name="l00740"></a><span class="lineno">  740</span>        </div>
+<div class="line"><a id="l00740" name="l00740"></a><span class="lineno">  740</span> </div>
 <div class="line"><a id="l00741" name="l00741"></a><span class="lineno">  741</span>        name_input_file = <a class="code hl_variable" href="classISSGUI.html#ab8bbb3e5641668f279aa4e0222e55641">filelist</a>.at(i) + <span class="stringliteral">&quot;_events.root&quot;</span>;</div>
 <div class="line"><a id="l00742" name="l00742"></a><span class="lineno">  742</span>        name_hist_files.push_back( name_input_file.Data() );</div>
 <div class="line"><a id="l00743" name="l00743"></a><span class="lineno">  743</span> </div>
@@ -862,15 +862,15 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00746" name="l00746"></a><span class="lineno">  746</span>    hist.<a class="code hl_function" href="classISSHistogrammer.html#a0fdb1a625faf3edc6158491331158b23">SetInputFile</a>( name_hist_files );</div>
 <div class="line"><a id="l00747" name="l00747"></a><span class="lineno">  747</span>    hist.<a class="code hl_function" href="classISSHistogrammer.html#ab2d9b4029d6510a1cfb7385897d20b1b">FillHists</a>();</div>
 <div class="line"><a id="l00748" name="l00748"></a><span class="lineno">  748</span>    hist.<a class="code hl_function" href="classISSHistogrammer.html#ab036a59de1676e1c5c26655a72d823c3">CloseOutput</a>();</div>
-<div class="line"><a id="l00749" name="l00749"></a><span class="lineno">  749</span>    </div>
+<div class="line"><a id="l00749" name="l00749"></a><span class="lineno">  749</span> </div>
 <div class="line"><a id="l00750" name="l00750"></a><span class="lineno">  750</span>    prog_format  = <span class="stringliteral">&quot;Histogramming complete&quot;</span>;</div>
 <div class="line"><a id="l00751" name="l00751"></a><span class="lineno">  751</span>    <a class="code hl_variable" href="classISSGUI.html#a82182d3f2a97021b0401c71dd56ce398">prog_hist</a>-&gt;ShowPosition( <span class="keyword">true</span>, <span class="keyword">false</span>, prog_format.data() );</div>
 <div class="line"><a id="l00752" name="l00752"></a><span class="lineno">  752</span> </div>
-<div class="line"><a id="l00753" name="l00753"></a><span class="lineno">  753</span>    </div>
+<div class="line"><a id="l00753" name="l00753"></a><span class="lineno">  753</span> </div>
 <div class="line"><a id="l00754" name="l00754"></a><span class="lineno">  754</span>    <span class="comment">// Update everything</span></div>
 <div class="line"><a id="l00755" name="l00755"></a><span class="lineno">  755</span>    gSystem-&gt;ProcessEvents();</div>
 <div class="line"><a id="l00756" name="l00756"></a><span class="lineno">  756</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span>    </div>
+<div class="line"><a id="l00757" name="l00757"></a><span class="lineno">  757</span> </div>
 <div class="line"><a id="l00758" name="l00758"></a><span class="lineno">  758</span>}</div>
 </div>
 <div class="line"><a id="l00759" name="l00759"></a><span class="lineno">  759</span> </div>
@@ -908,13 +908,13 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00790" name="l00790"></a><span class="lineno">  790</span> </div>
 <div class="line"><a id="l00791" name="l00791"></a><span class="lineno">  791</span>    <span class="comment">// Check each file</span></div>
 <div class="line"><a id="l00792" name="l00792"></a><span class="lineno">  792</span>    <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="classISSGUI.html#ab8bbb3e5641668f279aa4e0222e55641">filelist</a>.size(); i++ ){</div>
-<div class="line"><a id="l00793" name="l00793"></a><span class="lineno">  793</span>            </div>
+<div class="line"><a id="l00793" name="l00793"></a><span class="lineno">  793</span> </div>
 <div class="line"><a id="l00794" name="l00794"></a><span class="lineno">  794</span>        name_input_file = <a class="code hl_variable" href="classISSGUI.html#ab8bbb3e5641668f279aa4e0222e55641">filelist</a>.at(i) + <span class="stringliteral">&quot;_source.root&quot;</span>;</div>
 <div class="line"><a id="l00795" name="l00795"></a><span class="lineno">  795</span> </div>
 <div class="line"><a id="l00796" name="l00796"></a><span class="lineno">  796</span>        <span class="comment">// Add to list if the converted file exists</span></div>
 <div class="line"><a id="l00797" name="l00797"></a><span class="lineno">  797</span>        ftest.open( name_input_file.data() );</div>
 <div class="line"><a id="l00798" name="l00798"></a><span class="lineno">  798</span>        <span class="keywordflow">if</span>( ftest.is_open() ) {</div>
-<div class="line"><a id="l00799" name="l00799"></a><span class="lineno">  799</span>        </div>
+<div class="line"><a id="l00799" name="l00799"></a><span class="lineno">  799</span> </div>
 <div class="line"><a id="l00800" name="l00800"></a><span class="lineno">  800</span>            ftest.close();</div>
 <div class="line"><a id="l00801" name="l00801"></a><span class="lineno">  801</span>            rtest = <span class="keyword">new</span> TFile( name_input_file.data() );</div>
 <div class="line"><a id="l00802" name="l00802"></a><span class="lineno">  802</span>            <span class="keywordflow">if</span>( !rtest-&gt;IsZombie() ) {</div>
@@ -925,27 +925,27 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00807" name="l00807"></a><span class="lineno">  807</span>                std::cout &lt;&lt; <span class="stringliteral">&quot;, it&#39;s broken&quot;</span> &lt;&lt; std::endl;</div>
 <div class="line"><a id="l00808" name="l00808"></a><span class="lineno">  808</span>            }</div>
 <div class="line"><a id="l00809" name="l00809"></a><span class="lineno">  809</span>            rtest-&gt;Close();</div>
-<div class="line"><a id="l00810" name="l00810"></a><span class="lineno">  810</span>            </div>
+<div class="line"><a id="l00810" name="l00810"></a><span class="lineno">  810</span> </div>
 <div class="line"><a id="l00811" name="l00811"></a><span class="lineno">  811</span>        }</div>
-<div class="line"><a id="l00812" name="l00812"></a><span class="lineno">  812</span>        </div>
+<div class="line"><a id="l00812" name="l00812"></a><span class="lineno">  812</span> </div>
 <div class="line"><a id="l00813" name="l00813"></a><span class="lineno">  813</span>        <span class="keywordflow">else</span> {</div>
 <div class="line"><a id="l00814" name="l00814"></a><span class="lineno">  814</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Skipping &quot;</span> &lt;&lt; name_input_file;</div>
 <div class="line"><a id="l00815" name="l00815"></a><span class="lineno">  815</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;, file does not exist&quot;</span> &lt;&lt; std::endl;</div>
 <div class="line"><a id="l00816" name="l00816"></a><span class="lineno">  816</span>        }</div>
 <div class="line"><a id="l00817" name="l00817"></a><span class="lineno">  817</span> </div>
 <div class="line"><a id="l00818" name="l00818"></a><span class="lineno">  818</span>    }</div>
-<div class="line"><a id="l00819" name="l00819"></a><span class="lineno">  819</span>    </div>
+<div class="line"><a id="l00819" name="l00819"></a><span class="lineno">  819</span> </div>
 <div class="line"><a id="l00820" name="l00820"></a><span class="lineno">  820</span>    <span class="comment">// Perform the hadd (doesn&#39;t work on Windows)</span></div>
 <div class="line"><a id="l00821" name="l00821"></a><span class="lineno">  821</span>    std::string cmd = <span class="stringliteral">&quot;hadd -k -T -v 0 -f &quot;</span>;</div>
 <div class="line"><a id="l00822" name="l00822"></a><span class="lineno">  822</span>    cmd += name_output_file;</div>
 <div class="line"><a id="l00823" name="l00823"></a><span class="lineno">  823</span>    cmd += hadd_file_list;</div>
 <div class="line"><a id="l00824" name="l00824"></a><span class="lineno">  824</span>    gSystem-&gt;Exec( cmd.data() );</div>
-<div class="line"><a id="l00825" name="l00825"></a><span class="lineno">  825</span>    </div>
+<div class="line"><a id="l00825" name="l00825"></a><span class="lineno">  825</span> </div>
 <div class="line"><a id="l00826" name="l00826"></a><span class="lineno">  826</span>    <span class="comment">// Give this file to the autocalibrator</span></div>
 <div class="line"><a id="l00827" name="l00827"></a><span class="lineno">  827</span>    <span class="keywordflow">if</span>( autocal.<a class="code hl_function" href="classISSAutoCalibrator.html#a54be08df86f43f0735026e6c0a0cfac5">SetOutputFile</a>( name_output_file ) ) <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l00828" name="l00828"></a><span class="lineno">  828</span>    autocal.<a class="code hl_function" href="classISSAutoCalibrator.html#a5a5073d92318d1da67c2e8ee1450fd5f">DoFits</a>();</div>
 <div class="line"><a id="l00829" name="l00829"></a><span class="lineno">  829</span>    autocal.<a class="code hl_function" href="classISSAutoCalibrator.html#a0bc3ffd378758ee9a4c3dabc73572dc5">SaveCalFile</a>( name_results_file );</div>
-<div class="line"><a id="l00830" name="l00830"></a><span class="lineno">  830</span>    </div>
+<div class="line"><a id="l00830" name="l00830"></a><span class="lineno">  830</span> </div>
 <div class="line"><a id="l00831" name="l00831"></a><span class="lineno">  831</span>    prog_format  = <span class="stringliteral">&quot;AutoCalibrator complete&quot;</span>;</div>
 <div class="line"><a id="l00832" name="l00832"></a><span class="lineno">  832</span>    <a class="code hl_variable" href="classISSGUI.html#ae438d0ec1c38ae27ce13801e1822142b">prog_sort</a>-&gt;ShowPosition( <span class="keyword">true</span>, <span class="keyword">false</span>, prog_format.data() );</div>
 <div class="line"><a id="l00833" name="l00833"></a><span class="lineno">  833</span> </div>
@@ -980,7 +980,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00860" name="l00860"></a><span class="lineno">  860</span>    <a class="code hl_variable" href="classISSGUI.html#a0e3d0d15d56e61ff22584431434e60fd">myset</a> = std::make_shared&lt;ISSSettings&gt;( <a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a> );</div>
 <div class="line"><a id="l00861" name="l00861"></a><span class="lineno">  861</span>    <a class="code hl_variable" href="classISSGUI.html#a3598e0bc1e6aea691033ebfc73d57072">mycal</a> = std::make_shared&lt;ISSCalibration&gt;( <a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a>, <a class="code hl_variable" href="classISSGUI.html#a0e3d0d15d56e61ff22584431434e60fd">myset</a> );</div>
 <div class="line"><a id="l00862" name="l00862"></a><span class="lineno">  862</span>    <a class="code hl_variable" href="classISSGUI.html#a9319b10fedaf844fa07db5e98652f946">myrea</a> = std::make_shared&lt;ISSReaction&gt;( name_rea_file, <a class="code hl_variable" href="classISSGUI.html#a0e3d0d15d56e61ff22584431434e60fd">myset</a>, <a class="code hl_variable" href="classISSGUI.html#a8640a0ede29f51a5be85da39a47223be">flag_source</a> );</div>
-<div class="line"><a id="l00863" name="l00863"></a><span class="lineno">  863</span>    </div>
+<div class="line"><a id="l00863" name="l00863"></a><span class="lineno">  863</span> </div>
 <div class="line"><a id="l00864" name="l00864"></a><span class="lineno">  864</span>    <span class="comment">//------------------//</span></div>
 <div class="line"><a id="l00865" name="l00865"></a><span class="lineno">  865</span>    <span class="comment">// Run the analysis //</span></div>
 <div class="line"><a id="l00866" name="l00866"></a><span class="lineno">  866</span>    <span class="comment">//------------------//</span></div>
@@ -993,44 +993,44 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00873" name="l00873"></a><span class="lineno">  873</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>( <a class="code hl_variable" href="classISSGUI.html#a7fce60df4904295feb4ec7fe9a1b5c7d">flag_autocal</a> )</div>
 <div class="line"><a id="l00874" name="l00874"></a><span class="lineno">  874</span>        <a class="code hl_function" href="classISSGUI.html#a1c46eb6a7239a505be8973d91496e923">gui_autocal</a>();</div>
 <div class="line"><a id="l00875" name="l00875"></a><span class="lineno">  875</span>    std::cout &lt;&lt; <span class="stringliteral">&quot;\n\nFinished!\n&quot;</span>;</div>
-<div class="line"><a id="l00876" name="l00876"></a><span class="lineno">  876</span>    </div>
+<div class="line"><a id="l00876" name="l00876"></a><span class="lineno">  876</span> </div>
 <div class="line"><a id="l00877" name="l00877"></a><span class="lineno">  877</span>}</div>
 </div>
 <div class="line"><a id="l00878" name="l00878"></a><span class="lineno">  878</span> </div>
 <div class="foldopen" id="foldopen00879" data-start="{" data-end="}">
 <div class="line"><a id="l00879" name="l00879"></a><span class="lineno"><a class="line" href="classISSDialog.html#a47d7d2bd411702acd5f59dbc75165df1">  879</a></span><a class="code hl_function" href="classISSDialog.html#a47d7d2bd411702acd5f59dbc75165df1">ISSDialog::ISSDialog</a>( <span class="keyword">const</span> TGWindow *<a class="code hl_variable" href="Reaction_8cc.html#aace2d484b0e3651abd108f04803d316c">p</a>, <span class="keyword">const</span> TGWindow *<a class="code hl_function" href="iss__sort_8cc.html#a0ddf1224851353fc92bfbff6f499fa97">main</a>, TString msg, <span class="keywordtype">bool</span> &amp;ans ) {</div>
-<div class="line"><a id="l00880" name="l00880"></a><span class="lineno">  880</span>    </div>
+<div class="line"><a id="l00880" name="l00880"></a><span class="lineno">  880</span> </div>
 <div class="line"><a id="l00881" name="l00881"></a><span class="lineno">  881</span>    <span class="comment">// Default answer is false</span></div>
 <div class="line"><a id="l00882" name="l00882"></a><span class="lineno">  882</span>    <a class="code hl_variable" href="classISSDialog.html#a2dec52d7f457c65f610953e3f040a66b">answer</a> = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00883" name="l00883"></a><span class="lineno">  883</span>    </div>
+<div class="line"><a id="l00883" name="l00883"></a><span class="lineno">  883</span> </div>
 <div class="line"><a id="l00884" name="l00884"></a><span class="lineno">  884</span>    <a class="code hl_variable" href="classISSDialog.html#a785d63b4cf0229bed6f330ea1477baa7">fDialog</a> = <span class="keyword">new</span> TGTransientFrame( <a class="code hl_variable" href="Reaction_8cc.html#aace2d484b0e3651abd108f04803d316c">p</a>, <a class="code hl_function" href="iss__sort_8cc.html#a0ddf1224851353fc92bfbff6f499fa97">main</a>, 800, 100, kVerticalFrame );</div>
 <div class="line"><a id="l00885" name="l00885"></a><span class="lineno">  885</span>    <a class="code hl_variable" href="classISSDialog.html#afdb8ade9d1bf419dc1ff4a3bc99d3cf5">frame_button</a> = <span class="keyword">new</span> TGHorizontalFrame( <a class="code hl_variable" href="classISSDialog.html#a785d63b4cf0229bed6f330ea1477baa7">fDialog</a>, 240, 60 );</div>
-<div class="line"><a id="l00886" name="l00886"></a><span class="lineno">  886</span>    </div>
+<div class="line"><a id="l00886" name="l00886"></a><span class="lineno">  886</span> </div>
 <div class="line"><a id="l00887" name="l00887"></a><span class="lineno">  887</span>    <a class="code hl_variable" href="classISSDialog.html#ab75fa059fbc05c8306ef0f5c8c8f5dd8">dialog_msg</a> = <span class="keyword">new</span> TGLabel( <a class="code hl_variable" href="classISSDialog.html#a785d63b4cf0229bed6f330ea1477baa7">fDialog</a>, msg );</div>
 <div class="line"><a id="l00888" name="l00888"></a><span class="lineno">  888</span>    <a class="code hl_variable" href="classISSDialog.html#a785d63b4cf0229bed6f330ea1477baa7">fDialog</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSDialog.html#ab75fa059fbc05c8306ef0f5c8c8f5dd8">dialog_msg</a>, <span class="keyword">new</span> TGLayoutHints( kLHintsTop | kLHintsExpandY, 5, 5, 5, 5) );</div>
-<div class="line"><a id="l00889" name="l00889"></a><span class="lineno">  889</span>    </div>
+<div class="line"><a id="l00889" name="l00889"></a><span class="lineno">  889</span> </div>
 <div class="line"><a id="l00890" name="l00890"></a><span class="lineno">  890</span>    <a class="code hl_variable" href="classISSDialog.html#a7e714a9eeab12d6787f07f1a7374dc29">but_yes</a> = <span class="keyword">new</span> TGTextButton( <a class="code hl_variable" href="classISSDialog.html#afdb8ade9d1bf419dc1ff4a3bc99d3cf5">frame_button</a>, <span class="stringliteral">&quot; &amp;Yes &quot;</span>, 1 );</div>
 <div class="line"><a id="l00891" name="l00891"></a><span class="lineno">  891</span>    <a class="code hl_variable" href="classISSDialog.html#a7e714a9eeab12d6787f07f1a7374dc29">but_yes</a>-&gt;Connect( <span class="stringliteral">&quot;Clicked()&quot;</span>, <span class="stringliteral">&quot;ISSDialog&quot;</span>, <span class="keyword">this</span>, <span class="stringliteral">&quot;SayYes()&quot;</span> );</div>
 <div class="line"><a id="l00892" name="l00892"></a><span class="lineno">  892</span>    <a class="code hl_variable" href="classISSDialog.html#a7e714a9eeab12d6787f07f1a7374dc29">but_yes</a>-&gt;Associate( <a class="code hl_variable" href="classISSDialog.html#a785d63b4cf0229bed6f330ea1477baa7">fDialog</a> );</div>
 <div class="line"><a id="l00893" name="l00893"></a><span class="lineno">  893</span>    <a class="code hl_variable" href="classISSDialog.html#afdb8ade9d1bf419dc1ff4a3bc99d3cf5">frame_button</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSDialog.html#a7e714a9eeab12d6787f07f1a7374dc29">but_yes</a>, <span class="keyword">new</span> TGLayoutHints( kLHintsLeft | kLHintsExpandX, 4, 4, 4, 4 ) );</div>
-<div class="line"><a id="l00894" name="l00894"></a><span class="lineno">  894</span>    </div>
+<div class="line"><a id="l00894" name="l00894"></a><span class="lineno">  894</span> </div>
 <div class="line"><a id="l00895" name="l00895"></a><span class="lineno">  895</span>    <a class="code hl_variable" href="classISSDialog.html#a0f2493843e834bc57260c77dee95400d">but_no</a> = <span class="keyword">new</span> TGTextButton( <a class="code hl_variable" href="classISSDialog.html#afdb8ade9d1bf419dc1ff4a3bc99d3cf5">frame_button</a>, <span class="stringliteral">&quot; &amp;No &quot;</span>, 1 );</div>
 <div class="line"><a id="l00896" name="l00896"></a><span class="lineno">  896</span>    <a class="code hl_variable" href="classISSDialog.html#a0f2493843e834bc57260c77dee95400d">but_no</a>-&gt;Connect( <span class="stringliteral">&quot;Clicked()&quot;</span>, <span class="stringliteral">&quot;ISSDialog&quot;</span>, <span class="keyword">this</span>, <span class="stringliteral">&quot;SayNo()&quot;</span> );</div>
 <div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span>    <a class="code hl_variable" href="classISSDialog.html#a0f2493843e834bc57260c77dee95400d">but_no</a>-&gt;Associate( <a class="code hl_variable" href="classISSDialog.html#a785d63b4cf0229bed6f330ea1477baa7">fDialog</a> );</div>
 <div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span>    <a class="code hl_variable" href="classISSDialog.html#afdb8ade9d1bf419dc1ff4a3bc99d3cf5">frame_button</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSDialog.html#a0f2493843e834bc57260c77dee95400d">but_no</a>, <span class="keyword">new</span> TGLayoutHints( kLHintsLeft | kLHintsExpandX, 4, 4, 4, 4 ) );</div>
-<div class="line"><a id="l00899" name="l00899"></a><span class="lineno">  899</span>    </div>
+<div class="line"><a id="l00899" name="l00899"></a><span class="lineno">  899</span> </div>
 <div class="line"><a id="l00900" name="l00900"></a><span class="lineno">  900</span>    <a class="code hl_variable" href="classISSDialog.html#afdb8ade9d1bf419dc1ff4a3bc99d3cf5">frame_button</a>-&gt;Resize( 100, <a class="code hl_variable" href="classISSDialog.html#a0f2493843e834bc57260c77dee95400d">but_no</a>-&gt;GetDefaultHeight() + 4 );</div>
 <div class="line"><a id="l00901" name="l00901"></a><span class="lineno">  901</span>    <a class="code hl_variable" href="classISSDialog.html#a785d63b4cf0229bed6f330ea1477baa7">fDialog</a>-&gt;AddFrame( <a class="code hl_variable" href="classISSDialog.html#afdb8ade9d1bf419dc1ff4a3bc99d3cf5">frame_button</a>, <span class="keyword">new</span> TGLayoutHints( kLHintsBottom | kLHintsCenterX | kLHintsExpandY, 5, 5, 5, 5 ) );</div>
 <div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span> </div>
 <div class="line"><a id="l00903" name="l00903"></a><span class="lineno">  903</span>    <a class="code hl_variable" href="classISSDialog.html#a785d63b4cf0229bed6f330ea1477baa7">fDialog</a>-&gt;MapSubwindows();</div>
 <div class="line"><a id="l00904" name="l00904"></a><span class="lineno">  904</span>    <a class="code hl_variable" href="classISSDialog.html#a785d63b4cf0229bed6f330ea1477baa7">fDialog</a>-&gt;Resize( <a class="code hl_variable" href="classISSDialog.html#a785d63b4cf0229bed6f330ea1477baa7">fDialog</a>-&gt;GetDefaultSize() );</div>
-<div class="line"><a id="l00905" name="l00905"></a><span class="lineno">  905</span>    </div>
+<div class="line"><a id="l00905" name="l00905"></a><span class="lineno">  905</span> </div>
 <div class="line"><a id="l00906" name="l00906"></a><span class="lineno">  906</span>    <a class="code hl_variable" href="classISSDialog.html#a785d63b4cf0229bed6f330ea1477baa7">fDialog</a>-&gt;MapWindow();</div>
 <div class="line"><a id="l00907" name="l00907"></a><span class="lineno">  907</span> </div>
 <div class="line"><a id="l00908" name="l00908"></a><span class="lineno">  908</span>    gClient-&gt;WaitFor( <a class="code hl_variable" href="classISSDialog.html#a785d63b4cf0229bed6f330ea1477baa7">fDialog</a> );</div>
 <div class="line"><a id="l00909" name="l00909"></a><span class="lineno">  909</span> </div>
 <div class="line"><a id="l00910" name="l00910"></a><span class="lineno">  910</span>    ans = <a class="code hl_variable" href="classISSDialog.html#a2dec52d7f457c65f610953e3f040a66b">answer</a>;</div>
-<div class="line"><a id="l00911" name="l00911"></a><span class="lineno">  911</span>    </div>
+<div class="line"><a id="l00911" name="l00911"></a><span class="lineno">  911</span> </div>
 <div class="line"><a id="l00912" name="l00912"></a><span class="lineno">  912</span>}</div>
 </div>
 <div class="line"><a id="l00913" name="l00913"></a><span class="lineno">  913</span> </div>
@@ -1042,27 +1042,27 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00918" name="l00918"></a><span class="lineno">  918</span>    <span class="keyword">delete</span> <a class="code hl_variable" href="classISSDialog.html#a0f2493843e834bc57260c77dee95400d">but_no</a>;</div>
 <div class="line"><a id="l00919" name="l00919"></a><span class="lineno">  919</span>    <span class="keyword">delete</span> <a class="code hl_variable" href="classISSDialog.html#ab75fa059fbc05c8306ef0f5c8c8f5dd8">dialog_msg</a>;</div>
 <div class="line"><a id="l00920" name="l00920"></a><span class="lineno">  920</span>    <span class="keyword">delete</span> <a class="code hl_variable" href="classISSDialog.html#afdb8ade9d1bf419dc1ff4a3bc99d3cf5">frame_button</a>;</div>
-<div class="line"><a id="l00921" name="l00921"></a><span class="lineno">  921</span>    </div>
+<div class="line"><a id="l00921" name="l00921"></a><span class="lineno">  921</span> </div>
 <div class="line"><a id="l00922" name="l00922"></a><span class="lineno">  922</span>    <span class="keyword">delete</span> <a class="code hl_variable" href="classISSDialog.html#a785d63b4cf0229bed6f330ea1477baa7">fDialog</a>;</div>
-<div class="line"><a id="l00923" name="l00923"></a><span class="lineno">  923</span>    </div>
+<div class="line"><a id="l00923" name="l00923"></a><span class="lineno">  923</span> </div>
 <div class="line"><a id="l00924" name="l00924"></a><span class="lineno">  924</span>}</div>
 </div>
 <div class="line"><a id="l00925" name="l00925"></a><span class="lineno">  925</span> </div>
 <div class="foldopen" id="foldopen00926" data-start="{" data-end="}">
 <div class="line"><a id="l00926" name="l00926"></a><span class="lineno"><a class="line" href="classISSDialog.html#aa71f2e4a9f5346579786fd51e322799a">  926</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSDialog.html#aa71f2e4a9f5346579786fd51e322799a">ISSDialog::SayYes</a>() {</div>
-<div class="line"><a id="l00927" name="l00927"></a><span class="lineno">  927</span>    </div>
+<div class="line"><a id="l00927" name="l00927"></a><span class="lineno">  927</span> </div>
 <div class="line"><a id="l00928" name="l00928"></a><span class="lineno">  928</span>    <a class="code hl_variable" href="classISSDialog.html#a2dec52d7f457c65f610953e3f040a66b">answer</a> = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00929" name="l00929"></a><span class="lineno">  929</span>    <a class="code hl_variable" href="classISSDialog.html#a785d63b4cf0229bed6f330ea1477baa7">fDialog</a>-&gt;SendCloseMessage();</div>
-<div class="line"><a id="l00930" name="l00930"></a><span class="lineno">  930</span>    </div>
+<div class="line"><a id="l00930" name="l00930"></a><span class="lineno">  930</span> </div>
 <div class="line"><a id="l00931" name="l00931"></a><span class="lineno">  931</span>}</div>
 </div>
 <div class="line"><a id="l00932" name="l00932"></a><span class="lineno">  932</span> </div>
 <div class="foldopen" id="foldopen00933" data-start="{" data-end="}">
 <div class="line"><a id="l00933" name="l00933"></a><span class="lineno"><a class="line" href="classISSDialog.html#accee39e2527bf36cf552760cd7c5171f">  933</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSDialog.html#accee39e2527bf36cf552760cd7c5171f">ISSDialog::SayNo</a>() {</div>
-<div class="line"><a id="l00934" name="l00934"></a><span class="lineno">  934</span>    </div>
+<div class="line"><a id="l00934" name="l00934"></a><span class="lineno">  934</span> </div>
 <div class="line"><a id="l00935" name="l00935"></a><span class="lineno">  935</span>    <a class="code hl_variable" href="classISSDialog.html#a2dec52d7f457c65f610953e3f040a66b">answer</a> = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00936" name="l00936"></a><span class="lineno">  936</span>    <a class="code hl_variable" href="classISSDialog.html#a785d63b4cf0229bed6f330ea1477baa7">fDialog</a>-&gt;SendCloseMessage();</div>
-<div class="line"><a id="l00937" name="l00937"></a><span class="lineno">  937</span>    </div>
+<div class="line"><a id="l00937" name="l00937"></a><span class="lineno">  937</span> </div>
 <div class="line"><a id="l00938" name="l00938"></a><span class="lineno">  938</span>}</div>
 </div>
 <div class="line"><a id="l00939" name="l00939"></a><span class="lineno">  939</span> </div>

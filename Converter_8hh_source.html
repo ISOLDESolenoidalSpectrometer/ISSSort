@@ -135,10 +135,10 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classISSConverter.html">   39</a></span><span class="keyword">class </span><a class="code hl_class" href="classISSConverter.html">ISSConverter</a> {</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_function" href="classISSConverter.html#a22f0a2ba05d539fb15aedc583c69dc5f">ISSConverter</a>( std::shared_ptr&lt;ISSSettings&gt; <a class="code hl_variable" href="iss__sort_8cc.html#aef2e709b38e28fdbbfe36870c344b223">myset</a> );</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classISSConverter.html#afcccfc2a96f75ddbde66fd11686217fe">   44</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classISSConverter.html#afcccfc2a96f75ddbde66fd11686217fe">~ISSConverter</a>(){};</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classISSConverter.html#a2e69438b12ac6630015b3a32e761711b">ConvertFile</a>( std::string input_file_name,</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                     <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> start_block = 0,</div>
@@ -167,7 +167,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classISSConverter.html#af031812a3497fef47131673178788b46">GetVMEChanID</a>();</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classISSConverter.html#a55507cbf420c1a353798fbdf91141f0f">SetOutput</a>( std::string output_file_name );</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
 <div class="foldopen" id="foldopen00075" data-start="{" data-end="}">
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="classISSConverter.html#a7082018e292291dd2f2c6d8aa4246866">   75</a></span>    <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classISSConverter.html#a7082018e292291dd2f2c6d8aa4246866">CloseOutput</a>(){</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;\n Writing data and closing the file&quot;</span> &lt;&lt; std::endl;</div>
@@ -216,7 +216,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>               ((datum &amp; 0x000000FF) &lt;&lt; 24));</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    };</div>
 </div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="comment">// Swap the two halves of a 64-bit integer 0x0123456789ABCDEF -&gt;</span></div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="comment">// 0x89ABCDEF01234567</span></div>
 <div class="foldopen" id="foldopen00118" data-start="{" data-end="}">
@@ -225,7 +225,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>               ((datum &amp; 0x00000000FFFFFFFFLL) &lt;&lt; 32));</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    };</div>
 </div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="comment">// Swap endianness of a 64-bit integer 0x0123456789ABCDEF -&gt;</span></div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="comment">// 0xEFCDAB8967452301</span></div>
 <div class="foldopen" id="foldopen00125" data-start="{" data-end="}">
@@ -240,7 +240,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>               ((datum &amp; 0x00000000000000FFLL) &lt;&lt; 56));</div>
 <div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    };</div>
 </div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="comment">// Get nth word</span></div>
 <div class="foldopen" id="foldopen00137" data-start="{" data-end="}">
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="classISSConverter.html#a0f67f50e352f8095726bddd10ad93a97">  137</a></span>    <span class="keyword">inline</span> ULong64_t <a class="code hl_function" href="classISSConverter.html#a0f67f50e352f8095726bddd10ad93a97">GetWord</a>( UInt_t n = 0 ){</div>
@@ -253,18 +253,18 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classISSConverter.html#acf165ff27f1796ef672e6354150dd463">swap</a> &amp; <a class="code hl_enumvalue" href="classISSConverter.html#ad87623aa0fca763e43444bb3569ff9d0a18ada49c80c38c2d0d145c1fc20f8d82">SWAP_ENDIAN</a>) result = <a class="code hl_function" href="classISSConverter.html#a324a9c3b0b7531e852eff2815d010e94">Swap64</a>(result);</div>
 <div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="classISSConverter.html#acf165ff27f1796ef672e6354150dd463">swap</a> &amp; <a class="code hl_enumvalue" href="classISSConverter.html#ad87623aa0fca763e43444bb3569ff9d0ab69087db3afbceed5a5e320540d6f9db">SWAP_WORDS</a>)  result = <a class="code hl_function" href="classISSConverter.html#abbacdaf175a02aa0058c5cfc145c06fe">SwapWords</a>(result);</div>
 <div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="keywordflow">return</span>(result);</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    };</div>
 </div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="comment">// Flag for source run</span></div>
 <div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classISSConverter.html#aa4a0be2eda2c1e88cc5a47efcb55191c">  152</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="classISSConverter.html#aa4a0be2eda2c1e88cc5a47efcb55191c">flag_source</a>;</div>
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="comment">// Logs</span></div>
 <div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="classISSConverter.html#adfc20cb6cf76f8cc4cdcebb9e20e5991">  155</a></span>    std::stringstream <a class="code hl_variable" href="classISSConverter.html#adfc20cb6cf76f8cc4cdcebb9e20e5991">sslogs</a>;</div>
 <div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
 <div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="comment">// Set the size of the block and its components.</span></div>
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno"><a class="line" href="classISSConverter.html#a15b8fa35edf14a1141d3352dcd575614">  159</a></span>    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="classISSConverter.html#a15b8fa35edf14a1141d3352dcd575614">HEADER_SIZE</a> = 24; <span class="comment">// Size of header in bytes</span></div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="comment">//static const int DATA_BLOCK_SIZE = 0x20000; // Block size for CAEN data = 128 kB prior to June 2021</span></div>
@@ -275,17 +275,17 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="comment">// Set the arrays for the block components.</span></div>
 <div class="line"><a id="l00166" name="l00166"></a><span class="lineno"><a class="line" href="classISSConverter.html#afba3977b3aaef51f358dc6c596250ac4">  166</a></span>    <span class="keywordtype">char</span> <a class="code hl_variable" href="classISSConverter.html#afba3977b3aaef51f358dc6c596250ac4">block_header</a>[<a class="code hl_variable" href="classISSConverter.html#a15b8fa35edf14a1141d3352dcd575614">HEADER_SIZE</a>];</div>
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="classISSConverter.html#a1955bdcde89990403e992729746d6405">  167</a></span>    <span class="keywordtype">char</span> <a class="code hl_variable" href="classISSConverter.html#a1955bdcde89990403e992729746d6405">block_data</a>[<a class="code hl_variable" href="classISSConverter.html#a6d37f0050b1eb8cefd610f2917022a28">MAIN_SIZE</a>];</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="comment">// Data words - 1 word of 64 bits (8 bytes)</span></div>
 <div class="line"><a id="l00170" name="l00170"></a><span class="lineno"><a class="line" href="classISSConverter.html#a50d589d2ec8f01930512e8c0aed55d10">  170</a></span>    ULong64_t <a class="code hl_variable" href="classISSConverter.html#a50d589d2ec8f01930512e8c0aed55d10">word</a>;</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    </div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="comment">// Data words - 2 words of 32 bits (4 byte).</span></div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classISSConverter.html#afe8119a5482f4b07d0f3f96b5f629169">  173</a></span>    UInt_t <a class="code hl_variable" href="classISSConverter.html#afe8119a5482f4b07d0f3f96b5f629169">word_0</a>;</div>
 <div class="line"><a id="l00174" name="l00174"></a><span class="lineno"><a class="line" href="classISSConverter.html#a02e825707edb283265e4b94d68d86c49">  174</a></span>    UInt_t <a class="code hl_variable" href="classISSConverter.html#a02e825707edb283265e4b94d68d86c49">word_1</a>;</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    </div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="comment">// Pointer to the data words</span></div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno"><a class="line" href="classISSConverter.html#a4994dd0ae3123d37f6f89b9e58124c50">  177</a></span>    ULong64_t *<a class="code hl_variable" href="classISSConverter.html#a4994dd0ae3123d37f6f89b9e58124c50">data</a>;</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
 <div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="comment">// End of data in  a block looks like:</span></div>
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="comment">// word_0 = 0xFFFFFFFF, word_1 = 0xFFFFFFFF.</span></div>
 <div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="comment">// This flag is set true when we hit that point</span></div>
@@ -314,7 +314,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno"><a class="line" href="classISSConverter.html#a7760c3c41bd6ae751c58624c129aa013">  204</a></span>    UShort_t <a class="code hl_variable" href="classISSConverter.html#a7760c3c41bd6ae751c58624c129aa013">header_MyEndian</a>; <span class="comment">// 2 byte. If 1 then correct endianess.</span></div>
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno"><a class="line" href="classISSConverter.html#a8d9294c70ba637865791db68dc6f9717">  205</a></span>    UShort_t <a class="code hl_variable" href="classISSConverter.html#a8d9294c70ba637865791db68dc6f9717">header_DataEndian</a>; <span class="comment">// 2 byte.</span></div>
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno"><a class="line" href="classISSConverter.html#a34440bb103595a2691f909eba858015e">  206</a></span>    UInt_t <a class="code hl_variable" href="classISSConverter.html#a34440bb103595a2691f909eba858015e">header_DataLen</a>; <span class="comment">// 4 byte.</span></div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
 <div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <span class="comment">// Interpretated variables</span></div>
 <div class="line"><a id="l00209" name="l00209"></a><span class="lineno"><a class="line" href="classISSConverter.html#a2bc7b1d90e2f945e8904ad954eee35bb">  209</a></span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span> <a class="code hl_variable" href="classISSConverter.html#a2bc7b1d90e2f945e8904ad954eee35bb">my_tm_stp</a>;</div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno"><a class="line" href="classISSConverter.html#a1336bd66a7dc22d4a22154fba1e9cb1d">  210</a></span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <a class="code hl_variable" href="classISSConverter.html#a1336bd66a7dc22d4a22154fba1e9cb1d">my_tm_stp_lsb</a>;</div>
@@ -342,7 +342,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00232" name="l00232"></a><span class="lineno"><a class="line" href="classISSConverter.html#aacf24a3eeb942f4e69f20f7a8281ab48">  232</a></span>    std::shared_ptr&lt;ISSCaenData&gt; <a class="code hl_variable" href="classISSConverter.html#aacf24a3eeb942f4e69f20f7a8281ab48">caen_data</a>;</div>
 <div class="line"><a id="l00233" name="l00233"></a><span class="lineno"><a class="line" href="classISSConverter.html#a94463fd4ffae6dfc7eaa2f06482ca6f3">  233</a></span>    std::shared_ptr&lt;ISSMesyData&gt; <a class="code hl_variable" href="classISSConverter.html#a94463fd4ffae6dfc7eaa2f06482ca6f3">mesy_data</a>;</div>
 <div class="line"><a id="l00234" name="l00234"></a><span class="lineno"><a class="line" href="classISSConverter.html#a6ed8f038c2b00b36456c64670d85b4bc">  234</a></span>    std::shared_ptr&lt;ISSInfoData&gt; <a class="code hl_variable" href="classISSConverter.html#a6ed8f038c2b00b36456c64670d85b4bc">info_data</a>;</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    </div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
 <div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="comment">// Output stuff</span></div>
 <div class="line"><a id="l00237" name="l00237"></a><span class="lineno"><a class="line" href="classISSConverter.html#ae9e9612595edec013bab00705127f3b2">  237</a></span>    TFile *<a class="code hl_variable" href="classISSConverter.html#ae9e9612595edec013bab00705127f3b2">output_file</a>;</div>
 <div class="line"><a id="l00238" name="l00238"></a><span class="lineno"><a class="line" href="classISSConverter.html#a365dc8c5e2ce86866e0b83ad422a1e49">  238</a></span>    TTree *<a class="code hl_variable" href="classISSConverter.html#a365dc8c5e2ce86866e0b83ad422a1e49">output_tree</a>;</div>
@@ -384,7 +384,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span> </div>
 <div class="line"><a id="l00275" name="l00275"></a><span class="lineno"><a class="line" href="classISSConverter.html#a4e607fa48bb9279b4c817ba743737d7d">  275</a></span>    std::vector&lt;TH1F*&gt; <a class="code hl_variable" href="classISSConverter.html#a4e607fa48bb9279b4c817ba743737d7d">hpside</a>;</div>
 <div class="line"><a id="l00276" name="l00276"></a><span class="lineno"><a class="line" href="classISSConverter.html#ac2209810c73bb8fd5a0bbe34b700398e">  276</a></span>    std::vector&lt;TH1F*&gt; <a class="code hl_variable" href="classISSConverter.html#ac2209810c73bb8fd5a0bbe34b700398e">hnside</a>;</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    </div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span> </div>
 <div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <span class="comment">//  Settings file</span></div>
 <div class="line"><a id="l00279" name="l00279"></a><span class="lineno"><a class="line" href="classISSConverter.html#aeaff9e1a8d4611df7c0425971f9f4b84">  279</a></span>    std::shared_ptr&lt;ISSSettings&gt; <a class="code hl_variable" href="classISSConverter.html#aeaff9e1a8d4611df7c0425971f9f4b84">set</a>;</div>
 <div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span> </div>

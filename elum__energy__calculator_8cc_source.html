@@ -117,7 +117,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="comment">// Make a reaction instance</span></div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_variable" href="elum__energy__calculator_8cc.html#aef2e709b38e28fdbbfe36870c344b223">myset</a> = std::make_shared&lt;ISSSettings&gt;( <span class="stringliteral">&quot;dummy&quot;</span> );</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_variable" href="elum__energy__calculator_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a> = std::make_shared&lt;ISSReaction&gt;( reaction_file, <a class="code hl_variable" href="elum__energy__calculator_8cc.html#aef2e709b38e28fdbbfe36870c344b223">myset</a>, <span class="keyword">true</span> );</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="comment">// Centre of the ELUM</span></div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordtype">double</span> elum_z = <a class="code hl_variable" href="elum__energy__calculator_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a>-&gt;GetELUMDistance();</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordtype">double</span> elum_rin = <a class="code hl_variable" href="elum__energy__calculator_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a>-&gt;GetELUMInnerRadius();</div>
@@ -135,13 +135,13 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::cout &lt;&lt; std::endl &lt;&lt; <span class="stringliteral">&quot;ELUM at &quot;</span> &lt;&lt; elum_z &lt;&lt; <span class="stringliteral">&quot; mm&quot;</span> &lt;&lt; std::endl;</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    std::cout &lt;&lt; <span class="stringliteral">&quot;Alpha energy\tEnergy loss&quot;</span> &lt;&lt; std::endl;</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; alphas.size(); i++ ) {</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordtype">double</span> det_en = <a class="code hl_variable" href="elum__energy__calculator_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a>-&gt;SimulateDecay( elum_hit, alphas[i], 1 );</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordtype">double</span> enloss = alphas[i] - det_en;</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        std::cout &lt;&lt; alphas[i] &lt;&lt; <span class="stringliteral">&quot; keV \t&quot;</span> &lt;&lt; enloss &lt;&lt; <span class="stringliteral">&quot; keV&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    }</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
 </div>
 <div class="ttc" id="aelum__energy__calculator_8cc_html_a9692c61fd238040fce04f7f734afd12f"><div class="ttname"><a href="elum__energy__calculator_8cc.html#a9692c61fd238040fce04f7f734afd12f">elum_energy_calculator</a></div><div class="ttdeci">void elum_energy_calculator(std::string reaction_file)</div><div class="ttdef"><b>Definition</b> <a href="#l00019">elum_energy_calculator.cc:19</a></div></div>
