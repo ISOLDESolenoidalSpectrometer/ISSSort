@@ -2961,9 +2961,10 @@ unsigned long ISSHistogrammer::FillHists() {
 
 
 			// Loop over recoil or fission events
-			bool promptcheck = false;
-			bool randomcheck = false;
-			bool energycheck = false;
+			bool promptcheckT = false;
+			bool randomcheckT = false;
+			bool promptcheckE = false;
+			bool randomcheckE = false;
 
 			// If we have fission mode, rather than recoil mode
 			if( react->IsFission() ) {
@@ -3004,23 +3005,33 @@ unsigned long ISSHistogrammer::FillHists() {
 						cd_evt2 = read_evts->GetCDEvt(l);
 
 						// Check for prompt events with coincident fissions
-						if( PromptCoincidence( cd_evt1, array_evt ) && PromptCoincidence( cd_evt1, cd_evt2 ) )
-							promptcheck = true;
+						if( PromptCoincidence( cd_evt1, array_evt ) && PromptCoincidence( cd_evt1, cd_evt2 ) ){
+
+							promptcheckT = true;
+
+							// Check energy gate
+							if( FissionCutHeavy( cd_evt1 ) && FissionCutLight( cd_evt2 ) )
+								promptcheckE = true;
+
+						}
 
 						// Check for random events with coincident fissions
-						if( RandomCoincidence( cd_evt1, array_evt ) && PromptCoincidence( cd_evt1, cd_evt2 ) )
-							randomcheck = true;
+						if( RandomCoincidence( cd_evt1, array_evt ) && PromptCoincidence( cd_evt1, cd_evt2 ) ){
+							randomcheckT = true;
 
-						// Check energy gate
-						if( FissionCutHeavy( cd_evt1 ) && FissionCutLight( cd_evt2 ) )
-							energycheck = true;
+							// Check energy gate
+							if( FissionCutHeavy( cd_evt1 ) && FissionCutLight( cd_evt2 ) )
+								randomcheckE = true;
+
+						}
+
 
 					} // cd events 2
 
 				} // cd events 1
 
 				// Fill prompt hists
-				if( promptcheck == true && randomcheck == false ){
+				if( promptcheckT == true && randomcheckT == false ){
 
 					// Fission fragments in coincidence with an array event
 					fission_EdE_array->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
@@ -3062,7 +3073,7 @@ unsigned long ISSHistogrammer::FillHists() {
 					} // loop over cuts
 
 					// Fill energy gate hists
-					if( energycheck == true ) {
+					if( promptcheckE == true ) {
 
 						E_vs_z_fission->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 						E_vs_z_fission_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
@@ -3099,7 +3110,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				} // prompt
 
 				// Fill random hists, but only if we didn't fill it already as a prompt hit
-				else if( randomcheck == true && promptcheck == false ){
+				else if( randomcheckT == true && promptcheckT == false ){
 
 					// Array histograms
 					E_vs_z_fissionT_random->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
@@ -3133,7 +3144,7 @@ unsigned long ISSHistogrammer::FillHists() {
 					} // loop over cuts
 
 					// Fill energy gate hists
-					if( energycheck == true ) {
+					if( randomcheckE == true ) {
 
 						E_vs_z_fission_random->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 						E_vs_z_fission_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
@@ -3200,21 +3211,29 @@ unsigned long ISSHistogrammer::FillHists() {
 					}
 
 					// Check for prompt events with recoils
-					if( PromptCoincidence( recoil_evt, array_evt ) )
-						promptcheck = true;
+					if( PromptCoincidence( recoil_evt, array_evt ) ){
+						promptcheckT = true;
+
+						// Check energy gate
+						if( RecoilCut( recoil_evt ) )
+							promptcheckE = true;
+
+					}
 
 					// Check for random events with recoils
-					if( RandomCoincidence( recoil_evt, array_evt ) )
-						randomcheck = true;
+					if( RandomCoincidence( recoil_evt, array_evt ) ){
+						randomcheckT = true;
 
-					// Check energy gate
-					if( RecoilCut( recoil_evt ) )
-						energycheck = true;
+						// Check energy gate
+						if( RecoilCut( recoil_evt ) )
+							randomcheckE = true;
+
+					}
 
 				} // k
 
 				// Fill prompt hists
-				if( promptcheck == true ){
+				if( promptcheckT == true ){
 
 					// Recoils in coincidence with an array event
 					recoil_EdE_array[recoil_evt->GetSector()]->Fill( recoil_evt->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ), recoil_evt->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
@@ -3251,7 +3270,7 @@ unsigned long ISSHistogrammer::FillHists() {
 					} // loop over cuts
 
 					// Fill energy gate hists
-					if( energycheck == true ) {
+					if( promptcheckE == true ) {
 
 						E_vs_z_recoil->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 						E_vs_z_recoil_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
@@ -3288,7 +3307,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				} // prompt
 
 				// Fill random hists, but only if we didn't fill it already as a prompt hit
-				else if( randomcheck == true ){
+				else if( randomcheckT == true ){
 
 					// Array histograms
 					E_vs_z_recoilT_random->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
@@ -3322,7 +3341,7 @@ unsigned long ISSHistogrammer::FillHists() {
 					} // loop over cuts
 
 					// Fill energy gate hists
-					if( energycheck == true ) {
+					if( randomcheckE == true ) {
 
 						E_vs_z_recoil_random->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
 						E_vs_z_recoil_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
