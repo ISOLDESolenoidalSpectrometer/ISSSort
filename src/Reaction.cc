@@ -326,6 +326,39 @@ void ISSReaction::AddBindingEnergy( short Ai, short Zi, TString ame_be_str ) {
 
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Loads a TCutG from file, either a saved TCutG from a ROOT file or the (x,y)
+/// coordinates from a text file.
+std::shared_ptr<TCutG> ISSReaction::ReadCutFile( std::string cut_filename,
+												 std::string cut_name ) {
+
+  std::shared_ptr<TCutG> cut;
+  // Check if filename is given in the settings file.
+  if( cut_filename != "NULL" ) {
+
+	TFile *cut_file = new TFile( cut_filename.data(), "READ" );
+	if( cut_file->IsZombie() )
+	  std::cout << "Couldn't open " << cut_filename << " correctly" << std::endl;
+
+	else {
+
+	  if( !cut_file->GetListOfKeys()->Contains( cut_name.data() ) )
+		std::cout << "Couldn't find " << cut_name << " in "
+				  << cut_filename << std::endl;
+	  else
+		cut = std::make_shared<TCutG>( *static_cast<TCutG*>( cut_file->Get( cut_name.data() )->Clone() ) );
+	}
+
+	cut_file->Close();
+  }
+
+  // Assign an empty cut file if none is given, so the code doesn't crash
+  if( !cut )
+	cut = std::make_shared<TCutG>();
+
+  return cut;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /// Stores the binding energies per nucleon for each nucleus from the AME
 /// 2020 file
@@ -471,49 +504,8 @@ void ISSReaction::ReadReaction() {
 	fissioncutLfile = config->GetValue( "FissionCut.Light.File", "NULL" );
 	fissioncutLname = config->GetValue( "FissionCut.Light.Name", "CUTG" );
 
-	// Check if heavy cut is given by the user
-	if( fissioncutHfile != "NULL" ) {
-
-		TFile *fission_file = new TFile( fissioncutHfile.data(), "READ" );
-		if( fission_file->IsZombie() )
-			std::cout << "Couldn't open " << fissioncutHfile << " correctly" << std::endl;
-
-		else {
-
-			if( !fission_file->GetListOfKeys()->Contains( fissioncutHname.data() ) )
-				std::cout << "Couldn't find " << fissioncutHname << " in " << fissioncutHfile << std::endl;
-			else
-				fission_cutH = std::make_shared<TCutG>( *static_cast<TCutG*>( fission_file->Get( fissioncutHname.data() )->Clone() ) );
-
-		}
-
-		fission_file->Close();
-
-	}
-
-	// Check if light cut is given by the user
-	if( fissioncutLfile != "NULL" ) {
-
-		TFile *fission_file = new TFile( fissioncutLfile.data(), "READ" );
-		if( fission_file->IsZombie() )
-			std::cout << "Couldn't open " << fissioncutLfile << " correctly" << std::endl;
-
-		else {
-
-			if( !fission_file->GetListOfKeys()->Contains( fissioncutLname.data() ) )
-				std::cout << "Couldn't find " << fissioncutLname << " in " << fissioncutLfile << std::endl;
-			else
-				fission_cutL = std::make_shared<TCutG>( *static_cast<TCutG*>( fission_file->Get( fissioncutLname.data() )->Clone() ) );
-
-		}
-
-		fission_file->Close();
-
-	}
-
-	// Assign an empty cut file if none is given, so the code doesn't crash
-	if( !fission_cutH ) fission_cutH = std::make_shared<TCutG>();
-	if( !fission_cutL ) fission_cutL = std::make_shared<TCutG>();
+	fission_cutH = ReadCutFile( fissioncutHfile, fissioncutHname );
+	fission_cutL = ReadCutFile( fissioncutLfile, fissioncutLname );
 
 
 	// Get recoil energy cut
@@ -526,29 +518,7 @@ void ISSReaction::ReadReaction() {
 		recoilcutfile.at(i) = config->GetValue( Form( "RecoilCut_%d.File", i ), "NULL" );
 		recoilcutname.at(i) = config->GetValue( Form( "RecoilCut_%d.Name", i ), "CUTG" );
 
-		// Check if it is given by the user
-		if( recoilcutfile.at(i) != "NULL" ) {
-
-			TFile *recoil_file = new TFile( recoilcutfile.at(i).data(), "READ" );
-			if( recoil_file->IsZombie() )
-				std::cout << "Couldn't open " << recoilcutfile.at(i) << " correctly" << std::endl;
-
-			else {
-
-				if( !recoil_file->GetListOfKeys()->Contains( recoilcutname.at(i).data() ) )
-					std::cout << "Couldn't find " << recoilcutname.at(i) << " in " << recoilcutfile.at(i) << std::endl;
-				else
-					recoil_cut.at(i) = std::make_shared<TCutG>( *static_cast<TCutG*>( recoil_file->Get( recoilcutname.at(i).data() )->Clone() ) );
-
-			}
-
-			recoil_file->Close();
-
-		}
-
-		// Assign an empty cut file if none is given, so the code doesn't crash
-		if( !recoil_cut.at(i) ) recoil_cut.at(i) = std::make_shared<TCutG>();
-
+		recoil_cut[i] = ReadCutFile(recoilcutfile.at(i), recoilcutname.at(i));
 	}
 
 	// Get E versus z cuts
@@ -561,29 +531,7 @@ void ISSReaction::ReadReaction() {
 		evszcutfile.at(i) = config->GetValue( Form( "EvsZCut_%d.File", i ), "NULL" );
 		evszcutname.at(i) = config->GetValue( Form( "EvsZCut_%d.Name", i ), "CUTG" );
 
-		// Check if it is given by the user
-		if( evszcutfile.at(i) != "NULL" ) {
-
-			TFile *e_vs_z_file = new TFile( evszcutfile.at(i).data(), "READ" );
-			if( e_vs_z_file->IsZombie() )
-				std::cout << "Couldn't open " << evszcutfile.at(i) << " correctly" << std::endl;
-
-			else {
-
-				if( !e_vs_z_file->GetListOfKeys()->Contains( evszcutname.at(i).data() ) )
-					std::cout << "Couldn't find " << evszcutname.at(i) << " in " << evszcutfile.at(i) << std::endl;
-				else
-					e_vs_z_cut.at(i) = std::make_shared<TCutG>( *static_cast<TCutG*>( e_vs_z_file->Get( evszcutname.at(i).data() )->Clone() ) );
-
-			}
-
-			e_vs_z_file->Close();
-
-		}
-
-		// Assign an empty cut file if none is given, so the code doesn't crash
-		if( !e_vs_z_cut.at(i) ) e_vs_z_cut.at(i) = std::make_shared<TCutG>();
-
+		e_vs_z_cut[i] = ReadCutFile( evszcutfile.at(i), evszcutname.at(i) );
 	}
 
 	// EBIS time window
