@@ -65,6 +65,9 @@ void ISSDataPackets::SetData( std::shared_ptr<ISSCaenData> data ){
 	fill_data.SetChannel( data->GetChannel() );
 	fill_data.SetEnergy( data->GetEnergy() );
 	fill_data.SetThreshold( data->IsOverThreshold() );
+	fill_data.SetClipped( data->IsClipped() );
+	fill_data.SetOverflowLong( data->IsOverflowLong() );
+	fill_data.SetOverflowShort( data->IsOverflowShort() );
 
 	caen_packets.push_back( fill_data );
 
@@ -90,6 +93,9 @@ void ISSDataPackets::SetData( std::shared_ptr<ISSMesyData> data ){
 	fill_data.SetChannel( data->GetChannel() );
 	fill_data.SetEnergy( data->GetEnergy() );
 	fill_data.SetThreshold( data->IsOverThreshold() );
+	fill_data.SetClipped( data->IsClipped() );
+	fill_data.SetOverflowLong( data->IsOverflowLong() );
+	fill_data.SetOverflowShort( data->IsOverflowShort() );
 
 	mesy_packets.push_back( fill_data );
 
