@@ -326,6 +326,39 @@ void ISSReaction::AddBindingEnergy( short Ai, short Zi, TString ame_be_str ) {
 
 }
 
+////////////////////////////////////////////////////////////////////////////////
+/// Loads a TCutG from file, either a saved TCutG from a ROOT file or the (x,y)
+/// coordinates from a text file.
+std::shared_ptr<TCutG> ISSReaction::ReadCutFile( std::string cut_filename,
+												 std::string cut_name ) {
+
+  std::shared_ptr<TCutG> cut;
+  // Check if filename is given in the settings file.
+  if( cut_filename != "NULL" ) {
+
+	TFile *cut_file = new TFile( cut_filename.data(), "READ" );
+	if( cut_file->IsZombie() )
+	  std::cout << "Couldn't open " << cut_filename << " correctly" << std::endl;
+
+	else {
+
+	  if( !cut_file->GetListOfKeys()->Contains( cut_name.data() ) )
+		std::cout << "Couldn't find " << cut_name << " in "
+				  << cut_filename << std::endl;
+	  else
+		cut = std::make_shared<TCutG>( *static_cast<TCutG*>( cut_file->Get( cut_name.data() )->Clone() ) );
+	}
+
+	cut_file->Close();
+  }
+
+  // Assign an empty cut file if none is given, so the code doesn't crash
+  if( !cut )
+	cut = std::make_shared<TCutG>();
+
+  return cut;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 /// Stores the binding energies per nucleon for each nucleus from the AME
 /// 2020 file
