@@ -2,6 +2,13 @@
 
 #include <iomanip>
 
+ISSSettings::ISSSettings() {
+
+	// Just defaults for the default constructor
+	ISSSettings( "defaults" );
+
+}
+
 ISSSettings::ISSSettings( std::string filename ) {
 
 	// Setup the LUME types

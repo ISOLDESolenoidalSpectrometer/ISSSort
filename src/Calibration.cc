@@ -50,6 +50,22 @@ double walk_derivative( double *x, double *params ){
 	return root;
 }
 
+/// Default constructor
+ISSCalibration::ISSCalibration() {
+
+	// Just defaults
+	std::shared_ptr<ISSSettings> tmp_set = std::make_shared<ISSSettings>();
+	ISSCalibration( "defaults", tmp_set );
+
+}
+
+/// Kinda copy constructor
+ISSCalibration::ISSCalibration( ISSCalibration *mycal ){
+
+// TODO: Do we need this for making shared_ptr's? Do we care?
+
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 /// Constructs the ISSCalibration object. Initialises private variables, reads
 /// the calibration input file, and sets up the root-finding algorithm for the

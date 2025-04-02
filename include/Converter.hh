@@ -77,6 +77,9 @@ public:
 		//output_tree->SetDirectory(0);
 		output_file->Write( 0, TObject::kWriteDelete );
 		PurgeOutput();
+		output_file->cd("/");
+		set->Write( "Settings", TObject::kWriteDelete );
+		cal->Write( "Calibration", TObject::kWriteDelete );
 		output_file->Close();
 		//output_tree->ResetBranchAddresses();
 		//sorted_tree->ResetBranchAddresses();

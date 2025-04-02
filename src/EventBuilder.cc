@@ -236,6 +236,10 @@ void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
 
 	flag_input_file = true;
 
+	// Read calibration and settings from file
+	cal_from_file = (ISSCalibration*)input_file->Get("Calibration");
+	set_from_file = (ISSSettings*)input_file->Get("Settings");
+
 	// Set the input tree
 	SetInputTree( (TTree*)input_file->Get("iss_sort") );
 	StartFile();
@@ -637,6 +641,18 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 				myenergy = vme_data->GetEnergy();
 				mythres = vme_data->IsOverThreshold();
+
+				std::string entype = cal_from_file->VmeType( myvme, mymod, mych );
+				if( entype == "Qlong" ) {
+					myoverflow = vme_data->IsOverflowLong();
+				}
+				else if( entype == "Qshort" ){
+					myoverflow = vme_data->IsOverflowShort();
+				}
+				else if( entype == "Qdiff" ){
+					myoverflow = vme_data->IsOverflowLong();
+					myoverflow |= vme_data->IsOverflowShort();
+				}
 
 			}
 

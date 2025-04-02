@@ -37,10 +37,12 @@ const unsigned char HitN = 2;
 * and there is a time offset parameter for each ASIC module, too.
 */
 
-class ISSCalibration {
+class ISSCalibration : public TObject {
 
 public:
 
+	ISSCalibration();
+	ISSCalibration( ISSCalibration *mycal );
 	ISSCalibration( std::string filename, std::shared_ptr<ISSSettings> myset );///< Constructor
 	/// Destructor
 	inline virtual ~ISSCalibration() {
@@ -268,9 +270,9 @@ private:
 
 	std::string fInputFile;///< The location of the calibration input file
 
-	std::shared_ptr<ISSSettings> set;///< Pointer to the ISSSettings object
+	std::shared_ptr<ISSSettings> set;	///<! Pointer to the ISSSettings object (not stored in ROOT file, need the ! for this)
 
-	TRandom *fRand;///< Used to eliminate binning issues
+	TRandom *fRand;///<! Used to eliminate binning issues
 
 	// Calibration file value storage
 	std::vector< std::vector< std::vector<float> > > fAsicOffset;///< Constant in ASIC energy calculation
@@ -297,30 +299,30 @@ private:
 	std::vector< std::vector<long double> > fMesyTime;///< Time offset for signals on a given detector in the Mesytec DAQ
 	std::vector< std::vector<std::string> > fMesyType;///< The type assigned to the Mesytec signal
 
-	float fAsicOffsetDefault;///< The default constant in ASIC energy calculations
-	float fAsicGainDefault;///< The default linear term in ASIC energy calculations
-	float fAsicGainQuadrDefault;///< The default quadratic term in ASIC energy calculations
-	float fCaenOffsetDefault;///< The default constant in CAEN energy calculations
-	float fCaenGainDefault;///< The default linear term in CAEN energy calculations
-	float fCaenGainQuadrDefault;///< The default quadratic term in CAEN energy calculations
-	float fMesyOffsetDefault;///< The default constant in Mesytec energy calculations
-	float fMesyGainDefault;///< The default linear term in Mesytec energy calculations
-	float fMesyGainQuadrDefault;///< The default quadratic term in Mesytec energy calculations
+	float fAsicOffsetDefault;///<! The default constant in ASIC energy calculations
+	float fAsicGainDefault;///<! The default linear term in ASIC energy calculations
+	float fAsicGainQuadrDefault;///<! The default quadratic term in ASIC energy calculations
+	float fCaenOffsetDefault;///<! The default constant in CAEN energy calculations
+	float fCaenGainDefault;///<! The default linear term in CAEN energy calculations
+	float fCaenGainQuadrDefault;///<! The default quadratic term in CAEN energy calculations
+	float fMesyOffsetDefault;///<! The default constant in Mesytec energy calculations
+	float fMesyGainDefault;///<! The default linear term in Mesytec energy calculations
+	float fMesyGainQuadrDefault;///<! The default quadratic term in Mesytec energy calculations
 
 	// Stuff for the time walk calculation
-	std::unique_ptr<ROOT::Math::RootFinder> rf;///< Root finding object for the time-walk function: walk_function( double *x, double *params )
-	TF1 *fa;///< TF1 for the time walk function: walk_function( double *x, double *params )
-	TF1 *fb;///< TF1 for the time walk function derivative: walk_derivative( double *x, double *params )
+	std::unique_ptr<ROOT::Math::RootFinder> rf;	///<! Root finding object for the time-walk function: walk_function( double *x, double *params )
+	TF1 *fa;	///<! TF1 for the time walk function: walk_function( double *x, double *params )
+	TF1 *fb;	///<! TF1 for the time walk function derivative: walk_derivative( double *x, double *params )
 	double walk_params[nwalkpars+1];///< Parameters used to store time-walk parameters
 
 	// Time-walk Graphs
-	std::vector< std::vector< std::vector< std::string > > > twgraphfile;///< The location of the time walk graph files
-	std::vector< std::vector< std::vector< std::string > > > twgraphname;///< The names of the time walk graphs
-	std::vector< std::vector< std::vector< std::shared_ptr<TGraph> > > > tw_graph;///< Vector containing time walk graphs
+	std::vector< std::vector< std::vector< std::string > > > twgraphfile;			///<! The location of the time walk graph files
+	std::vector< std::vector< std::vector< std::string > > > twgraphname;			///<! The names of the time walk graphs
+	std::vector< std::vector< std::vector< std::shared_ptr<TGraph> > > > tw_graph;	///<! Vector containing time walk graphs
 
 
 
-	//ClassDef(ISSCalibration, 1)
+	ClassDef( ISSCalibration, 10 )
 
 };
 

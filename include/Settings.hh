@@ -14,10 +14,11 @@
 *
 */
 
-class ISSSettings {
+class ISSSettings : public TObject {
 
 public:
 
+	ISSSettings();
 	ISSSettings( std::string filename );
 	inline virtual ~ISSSettings() {};
 
@@ -364,6 +365,8 @@ private:
 	std::vector<std::vector<std::vector<char>>> cd_strip;			///< A channel map for the CD ring/sector IDs (-1 if not a CD)
 	std::vector<std::vector<std::vector<char>>> cd_side;			///< A channel map for the CD sides (rings = 0, sectors = 1) (-1 if not a CD)
 
+
+	ClassDef( ISSSettings, 10 )
 
 };
 

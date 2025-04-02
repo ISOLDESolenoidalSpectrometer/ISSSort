@@ -112,6 +112,8 @@ public:
 	inline void CloseOutput(){
 		output_tree->ResetBranchAddresses();
 		PurgeOutput();
+		output_file->cd("/");
+		set->Write( "Settings", TObject::kWriteDelete );
 		output_file->Close();
 		//input_tree->ResetBranchAddresses();
 		//nptool_tree->ResetBranchAddresses();
@@ -162,10 +164,12 @@ private:
 	std::unique_ptr<ISSEvts> write_evts; ///< Container for storing hits on all detectors in order to construct events
 
 	// Do calibration
+	ISSCalibration *cal_from_file;
 	std::shared_ptr<ISSCalibration> cal; ///< Pointer to an ISSCalibration object, used for accessing gain-matching parameters and thresholds
 	bool overwrite_cal; ///< Boolean determining whether an energy calibration should be used (true) or not (false). Set in the ISSEventBuilder::AddCalibration function
 
 	// Settings file
+	ISSSettings *set_from_file;
 	std::shared_ptr<ISSSettings> set; ///< Pointer to the settings object. Assigned in constructor
 
 	// Progress bar
