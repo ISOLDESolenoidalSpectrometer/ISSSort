@@ -625,7 +625,7 @@ void ISSGUI::gui_build(){
 	//-----------------------//
 	// Physics event builder //
 	//-----------------------//
-	ISSEventBuilder eb( myset );
+	ISSEventBuilder eb;
 	eb.AddProgressBar( prog_evnt );
 	std::cout << "\n +++ ISS Analysis:: processing EventBuilder +++" << std::endl;
 
@@ -638,6 +638,10 @@ void ISSGUI::gui_build(){
 	std::ifstream ftest;
 	TString name_input_file;
 	TString name_output_file;
+
+	// Update settings file if given
+	if( myset->InputFile() != "dummy" )
+		eb.AddSettings( myset );
 
 	// Update calibration file if given
 	if( mycal->InputFile() != "dummy" )

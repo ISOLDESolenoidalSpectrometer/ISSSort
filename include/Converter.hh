@@ -40,6 +40,7 @@ class ISSConverter {
 
 public:
 
+	ISSConverter();
 	ISSConverter( std::shared_ptr<ISSSettings> myset );
 	virtual ~ISSConverter(){};
 
@@ -89,6 +90,7 @@ public:
 	inline TTree* GetTree(){ return output_tree; };
 	inline TTree* GetSortedTree(){ return sorted_tree; };
 
+	inline void AddSettings( std::shared_ptr<ISSSettings> myset ){ set = myset; };
 	inline void AddCalibration( std::shared_ptr<ISSCalibration> mycal ){ cal = mycal; };
 	inline void SourceOnly(){ flag_source = true; };
 

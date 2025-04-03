@@ -54,15 +54,43 @@ double walk_derivative( double *x, double *params ){
 ISSCalibration::ISSCalibration() {
 
 	// Just defaults
-	std::shared_ptr<ISSSettings> tmp_set = std::make_shared<ISSSettings>();
-	ISSCalibration( "defaults", tmp_set );
+	set = std::make_shared<ISSSettings>();
+	ISSCalibration( "defaults", set );
 
 }
 
 /// Kinda copy constructor
 ISSCalibration::ISSCalibration( ISSCalibration *mycal ){
 
-// TODO: Do we need this for making shared_ptr's? Do we care?
+	SetFile( mycal->InputFile() );
+
+	fAsicOffset		= mycal->GetAsicOffsets();
+	fAsicGain		= mycal->GetAsicGains();
+	fAsicGainQuadr	= mycal->GetAsicGainQuadrs();
+	fAsicThreshold	= mycal->GetAsicThresholds();
+	fAsicTime		= mycal->GetAsicTimes();
+	fAsicEnabled	= mycal->GetAsicEnableds();
+	fAsicWalkHit0	= mycal->GetAsicWalkHit0s();
+	fAsicWalkHit1	= mycal->GetAsicWalkHit1s();
+	fAsicWalkType	= mycal->GetAsicWalkTypes();
+	twgraphfile		= mycal->GetTWGraphFiles();
+	twgraphname		= mycal->GetTWGraphNames();
+
+	fCaenOffset		= mycal->GetCaenOffsets();
+	fCaenGain		= mycal->GetCaenGains();
+	fCaenGainQuadr	= mycal->GetCaenGainQuadrs();
+	fCaenThreshold	= mycal->GetCaenThresholds();
+	fCaenTime		= mycal->GetCaenTimes();
+	fCaenType		= mycal->GetCaenTypes();
+
+	fMesyOffset		= mycal->GetMesyOffsets();
+	fMesyGain		= mycal->GetMesyGains();
+	fMesyGainQuadr	= mycal->GetMesyGainQuadrs();
+	fMesyThreshold	= mycal->GetMesyThresholds();
+	fMesyTime		= mycal->GetMesyTimes();
+	fMesyType		= mycal->GetMesyTypes();
+
+	Initialise();
 
 }
 
@@ -78,6 +106,13 @@ ISSCalibration::ISSCalibration( std::string filename, std::shared_ptr<ISSSetting
 	SetFile( filename );
 	set = myset;
 	ReadCalibration();
+	Initialise();
+
+}
+
+void ISSCalibration::Initialise(){
+
+	// Random number generator
 	fRand = new TRandom();
 
 	// Root finder algorithm

@@ -105,6 +105,7 @@ int mon_time = -1; // update time in seconds
 // Settings file
 std::shared_ptr<ISSSettings> myset;
 bool flag_print_settings = false;
+bool overwrite_set = false;
 
 // Calibration file
 std::shared_ptr<ISSCalibration> mycal;
@@ -164,9 +165,17 @@ void* monitor_run( void* ptr ){
 	// Get the settings, file etc.
 	thptr *calfiles = (thptr*)ptr;
 
-	// Setup the different steps
-	conv_mon = std::make_shared<ISSConverter>( calfiles->myset );
-	eb_mon = std::make_shared<ISSEventBuilder>( calfiles->myset );
+	// Setup the converter step
+	conv_mon = std::make_shared<ISSConverter>();
+	conv_mon->AddSettings( calfiles->myset );
+	conv_mon->AddCalibration( calfiles->mycal );
+
+	// Setup the event builder step
+	eb_mon = std::make_shared<ISSEventBuilder>();
+	eb_mon->AddSettings( calfiles->myset );
+	eb_mon->AddCalibration( calfiles->mycal );
+
+	// Setup the histogram step
 	hist_mon = std::make_shared<ISSHistogrammer>( calfiles->myreact, calfiles->myset );
 
 	// Data blocks for Data spy
@@ -191,7 +200,6 @@ void* monitor_run( void* ptr ){
 	// Converter setup
 	if( !flag_spy ) curFileMon = input_names.at(0); // maybe change in GUI later?
 	if( flag_source ) conv_mon->SourceOnly();
-	conv_mon->AddCalibration( calfiles->mycal );
 	conv_mon->SetOutput( "monitor_singles.root" );
 	conv_mon->MakeTree();
 	conv_mon->MakeHists();
@@ -359,7 +367,8 @@ void do_convert(){
 	//------------------------//
 	// Run conversion to ROOT //
 	//------------------------//
-	ISSConverter conv( myset );
+	ISSConverter conv;
+	conv.AddSettings( myset );
 	conv.AddCalibration( mycal );
 	if( flag_source ) conv.SourceOnly();
 	std::cout << "\n +++ ISS Analysis:: processing Converter +++" << std::endl;
@@ -439,7 +448,7 @@ bool do_build(){
 	//-----------------------//
 	// Physics event builder //
 	//-----------------------//
-	ISSEventBuilder eb( myset );
+	ISSEventBuilder eb;
 	std::cout << "\n +++ ISS Analysis:: processing EventBuilder +++" << std::endl;
 
 	TFile *rtest;
@@ -447,6 +456,9 @@ bool do_build(){
 	std::string name_input_file;
 	std::string name_output_file;
 	bool return_flag = false;
+
+	// Update settings file if given
+	if( overwrite_set ) eb.AddSettings( myset );
 
 	// Update calibration file if given
 	if( overwrite_cal ) eb.AddCalibration( mycal );
@@ -478,6 +490,16 @@ bool do_build(){
 			ftest.close();
 
 		}
+
+		// If we have a new settings file, but an old calibration, print a warning
+		if( overwrite_set && !overwrite_cal && !force_convert.at(i) ){
+
+			std::cout << "\n\tWARNING!! Changing the settings but not the calibration." << std::endl;
+			std::cout << "\n\tReading calibration from " << name_input_file << " and settings from " << myset->InputFile() << std::endl;
+			std::cout << "\tIn case the detector mapping has changed, things will go awry!\n" << std::endl;
+
+		}
+
 
 		// We need to do event builder if we just converted it
 		// specific request to do new event build with -e
@@ -577,7 +599,8 @@ void do_nptool(){
 	//-----------------------//
 	// Physics event builder //
 	//-----------------------//
-	ISSEventBuilder eb( myset );
+	ISSEventBuilder eb;
+	eb.AddSettings( myset );
 	std::cout << "\n +++ ISS Analysis:: processing EventBuilder for NPTool data +++" << std::endl;
 
 	TFile *rtest;
@@ -941,7 +964,7 @@ int main( int argc, char *argv[] ){
 		if( !ftest.is_open() ) {
 
 			std::cout << name_set_file << " does not exist.";
-			std::cout << " Using defaults" << std::endl;
+			std::cout << " Will attempt to read from ROOT file, or use defaults." << std::endl;
 			name_set_file = "dummy";
 
 		}
@@ -949,14 +972,16 @@ int main( int argc, char *argv[] ){
 		else {
 
 			ftest.close();
-			std::cout << "Settings file: " << name_set_file << std::endl;
+			std::cout << "Settings file provided: " << name_set_file << std::endl;
+			overwrite_set = true;
 
 		}
 
 	}
 	else {
 
-		std::cout << "No settings file provided. Using defaults." << std::endl;
+		std::cout << "No settings file provided.";
+		std::cout << " Will attempt to read from ROOT file, or use defaults." << std::endl;
 		name_set_file = "dummy";
 
 	}
@@ -970,7 +995,7 @@ int main( int argc, char *argv[] ){
 		if( !ftest.is_open() ) {
 
 			std::cout << name_cal_file << " does not exist.";
-			std::cout << " Using defaults" << std::endl;
+			std::cout << " Will attempt to read from ROOT file, or use defaults." << std::endl;
 			name_cal_file = "dummy";
 
 		}
@@ -986,7 +1011,8 @@ int main( int argc, char *argv[] ){
 	}
 	else {
 
-		std::cout << "No calibration file provided. Using defaults." << std::endl;
+		std::cout << "No calibration file provided.";
+		std::cout << " Will attempt to read from ROOT file, or use defaults." << std::endl;
 		name_cal_file = "dummy";
 
 	}
@@ -1000,7 +1026,7 @@ int main( int argc, char *argv[] ){
 		if( !ftest.is_open() ) {
 
 			std::cout << name_react_file << " does not exist.";
-			std::cout << " Using defaults" << std::endl;
+			std::cout << " Using defaults." << std::endl;
 			name_react_file = "dummy";
 
 		}

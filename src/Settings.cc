@@ -11,16 +11,168 @@ ISSSettings::ISSSettings() {
 
 ISSSettings::ISSSettings( std::string filename ) {
 
-	// Setup the LUME types
-	lume_type_list.push_back( "be" ); // back energy
-	lume_type_list.push_back( "ne" ); // near energy
-	lume_type_list.push_back( "fe" ); // far energy
-
 	// Set filename
 	SetFile( filename );
 
 	// Go read the settings
 	ReadSettings();
+
+}
+
+/// Copy constructor
+ISSSettings::ISSSettings( ISSSettings *myset ){
+
+	if( !myset ) return; // Handle null pointer case
+
+	// Set filename
+	SetFile( myset->InputFile() );
+
+	// Copy array settings
+	n_array_mod = myset->GetNumberOfArrayModules();
+	n_array_asic = myset->GetNumberOfArrayASICs();
+	n_array_ch = myset->GetNumberOfArrayChannels();
+	n_array_row = myset->GetNumberOfArrayRows();
+	n_array_pstrip = myset->GetNumberOfArrayPstrips();
+	n_array_nstrip = myset->GetNumberOfArrayNstrips();
+
+	// Copy CAEN settings
+	n_caen_mod = myset->GetNumberOfCAENModules();
+	n_caen_ch = myset->GetNumberOfCAENChannels();
+	caen_model = myset->GetCAENModels();
+
+	// Copy Mesytec settings
+	n_mesy_mod = myset->GetNumberOfMesytecModules();
+	n_mesy_ch = myset->GetNumberOfMesytecChannels();
+
+	// Copy info code settings
+	extt_code = myset->GetExternalTriggerCode();
+	sync_code = myset->GetSyncCode();
+	ext_item_code = myset->GetExtItemCode();
+	thsb_code = myset->GetTimestampCode();
+	pause_code = myset->GetPauseCode();
+	resume_code = myset->GetResumeCode();
+
+	// Copy pulser and timing signal settings
+	asic_pulser_asic_0 = myset->GetArrayPulserAsic0();
+	asic_pulser_ch_0 = myset->GetArrayPulserChannel0();
+	asic_pulser_code_0 = myset->GetArrayPulserCode0();
+	asic_pulser_asic_1 = myset->GetArrayPulserAsic1();
+	asic_pulser_ch_1 = myset->GetArrayPulserChannel1();
+	asic_pulser_code_1 = myset->GetArrayPulserCode1();
+	asic_pulser_thres = myset->GetArrayPulserThreshold();
+	caen_pulser_mod = myset->GetCAENPulserModule();
+	caen_pulser_ch = myset->GetCAENPulserChannel();
+	caen_pulser_code =GetCAENPulserCode();
+	mesy_pulser_mod = myset->GetMesytecPulserModule();
+	mesy_pulser_ch = myset->GetMesytecPulserChannel();
+	mesy_pulser_code = myset->GetMesytecPulserCode();
+	vme_ebis_crate = myset->GetEBISCrate();
+	vme_ebis_mod = myset->GetEBISModule();
+	vme_ebis_ch = myset->GetEBISChannel();
+	ebis_code = myset->GetEBISCode();
+	vme_t1_crate = myset->GetT1Crate();
+	vme_t1_mod = myset->GetT1Module();
+	vme_t1_ch = myset->GetT1Channel();
+	t1_code = myset->GetT1Code();
+	vme_sc_crate = myset->GetSCCrate();
+	vme_sc_mod = myset->GetSCModule();
+	vme_sc_ch = myset->GetSCChannel();
+	sc_code = myset->GetSCCode();
+	vme_laser_crate = myset->GetLaserCrate();
+	vme_laser_mod = myset->GetLaserModule();
+	vme_laser_ch = myset->GetLaserChannel();
+	laser_code = myset->GetLaserCode();
+
+	// Copy event builder settings
+	build_by_tm_stp = myset->BuildByTimeStamp();
+	event_window = myset->GetEventWindow();
+	recoil_hit_window = myset->GetRecoilHitWindow();
+	array_pn_hit_window = myset->GetArrayPNHitWindow();
+	array_pp_hit_window = myset->GetArrayPPHitWindow();
+	array_nn_hit_window = myset->GetArrayNNHitWindow();
+	zd_hit_window = myset->GetZeroDegreeHitWindow();
+	gamma_hit_window = myset->GetGammaRayHitWindow();
+	lume_hit_window = myset->GetLumeHitWindow();
+	cd_rs_hit_window = myset->GetCDRSHitWindow();
+	cd_dd_hit_window = myset->GetCDDDHitWindow();
+
+	// Copy data settings
+	block_size = myset->GetBlockSize();
+	flag_asic_only = myset->IsASICOnly();
+	flag_caen_only = myset->IsCAENOnly();
+	flag_mesy_only = myset->IsMesyOnly();
+
+	// Copy event rejection settings
+	clipped_reject = myset->GetClippedRejection();
+	overflow_reject = myset->GetOverflowRejection();
+
+	// Copy recoil detector settings
+	n_recoil_sector = myset->GetNumberOfRecoilSectors();
+	n_recoil_layer = myset->GetNumberOfRecoilLayers();
+	recoil_eloss_start = myset->GetRecoilEnergyLossStop();
+	recoil_eloss_stop = myset->GetRecoilEnergyLossStop();
+	recoil_erest_start = myset->GetRecoilEnergyRestStart();
+	recoil_erest_stop = myset->GetRecoilEnergyRestStop();
+	recoil_etot_start = myset->GetRecoilEnergyTotalStart();
+	recoil_etot_stop = myset->GetRecoilEnergyTotalStop();
+	recoil_vme = myset->GetRecoilCrates();
+	recoil_mod = myset->GetRecoilModules();
+	recoil_ch = myset->GetRecoilChannels();
+	recoil_sector = myset->GetRecoilSectors();
+	recoil_layer = myset->GetRecoilLayers();
+
+	// Copy MWPC settings
+	n_mwpc_axes = myset->GetNumberOfMWPCAxes();
+	mwpc_vme = myset->GetMwpcCrates();
+	mwpc_mod = myset->GetMwpcModules();
+	mwpc_ch  = myset->GetMwpcChannels();
+	mwpc_axis = myset->GetMwpcAxes();
+	mwpc_tac = myset->GetMwpcTacs();
+
+	// Copy ELUM settings
+	n_elum_sector = myset->GetNumberOfELUMSectors();
+	elum_vme = myset->GetELUMCrates();
+	elum_mod = myset->GetELUMModules();
+	elum_ch  = myset->GetELUMChannels();
+	elum_sector = myset->GetELUMSectors();
+
+	// Copy ZeroDegree settings
+	n_zd_layer = myset->GetNumberOfZDLayers();
+	zd_vme = myset->GetZDCrates();
+	zd_mod = myset->GetZDModules();
+	zd_ch  = myset->GetZDChannels();
+	zd_layer = myset->GetZDLayers();
+
+	// Copy ScintArray settings
+	n_scint_detector = myset->GetNumberOfScintArrayDetectors();
+	scint_vme = myset->GetScintArrayCrates();
+	scint_mod = myset->GetScintArrayModules();
+	scint_ch  = myset->GetScintArrayChannels();
+	scint_detector = myset->GetScintArrayDetectors();
+
+	// Copy LUME settings
+	n_lume = myset->GetNumberOfLUMEDetectors();
+	lume_vme = myset->GetLUMECrates();
+	lume_mod = myset->GetLUMEModules();
+	lume_ch  = myset->GetLUMEChannels();
+	lume_detector = myset->GetLUMEDetectors();
+	lume_type = myset->GetLUMETypes();
+
+	// Copy CD detector settings
+	n_cd_sector = myset->GetNumberOfCDSectors();
+	n_cd_layer = myset->GetNumberOfCDLayers();
+	cd_eloss_start = myset->GetCDEnergyLossStop();
+	cd_eloss_stop = myset->GetCDEnergyLossStop();
+	cd_erest_start = myset->GetCDEnergyRestStart();
+	cd_erest_stop = myset->GetCDEnergyRestStop();
+	cd_etot_start = myset->GetCDEnergyTotalStart();
+	cd_etot_stop = myset->GetCDEnergyTotalStop();
+	cd_vme = myset->GetCDCrates();
+	cd_mod = myset->GetCDModules();
+	cd_ch  = myset->GetCDChannels();
+	cd_layer = myset->GetCDLayers();
+	cd_strip = myset->GetCDStrips();
+	cd_side = myset->GetCDSides();
 
 }
 
@@ -442,6 +594,11 @@ void ISSSettings::ReadSettings() {
 		}
 
 	}
+
+	// Setup the LUME types
+	lume_type_list.push_back( "be" ); // back energy
+	lume_type_list.push_back( "ne" ); // near energy
+	lume_type_list.push_back( "fe" ); // far energy
 
 	// Loop over all LUME detectors
 	for( unsigned int i = 0; i < n_lume; ++i ){
