@@ -42,9 +42,11 @@ class ISSHistogrammer {
 
 public:
 
+	ISSHistogrammer();
 	ISSHistogrammer( std::shared_ptr<ISSReaction> myreact, std::shared_ptr<ISSSettings> myset );
 	virtual ~ISSHistogrammer(){};
 
+	void Initialise();
 	void MakeHists();
 	void ResetHists();
 	unsigned long FillHists();
@@ -66,6 +68,20 @@ public:
 	inline void PurgeOutput(){ output_file->Purge(2); }
 
 	inline TFile* GetFile(){ return output_file; };
+
+	// Adds the settings from the external settings file to the class
+	inline void AddSettings( std::shared_ptr<ISSSettings> myset ){
+		set = myset;
+		overwrite_set = true;
+	};
+	inline void AddReaction( std::shared_ptr<ISSReaction> myreact ){ react = myreact; };
+	inline void GenerateReaction( std::string react_file, bool flag_source ){
+		if( set.get() == nullptr ){
+			std::cerr << "No settings file given to histogrammer... Exiting!!\n";
+			exit(0);
+		}
+		react = std::make_shared<ISSReaction>( react_file, set, flag_source );
+	};
 
 	inline void AddProgressBar( std::shared_ptr<TGProgressBar> myprog ){
 		prog = myprog;
@@ -257,6 +273,7 @@ private:
 
 	// Settings file
 	std::shared_ptr<ISSSettings> set;
+	bool overwrite_set;
 
 	/// Input tree
 	TChain *input_tree;

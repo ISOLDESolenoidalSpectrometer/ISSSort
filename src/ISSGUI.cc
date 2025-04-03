@@ -716,9 +716,15 @@ void ISSGUI::gui_hist(){
 	//------------------------------//
 	// Finally make some histograms //
 	//------------------------------//
-	ISSHistogrammer hist( myrea, myset );
+	ISSHistogrammer hist;
 	hist.AddProgressBar( prog_hist );
 	std::cout << "\n +++ ISS Analysis:: processing Histogrammer +++" << std::endl;
+
+	// Update settings and reaction files if given
+	if( myset->InputFile() != "dummy" ){
+		hist.AddSettings( myset );
+		hist.AddReaction( myrea );
+	}
 
 	// Update everything
 	gSystem->ProcessEvents();
@@ -731,12 +737,8 @@ void ISSGUI::gui_hist(){
 	prog_format = "Histogramming: %.0f%%";
 	prog_hist->ShowPosition( true, false, prog_format.data() );
 
-	name_output_file = text_out_file->GetText();
-	if( name_output_file == "" ) name_output_file = "output.root";
-	hist.SetOutput( name_output_file.Data() );
-	std::vector<std::string> name_hist_files;
-
 	// We are going to chain all the event files now
+	std::vector<std::string> name_hist_files;
 	for( unsigned int i = 0; i < filelist.size(); i++ ){
 
 		// Skip the file if it's deleted
@@ -747,8 +749,22 @@ void ISSGUI::gui_hist(){
 
 	}
 
+	// Set input
 	hist.SetInputFile( name_hist_files );
+
+	// Generate a new reaction file if we don't have the settings from the input
+	if( myset->InputFile() == "dummy" )
+		hist.GenerateReaction( myrea->InputFile(), flag_source );
+
+	// Set ouput
+	name_output_file = text_out_file->GetText();
+	if( name_output_file == "" ) name_output_file = "output.root";
+	hist.SetOutput( name_output_file.Data() );
+
+	// Do physics
 	hist.FillHists();
+
+	// Close
 	hist.CloseOutput();
 
 	prog_format  = "Histogramming complete";

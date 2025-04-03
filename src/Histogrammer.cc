@@ -1,12 +1,18 @@
 #include "Histogrammer.hh"
 
-ISSHistogrammer::ISSHistogrammer( std::shared_ptr<ISSReaction> myreact, std::shared_ptr<ISSSettings> myset ){
+ISSHistogrammer::ISSHistogrammer(){
 
-	react = myreact;
-	set = myset;
+	Initialise();
+
+}
+
+void ISSHistogrammer::Initialise(){
 
 	// No progress bar by default
 	_prog_ = false;
+
+	// No settings file by default
+	overwrite_set = false;
 
 	// Make the histograms track the sum of the weights for correctly
 	// performing the error propagation when subtracting
@@ -15,6 +21,12 @@ ISSHistogrammer::ISSHistogrammer( std::shared_ptr<ISSReaction> myreact, std::sha
 }
 
 void ISSHistogrammer::SetOutput( std::string output_file_name ){
+
+	// Check we have built the reaction already
+	if( react.get() == nullptr ){
+		std::cerr << "No reaction file given to histogrammer... Exiting!!\n";
+		exit(0);
+	}
 
 	// These are the branches we need
 	rx_evts	= std::make_unique<ISSRxEvent>();
@@ -3763,13 +3775,30 @@ void ISSHistogrammer::SetInputTree( TTree *user_tree ){
 
 void ISSHistogrammer::SetInputFile( std::vector<std::string> input_file_names ) {
 
-	/// Overlaaded function for a single file or multiple files
+	/// Overloaded function for a single file or multiple files
+	TFile *input_file = nullptr;
 	input_tree = new TChain( "evt_tree" );
 	for( unsigned int i = 0; i < input_file_names.size(); i++ ) {
 
+		// Add to the chain
 		input_tree->Add( input_file_names[i].data() );
 
+		// Read settings from first file in chain (that works)
+		if( set.get() == nullptr ) {
+
+			input_file = new TFile( input_file_names[0].data() );
+			if( input_file->GetListOfKeys()->Contains( "Settings" ) )
+				set = std::make_shared<ISSSettings>( (ISSSettings*)input_file->Get( "Settings" ) );
+			else
+				set = std::make_shared<ISSSettings>();
+
+			// Close input file again
+			input_file->Close();
+
+		}
+
 	}
+
 	input_tree->SetBranchAddress( "ISSEvts", &read_evts );
 
 	return;
@@ -3782,6 +3811,20 @@ void ISSHistogrammer::SetInputFile( std::string input_file_name ) {
 	input_tree = new TChain( "evt_tree" );
 	input_tree->Add( input_file_name.data() );
 	input_tree->SetBranchAddress( "ISSEvts", &read_evts );
+
+	// Read settings from file if needed
+	if( set.get() == nullptr ) {
+
+		TFile *input_file = new TFile( input_file_name.data() );
+		if( input_file->GetListOfKeys()->Contains( "Settings" ) )
+			set = std::make_shared<ISSSettings>( (ISSSettings*)input_file->Get( "Settings" ) );
+		else
+			set = std::make_shared<ISSSettings>();
+
+		// Close input file again
+		input_file->Close();
+
+	}
 
 	return;
 

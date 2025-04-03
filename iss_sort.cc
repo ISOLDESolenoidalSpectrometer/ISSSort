@@ -176,7 +176,9 @@ void* monitor_run( void* ptr ){
 	eb_mon->AddCalibration( calfiles->mycal );
 
 	// Setup the histogram step
-	hist_mon = std::make_shared<ISSHistogrammer>( calfiles->myreact, calfiles->myset );
+	hist_mon = std::make_shared<ISSHistogrammer>();
+	hist_mon->AddSettings( calfiles->myset );
+	hist_mon->AddReaction( calfiles->myreact );
 
 	// Data blocks for Data spy
 	if( flag_spy && myset->GetBlockSize() != 0x10000 ) {
@@ -276,27 +278,38 @@ void* monitor_run( void* ptr ){
 			if( !flag_source ) {
 
 				// Event builder
+				TTree *sorted_tree = conv_mon->GetSortedTree()->CloneTree();
+				eb_mon->SetInputTree( sorted_tree );
+				eb_mon->GetTree()->Reset();
+
+				// Set output
 				if( bFirstRun ) {
 					eb_mon->SetOutput( "monitor_events.root" );
 					eb_mon->StartFile();
 				}
-				TTree *sorted_tree = conv_mon->GetSortedTree()->CloneTree();
-				eb_mon->SetInputTree( sorted_tree );
-				eb_mon->GetTree()->Reset();
+
+				// Build!
 				nbuild = eb_mon->BuildEvents();
 				eb_mon->PurgeOutput();
 				delete sorted_tree;
 
 				// Histogrammer
-				if( bFirstRun ) {
-					hist_mon->SetOutput( "monitor_hists.root" );
-				}
 				if( nbuild ) {
+
+					// Set input
 					TTree *evt_tree = eb_mon->GetTree()->CloneTree();
 					hist_mon->SetInputTree( evt_tree );
+
+					// Set output
+					if( bFirstRun ) {
+						hist_mon->SetOutput( "monitor_hists.root" );
+					}
+
+					// Do physics
 					hist_mon->FillHists();
 					hist_mon->PurgeOutput();
 					delete evt_tree;
+
 				}
 
 				// If this was the first time we ran, do stuff?
@@ -491,16 +504,6 @@ bool do_build(){
 
 		}
 
-		// If we have a new settings file, but an old calibration, print a warning
-		if( overwrite_set && !overwrite_cal && !force_convert.at(i) ){
-
-			std::cout << "\n\tWARNING!! Changing the settings but not the calibration." << std::endl;
-			std::cout << "\n\tReading calibration from " << name_input_file << " and settings from " << myset->InputFile() << std::endl;
-			std::cout << "\tIn case the detector mapping has changed, things will go awry!\n" << std::endl;
-
-		}
-
-
 		// We need to do event builder if we just converted it
 		// specific request to do new event build with -e
 		// this is useful if you need to add a new calibration
@@ -530,6 +533,15 @@ bool do_build(){
 			std::cout << name_input_file << " --> ";
 			std::cout << name_output_file << std::endl;
 
+			// If we have a new settings file, but an old calibration, print a warning
+			if( overwrite_set && !overwrite_cal && !force_convert.at(i) ){
+
+				std::cout << "\n\tWARNING!! Changing the settings but not the calibration." << std::endl;
+				std::cout << "\n\tReading calibration from " << name_input_file << " and settings from " << myset->InputFile() << std::endl;
+				std::cout << "\tIn case the detector mapping has changed, things will go awry!\n" << std::endl;
+
+			}
+
 			eb.SetInputFile( name_input_file );
 			eb.SetOutput( name_output_file );
 			eb.BuildEvents();
@@ -550,13 +562,19 @@ void do_hist(){
 	//------------------------------//
 	// Finally make some histograms //
 	//------------------------------//
-	ISSHistogrammer hist( myreact, myset );
+	ISSHistogrammer hist;
 	std::cout << "\n +++ ISS Analysis:: processing Histogrammer +++" << std::endl;
 
 	std::ifstream ftest;
 	std::string name_input_file;
 
 	std::vector<std::string> name_hist_files;
+
+	// Update settings and reaction files if given
+	if( overwrite_set ){
+		hist.AddSettings( myset );
+		hist.AddReaction( myreact );
+	}
 
 	// We are going to chain all the event files now
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
@@ -583,9 +601,20 @@ void do_hist(){
 	// Only do something if there are valid files
 	if( name_hist_files.size() ) {
 
-		hist.SetOutput( output_name );
+		// Set input files
 		hist.SetInputFile( name_hist_files );
+
+		// Generate a new reaction file if we don't have the settings from the input
+		if( !overwrite_set )
+			hist.GenerateReaction( name_react_file, flag_source );
+
+		// Set output
+		hist.SetOutput( output_name );
+
+		// Now do the physics
 		hist.FillHists();
+
+		// Close
 		hist.CloseOutput();
 
 	}
@@ -681,13 +710,19 @@ void do_pace4(){
 	//-----------------------------------------------------//
 	// Make some histograms from the PACE4 simulation data //
 	//-----------------------------------------------------//
-	ISSHistogrammer hist( myreact, myset );
+	ISSHistogrammer hist;
 	std::cout << "\n +++ ISS Analysis:: processing Histogrammer with PACE4 data +++" << std::endl;
 
 	std::ifstream ftest;
 	std::string name_input_file;
 
 	std::vector<std::string> name_hist_files;
+
+	// Add settings file
+	hist.AddSettings( myset );
+
+	// Add the reaction file
+	hist.AddReaction( myreact );
 
 	// We are going to chain all the event files now
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
