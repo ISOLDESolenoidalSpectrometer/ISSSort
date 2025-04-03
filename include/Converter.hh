@@ -40,6 +40,7 @@ class ISSConverter {
 
 public:
 
+	ISSConverter();
 	ISSConverter( std::shared_ptr<ISSSettings> myset );
 	virtual ~ISSConverter(){};
 
@@ -77,6 +78,9 @@ public:
 		//output_tree->SetDirectory(0);
 		output_file->Write( 0, TObject::kWriteDelete );
 		PurgeOutput();
+		output_file->cd("/");
+		set->Write( "Settings", TObject::kWriteDelete );
+		cal->Write( "Calibration", TObject::kWriteDelete );
 		output_file->Close();
 		//output_tree->ResetBranchAddresses();
 		//sorted_tree->ResetBranchAddresses();
@@ -86,6 +90,7 @@ public:
 	inline TTree* GetTree(){ return output_tree; };
 	inline TTree* GetSortedTree(){ return sorted_tree; };
 
+	inline void AddSettings( std::shared_ptr<ISSSettings> myset ){ set = myset; };
 	inline void AddCalibration( std::shared_ptr<ISSCalibration> mycal ){ cal = mycal; };
 	inline void SourceOnly(){ flag_source = true; };
 

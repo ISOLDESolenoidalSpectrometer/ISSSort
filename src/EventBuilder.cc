@@ -1,11 +1,10 @@
 #include "EventBuilder.hh"
 ///////////////////////////////////////////////////////////////////////////////
-/// This constructs the event-builder object, setting parameters for this process by grabbing information from the settings file (or using default parameters defined in the constructor)
-/// \param[in] myset The ISSSettings object which is constructed by the ISSSettings constructor used in iss_sort.cc
-ISSEventBuilder::ISSEventBuilder( std::shared_ptr<ISSSettings> myset ){
+/// This constructs the event-builder object
+ISSEventBuilder::ISSEventBuilder(){
 
-	// First get the settings
-	set = myset;
+	// No settings file by default
+	overwrite_set = false;
 
 	// No calibration file by default
 	overwrite_cal = false;
@@ -16,36 +15,11 @@ ISSEventBuilder::ISSEventBuilder( std::shared_ptr<ISSSettings> myset ){
 	// No progress bar by default
 	_prog_ = false;
 
-	// ------------------------------------------------------------------------ //
-	// Initialise variables and flags
-	// ------------------------------------------------------------------------ //
-	build_window = set->GetEventWindow();
+}
 
-	// Resize 17 vectors to match modules of detectors
-	n_fpga_pulser.resize( set->GetNumberOfArrayModules() );
-	n_asic_pulser.resize( set->GetNumberOfArrayModules() );
-	n_asic_pause.resize( set->GetNumberOfArrayModules() );
-	n_asic_resume.resize( set->GetNumberOfArrayModules() );
-	flag_pause.resize( set->GetNumberOfArrayModules() );
-	flag_resume.resize( set->GetNumberOfArrayModules() );
-	pause_time.resize( set->GetNumberOfArrayModules() );
-	resume_time.resize( set->GetNumberOfArrayModules() );
-	asic_dead_time.resize( set->GetNumberOfArrayModules() );
-	asic_time_start.resize( set->GetNumberOfArrayModules() );
-	asic_time_stop.resize( set->GetNumberOfArrayModules() );
-	asic_time.resize( set->GetNumberOfArrayModules() );
-	asic_prev.resize( set->GetNumberOfArrayModules() );
-	fpga_time.resize( set->GetNumberOfArrayModules() );
-	fpga_prev.resize( set->GetNumberOfArrayModules() );
-	vme_time_start.resize( set->GetNumberOfVmeCrates() );
-	vme_time_stop.resize( set->GetNumberOfVmeCrates() );
-
-	for( unsigned int i = 0; i < set->GetNumberOfVmeCrates(); ++i ){
-
-		vme_time_start[i].resize( set->GetMaximumNumberOfVmeModules() );
-		vme_time_stop[i].resize( set->GetMaximumNumberOfVmeModules() );
-
-	}
+///////////////////////////////////////////////////////////////////////////////
+/// This maps the vectors for the array just once, assuming you dont change array geomerty between run files!
+void ISSEventBuilder::ArrayMapping(){
 
 	// p-side = 0; n-side = 1;
 	asic_side.push_back(0); // asic 0 = p-side
@@ -65,7 +39,6 @@ ISSEventBuilder::ISSEventBuilder( std::shared_ptr<ISSSettings> myset ){
 	array_row.resize( set->GetNumberOfArrayASICs() );
 	array_pid.resize( set->GetNumberOfArrayASICs() );
 	array_nid.resize( set->GetNumberOfArrayASICs() );
-
 
 	// Loop over ASICs in a module
 	for( unsigned int i = 0; i < set->GetNumberOfArrayASICs(); ++i ) {
@@ -143,9 +116,38 @@ ISSEventBuilder::ISSEventBuilder( std::shared_ptr<ISSSettings> myset ){
 /// Reset private-member counters, arrays and flags for processing the next input file. Called in the ISSEventBuilder::SetInputFile and ISSEventBuilder::SetInputTree functions
 void ISSEventBuilder::StartFile(){
 
-	// Call for every new file
-	// Reset counters etc.
+	// ------------------------------------------------------------------------ //
+	// Initialise variables and flags
+	// ------------------------------------------------------------------------ //
+	build_window = set->GetEventWindow();
 
+	// Resize 17 vectors to match modules of detectors
+	n_fpga_pulser.resize( set->GetNumberOfArrayModules(), 0 );
+	n_asic_pulser.resize( set->GetNumberOfArrayModules(), 0 );
+	n_asic_pause.resize( set->GetNumberOfArrayModules(), 0 );
+	n_asic_resume.resize( set->GetNumberOfArrayModules(), 0 );
+	flag_pause.resize( set->GetNumberOfArrayModules(), false );
+	flag_resume.resize( set->GetNumberOfArrayModules(), false );
+	pause_time.resize( set->GetNumberOfArrayModules(), 0 );
+	resume_time.resize( set->GetNumberOfArrayModules(), 0 );
+	asic_dead_time.resize( set->GetNumberOfArrayModules(), 0 );
+	asic_time_start.resize( set->GetNumberOfArrayModules(), 0 );
+	asic_time_stop.resize( set->GetNumberOfArrayModules(), 0 );
+	asic_time.resize( set->GetNumberOfArrayModules(), 0 );
+	asic_prev.resize( set->GetNumberOfArrayModules(), 0 );
+	fpga_time.resize( set->GetNumberOfArrayModules(), 0 );
+	fpga_prev.resize( set->GetNumberOfArrayModules(), 0 );
+	vme_time_start.resize( set->GetNumberOfVmeCrates() );
+	vme_time_stop.resize( set->GetNumberOfVmeCrates() );
+
+	for( unsigned int i = 0; i < set->GetNumberOfVmeCrates(); ++i ){
+
+		vme_time_start[i].resize( set->GetMaximumNumberOfVmeModules(), 0 );
+		vme_time_stop[i].resize( set->GetMaximumNumberOfVmeModules(), 0 );
+
+	}
+
+	// Reset counters etc.
 	time_prev = 0;
 	time_min = 0;
 	time_max = 0;
@@ -179,38 +181,6 @@ void ISSEventBuilder::StartFile(){
 	lume_ctr	= 0;
 	cd_ctr		= 0;
 
-
-	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
-
-		n_fpga_pulser[i] = 0;
-		n_asic_pulser[i] = 0;
-		n_asic_pause[i] = 0;
-		n_asic_resume[i] = 0;
-		flag_pause[i] = false;
-		flag_resume[i] = false;
-		pause_time[i] = 0;
-		resume_time[i] = 0;
-		asic_dead_time[i] = 0;
-		asic_time_start[i] = 0;
-		asic_time_stop[i] = 0;
-		asic_time[i] = 0;
-		asic_prev[i] = 0;
-		fpga_time[i] = 0;
-		fpga_prev[i] = 0;
-
-	}
-
-	for( unsigned int i = 0; i < set->GetNumberOfVmeCrates(); ++i ) {
-
-		for( unsigned int j = 0; j < set->GetMaximumNumberOfVmeModules(); ++j ) {
-
-			vme_time_start[i][j] = 0;
-			vme_time_stop[i][j] = 0;
-
-		}
-
-	}
-
 	// Some flags must be false to start
 	flag_caen_pulser = false;
 
@@ -235,6 +205,22 @@ void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
 	}
 
 	flag_input_file = true;
+
+	// Read settings from file
+	if( input_file->GetListOfKeys()->Contains( "Settings" ) )
+		set = std::make_shared<ISSSettings>( (ISSSettings*)input_file->Get( "Settings" ) );
+	else
+		set = std::make_shared<ISSSettings>();
+
+	// Read calibration from the file
+	if( input_file->GetListOfKeys()->Contains( "Calibration" ) )
+		cal = std::make_shared<ISSCalibration>( (ISSCalibration*)input_file->Get( "Calibration" ) );
+	else
+		cal = std::make_shared<ISSCalibration>();
+	cal->AddSettings( set );
+
+	// Do the array mapping just once after settings
+	ArrayMapping();
 
 	// Set the input tree
 	SetInputTree( (TTree*)input_file->Get("iss_sort") );
@@ -615,16 +601,12 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				unsigned short adc_value = 0;
 				if( entype == "Qlong" ) {
 					adc_value = vme_data->GetQlong();
-					myoverflow = vme_data->IsOverflowLong();
 				}
 				else if( entype == "Qshort" ){
 					adc_value = vme_data->GetQshort();
-					myoverflow = vme_data->IsOverflowShort();
 				}
 				else if( entype == "Qdiff" ){
 					adc_value = vme_data->GetQdiff();
-					myoverflow = vme_data->IsOverflowLong();
-					myoverflow |= vme_data->IsOverflowShort();
 				}
 				myenergy = cal->VmeEnergy( myvme, mymod, mych, adc_value );
 
@@ -639,6 +621,20 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				mythres = vme_data->IsOverThreshold();
 
 			}
+
+			// Check for overflows
+			std::string entype = cal->VmeType( myvme, mymod, mych );
+			if( entype == "Qlong" ) {
+				myoverflow = vme_data->IsOverflowLong();
+			}
+			else if( entype == "Qshort" ){
+				myoverflow = vme_data->IsOverflowShort();
+			}
+			else if( entype == "Qdiff" ){
+				myoverflow = vme_data->IsOverflowLong();
+				myoverflow |= vme_data->IsOverflowShort();
+			}
+
 
 			// If it's below threshold do not use as window opener
 			if( mythres ) event_open = true;

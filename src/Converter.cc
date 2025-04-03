@@ -1,25 +1,6 @@
 #include "Converter.hh"
 
-ISSConverter::ISSConverter( std::shared_ptr<ISSSettings> myset ) {
-
-	// We need to do initialise, but only after Settings are added
-	set = myset;
-
-	my_tm_stp_msb = 0;
-	my_tm_stp_hsb = 0;
-
-	// Resize counters
-	ctr_asic_hit.resize( set->GetNumberOfArrayModules() );
-	ctr_asic_ext.resize( set->GetNumberOfArrayModules() );
-	ctr_asic_pause.resize( set->GetNumberOfArrayModules() );
-	ctr_asic_resume.resize( set->GetNumberOfArrayModules() );
-	ctr_caen_hit.resize( set->GetNumberOfCAENModules() );
-	ctr_caen_ext.resize( set->GetNumberOfCAENModules() );
-	ctr_mesy_hit.resize( set->GetNumberOfMesytecModules() );
-	ctr_mesy_ext.resize( set->GetNumberOfMesytecModules() );
-
-	// Start counters at zero
-	StartFile();
+ISSConverter::ISSConverter() {
 
 	// Default that we do not have a source only run
 	flag_source = false;
@@ -29,31 +10,37 @@ ISSConverter::ISSConverter( std::shared_ptr<ISSSettings> myset ) {
 
 }
 
+ISSConverter::ISSConverter( std::shared_ptr<ISSSettings> myset ) {
+
+	// Default constructor
+	ISSConverter();
+
+	// We need to do initialise, but only after Settings are added
+	set = myset;
+
+}
+
 void ISSConverter::StartFile(){
 
-	// Start counters at zero
-	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
-
-		ctr_asic_hit[i] = 0;	// hits on each module
-		ctr_asic_ext[i] = 0;	// external timestamps
-		ctr_asic_pause[i] = 0;
-		ctr_asic_resume[i] = 0;
-
+	// Check that we have the settings file
+	if( set.get() == nullptr ){
+		std::cerr << "No settings file given to Converter... Exiting!" << std::endl;
+		exit(0);
 	}
 
-	for( unsigned int i = 0; i < set->GetNumberOfCAENModules(); ++i ) {
+	// Reset timestamps
+	my_tm_stp_msb = 0;
+	my_tm_stp_hsb = 0;
 
-		ctr_caen_hit[i] = 0;	// hits on each module
-		ctr_caen_ext[i] = 0;	// external timestamps
-
-	}
-
-	for( unsigned int i = 0; i < set->GetNumberOfMesytecModules(); ++i ) {
-
-		ctr_mesy_hit[i] = 0;	// hits on each module
-		ctr_mesy_ext[i] = 0;	// external timestamps
-
-	}
+	// Reset counters
+	ctr_asic_hit.resize( set->GetNumberOfArrayModules(), 0 );
+	ctr_asic_ext.resize( set->GetNumberOfArrayModules(), 0 );
+	ctr_asic_pause.resize( set->GetNumberOfArrayModules(), 0 );
+	ctr_asic_resume.resize( set->GetNumberOfArrayModules(), 0 );
+	ctr_caen_hit.resize( set->GetNumberOfCAENModules(), 0 );
+	ctr_caen_ext.resize( set->GetNumberOfCAENModules(), 0 );
+	ctr_mesy_hit.resize( set->GetNumberOfMesytecModules(), 0 );
+	ctr_mesy_ext.resize( set->GetNumberOfMesytecModules(), 0 );
 
 	return;
 
