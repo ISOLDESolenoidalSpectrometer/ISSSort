@@ -70,7 +70,7 @@ class ISSEventBuilder {
 
 public:
 
-	ISSEventBuilder( std::shared_ptr<ISSSettings> myset ); ///< Constructor
+	ISSEventBuilder(); ///< Constructor
 	virtual ~ISSEventBuilder(){}; /// Destructor (currently empty)
 
 	void	SetInputFile( std::string input_file_name ); ///< Function to set the input data file from which events are built
@@ -85,11 +85,24 @@ public:
 	void	Initialise();	///< Called for every event
 	void	MakeHists(); ///< Creates histograms for events that occur
 	void	ResetHists(); ///< Empties the histograms during the DataSpy
+	void	ArrayMapping();	///< Do the mapping of the array just once
+
+	/// Adds the settings from the external settings file to the class
+	/// \param[in] myset The ISSSettings object which is constructed by the ISSSettings constructor used in iss_sort.cc
+	inline void AddSettings( std::shared_ptr<ISSSettings> myset ){
+		set = myset;
+		overwrite_set = true;
+	};
 
 	/// Adds the calibration from the external calibration file to the class
 	/// \param[in] mycal The ISSCalibration object which is constructed by the ISSCalibration constructor used in iss_sort.cc
 	inline void AddCalibration( std::shared_ptr<ISSCalibration> mycal ){
+		if( set.get() == nullptr ){
+			std::cerr << "No settings given... Exiting!!" << std::endl;
+			exit(0);
+		}
 		cal = mycal;
+		cal->AddSettings( set );
 		overwrite_cal = true;
 	};
 
@@ -112,6 +125,8 @@ public:
 	inline void CloseOutput(){
 		output_tree->ResetBranchAddresses();
 		PurgeOutput();
+		output_file->cd("/");
+		set->Write( "Settings", TObject::kWriteDelete );
 		output_file->Close();
 		//input_tree->ResetBranchAddresses();
 		//nptool_tree->ResetBranchAddresses();
@@ -167,6 +182,7 @@ private:
 
 	// Settings file
 	std::shared_ptr<ISSSettings> set; ///< Pointer to the settings object. Assigned in constructor
+	bool overwrite_set; ///< Boolean determining whether an settings should be used (true) or not (false). Set in the ISSEventBuilder::AddSettings function
 
 	// Progress bar
 	bool _prog_; ///< Boolean determining if there is a progress bar (in the GUI)

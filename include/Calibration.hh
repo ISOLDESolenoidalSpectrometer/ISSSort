@@ -37,18 +37,52 @@ const unsigned char HitN = 2;
 * and there is a time offset parameter for each ASIC module, too.
 */
 
-class ISSCalibration {
+class ISSCalibration : public TObject {
 
 public:
 
+	ISSCalibration();
+	ISSCalibration( ISSCalibration *mycal );
 	ISSCalibration( std::string filename, std::shared_ptr<ISSSettings> myset );///< Constructor
+
 	/// Destructor
 	inline virtual ~ISSCalibration() {
 		delete fRand;
 	};
 
+	void Initialise();
 	void ReadCalibration();
 	void PrintCalibration( std::ostream &stream, std::string opt );
+	inline void AddSettings( std::shared_ptr<ISSSettings> myset ){ set = myset; };
+
+
+	// Getters for the copy constructor
+	std::vector<std::vector<std::vector<float>>> GetAsicOffsets(){ return fAsicOffset; };
+	std::vector<std::vector<std::vector<float>>> GetAsicGains(){ return fAsicGain; };
+	std::vector<std::vector<std::vector<float>>> GetAsicGainQuadrs(){ return fAsicGainQuadr; };
+	std::vector<std::vector<std::vector<unsigned int>>> GetAsicThresholds(){ return fAsicThreshold; };
+	std::vector<std::vector<long double>> GetAsicTimes(){ return fAsicTime; };
+	std::vector<std::vector<bool>> GetAsicEnableds(){ return fAsicEnabled; };
+	std::vector<std::vector<std::vector<double>>> GetAsicWalkHit0s(){ return fAsicWalkHit0; };
+	std::vector<std::vector<std::vector<double>>> GetAsicWalkHit1s(){ return fAsicWalkHit1; };
+	std::vector<std::vector<unsigned char>> GetAsicWalkTypes(){ return fAsicWalkType; };
+	std::vector<std::vector<std::vector<std::string>>> GetTWGraphFiles(){ return twgraphfile; };
+	std::vector<std::vector<std::vector<std::string>>> GetTWGraphNames(){ return twgraphname; };
+
+	std::vector<std::vector<float>> GetCaenOffsets(){ return fCaenOffset; };
+	std::vector<std::vector<float>> GetCaenGains(){ return fCaenGain; };
+	std::vector<std::vector<float>> GetCaenGainQuadrs(){ return fCaenGainQuadr; };
+	std::vector<std::vector<unsigned int>> GetCaenThresholds(){ return fCaenThreshold; };
+	std::vector<std::vector<long double>> GetCaenTimes(){ return fCaenTime; };
+	std::vector<std::vector<std::string>> GetCaenTypes(){ return fCaenType; };
+
+	std::vector<std::vector<float>> GetMesyOffsets(){ return fMesyOffset; };
+	std::vector<std::vector<float>> GetMesyGains(){ return fMesyGain; };
+	std::vector<std::vector<float>> GetMesyGainQuadrs(){ return fMesyGainQuadr; };
+	std::vector<std::vector<unsigned int>> GetMesyThresholds(){ return fMesyThreshold; };
+	std::vector<std::vector<long double>> GetMesyTimes(){ return fMesyTime; };
+	std::vector<std::vector<std::string>> GetMesyTypes(){ return fMesyType; };
+
 
 	/// Setter for the location of the input file
 	/// \param[in] filename The location of the input file
@@ -268,59 +302,58 @@ private:
 
 	std::string fInputFile;///< The location of the calibration input file
 
-	std::shared_ptr<ISSSettings> set;///< Pointer to the ISSSettings object
+	std::shared_ptr<ISSSettings> set;	///<! Pointer to the ISSSettings object (not stored in ROOT file, need the ! for this)
 
-	TRandom *fRand;///< Used to eliminate binning issues
+	TRandom *fRand;///<! Used to eliminate binning issues
 
 	// Calibration file value storage
-	std::vector< std::vector< std::vector<float> > > fAsicOffset;///< Constant in ASIC energy calculation
-	std::vector< std::vector< std::vector<float> > > fAsicGain;///< Linear term in ASIC energy calculation
-	std::vector< std::vector< std::vector<float> > > fAsicGainQuadr;///< Quadratic term in ASIC energy calibration
-	std::vector< std::vector< std::vector<unsigned int> > > fAsicThreshold;///< Threshold for raw signals on the ASICs
-	std::vector< std::vector<long double> > fAsicTime;///< Time offset for signals on a given ASIC
-	std::vector< std::vector<bool> > fAsicEnabled;///< Boolean determining if ASIC is enabled or not
-	std::vector< std::vector< std::vector<double> > > fAsicWalkHit0;///< Time-walk parameters for the ASICs for hit bit 0 events
-	std::vector< std::vector< std::vector<double> > > fAsicWalkHit1;///< Time-walk parameters for the ASICs for hit bit 1 events
-	std::vector< std::vector<unsigned char> > fAsicWalkType;///< Type of time-walk parameters for the ASICs, with 0: Annie Dolan's poly + exp function and 1: Sam Reeve's inverted thing
+	std::vector<std::vector<std::vector<float>>> fAsicOffset;///< Constant in ASIC energy calculation
+	std::vector<std::vector<std::vector<float>>> fAsicGain;///< Linear term in ASIC energy calculation
+	std::vector<std::vector<std::vector<float>>> fAsicGainQuadr;///< Quadratic term in ASIC energy calibration
+	std::vector<std::vector<std::vector<unsigned int>>> fAsicThreshold;///< Threshold for raw signals on the ASICs
+	std::vector<std::vector<long double>> fAsicTime;///< Time offset for signals on a given ASIC
+	std::vector<std::vector<bool>> fAsicEnabled;///< Boolean determining if ASIC is enabled or not
+	std::vector<std::vector<std::vector<double>>> fAsicWalkHit0;///< Time-walk parameters for the ASICs for hit bit 0 events
+	std::vector<std::vector<std::vector<double>>> fAsicWalkHit1;///< Time-walk parameters for the ASICs for hit bit 1 events
+	std::vector<std::vector<unsigned char>> fAsicWalkType;///< Type of time-walk parameters for the ASICs, with 0: Annie Dolan's poly + exp function and 1: Sam Reeve's inverted thing
 
-	std::vector< std::vector<float> > fCaenOffset;///< Constant in CAEN energy calculation
-	std::vector< std::vector<float> > fCaenGain;///< Linear term in CAEN energy calculation
-	std::vector< std::vector<float> > fCaenGainQuadr;///< Quadratic term in CAEN energy calibration
-	std::vector< std::vector<unsigned int> > fCaenThreshold;///< Threshold for raw signals from detectors in the CAEN DAQ
-	std::vector< std::vector<long double> > fCaenTime;///< Time offset for signals on a given detector in the CAEN DAQ
-	std::vector< std::vector<std::string> > fCaenType;///< The type assigned to the CAEN signal
+	std::vector<std::vector<float>> fCaenOffset;///< Constant in CAEN energy calculation
+	std::vector<std::vector<float>> fCaenGain;///< Linear term in CAEN energy calculation
+	std::vector<std::vector<float>> fCaenGainQuadr;///< Quadratic term in CAEN energy calibration
+	std::vector<std::vector<unsigned int>> fCaenThreshold;///< Threshold for raw signals from detectors in the CAEN DAQ
+	std::vector<std::vector<long double>> fCaenTime;///< Time offset for signals on a given detector in the CAEN DAQ
+	std::vector<std::vector<std::string>> fCaenType;///< The type assigned to the CAEN signal
 
-	std::vector< std::vector<float> > fMesyOffset;///< Constant in Mesytec energy calculation
-	std::vector< std::vector<float> > fMesyGain;///< Linear term in Mesytec energy calculation
-	std::vector< std::vector<float> > fMesyGainQuadr;///< Quadratic term in Mesytec energy calibration
-	std::vector< std::vector<unsigned int> > fMesyThreshold;///< Threshold for raw signals from detectors in the Mesytec DAQ
-	std::vector< std::vector<long double> > fMesyTime;///< Time offset for signals on a given detector in the Mesytec DAQ
-	std::vector< std::vector<std::string> > fMesyType;///< The type assigned to the Mesytec signal
+	std::vector<std::vector<float>> fMesyOffset;///< Constant in Mesytec energy calculation
+	std::vector<std::vector<float>> fMesyGain;///< Linear term in Mesytec energy calculation
+	std::vector<std::vector<float>> fMesyGainQuadr;///< Quadratic term in Mesytec energy calibration
+	std::vector<std::vector<unsigned int>> fMesyThreshold;///< Threshold for raw signals from detectors in the Mesytec DAQ
+	std::vector<std::vector<long double>> fMesyTime;///< Time offset for signals on a given detector in the Mesytec DAQ
+	std::vector<std::vector<std::string>> fMesyType;///< The type assigned to the Mesytec signal
 
-	float fAsicOffsetDefault;///< The default constant in ASIC energy calculations
-	float fAsicGainDefault;///< The default linear term in ASIC energy calculations
-	float fAsicGainQuadrDefault;///< The default quadratic term in ASIC energy calculations
-	float fCaenOffsetDefault;///< The default constant in CAEN energy calculations
-	float fCaenGainDefault;///< The default linear term in CAEN energy calculations
-	float fCaenGainQuadrDefault;///< The default quadratic term in CAEN energy calculations
-	float fMesyOffsetDefault;///< The default constant in Mesytec energy calculations
-	float fMesyGainDefault;///< The default linear term in Mesytec energy calculations
-	float fMesyGainQuadrDefault;///< The default quadratic term in Mesytec energy calculations
+	float fAsicOffsetDefault;///<! The default constant in ASIC energy calculations
+	float fAsicGainDefault;///<! The default linear term in ASIC energy calculations
+	float fAsicGainQuadrDefault;///<! The default quadratic term in ASIC energy calculations
+	float fCaenOffsetDefault;///<! The default constant in CAEN energy calculations
+	float fCaenGainDefault;///<! The default linear term in CAEN energy calculations
+	float fCaenGainQuadrDefault;///<! The default quadratic term in CAEN energy calculations
+	float fMesyOffsetDefault;///<! The default constant in Mesytec energy calculations
+	float fMesyGainDefault;///<! The default linear term in Mesytec energy calculations
+	float fMesyGainQuadrDefault;///<! The default quadratic term in Mesytec energy calculations
 
 	// Stuff for the time walk calculation
-	std::unique_ptr<ROOT::Math::RootFinder> rf;///< Root finding object for the time-walk function: walk_function( double *x, double *params )
-	TF1 *fa;///< TF1 for the time walk function: walk_function( double *x, double *params )
-	TF1 *fb;///< TF1 for the time walk function derivative: walk_derivative( double *x, double *params )
+	std::unique_ptr<ROOT::Math::RootFinder> rf;	///<! Root finding object for the time-walk function: walk_function( double *x, double *params )
+	TF1 *fa;	///<! TF1 for the time walk function: walk_function( double *x, double *params )
+	TF1 *fb;	///<! TF1 for the time walk function derivative: walk_derivative( double *x, double *params )
 	double walk_params[nwalkpars+1];///< Parameters used to store time-walk parameters
 
 	// Time-walk Graphs
-	std::vector< std::vector< std::vector< std::string > > > twgraphfile;///< The location of the time walk graph files
-	std::vector< std::vector< std::vector< std::string > > > twgraphname;///< The names of the time walk graphs
-	std::vector< std::vector< std::vector< std::shared_ptr<TGraph> > > > tw_graph;///< Vector containing time walk graphs
+	std::vector<std::vector<std::vector<std::string>>> twgraphfile;			///< The location of the time walk graph files
+	std::vector<std::vector<std::vector<std::string>>> twgraphname;			///< The names of the time walk graphs
+	std::vector<std::vector<std::vector<std::shared_ptr<TGraph>>>> tw_graph;	///<! Vector containing time walk graphs
 
 
-
-	//ClassDef(ISSCalibration, 1)
+	ClassDef( ISSCalibration, 10 )
 
 };
 

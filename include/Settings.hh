@@ -14,11 +14,13 @@
 *
 */
 
-class ISSSettings {
+class ISSSettings : public TObject {
 
 public:
 
+	ISSSettings();
 	ISSSettings( std::string filename );
+	ISSSettings( ISSSettings *myset ); ///< Copy constructor
 	inline virtual ~ISSSettings() {};
 
 	void ReadSettings();
@@ -43,6 +45,7 @@ public:
 	// CAEN settings
 	inline unsigned char GetNumberOfCAENModules(){ return n_caen_mod; };
 	inline unsigned char GetNumberOfCAENChannels(){ return n_caen_ch; };
+	inline std::vector<unsigned int> GetCAENModels(){ return caen_model; };
 	inline unsigned int GetCAENModel( unsigned char i ){
 		if( i < n_caen_mod )
 			return caen_model[i];
@@ -147,6 +150,11 @@ public:
 	inline unsigned char GetRecoilEnergyRestStop(){ return recoil_erest_stop; };
 	inline unsigned char GetRecoilEnergyTotalStart(){ return recoil_etot_start; };
 	inline unsigned char GetRecoilEnergyTotalStop(){ return recoil_etot_stop; };
+	inline std::vector<std::vector<unsigned char>> GetRecoilCrates(){ return recoil_vme; };
+	inline std::vector<std::vector<unsigned char>> GetRecoilModules(){ return recoil_mod; };
+	inline std::vector<std::vector<unsigned char>> GetRecoilChannels(){ return recoil_ch; };
+	inline std::vector<std::vector<std::vector<char>>> GetRecoilSectors(){ return recoil_sector; };
+	inline std::vector<std::vector<std::vector<char>>> GetRecoilLayers(){ return recoil_layer; };
 	char GetRecoilSector( unsigned char vme, unsigned char mod, unsigned char ch );
 	char GetRecoilLayer( unsigned char vme, unsigned char mod, unsigned char ch );
 	char GetRecoilCrate( unsigned char sec, unsigned char layer );
@@ -156,27 +164,49 @@ public:
 
 	// MWPC
 	inline unsigned char GetNumberOfMWPCAxes(){ return n_mwpc_axes; };
+	inline std::vector<std::vector<unsigned char>> GetMwpcCrates(){ return mwpc_vme; };
+	inline std::vector<std::vector<unsigned char>> GetMwpcModules(){ return mwpc_mod; };
+	inline std::vector<std::vector<unsigned char>> GetMwpcChannels(){ return mwpc_ch; };
+	inline std::vector<std::vector<std::vector<char>>> GetMwpcAxes(){ return mwpc_axis; };
+	inline std::vector<std::vector<std::vector<char>>> GetMwpcTacs(){ return mwpc_tac; };
 	char GetMWPCAxis( unsigned char vme, unsigned char mod, unsigned char ch );
 	char GetMWPCID( unsigned char vme, unsigned char mod, unsigned char ch );
 	bool IsMWPC( unsigned char vme, unsigned char mod, unsigned char ch );
 
 	// ELUM detector
 	inline unsigned char GetNumberOfELUMSectors(){ return n_elum_sector; };
+	inline std::vector<unsigned char> GetELUMCrates(){ return elum_vme; };
+	inline std::vector<unsigned char> GetELUMModules(){ return elum_mod; };
+	inline std::vector<unsigned char> GetELUMChannels(){ return elum_ch; };
+	inline std::vector<std::vector<std::vector<char>>> GetELUMSectors(){ return elum_sector; };
 	char GetELUMSector( unsigned char vme, unsigned char mod, unsigned char ch );
 	bool IsELUM( unsigned char vme, unsigned char mod, unsigned char ch );
 
 	// ZeroDegree detector
 	inline unsigned char GetNumberOfZDLayers(){ return n_zd_layer; };
+	inline std::vector<unsigned char> GetZDCrates(){ return zd_vme; };
+	inline std::vector<unsigned char> GetZDModules(){ return zd_mod; };
+	inline std::vector<unsigned char> GetZDChannels(){ return zd_ch; };
+	inline std::vector<std::vector<std::vector<char>>> GetZDLayers(){ return zd_layer; };
 	char GetZDLayer( unsigned char vme, unsigned char mod, unsigned char ch );
 	bool IsZD( unsigned char vme, unsigned char mod, unsigned char ch );
 
 	// Scintillation detectors
 	inline unsigned char GetNumberOfScintArrayDetectors(){ return n_scint_detector; };
+	inline std::vector<unsigned char> GetScintArrayCrates(){ return scint_vme; };
+	inline std::vector<unsigned char> GetScintArrayModules(){ return scint_mod; };
+	inline std::vector<unsigned char> GetScintArrayChannels(){ return scint_ch; };
+	inline std::vector<std::vector<std::vector<char>>> GetScintArrayDetectors(){ return scint_detector; };
 	char GetScintArrayDetector( unsigned char vme, unsigned char mod, unsigned char ch );
 	bool IsScintArray( unsigned char vme, unsigned char mod, unsigned char ch );
 
 	// LUME detectors
 	inline unsigned char GetNumberOfLUMEDetectors(){ return n_lume; };
+	inline std::vector<std::vector<unsigned char>> GetLUMECrates(){ return lume_vme; };
+	inline std::vector<std::vector<unsigned char>> GetLUMEModules(){ return lume_mod; };
+	inline std::vector<std::vector<unsigned char>> GetLUMEChannels(){ return lume_ch; };
+	inline std::vector<std::vector<std::vector<char>>> GetLUMEDetectors(){ return lume_detector; };
+	inline std::vector<std::vector<std::vector<char>>> GetLUMETypes(){ return lume_type; };
 	char GetLUMEDetector( unsigned char vme, unsigned char mod, unsigned char ch );
 	char GetLUMEType( unsigned char vme, unsigned char mod, unsigned char ch );
 	bool IsLUME( unsigned char vme, unsigned char mod, unsigned char ch );
@@ -192,6 +222,12 @@ public:
 	inline unsigned char GetCDEnergyRestStop(){ return cd_erest_stop; };
 	inline unsigned char GetCDEnergyTotalStart(){ return cd_etot_start; };
 	inline unsigned char GetCDEnergyTotalStop(){ return cd_etot_stop; };
+	inline std::vector<std::vector<std::vector<unsigned char>>> GetCDCrates(){ return cd_vme; };
+	inline std::vector<std::vector<std::vector<unsigned char>>> GetCDModules(){ return cd_mod; };
+	inline std::vector<std::vector<std::vector<unsigned char>>> GetCDChannels(){ return cd_ch; };
+	inline std::vector<std::vector<std::vector<char>>> GetCDLayers(){ return cd_layer; };
+	inline std::vector<std::vector<std::vector<char>>> GetCDStrips(){ return cd_strip; };
+	inline std::vector<std::vector<std::vector<char>>> GetCDSides(){ return cd_side; };
 	char GetCDLayer( unsigned char vme, unsigned char mod, unsigned char ch );
 	char GetCDSector( unsigned char vme, unsigned char mod, unsigned char ch );
 	char GetCDRing( unsigned char vme, unsigned char mod, unsigned char ch );
@@ -329,7 +365,7 @@ private:
 	std::vector<std::vector<std::vector<char>>> zd_layer;		///< A channel map for the ZeroDegree layers (-1 if not a ZeroDegree)
 
 
-	// ELUM detector
+	// Gamma-ray detector
 	unsigned char n_scint_detector;								///< Number of ScintArray detectors
 	std::vector<unsigned char> scint_vme;						///< A list of VME crate numbers for each ScintArray detectors
 	std::vector<unsigned char> scint_mod;						///< A list of module numbers for each ScintArray detectors
@@ -364,6 +400,8 @@ private:
 	std::vector<std::vector<std::vector<char>>> cd_strip;			///< A channel map for the CD ring/sector IDs (-1 if not a CD)
 	std::vector<std::vector<std::vector<char>>> cd_side;			///< A channel map for the CD sides (rings = 0, sectors = 1) (-1 if not a CD)
 
+
+	ClassDef( ISSSettings, 10 )
 
 };
 
