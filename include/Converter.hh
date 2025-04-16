@@ -64,9 +64,9 @@ public:
 	void ProcessBlockData( unsigned long nblock );
 
 	void ProcessASICData();
-	void ProcessCAENData();
+	bool ProcessCAENData();
 	void ProcessMesytecLogicItem();
-	void ProcessMesytecData();
+	bool ProcessMesytecData();
 	void ProcessInfoData();
 	void FinishCAENData();
 	void FinishMesytecData();
