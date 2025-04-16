@@ -207,17 +207,25 @@ void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
 	flag_input_file = true;
 
 	// Read settings from file
-	if( input_file->GetListOfKeys()->Contains( "Settings" ) )
-		set = std::make_shared<ISSSettings>( (ISSSettings*)input_file->Get( "Settings" ) );
-	else
-		set = std::make_shared<ISSSettings>();
+	if( !overwrite_set ) {
+
+		if( input_file->GetListOfKeys()->Contains( "Settings" ) )
+			set = std::make_shared<ISSSettings>( (ISSSettings*)input_file->Get( "Settings" ) );
+		else
+			set = std::make_shared<ISSSettings>();
+
+	}
 
 	// Read calibration from the file
-	if( input_file->GetListOfKeys()->Contains( "Calibration" ) )
-		cal = std::make_shared<ISSCalibration>( (ISSCalibration*)input_file->Get( "Calibration" ) );
-	else
-		cal = std::make_shared<ISSCalibration>();
-	cal->AddSettings( set );
+	if( !overwrite_cal ) {
+
+		if( input_file->GetListOfKeys()->Contains( "Calibration" ) )
+			cal = std::make_shared<ISSCalibration>( (ISSCalibration*)input_file->Get( "Calibration" ) );
+		else
+			cal = std::make_shared<ISSCalibration>();
+		cal->AddSettings( set );
+
+	}
 
 	// Do the array mapping just once after settings
 	ArrayMapping();
