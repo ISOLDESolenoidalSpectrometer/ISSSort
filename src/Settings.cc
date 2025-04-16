@@ -737,9 +737,9 @@ void ISSSettings::ReadSettings() {
 					mm++;
 					cc -= GetMaximumNumberOfVmeChannels();
 				}
-				cd_vme[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Crate", i, j, sidechar.data() ), (int)1 ); // layer, ring
-				cd_mod[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Module", i, j, sidechar.data() ), (int)mm );
-				cd_ch[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Channel", i, j, sidechar.data() ), (int)cc );
+				cd_vme[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Crate", i, k, sidechar.data() ), (int)1 ); // layer, ring
+				cd_mod[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Module", i, k, sidechar.data() ), (int)mm );
+				cd_ch[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Channel", i, k, sidechar.data() ), (int)cc );
 
 				if( cd_vme[i][j][k] < GetNumberOfVmeCrates() &&
 				   cd_mod[i][j][k] < GetMaximumNumberOfVmeModules() &&
