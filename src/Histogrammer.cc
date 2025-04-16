@@ -3031,7 +3031,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				} // cd events 1
 
 				// Fill prompt hists
-				if( promptcheckT == true && randomcheckT == false ){
+				if( promptcheckT == true ){
 
 					// Fission fragments in coincidence with an array event
 					fission_EdE_array->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
@@ -3109,8 +3109,14 @@ unsigned long ISSHistogrammer::FillHists() {
 
 				} // prompt
 
-				// Fill random hists, but only if we didn't fill it already as a prompt hit
-				else if( randomcheckT == true && promptcheckT == false ){
+				// Fill random hists, even if we filled it already as a prompt hit...
+				// Justification is that larger random windows can be used whilst keeping
+				// the event ratio for prompt and random consistent. Using an else here would
+				// mean that the scaling of the randoms would not increase linearly with window width.
+				// Some events will be added and subtracted if there is a prompt AND random coinicidence
+				// with two different fission fragments, so the error bar goes up, but if the random
+				// window is larger, the weighting of the random will be <1 and a small contribution.
+				if( randomcheckT == true ){
 
 					// Array histograms
 					E_vs_z_fissionT_random->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
@@ -3306,8 +3312,14 @@ unsigned long ISSHistogrammer::FillHists() {
 
 				} // prompt
 
-				// Fill random hists, but only if we didn't fill it already as a prompt hit
-				else if( randomcheckT == true ){
+				// Fill random hists, even if we filled it already as a prompt hit...
+				// Justification is that larger random windows can be used whilst keeping
+				// the event ratio for prompt and random consistent. Using an else here would
+				// mean that the scaling of the randoms would not increase linearly with window width.
+				// Some events will be added and subtracted if there is a prompt AND random coinicidence
+				// with two different recoil, so the error bar goes up, but if the random window
+				// is larger, the weighting of the random will be <1 and a small contribution.
+				if( randomcheckT == true ){
 
 					// Array histograms
 					E_vs_z_recoilT_random->Fill( react->GetZmeasured(), array_evt->GetEnergy() );
