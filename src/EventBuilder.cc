@@ -384,12 +384,22 @@ void ISSEventBuilder::Initialise(){
 	std::vector<char>().swap(lne_id_list);
 	std::vector<char>().swap(lfe_id_list);
 
-	cdren_list.resize( set->GetNumberOfCDLayers(), std::vector<float>() );
-	cdrtd_list.resize( set->GetNumberOfCDLayers(), std::vector<double>() );
-	cdrid_list.resize( set->GetNumberOfCDLayers(), std::vector<char>() );
-	cdsen_list.resize( set->GetNumberOfCDLayers(), std::vector<float>() );
-	cdstd_list.resize( set->GetNumberOfCDLayers(), std::vector<double>() );
-	cdsid_list.resize( set->GetNumberOfCDLayers(), std::vector<char>() );
+	cdren_list.resize( set->GetNumberOfCDLayers() );
+	cdrtd_list.resize( set->GetNumberOfCDLayers() );
+	cdrid_list.resize( set->GetNumberOfCDLayers() );
+	cdsen_list.resize( set->GetNumberOfCDLayers() );
+	cdstd_list.resize( set->GetNumberOfCDLayers() );
+	cdsid_list.resize( set->GetNumberOfCDLayers() );
+	for( unsigned int i = 0; i < set->GetNumberOfCDLayers(); ++i ){
+
+		std::vector<float>().swap( cdren_list[i] );
+		std::vector<double>().swap( cdrtd_list[i] );
+		std::vector<char>().swap( cdrid_list[i] );
+		std::vector<float>().swap( cdsen_list[i] );
+		std::vector<double>().swap( cdstd_list[i] );
+		std::vector<char>().swap( cdsid_list[i] );
+
+	}
 
 	std::vector<std::shared_ptr<ISSCDEvt>>().swap( cd_evt );
 	write_evts->ClearEvt();
@@ -643,6 +653,14 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				myoverflow |= vme_data->IsOverflowShort();
 			}
 
+			//std::cout << "Recoil: " << set->IsRecoil( myvme, mymod, mych ) << std::endl;
+			//std::cout << "MWPC: " << set->IsMWPC( myvme, mymod, mych ) << std::endl;
+			//std::cout << "ELUM: " << set->IsELUM( myvme, mymod, mych ) << std::endl;
+			//std::cout << "ZD: " << set->IsZD( myvme, mymod, mych ) << std::endl;
+			//std::cout << "ScintArray: " << set->IsScintArray( myvme, mymod, mych ) << std::endl;
+			//std::cout << "LUME: " << set->IsLUME( myvme, mymod, mych ) << std::endl;
+			//std::cout << "CD: " << set->IsCD( myvme, mymod, mych ) << std::endl;
+
 
 			// If it's below threshold do not use as window opener
 			if( mythres ) event_open = true;
@@ -728,6 +746,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				hit_ctr++; // increase counter for bits of data included in this event
 
 			}
+
 			// Is it a LUME?
 			else if( set->IsLUME( myvme, mymod, mych ) &&
 					mythres &&											// check threshold
