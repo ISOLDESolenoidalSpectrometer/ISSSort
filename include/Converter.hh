@@ -65,6 +65,7 @@ public:
 
 	void ProcessASICData();
 	void ProcessCAENData();
+	void ProcessMesytecLogicItem();
 	void ProcessMesytecData();
 	void ProcessInfoData();
 	void FinishCAENData();

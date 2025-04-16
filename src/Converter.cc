@@ -1454,7 +1454,7 @@ void ISSConverter::ProcessMesytecData(){
 
 	// Check things make sense
 	if( my_mod_id >= set->GetNumberOfMesytecModules() ||
-		my_ch_id >= set->GetNumberOfMesytecChannels() ) {
+		my_ch_id >= set->GetNumberOfMesytecChannels() + set->GetNumberOfMesytecLogicInputs() ) {
 
 		std::cout << "Bad Mesytec event with mod_id=" << (int) my_mod_id;
 		std::cout << " ch_id=" << (int) my_ch_id;
@@ -1469,6 +1469,14 @@ void ISSConverter::ProcessMesytecData(){
 
 	// Mesytec timestamps are 4 ns precision? TBD
 	my_tm_stp = my_tm_stp*4;
+
+	// If it's a logic input, process that properly
+	if( my_ch_id >= set->GetNumberOfMesytecChannels() &&
+	   my_ch_id < set->GetNumberOfMesytecChannels() + set->GetNumberOfMesytecLogicInputs() ) {
+
+		ProcessMesytecLogicItem();
+
+	}
 
 	// First of the data items
 	if( !flag_mesy_data0 && !flag_mesy_data1 && !flag_mesy_data2 && !flag_mesy_data3 ){
@@ -1552,6 +1560,15 @@ void ISSConverter::ProcessMesytecData(){
 	return;
 
 }
+
+void ISSConverter::ProcessMesytecLogicItem(){
+
+	// For now, we just return, but eventually we need to map some stuff
+	// to these channels and do something with the data.
+	return;
+
+}
+
 
 void ISSConverter::FinishMesytecData(){
 
