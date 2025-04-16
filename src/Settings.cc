@@ -43,6 +43,7 @@ ISSSettings::ISSSettings( ISSSettings *myset ){
 	// Copy Mesytec settings
 	n_mesy_mod = myset->GetNumberOfMesytecModules();
 	n_mesy_ch = myset->GetNumberOfMesytecChannels();
+	n_mesy_logic = myset->GetNumberOfMesytecLogicInputs();
 
 	// Copy info code settings
 	extt_code = myset->GetExternalTriggerCode();
@@ -198,7 +199,8 @@ void ISSSettings::ReadSettings() {
 
 	// Mesytec initialisation
 	n_mesy_mod = config->GetValue( "NumberOfMesytecModules", 0 );
-	n_mesy_ch = config->GetValue( "NumberOfMesytecChannels", 16 );
+	n_mesy_ch = config->GetValue( "NumberOfMesytecChannels", 32 );
+	n_mesy_logic = config->GetValue( "NumberOfMesytecLogicInputs", 2 );
 
 
 	// Info code initialisation
@@ -1214,6 +1216,7 @@ void ISSSettings::PrintSettings() {
 	// Mesytec settings
 	PRINT_SETTING_INT(n_mesy_mod);
 	PRINT_SETTING_INT(n_mesy_ch);
+	PRINT_SETTING_INT(n_mesy_logic);
 
 	// Info code settings
 	PRINT_SETTING_INT(extt_code);
