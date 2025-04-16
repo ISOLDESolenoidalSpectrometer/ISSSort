@@ -613,7 +613,7 @@ void ISSSettings::ReadSettings() {
 		for( unsigned int j = 0; j < lume_type_list.size(); ++j ){
 
 			// Assuming they are all in the same Mesytec module
-			unsigned char mm = 2;
+			unsigned char mm = 5;
 			unsigned char cc = i * lume_type_list.size() + j;
 
 			lume_vme[i][j] = config->GetValue( Form( "LUME_%d_%s.Crate", i, lume_type_list[j].data() ), (int) 1 );
@@ -731,7 +731,7 @@ void ISSSettings::ReadSettings() {
 
 			for( unsigned int k = 0; k < nstrips; ++k ){
 
-				unsigned char mm = 2*i;
+				unsigned char mm = 2*i + j + 2;
 				unsigned char cc = k;
 				if( k > GetMaximumNumberOfVmeChannels() ) {
 					mm++;
