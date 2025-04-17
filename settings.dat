@@ -31,7 +31,8 @@
 ## Mesytec things: Crate = 1 #
 ##---------------------------#
 #NumberOfMesytecModules: 0 		# maximum 16
-#NumberOfMesytecChannels: 16
+#NumberOfMesytecChannels: 32
+#NumberOfMesytecLogicInputs: 2
 
 
 ##------------------------#

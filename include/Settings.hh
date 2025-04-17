@@ -55,6 +55,7 @@ public:
 	// Mesytec settings
 	inline unsigned char GetNumberOfMesytecModules(){ return n_mesy_mod; };
 	inline unsigned char GetNumberOfMesytecChannels(){ return n_mesy_ch; };
+	inline unsigned char GetNumberOfMesytecLogicInputs(){ return n_mesy_logic; };
 
 	// VME totals
 	inline unsigned int GetNumberOfVmeCrates(){ return 2; }; // fixed: CAEN + Mesytec
@@ -259,6 +260,7 @@ private:
 	// Mesytec settings
 	unsigned char n_mesy_mod;
 	unsigned char n_mesy_ch;
+	unsigned char n_mesy_logic;
 
 	// Info code settings
 	unsigned char extt_code;			///< This is the info code for the external timestamp, 5 before 2019 and 14 after 2019 (This is ISS == 14)

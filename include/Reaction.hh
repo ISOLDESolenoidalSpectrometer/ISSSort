@@ -233,6 +233,14 @@ public:
 	inline bool GetArrayHistMode(){ return array_hist_mode; }; ///< array mode, p-side only data or demand p/n coincidences
 	inline bool RxTreeEnabled(){ return rxtree_flag; }; ///< if the user output tree is enabled
 
+	inline unsigned int HistExBins(){ return hist_nbins_ex; }
+	inline double HistExMin(){ return hist_range_ex[0]; }
+	inline double HistExMax(){ return hist_range_ex[1]; }
+
+	inline unsigned int HistElabBins(){ return hist_nbins_elab; }
+	inline double HistElabMin(){ return hist_range_elab[0]; }
+	inline double HistElabMax(){ return hist_range_elab[1]; }
+
 	inline double GetZmeasured(){ return z_meas; };///< Getter for the measured z (where the particle lands on the array)
 	inline double GetZprojected(){ return z; };///< Getter for the projected z (where the particle would intersect with the beam axis)
 
@@ -495,6 +503,12 @@ private:
 
 	// Flag for enabling the output tree
 	bool rxtree_flag;
+
+	// Histogram ranges
+	double hist_range_ex[2];			///< lower and upper limits of the Ex historgrams
+	unsigned int hist_nbins_ex;			///< number of bins in the Ex histograms
+	double hist_range_elab[2];			///< lower and upper limits of the Elab historgrams
+	unsigned int hist_nbins_elab;		///< number of bins in the Elab histograms
 
 	// Coincidence windows
 	double array_recoil_prompt[2];		///< Prompt time window between recoil and array event
