@@ -116,3 +116,9 @@ FissionCut.Light.Name: CUTG
 ## Histogramming options
 #Hists.ArrayMode: 0			# 0 - demand p/n coincidences, 1 - p-side only
 #Hists.OutputTree: 0		# 0 - off, 1 - reaction data output to tree
+#Hists.Ex.Min: -5000		# Minimum of the Ex spectra in keV
+#Hists.Ex.Max: 15000		# Maximum of the Ex spectra in keV
+#Hists.Ex.Bins: 1000		# Number of bins in the Ex spectra
+#Hists.Elab.Min: 0			# Minimum of the Elab spectra in keV
+#Hists.Elab.Max: 16000		# Maximum of the Elab spectra in keV
+#Hists.Elab.Bins: 800		# Number of bins in the Elab spectra
