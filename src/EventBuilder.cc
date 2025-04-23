@@ -769,7 +769,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				mysector = set->GetCDSector( myvme, mymod, mych );
 
 				// Ring side
-				if( myring >= 0 && mylayer >= 0 && mylayer < set->GetNumberOfCDLayers() ) {
+				if( myring < set->GetNumberOfCDRings() &&
+					mylayer < set->GetNumberOfCDLayers() ) {
 
 					cdren_list[mylayer].push_back( myenergy );
 					cdrtd_list[mylayer].push_back( mytime );
@@ -780,7 +781,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				}
 
 				// Sector side
-				if( mysector >= 0 && mylayer >= 0 && mylayer < set->GetNumberOfCDLayers() ) {
+				if( mysector < set->GetNumberOfCDSectors() &&
+					mylayer < set->GetNumberOfCDLayers() ) {
 
 					cdsen_list[mylayer].push_back( myenergy );
 					cdstd_list[mylayer].push_back( mytime );
