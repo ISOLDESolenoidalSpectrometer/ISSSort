@@ -390,6 +390,12 @@ void ISSEventBuilder::Initialise(){
 	std::vector<char>().swap(lne_id_list);
 	std::vector<char>().swap(lfe_id_list);
 
+	cdren_list.clear();
+	cdrtd_list.clear();
+	cdrid_list.clear();
+	cdsen_list.clear();
+	cdstd_list.clear();
+	cdsid_list.clear();
 	cdren_list.resize( set->GetNumberOfCDLayers(), std::vector<float>() );
 	cdrtd_list.resize( set->GetNumberOfCDLayers(), std::vector<double>() );
 	cdrid_list.resize( set->GetNumberOfCDLayers(), std::vector<char>() );
