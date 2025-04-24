@@ -3385,7 +3385,7 @@ void ISSEventBuilder::MakeHists(){
 		hname = "cd_pn_en_" + std::to_string(i);
 		htitle = "ring vs. sector energy (layer ";
 		htitle += std::to_string(i) + ");Energy rings (keV);Energy sectors (keV)";
-		cd_pn_en[i] = new TH2F( hname.data(), htitle.data(), 2e4, 0, 2e5, 2e4, 0, 2e5 );
+		cd_pn_en[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e5, 2e3, 0, 2e5 );
 
 		hname = "cd_pn_td_" + std::to_string(i);
 		htitle = "ring vs. sector time difference (layer ";
