@@ -424,8 +424,8 @@ private:
 
 	// CD histograms
 	std::vector<TH2F*> cd_rs_mult;	///< CD ring-strip multiplicity for each layer
-	std::vector<TH2F*> cd_pn_en;	///< CD ring-strip energy matrix for each layer
-	std::vector<TH1F*> cd_pn_td;	///< CD ring-strip time difference for each layer
+	std::vector<TH2F*> cd_rs_en;	///< CD ring-strip energy matrix for each layer
+	std::vector<TH1F*> cd_rs_td;	///< CD ring-strip time difference for each layer
 	TH2F* cd_EdE;					///< Histogram for the CD E-dE that are real (calibrated)
 	TH2F* cd_dEsum;					///< Histogram for the CD E+dE vs E (calibrated)
 

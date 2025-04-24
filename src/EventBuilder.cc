@@ -2729,8 +2729,8 @@ void ISSEventBuilder::CdFinder() {
 
 			for( unsigned int k = 0; k < cdren_list[i].size(); k++ ) {
 
-				cd_pn_en[i]->Fill( cdren_list[i][k], cdsen_list[i][j] );
-				cd_pn_td[i]->Fill( cdrtd_list[i][k] - cdstd_list[i][j] );
+				cd_rs_en[i]->Fill( cdren_list[i][k], cdsen_list[i][j] );
+				cd_rs_td[i]->Fill( cdrtd_list[i][k] - cdstd_list[i][j] );
 
 			} // k - rings
 
@@ -3372,8 +3372,8 @@ void ISSEventBuilder::MakeHists(){
 	output_file->cd( dirname.data() );
 
 	cd_rs_mult.resize( set->GetNumberOfCDLayers() );
-	cd_pn_en.resize( set->GetNumberOfCDLayers() );
-	cd_pn_td.resize( set->GetNumberOfCDLayers() );
+	cd_rs_en.resize( set->GetNumberOfCDLayers() );
+	cd_rs_td.resize( set->GetNumberOfCDLayers() );
 
 	for( unsigned int i = 0; i < set->GetNumberOfCDLayers(); ++i ) {
 
@@ -3382,15 +3382,15 @@ void ISSEventBuilder::MakeHists(){
 		htitle += std::to_string(i) + ");mult rings;mult sectors";
 		cd_rs_mult[i] = new TH2F( hname.data(), htitle.data(), 6, -0.5, 5.5, 6, -0.5, 5.5 );
 
-		hname = "cd_pn_en_" + std::to_string(i);
+		hname = "cd_rs_en_" + std::to_string(i);
 		htitle = "ring vs. sector energy (layer ";
 		htitle += std::to_string(i) + ");Energy rings (keV);Energy sectors (keV)";
-		cd_pn_en[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e5, 2e3, 0, 2e5 );
+		cd_rs_en[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e5, 2e3, 0, 2e5 );
 
-		hname = "cd_pn_td_" + std::to_string(i);
+		hname = "cd_rs_td_" + std::to_string(i);
 		htitle = "ring vs. sector time difference (layer ";
 		htitle += std::to_string(i) + ");Time difference, #Deltat = t_{ring} - t_{sector} (ns)";
-		cd_pn_td[i] = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
+		cd_rs_td[i] = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
 
 	}
 
@@ -3576,13 +3576,13 @@ void ISSEventBuilder::CleanHists() {
 		delete (cd_rs_mult[i]);
 	cd_rs_mult.clear();
 
-	for( unsigned int i = 0; i < cd_pn_en.size(); i++ )
-		delete (cd_pn_en[i]);
-	cd_pn_en.clear();
+	for( unsigned int i = 0; i < cd_rs_en.size(); i++ )
+		delete (cd_rs_en[i]);
+	cd_rs_en.clear();
 
-	for( unsigned int i = 0; i < cd_pn_td.size(); i++ )
-		delete (cd_pn_td[i]);
-	cd_pn_td.clear();
+	for( unsigned int i = 0; i < cd_rs_td.size(); i++ )
+		delete (cd_rs_td[i]);
+	cd_rs_td.clear();
 
 
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
@@ -3736,11 +3736,11 @@ void ISSEventBuilder::ResetHists() {
 	for( unsigned int i = 0; i < cd_rs_mult.size(); i++ )
 		cd_rs_mult[i]->Reset("ICESM");
 
-	for( unsigned int i = 0; i < cd_pn_en.size(); i++ )
-		cd_pn_en[i]->Reset("ICESM");
+	for( unsigned int i = 0; i < cd_rs_en.size(); i++ )
+		cd_rs_en[i]->Reset("ICESM");
 
-	for( unsigned int i = 0; i < cd_pn_td.size(); i++ )
-		cd_pn_td[i]->Reset("ICESM");
+	for( unsigned int i = 0; i < cd_rs_td.size(); i++ )
+		cd_rs_td[i]->Reset("ICESM");
 
 	cd_EdE->Reset("ICESM");
 	cd_dEsum->Reset("ICESM");
