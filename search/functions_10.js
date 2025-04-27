@@ -1,5 +1,8 @@
 var searchData=
 [
-  ['walk_5fderivative_0',['walk_derivative',['../Calibration_8cc.html#a7b7b0b6f5dab15f5108e8999b0e659cb',1,'Calibration.cc']]],
-  ['walk_5ffunction_1',['walk_function',['../Calibration_8cc.html#a9fb106a6491ac92c3b35ee9c5c20d686',1,'Calibration.cc']]]
+  ['verbose_0',['Verbose',['../classDataSpy.html#af7f516e7a0d0b99e298038344f559853',1,'DataSpy']]],
+  ['vmeenergy_1',['VmeEnergy',['../classISSCalibration.html#a6f497c81a3af04b32d73d8c0c45a7e3b',1,'ISSCalibration']]],
+  ['vmethreshold_2',['VmeThreshold',['../classISSCalibration.html#a4e6eb21fae8197846fa0373418e48c42',1,'ISSCalibration']]],
+  ['vmetime_3',['VmeTime',['../classISSCalibration.html#a54f09f2acc89ec231105381002af9d3f',1,'ISSCalibration']]],
+  ['vmetype_4',['VmeType',['../classISSCalibration.html#a891e7edb93e9ac18c6f92ab91e59d63c',1,'ISSCalibration']]]
 ];
