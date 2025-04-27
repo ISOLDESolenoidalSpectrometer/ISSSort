@@ -258,11 +258,11 @@ private:
 	bool				myhitbit;	///< hit bit enabled?
 
 	// Data variables - Recoil / ELUM / ZeroDegree / MWPC / CD
-	unsigned char		myid;		///< generic detector id
-	unsigned char		mysector;	///< 4 quadrants of the recoil, for example
-	unsigned char		mylayer;	///< 2 layers for the dE-E, for example
-	unsigned char		mytype;		///< type of detector (for LUME: be, ne, fe)
-	unsigned char		myring;		///< ring of the CD detector
+	int		myid;		///< generic detector id
+	int		mysector;	///< 4 quadrants of the recoil, for example
+	int		mylayer;	///< 2 layers for the dE-E, for example
+	int		mytype;		///< type of detector (for LUME: be, ne, fe)
+	int		myring;		///< ring of the CD detector
 
 
 	// Array variables
@@ -424,6 +424,8 @@ private:
 
 	// CD histograms
 	std::vector<TH2F*> cd_rs_mult;	///< CD ring-strip multiplicity for each layer
+	std::vector<TH2F*> cd_rs_en;	///< CD ring-strip energy matrix for each layer
+	std::vector<TH1F*> cd_rs_td;	///< CD ring-strip time difference for each layer
 	TH2F* cd_EdE;					///< Histogram for the CD E-dE that are real (calibrated)
 	TH2F* cd_dEsum;					///< Histogram for the CD E+dE vs E (calibrated)
 

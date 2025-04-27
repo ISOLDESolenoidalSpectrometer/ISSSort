@@ -207,17 +207,25 @@ void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
 	flag_input_file = true;
 
 	// Read settings from file
-	if( input_file->GetListOfKeys()->Contains( "Settings" ) )
-		set = std::make_shared<ISSSettings>( (ISSSettings*)input_file->Get( "Settings" ) );
-	else
-		set = std::make_shared<ISSSettings>();
+	if( !overwrite_set ) {
+
+		if( input_file->GetListOfKeys()->Contains( "Settings" ) )
+			set = std::make_shared<ISSSettings>( (ISSSettings*)input_file->Get( "Settings" ) );
+		else
+			set = std::make_shared<ISSSettings>();
+
+	}
 
 	// Read calibration from the file
-	if( input_file->GetListOfKeys()->Contains( "Calibration" ) )
-		cal = std::make_shared<ISSCalibration>( (ISSCalibration*)input_file->Get( "Calibration" ) );
-	else
-		cal = std::make_shared<ISSCalibration>();
-	cal->AddSettings( set );
+	if( !overwrite_cal ) {
+
+		if( input_file->GetListOfKeys()->Contains( "Calibration" ) )
+			cal = std::make_shared<ISSCalibration>( (ISSCalibration*)input_file->Get( "Calibration" ) );
+		else
+			cal = std::make_shared<ISSCalibration>();
+		cal->AddSettings( set );
+
+	}
 
 	// Do the array mapping just once after settings
 	ArrayMapping();
@@ -376,12 +384,22 @@ void ISSEventBuilder::Initialise(){
 	std::vector<char>().swap(lne_id_list);
 	std::vector<char>().swap(lfe_id_list);
 
-	cdren_list.resize( set->GetNumberOfCDLayers(), std::vector<float>() );
-	cdrtd_list.resize( set->GetNumberOfCDLayers(), std::vector<double>() );
-	cdrid_list.resize( set->GetNumberOfCDLayers(), std::vector<char>() );
-	cdsen_list.resize( set->GetNumberOfCDLayers(), std::vector<float>() );
-	cdstd_list.resize( set->GetNumberOfCDLayers(), std::vector<double>() );
-	cdsid_list.resize( set->GetNumberOfCDLayers(), std::vector<char>() );
+	cdren_list.resize( set->GetNumberOfCDLayers() );
+	cdrtd_list.resize( set->GetNumberOfCDLayers() );
+	cdrid_list.resize( set->GetNumberOfCDLayers() );
+	cdsen_list.resize( set->GetNumberOfCDLayers() );
+	cdstd_list.resize( set->GetNumberOfCDLayers() );
+	cdsid_list.resize( set->GetNumberOfCDLayers() );
+	for( unsigned int i = 0; i < set->GetNumberOfCDLayers(); ++i ){
+
+		std::vector<float>().swap( cdren_list[i] );
+		std::vector<double>().swap( cdrtd_list[i] );
+		std::vector<char>().swap( cdrid_list[i] );
+		std::vector<float>().swap( cdsen_list[i] );
+		std::vector<double>().swap( cdstd_list[i] );
+		std::vector<char>().swap( cdsid_list[i] );
+
+	}
 
 	std::vector<std::shared_ptr<ISSCDEvt>>().swap( cd_evt );
 	write_evts->ClearEvt();
@@ -635,6 +653,14 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				myoverflow |= vme_data->IsOverflowShort();
 			}
 
+			//std::cout << "Recoil: " << set->IsRecoil( myvme, mymod, mych ) << std::endl;
+			//std::cout << "MWPC: " << set->IsMWPC( myvme, mymod, mych ) << std::endl;
+			//std::cout << "ELUM: " << set->IsELUM( myvme, mymod, mych ) << std::endl;
+			//std::cout << "ZD: " << set->IsZD( myvme, mymod, mych ) << std::endl;
+			//std::cout << "ScintArray: " << set->IsScintArray( myvme, mymod, mych ) << std::endl;
+			//std::cout << "LUME: " << set->IsLUME( myvme, mymod, mych ) << std::endl;
+			//std::cout << "CD: " << set->IsCD( myvme, mymod, mych ) << std::endl;
+
 
 			// If it's below threshold do not use as window opener
 			if( mythres ) event_open = true;
@@ -720,6 +746,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				hit_ctr++; // increase counter for bits of data included in this event
 
 			}
+
 			// Is it a LUME?
 			else if( set->IsLUME( myvme, mymod, mych ) &&
 					mythres &&											// check threshold
@@ -2690,10 +2717,26 @@ void ISSEventBuilder::CdFinder() {
 	// Quick check that we have a CD at all
 	if( set->GetNumberOfCDLayers() == 0 ) return;
 
-	// Multiplicity matrix
-	for( unsigned int i = 0; i < set->GetNumberOfCDLayers(); ++i )
+	// Multiplicity, time and energy matrices
+	for( unsigned int i = 0; i < set->GetNumberOfCDLayers(); ++i ) {
+
+		// Multiplicity
 		if( cdren_list[i].size() || cdsen_list[i].size() )
 			cd_rs_mult[i]->Fill( cdren_list[i].size(), cdsen_list[i].size() );
+
+		// Plot each sector energy against each ring energy
+		for( unsigned int j = 0; j < cdsen_list[i].size(); j++ ) {
+
+			for( unsigned int k = 0; k < cdren_list[i].size(); k++ ) {
+
+				cd_rs_en[i]->Fill( cdren_list[i][k], cdsen_list[i][j] );
+				cd_rs_td[i]->Fill( cdrtd_list[i][k] - cdstd_list[i][j] );
+
+			} // k - rings
+
+		} // j - sectors
+
+	} // i - layer
 
 	// Look for the dE signal as a trigger
 	unsigned char dE_idx = set->GetCDEnergyLossStart();
@@ -3329,6 +3372,8 @@ void ISSEventBuilder::MakeHists(){
 	output_file->cd( dirname.data() );
 
 	cd_rs_mult.resize( set->GetNumberOfCDLayers() );
+	cd_rs_en.resize( set->GetNumberOfCDLayers() );
+	cd_rs_td.resize( set->GetNumberOfCDLayers() );
 
 	for( unsigned int i = 0; i < set->GetNumberOfCDLayers(); ++i ) {
 
@@ -3336,6 +3381,16 @@ void ISSEventBuilder::MakeHists(){
 		htitle = "ring vs. sector multiplicity (layer ";
 		htitle += std::to_string(i) + ");mult rings;mult sectors";
 		cd_rs_mult[i] = new TH2F( hname.data(), htitle.data(), 6, -0.5, 5.5, 6, -0.5, 5.5 );
+
+		hname = "cd_rs_en_" + std::to_string(i);
+		htitle = "ring vs. sector energy (layer ";
+		htitle += std::to_string(i) + ");Energy rings (keV);Energy sectors (keV)";
+		cd_rs_en[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e5, 2e3, 0, 2e5 );
+
+		hname = "cd_rs_td_" + std::to_string(i);
+		htitle = "ring vs. sector time difference (layer ";
+		htitle += std::to_string(i) + ");Time difference, #Deltat = t_{ring} - t_{sector} (ns)";
+		cd_rs_td[i] = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
 
 	}
 
@@ -3521,6 +3576,14 @@ void ISSEventBuilder::CleanHists() {
 		delete (cd_rs_mult[i]);
 	cd_rs_mult.clear();
 
+	for( unsigned int i = 0; i < cd_rs_en.size(); i++ )
+		delete (cd_rs_en[i]);
+	cd_rs_en.clear();
+
+	for( unsigned int i = 0; i < cd_rs_td.size(); i++ )
+		delete (cd_rs_td[i]);
+	cd_rs_td.clear();
+
 
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
 		delete (fpga_td[i]);
@@ -3672,6 +3735,12 @@ void ISSEventBuilder::ResetHists() {
 
 	for( unsigned int i = 0; i < cd_rs_mult.size(); i++ )
 		cd_rs_mult[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < cd_rs_en.size(); i++ )
+		cd_rs_en[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < cd_rs_td.size(); i++ )
+		cd_rs_td[i]->Reset("ICESM");
 
 	cd_EdE->Reset("ICESM");
 	cd_dEsum->Reset("ICESM");

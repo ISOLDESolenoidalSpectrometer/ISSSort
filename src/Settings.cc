@@ -43,6 +43,7 @@ ISSSettings::ISSSettings( ISSSettings *myset ){
 	// Copy Mesytec settings
 	n_mesy_mod = myset->GetNumberOfMesytecModules();
 	n_mesy_ch = myset->GetNumberOfMesytecChannels();
+	n_mesy_logic = myset->GetNumberOfMesytecLogicInputs();
 
 	// Copy info code settings
 	extt_code = myset->GetExternalTriggerCode();
@@ -198,7 +199,8 @@ void ISSSettings::ReadSettings() {
 
 	// Mesytec initialisation
 	n_mesy_mod = config->GetValue( "NumberOfMesytecModules", 0 );
-	n_mesy_ch = config->GetValue( "NumberOfMesytecChannels", 16 );
+	n_mesy_ch = config->GetValue( "NumberOfMesytecChannels", 32 );
+	n_mesy_logic = config->GetValue( "NumberOfMesytecLogicInputs", 2 );
 
 
 	// Info code initialisation
@@ -611,7 +613,7 @@ void ISSSettings::ReadSettings() {
 		for( unsigned int j = 0; j < lume_type_list.size(); ++j ){
 
 			// Assuming they are all in the same Mesytec module
-			unsigned char mm = 2;
+			unsigned char mm = 5;
 			unsigned char cc = i * lume_type_list.size() + j;
 
 			lume_vme[i][j] = config->GetValue( Form( "LUME_%d_%s.Crate", i, lume_type_list[j].data() ), (int) 1 );
@@ -729,15 +731,15 @@ void ISSSettings::ReadSettings() {
 
 			for( unsigned int k = 0; k < nstrips; ++k ){
 
-				unsigned char mm = 2*i;
+				unsigned char mm = 2*i + j + 2;
 				unsigned char cc = k;
 				if( k > GetMaximumNumberOfVmeChannels() ) {
 					mm++;
 					cc -= GetMaximumNumberOfVmeChannels();
 				}
-				cd_vme[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Crate", i, j, sidechar.data() ), (int)1 ); // layer, ring
-				cd_mod[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Module", i, j, sidechar.data() ), (int)mm );
-				cd_ch[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Channel", i, j, sidechar.data() ), (int)cc );
+				cd_vme[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Crate", i, k, sidechar.data() ), (int)1 ); // layer, ring
+				cd_mod[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Module", i, k, sidechar.data() ), (int)mm );
+				cd_ch[i][j][k] = (int)config->GetValue( Form( "CD_%d_%d.%s.Channel", i, k, sidechar.data() ), (int)cc );
 
 				if( cd_vme[i][j][k] < GetNumberOfVmeCrates() &&
 				   cd_mod[i][j][k] < GetMaximumNumberOfVmeModules() &&
@@ -1214,6 +1216,7 @@ void ISSSettings::PrintSettings() {
 	// Mesytec settings
 	PRINT_SETTING_INT(n_mesy_mod);
 	PRINT_SETTING_INT(n_mesy_ch);
+	PRINT_SETTING_INT(n_mesy_logic);
 
 	// Info code settings
 	PRINT_SETTING_INT(extt_code);

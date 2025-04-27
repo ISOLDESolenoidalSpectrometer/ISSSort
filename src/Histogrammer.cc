@@ -100,7 +100,7 @@ void ISSHistogrammer::MakeHists() {
 
 	hname = "E_vs_z";
 	htitle = "Energy vs. z distance;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+	E_vs_z = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 	hname = "Theta";
 	htitle = "Centre of mass angle;#theta_{CM} [deg];Counts per deg";
@@ -108,19 +108,19 @@ void ISSHistogrammer::MakeHists() {
 
 	hname = "Ex";
 	htitle = "Excitation energy;Excitation energy [keV];Counts per 20 keV";
-	Ex = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+	Ex = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	hname = "E_vs_theta";
 	htitle = "Energy vs. centre of mass angle;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-	E_vs_theta = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+	E_vs_theta = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 	hname = "Ex_vs_theta";
 	htitle = "Excitation energy vs. centre of mass angle;#theta_{CM} [deg.];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+	Ex_vs_theta = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	hname = "Ex_vs_z";
 	htitle = "Excitation energy vs. measured z;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+	Ex_vs_z = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	// For each user cut
 	E_vs_z_cut.resize( react->GetNumberOfEvsZCuts() );
@@ -138,7 +138,7 @@ void ISSHistogrammer::MakeHists() {
 		hname = "E_vs_z_cut" + std::to_string(j);
 		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 		htitle += ";z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "Theta_cut"+ std::to_string(j);
 		htitle = "Centre of mass angle for user cut " + std::to_string(j);
@@ -148,22 +148,22 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
 		htitle += ";Excitation energy [keV];Counts per 20 keV";
-		Ex_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_cut[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "E_vs_theta_cut";
 		htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += ";#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "Ex_vs_theta_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += ";#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += ";z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 
 	}
@@ -185,7 +185,7 @@ void ISSHistogrammer::MakeHists() {
 		hname = "E_vs_z_mod" + std::to_string(j);
 		htitle = "Energy vs. z distance for module " + std::to_string(j);
 		htitle += ";z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "Theta_mod"+ std::to_string(j);
 		htitle = "Centre of mass angle for module " + std::to_string(j);
@@ -195,22 +195,22 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_mod" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
 		htitle += ";Excitation energy [keV];Counts per 20 keV";
-		Ex_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_mod[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "E_vs_theta_mod"+ std::to_string(j);
 		htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += ";#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "Ex_vs_theta_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += ";#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += ";z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(),  1000, -5000, 15000 );
+		Ex_vs_z_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(),  react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	}
 
@@ -221,15 +221,15 @@ void ISSHistogrammer::MakeHists() {
 
 	hname = "E_vs_z_ebis";
 	htitle = "Energy vs. z distance gated on EBIS and off beam subtracted;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_ebis = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+	E_vs_z_ebis = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 	hname = "E_vs_z_ebis_on";
 	htitle = "Energy vs. z distance gated on EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_ebis_on = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+	E_vs_z_ebis_on = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 	hname = "E_vs_z_ebis_off";
 	htitle = "Energy vs. z distance gated off EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_ebis_off = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+	E_vs_z_ebis_off = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 	hname = "Theta_ebis";
 	htitle = "Centre of mass angle gated by EBIS and off beam subtracted;#theta_{CM} [deg];Counts per deg";
@@ -245,51 +245,51 @@ void ISSHistogrammer::MakeHists() {
 
 	hname = "Ex_ebis";
 	htitle = "Excitation energy gated by EBIS and off beam subtracted;Excitation energy [keV];Counts per 20 keV";
-	Ex_ebis = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+	Ex_ebis = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	hname = "Ex_ebis_on";
 	htitle = "Excitation energy gated on EBIS;Excitation energy [keV];Counts per 20 keV";
-	Ex_ebis_on = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+	Ex_ebis_on = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	hname = "Ex_ebis_off";
 	htitle = "Excitation energy gated off EBIS;Excitation energy [keV];Counts per 20 keV";
-	Ex_ebis_off = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+	Ex_ebis_off = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	hname = "E_vs_theta_ebis";
 	htitle = "Energy vs. centre of mass angle gated by EBIS and off beam subtracted;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-	E_vs_theta_ebis = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+	E_vs_theta_ebis = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 	hname = "E_vs_theta_ebis_on";
 	htitle = "Energy vs. centre of mass angle gated on EBIS;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-	E_vs_theta_ebis_on = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+	E_vs_theta_ebis_on = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 	hname = "E_vs_theta_ebis_off";
 	htitle = "Energy vs. centre of mass angle gated off EBIS;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-	E_vs_theta_ebis_off = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+	E_vs_theta_ebis_off = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 	hname = "Ex_vs_theta_ebis";
 	htitle = "Excitation energy vs. centre of mass angle gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta_ebis = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+	Ex_vs_theta_ebis = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	hname = "Ex_vs_theta_ebis_on";
 	htitle = "Excitation energy vs. centre of mass angle gated on EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta_ebis_on = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+	Ex_vs_theta_ebis_on = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	hname = "Ex_vs_theta_ebis_off";
 	htitle = "Excitation energy vs. centre of mass angle gated off EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta_ebis_off = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+	Ex_vs_theta_ebis_off = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	hname = "Ex_vs_z_ebis";
 	htitle = "Excitation energy vs. measured z gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_ebis = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(),  1000, -5000, 15000 );
+	Ex_vs_z_ebis = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(),  react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	hname = "Ex_vs_z_ebis_on";
 	htitle = "Excitation energy vs. measured z gated on EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_ebis_on = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+	Ex_vs_z_ebis_on = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	hname = "Ex_vs_z_ebis_off";
 	htitle = "Excitation energy vs. measured z gated off EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_ebis_off = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+	Ex_vs_z_ebis_off = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	// For each user cut
 	E_vs_z_ebis_cut.resize( react->GetNumberOfEvsZCuts() );
@@ -319,17 +319,17 @@ void ISSHistogrammer::MakeHists() {
 		hname = "E_vs_z_ebis_cut" + std::to_string(j);
 		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "E_vs_z_ebis_on_cut" + std::to_string(j);
 		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 		htitle += " gated on EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "E_vs_z_ebis_off_cut" + std::to_string(j);
 		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 		htitle += " gated off EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "Theta_ebis_cut"+ std::to_string(j);
 		htitle = "Centre of mass angle for user cut " + std::to_string(j);
@@ -349,62 +349,62 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_ebis_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_ebis_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_ebis_cut[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_ebis_on_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
 		htitle += " gated on EBIS;Excitation energy [keV];Counts per 20 keV";
-		Ex_ebis_on_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_ebis_on_cut[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_ebis_off_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
 		htitle += " gated off EBIS;Excitation energy [keV];Counts per 20 keV";
-		Ex_ebis_off_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_ebis_off_cut[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "E_vs_theta_ebis_cut";
 		htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "E_vs_theta_ebis_on_cut";
 		htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += " gated on EBIS;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "E_vs_theta_ebis_off_cut";
 		htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += " gated off EBIS;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "Ex_vs_theta_ebis_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_theta_ebis_on_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += " gated on EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_theta_ebis_off_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += " gated off EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_ebis_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_ebis_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_ebis_on_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for user cut " + std::to_string(j);
 		htitle += " gated on EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_ebis_on_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_ebis_off_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for user cut " + std::to_string(j);
 		htitle += " gated off EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_ebis_off_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	}
 
@@ -436,17 +436,17 @@ void ISSHistogrammer::MakeHists() {
 		hname = "E_vs_z_ebis_mod" + std::to_string(j);
 		htitle = "Energy vs. z distance for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "E_vs_z_ebis_on_mod" + std::to_string(j);
 		htitle = "Energy vs. z distance for module " + std::to_string(j);
 		htitle += " gated on EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "E_vs_z_ebis_off_mod" + std::to_string(j);
 		htitle = "Energy vs. z distance for module " + std::to_string(j);
 		htitle += " gated off EBIS;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "Theta_ebis_mod"+ std::to_string(j);
 		htitle = "Centre of mass angle for module " + std::to_string(j);
@@ -466,62 +466,62 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_ebis_mod" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_ebis_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_ebis_mod[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_ebis_on_mod" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
 		htitle += " gated on EBIS;Excitation energy [keV];Counts per 20 keV";
-		Ex_ebis_on_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_ebis_on_mod[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_ebis_off_mod" + std::to_string(j);
 		htitle = "Excitation energy for module " + std::to_string(j);
 		htitle += " gated off EBIS;Excitation energy [keV];Counts per 20 keV";
-		Ex_ebis_off_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_ebis_off_mod[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "E_vs_theta_ebis_mod"+ std::to_string(j);
 		htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "E_vs_theta_ebis_on_mod"+ std::to_string(j);
 		htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += " gated on EBIS;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "E_vs_theta_ebis_off_mod"+ std::to_string(j);
 		htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += " gated off EBIS;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "Ex_vs_theta_ebis_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_theta_ebis_on_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += " gated on EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_theta_ebis_off_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 		htitle += " gated off EBIS;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_ebis_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
 		htitle += " gated by EBIS and off beam subtracted;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_ebis_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_ebis_on_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for module " + std::to_string(j);
 		htitle += " gated on EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_ebis_on_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_ebis_off_mod" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z  for module " + std::to_string(j);
 		htitle += " gated off EBIS;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_ebis_off_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	}
 
@@ -534,19 +534,19 @@ void ISSHistogrammer::MakeHists() {
 
 		hname = "E_vs_z_recoil";
 		htitle = "Energy vs. z distance gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoil = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_recoil = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "E_vs_z_recoilT";
 		htitle = "Energy vs. z distance with a prompt time gate on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "E_vs_z_recoil_random";
 		htitle = "Energy vs. z distance time-random gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoil_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_recoil_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "E_vs_z_recoilT_random";
 		htitle = "Energy vs. z distance with a random time gate on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_recoilT_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_recoilT_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "Theta_recoil";
 		htitle = "Centre of mass angle gated on recoils;#theta_{CM} [deg];Counts per deg";
@@ -566,67 +566,67 @@ void ISSHistogrammer::MakeHists() {
 
 		hname = "Ex_recoil";
 		htitle = "Excitation energy gated by recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoil = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_recoil = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_recoilT";
 		htitle = "Excitation energy with a prompt time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoilT = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_recoilT = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_recoil_random";
 		htitle = "Excitation energy time-random gated by recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoil_random = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_recoil_random = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_recoilT_random";
 		htitle = "Excitation energy with a random time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
-		Ex_recoilT_random = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_recoilT_random = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "E_vs_theta_recoil";
 		htitle = "Energy vs. centre of mass angle gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_recoil = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_recoil = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "E_vs_theta_recoilT";
 		htitle = "Energy vs. centre of mass angle with a prompt time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_recoilT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_recoilT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "E_vs_theta_recoil_random";
 		htitle = "Energy vs. centre of mass angle time-random gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_recoil_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_recoil_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "E_vs_theta_recoilT_random";
 		htitle = "Energy vs. centre of mass angle with a random time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_recoilT_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_recoilT_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "Ex_vs_theta_recoil";
 		htitle = "Excitation energy vs. centre of mass angle gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoil = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_recoil = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_theta_recoilT";
 		htitle = "Excitation energy vs. centre of mass angle with a prompt time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoilT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_recoilT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_theta_recoil_random";
 		htitle = "Excitation energy vs. centre of mass angle time-random gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoil_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_recoil_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_theta_recoilT_random";
 		htitle = "Excitation energy vs. centre of mass angle with a random time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_recoilT_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_recoilT_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_recoil";
 		htitle = "Excitation energy vs. measured z gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoil = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_recoil = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_recoilT";
 		htitle = "Excitation energy vs. measured z with a prompt time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_recoilT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_recoil_random";
 		htitle = "Excitation energy vs. measured z time-random gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoil_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_recoil_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_recoilT_random";
 		htitle = "Excitation energy vs. measured z with a random time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_recoilT_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_recoilT_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		// For each user cut
 		E_vs_z_recoil_cut.resize( react->GetNumberOfEvsZCuts() );
@@ -663,22 +663,22 @@ void ISSHistogrammer::MakeHists() {
 			hname = "E_vs_z_recoil_cut" + std::to_string(j);
 			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 			htitle += " gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "E_vs_z_recoilT_cut" + std::to_string(j);
 			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 			htitle += " with a prompt time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "E_vs_z_recoil_random_cut" + std::to_string(j);
 			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 			htitle += " time-random gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "E_vs_z_recoilT_random_cut" + std::to_string(j);
 			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 			htitle += " with a random time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "Theta_recoil_cut"+ std::to_string(j);
 			htitle = "Centre of mass angle for user cut " + std::to_string(j);
@@ -703,82 +703,82 @@ void ISSHistogrammer::MakeHists() {
 			hname = "Ex_recoil_cut" + std::to_string(j);
 			htitle = "Excitation energy for user cut " + std::to_string(j);
 			htitle += " gated by recoils;Excitation energy [keV];Counts per 20 keV";
-			Ex_recoil_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_recoil_cut[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_recoilT_cut" + std::to_string(j);
 			htitle = "Excitation energy for user cut " + std::to_string(j);
 			htitle += " with a prompt time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
-			Ex_recoilT_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_recoilT_cut[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_recoil_random_cut" + std::to_string(j);
 			htitle = "Excitation energy for user cut " + std::to_string(j);
 			htitle += " time-random gated by recoils;Excitation energy [keV];Counts per 20 keV";
-			Ex_recoil_random_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_recoil_random_cut[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_recoilT_random_cut" + std::to_string(j);
 			htitle = "Excitation energy for user cut " + std::to_string(j);
 			htitle += " with a random time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
-			Ex_recoilT_random_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_recoilT_random_cut[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "E_vs_theta_recoil_cut";
 			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "E_vs_theta_recoilT_cut";
 			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "E_vs_theta_recoil_random_cut";
 			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " time-random gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "E_vs_theta_recoilT_random_cut";
 			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " with a random time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "Ex_vs_theta_recoil_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_theta_recoilT_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_theta_recoil_random_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " time-random gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_theta_recoilT_random_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " with a random time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_recoil_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 			htitle += " gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_recoil_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_recoilT_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 			htitle += " with a prompt time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_recoilT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_recoil_random_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 			htitle += " time-random gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_recoil_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_recoilT_random_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 			htitle += " with a random time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_recoilT_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		} // Array
 
@@ -817,22 +817,22 @@ void ISSHistogrammer::MakeHists() {
 			hname = "E_vs_z_recoil_mod" + std::to_string(j);
 			htitle = "Energy vs. z distance for module " + std::to_string(j);
 			htitle += " gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "E_vs_z_recoilT_mod" + std::to_string(j);
 			htitle = "Energy vs. z distance for module " + std::to_string(j);
 			htitle += " with a prompt time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "E_vs_z_recoil_random_mod" + std::to_string(j);
 			htitle = "Energy vs. z distance for module " + std::to_string(j);
 			htitle += " time-random gated on recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "E_vs_z_recoilT_random_mod" + std::to_string(j);
 			htitle = "Energy vs. z distance for module " + std::to_string(j);
 			htitle += " with a random time gate on all recoils;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "Theta_recoil_mod"+ std::to_string(j);
 			htitle = "Centre of mass angle for module " + std::to_string(j);
@@ -857,82 +857,82 @@ void ISSHistogrammer::MakeHists() {
 			hname = "Ex_recoil_mod" + std::to_string(j);
 			htitle = "Excitation energy for module " + std::to_string(j);
 			htitle += " gated by recoils;Excitation energy [keV];Counts per 20 keV";
-			Ex_recoil_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_recoil_mod[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_recoilT_mod" + std::to_string(j);
 			htitle = "Excitation energy for module " + std::to_string(j);
 			htitle += " with a prompt time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
-			Ex_recoilT_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_recoilT_mod[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_recoil_random_mod" + std::to_string(j);
 			htitle = "Excitation energy for module " + std::to_string(j);
 			htitle += " time-random gated by recoils;Excitation energy [keV];Counts per 20 keV";
-			Ex_recoil_random_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_recoil_random_mod[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_recoilT_random_mod" + std::to_string(j);
 			htitle = "Excitation energy for module " + std::to_string(j);
 			htitle += " with a random time gate on all recoils;Excitation energy [keV];Counts per 20 keV";
-			Ex_recoilT_random_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_recoilT_random_mod[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "E_vs_theta_recoil_mod"+ std::to_string(j);
 			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "E_vs_theta_recoilT_mod"+ std::to_string(j);
 			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "E_vs_theta_recoil_random_mod"+ std::to_string(j);
 			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " time-random gated by recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "E_vs_theta_recoilT_random_mod"+ std::to_string(j);
 			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " with a random time gate on all recoils;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "Ex_vs_theta_recoil_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_theta_recoilT_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " with a prompt time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_theta_recoil_random_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " time-random gated by recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_theta_recoilT_random_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " with a random time gate on all recoils;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_recoil_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
 			htitle += " gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_recoil_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_recoilT_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
 			htitle += " with a prompt time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_recoilT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_recoil_random_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
 			htitle += " time-random gated by recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_recoil_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_recoilT_random_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
 			htitle += " with a random time gate on all recoils;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_recoilT_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		} // Array
 
@@ -947,19 +947,19 @@ void ISSHistogrammer::MakeHists() {
 
 		hname = "E_vs_z_fission";
 		htitle = "Energy vs. z distance gated on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_fission = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_fission = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "E_vs_z_fissionT";
 		htitle = "Energy vs. z distance with a prompt time gate on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_fissionT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_fissionT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "E_vs_z_fission_random";
 		htitle = "Energy vs. z distance time-random gated on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_fission_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_fission_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "E_vs_z_fissionT_random";
 		htitle = "Energy vs. z distance with a random time gate on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_fissionT_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_fissionT_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "Theta_fission";
 		htitle = "Centre of mass angle gated on fission fragments;#theta_{CM} [deg];Counts per deg";
@@ -979,67 +979,67 @@ void ISSHistogrammer::MakeHists() {
 
 		hname = "Ex_fission";
 		htitle = "Excitation energy gated by fission fragments;Excitation energy [keV];Counts per 20 keV";
-		Ex_fission = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_fission = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_fissionT";
 		htitle = "Excitation energy with a prompt time gate on all fission fragments;Excitation energy [keV];Counts per 20 keV";
-		Ex_fissionT = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_fissionT = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_fission_random";
 		htitle = "Excitation energy time-random gated by fission fragments;Excitation energy [keV];Counts per 20 keV";
-		Ex_fission_random = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_fission_random = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_fissionT_random";
 		htitle = "Excitation energy with a random time gate on all fission fragments;Excitation energy [keV];Counts per 20 keV";
-		Ex_fissionT_random = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_fissionT_random = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "E_vs_theta_fission";
 		htitle = "Energy vs. centre of mass angle gated by fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_fission = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_fission = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "E_vs_theta_fissionT";
 		htitle = "Energy vs. centre of mass angle with a prompt time gate on all fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_fissionT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_fissionT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "E_vs_theta_fission_random";
 		htitle = "Energy vs. centre of mass angle time-random gated by fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_fission_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_fission_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "E_vs_theta_fissionT_random";
 		htitle = "Energy vs. centre of mass angle with a random time gate on all fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_fissionT_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_fissionT_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "Ex_vs_theta_fission";
 		htitle = "Excitation energy vs. centre of mass angle gated by fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_fission = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_fission = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_theta_fissionT";
 		htitle = "Excitation energy vs. centre of mass angle with a prompt time gate on all fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_fissionT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_fissionT = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_theta_fission_random";
 		htitle = "Excitation energy vs. centre of mass angle time-random gated by fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_fission_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_fission_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_theta_fissionT_random";
 		htitle = "Excitation energy vs. centre of mass angle with a random time gate on all fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_fissionT_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_fissionT_random = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_fission";
 		htitle = "Excitation energy vs. measured z gated by fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_fission = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_fission = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_fissionT";
 		htitle = "Excitation energy vs. measured z with a prompt time gate on all fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_fissionT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_fissionT = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_fission_random";
 		htitle = "Excitation energy vs. measured z time-random gated by fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_fission_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_fission_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_fissionT_random";
 		htitle = "Excitation energy vs. measured z with a random time gate on all fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_fissionT_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_fissionT_random = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		// For each user cut
 		E_vs_z_fission_cut.resize( react->GetNumberOfEvsZCuts() );
@@ -1075,22 +1075,22 @@ void ISSHistogrammer::MakeHists() {
 			hname = "E_vs_z_fission_cut" + std::to_string(j);
 			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 			htitle += " gated on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_fission_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_fission_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "E_vs_z_fissionT_cut" + std::to_string(j);
 			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 			htitle += " with a prompt time gate on all fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_fissionT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_fissionT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "E_vs_z_fission_random_cut" + std::to_string(j);
 			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 			htitle += " time-random gated on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_fission_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_fission_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "E_vs_z_fissionT_random_cut" + std::to_string(j);
 			htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 			htitle += " with a random time gate on all fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_fissionT_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_fissionT_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "Theta_fission_cut"+ std::to_string(j);
 			htitle = "Centre of mass angle for user cut " + std::to_string(j);
@@ -1115,82 +1115,82 @@ void ISSHistogrammer::MakeHists() {
 			hname = "Ex_fission_cut" + std::to_string(j);
 			htitle = "Excitation energy for user cut " + std::to_string(j);
 			htitle += " gated by fission fragments;Excitation energy [keV];Counts per 20 keV";
-			Ex_fission_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_fission_cut[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_fissionT_cut" + std::to_string(j);
 			htitle = "Excitation energy for user cut " + std::to_string(j);
 			htitle += " with a prompt time gate on all fission fragments;Excitation energy [keV];Counts per 20 keV";
-			Ex_fissionT_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_fissionT_cut[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_fission_random_cut" + std::to_string(j);
 			htitle = "Excitation energy for user cut " + std::to_string(j);
 			htitle += " time-random gated by fission fragments;Excitation energy [keV];Counts per 20 keV";
-			Ex_fission_random_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_fission_random_cut[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_fissionT_random_cut" + std::to_string(j);
 			htitle = "Excitation energy for user cut " + std::to_string(j);
 			htitle += " with a random time gate on all fission fragments;Excitation energy [keV];Counts per 20 keV";
-			Ex_fissionT_random_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_fissionT_random_cut[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "E_vs_theta_fission_cut";
 			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " gated by fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_fission_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_fission_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "E_vs_theta_fissionT_cut";
 			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " with a prompt time gate on all fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_fissionT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_fissionT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "E_vs_theta_fission_random_cut";
 			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " time-random gated by fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_fission_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_fission_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "E_vs_theta_fissionT_random_cut";
 			htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " with a random time gate on all fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_fissionT_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_fissionT_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "Ex_vs_theta_fission_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " gated by fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_fission_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_fission_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_theta_fissionT_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " with a prompt time gate on all fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_fissionT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_fissionT_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_theta_fission_random_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " time-random gated by fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_fission_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_fission_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_theta_fissionT_random_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 			htitle += " with a random time gate on all fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_fissionT_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_fissionT_random_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_fission_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 			htitle += " gated by fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_fission_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_fission_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_fissionT_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 			htitle += " with a prompt time gate on all fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_fissionT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_fissionT_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_fission_random_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 			htitle += " time-random gated by fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_fission_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_fission_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_fissionT_random_cut" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 			htitle += " with a random time gate on all fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_fissionT_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_fissionT_random_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		} // Array
 
@@ -1228,22 +1228,22 @@ void ISSHistogrammer::MakeHists() {
 			hname = "E_vs_z_fission_mod" + std::to_string(j);
 			htitle = "Energy vs. z distance for module " + std::to_string(j);
 			htitle += " gated on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_fission_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_fission_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "E_vs_z_fissionT_mod" + std::to_string(j);
 			htitle = "Energy vs. z distance for module " + std::to_string(j);
 			htitle += " with a prompt time gate on all fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_fissionT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_fissionT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "E_vs_z_fission_random_mod" + std::to_string(j);
 			htitle = "Energy vs. z distance for module " + std::to_string(j);
 			htitle += " time-random gated on fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_fission_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_fission_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "E_vs_z_fissionT_random_mod" + std::to_string(j);
 			htitle = "Energy vs. z distance for module " + std::to_string(j);
 			htitle += " with a random time gate on all fission fragments;z [mm];Energy [keV];Counts per mm per 20 keV";
-			E_vs_z_fissionT_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+			E_vs_z_fissionT_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			hname = "Theta_fission_mod"+ std::to_string(j);
 			htitle = "Centre of mass angle for module " + std::to_string(j);
@@ -1268,82 +1268,82 @@ void ISSHistogrammer::MakeHists() {
 			hname = "Ex_fission_mod" + std::to_string(j);
 			htitle = "Excitation energy for module " + std::to_string(j);
 			htitle += " gated by fission fragments;Excitation energy [keV];Counts per 20 keV";
-			Ex_fission_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_fission_mod[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_fissionT_mod" + std::to_string(j);
 			htitle = "Excitation energy for module " + std::to_string(j);
 			htitle += " with a prompt time gate on all fission fragments;Excitation energy [keV];Counts per 20 keV";
-			Ex_fissionT_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_fissionT_mod[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_fission_random_mod" + std::to_string(j);
 			htitle = "Excitation energy for module " + std::to_string(j);
 			htitle += " time-random gated by fission fragments;Excitation energy [keV];Counts per 20 keV";
-			Ex_fission_random_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_fission_random_mod[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_fissionT_random_mod" + std::to_string(j);
 			htitle = "Excitation energy for module " + std::to_string(j);
 			htitle += " with a random time gate on all fission fragments;Excitation energy [keV];Counts per 20 keV";
-			Ex_fissionT_random_mod[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+			Ex_fissionT_random_mod[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "E_vs_theta_fission_mod"+ std::to_string(j);
 			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " gated by fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_fission_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_fission_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "E_vs_theta_fissionT_mod"+ std::to_string(j);
 			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " with a prompt time gate on all fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_fissionT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_fissionT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "E_vs_theta_fission_random_mod"+ std::to_string(j);
 			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " time-random gated by fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_fission_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_fission_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "E_vs_theta_fissionT_random_mod"+ std::to_string(j);
 			htitle = "Energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " with a random time gate on all fission fragments;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-			E_vs_theta_fissionT_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+			E_vs_theta_fissionT_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 			hname = "Ex_vs_theta_fission_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " gated by fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_fission_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_fission_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_theta_fissionT_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " with a prompt time gate on all fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_fissionT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_fissionT_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_theta_fission_random_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " time-random gated by fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_fission_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_fission_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_theta_fissionT_random_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. centre of mass angle for module " + std::to_string(j);
 			htitle += " with a random time gate on all fission fragments;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-			Ex_vs_theta_fissionT_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+			Ex_vs_theta_fissionT_random_mod[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_fission_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
 			htitle += " gated by fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_fission_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_fission_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_fissionT_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
 			htitle += " with a prompt time gate on all fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_fissionT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_fissionT_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_fission_random_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
 			htitle += " time-random gated by fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_fission_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_fission_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 			hname = "Ex_vs_z_fissionT_random_mod" + std::to_string(j);
 			htitle = "Excitation energy vs. measured z for module " + std::to_string(j);
 			htitle += " with a random time gate on all fission fragments;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-			Ex_vs_z_fissionT_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+			Ex_vs_z_fissionT_random_mod[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		} // Array
 
@@ -1357,7 +1357,7 @@ void ISSHistogrammer::MakeHists() {
 
 	hname = "E_vs_z_T1";
 	htitle = "Energy vs. z distance with a time gate on T1 proton pulse;z [mm];Energy [keV];Counts per mm per 20 keV";
-	E_vs_z_T1 = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+	E_vs_z_T1 = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 	hname = "Theta_T1";
 	htitle = "Centre of mass angle with a time gate on T1 proton pulse;#theta_{CM} [deg];Counts per deg";
@@ -1365,23 +1365,23 @@ void ISSHistogrammer::MakeHists() {
 
 	hname = "Ex_T1";
 	htitle = "Excitation energy with a time gate on T1 proton pulse;Excitation energy [keV];Counts per 20 keV";
-	Ex_T1 = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+	Ex_T1 = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	hname = "E_vs_theta_T1";
 	htitle = "Energy vs. centre of mass angle with a time gate on T1 proton pulse;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-	E_vs_theta_T1 = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+	E_vs_theta_T1 = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 	hname = "Ex_vs_T1";
 	htitle = "Excitation energy as a function of time since T1 proton pulse;Event time - T1 [ns];Excitation energy [keV];Counts per 20 keV";
-	Ex_vs_T1 = new TH2F( hname.data(), htitle.data(), 1000, 0, 100e9, 1000, -5000, 15000 );
+	Ex_vs_T1 = new TH2F( hname.data(), htitle.data(), 1000, 0, 100e9, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	hname = "Ex_vs_theta_T1";
 	htitle = "Excitation energy vs. centre of mass angle with a time gate on T1 proton pulse;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-	Ex_vs_theta_T1 = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+	Ex_vs_theta_T1 = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	hname = "Ex_vs_z_T1";
 	htitle = "Excitation energy vs. measured z with a time gate on T1 proton pulse;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-	Ex_vs_z_T1 = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+	Ex_vs_z_T1 = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	// For each user cut
 	E_vs_z_T1_cut.resize( react->GetNumberOfEvsZCuts() );
@@ -1401,7 +1401,7 @@ void ISSHistogrammer::MakeHists() {
 		hname = "E_vs_z_T1_cut" + std::to_string(j);
 		htitle = "Energy vs. z distance for user cut " + std::to_string(j);
 		htitle += " with a time gate on T1 proton pulse;z [mm];Energy [keV];Counts per mm per 20 keV";
-		E_vs_z_T1_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 800, 0, 16000 );
+		E_vs_z_T1_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 		hname = "Theta_T1_cut"+ std::to_string(j);
 		htitle = "Centre of mass angle for user cut " + std::to_string(j);
@@ -1411,26 +1411,26 @@ void ISSHistogrammer::MakeHists() {
 		hname = "Ex_T1_cut" + std::to_string(j);
 		htitle = "Excitation energy for user cut " + std::to_string(j);
 		htitle += " with a time gate on T1 proton pulse;Excitation energy [keV];Counts per 20 keV";
-		Ex_T1_cut[j] = new TH1F( hname.data(), htitle.data(), 1000, -5000, 15000 );
+		Ex_T1_cut[j] = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "E_vs_theta_T1_cut";
 		htitle = "Energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += " with a time gate on T1 proton pulse;#theta_{CM} [deg];Energy [keV];Counts per deg per 20 keV";
-		E_vs_theta_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 800, 0, 16000  );
+		E_vs_theta_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistElabBins(), react->HistElabMin(), react->HistElabMax()  );
 
 		hname = "Ex_vs_T1_cut" + std::to_string(j);
 		htitle = "Excitation energy as a function of time since T1 proton pulse;Event time - T1 [ns];Excitation energy [keV];Counts per 20 keV";
-		Ex_vs_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 1000, 0, 100e9, 1000, -5000, 15000 );
+		Ex_vs_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 1000, 0, 100e9, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_theta_T1_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. centre of mass angle for user cut " + std::to_string(j);
 		htitle += " with a time gate on T1 proton pulse;#theta_{CM} [deg];Excitation energy [keV];Counts per deg per 20 keV";
-		Ex_vs_theta_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, 1000, -5000, 15000 );
+		Ex_vs_theta_T1_cut[j] = new TH2F( hname.data(), htitle.data(), 180, 0, 180.0, react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 		hname = "Ex_vs_z_T1_cut" + std::to_string(j);
 		htitle = "Excitation energy vs. measured z for user cut " + std::to_string(j);
 		htitle += " with a time gate on T1 proton pulse;z [mm];Excitation energy [keV];Counts per mm per 20 keV";
-		Ex_vs_z_T1_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), 1000, -5000, 15000 );
+		Ex_vs_z_T1_cut[j] = new TH2F( hname.data(), htitle.data(), zbins.size()-1, zbins.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 	} // Array
 
@@ -1540,11 +1540,11 @@ void ISSHistogrammer::MakeHists() {
 		recoil_array_tw_hit0 = new TH2F( "tw_recoil_array_hit0",
 										"Time-walk histogram for array-recoil coincidences with hit bit false;#Deltat [ns];Array energy [keV];Counts",
 										1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-										800, 0, 16000 );
+										react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 		recoil_array_tw_hit1 = new TH2F( "tw_recoil_array_hit1",
 										"Time-walk histogram for array-recoil coincidences with hit bit true;#Deltat [ns];Array energy [keV];Counts",
 										1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-										800, 0, 16000 );
+										react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 		recoil_array_tw_hit0_prof = new TProfile( "tw_recoil_array_hit0_prof", "Time-walk profile for recoil-array coincidences with hit bit false;Array energy;#Delta t", 2000, 0, 60000 );
 		recoil_array_tw_hit1_prof = new TProfile( "tw_recoil_array_hit1_prof", "Time-walk profile for recoil-array coincidences with hit bit true;Array energy;#Delta t", 2000, 0, 60000 );
 
@@ -1564,13 +1564,13 @@ void ISSHistogrammer::MakeHists() {
 				htitle = "Time-walk histogram for array-recoil coincidences (module ";
 				htitle += std::to_string(i) + ", row " + std::to_string(j) + ") with hit bit false;Deltat [ns];Array energy [keV];Counts";
 				recoil_array_tw_hit0_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-														  800, 0, 16000 );
+														  react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 				hname = "tw_recoil_array_hit1_mod_" + std::to_string(i) + "_row" + std::to_string(j);
 				htitle = "Time-walk histogram for array-recoil coincidences (module ";
 				htitle += std::to_string(i) + ", row " + std::to_string(j) + ") with hit bit true;Deltat [ns];Array energy [keV];Counts";
 				recoil_array_tw_hit1_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-														  800, 0, 16000 );
+														  react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			}
 
@@ -1693,11 +1693,11 @@ void ISSHistogrammer::MakeHists() {
 		fission_array_tw_hit0 = new TH2F( "tw_fission_array_hit0",
 										 "Time-walk histogram for array-fission coincidences with hit bit false;#Deltat [ns];Array energy [keV];Counts",
 										 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-										 800, 0, 16000 );
+										 react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 		fission_array_tw_hit1 = new TH2F( "tw_fission_array_hit1",
 										 "Time-walk histogram for array-fission coincidences with hit bit true;#Deltat [ns];Array energy [keV];Counts",
 										 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-										 800, 0, 16000 );
+										 react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 		fission_array_tw_hit0_prof = new TProfile( "tw_fission_array_hit0_prof", "Time-walk profile for fission-array coincidences with hit bit false;Array energy;#Delta t", 2000, 0, 60000 );
 		fission_array_tw_hit1_prof = new TProfile( "tw_fission_array_hit1_prof", "Time-walk profile for fission-array coincidences with hit bit true;Array energy;#Delta t", 2000, 0, 60000 );
 
@@ -1717,13 +1717,13 @@ void ISSHistogrammer::MakeHists() {
 				htitle = "Time-walk histogram for array-fission coincidences (module ";
 				htitle += std::to_string(i) + ", row " + std::to_string(j) + ") with hit bit false;Deltat [ns];Array energy [keV];Counts";
 				fission_array_tw_hit0_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-														   800, 0, 16000 );
+														   react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 				hname = "tw_fission_array_hit1_mod_" + std::to_string(i) + "_row" + std::to_string(j);
 				htitle = "Time-walk histogram for array-fission coincidences (module ";
 				htitle += std::to_string(i) + ", row " + std::to_string(j) + ") with hit bit true;Deltat [ns];Array energy [keV];Counts";
 				fission_array_tw_hit1_row[i][j] = new TH2F( hname.data(), htitle.data(), 1000, -1.0*set->GetEventWindow(), 1.0*set->GetEventWindow(),
-														   800, 0, 16000 );
+														   react->HistElabBins(), react->HistElabMin(), react->HistElabMax() );
 
 			}
 

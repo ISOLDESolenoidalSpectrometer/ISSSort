@@ -747,6 +747,7 @@ void ISSConverter::ProcessBlockHeader( unsigned long nblock ){
 	// Flags for Mesytec data items
 	flag_mesy_data0 = false;
 	flag_mesy_data1 = false;
+	flag_mesy_data2 = false;
 	flag_mesy_data3 = false;
 	flag_mesy_trace = false;
 
@@ -885,16 +886,16 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 				// We've got something from the CAEN DAQ
 				if( my_vme_id == 0 ) {
 
-					ProcessCAENData();
-					FinishCAENData();
+					if( ProcessCAENData() )
+						FinishCAENData();
 
 				}
 
 				// or we've got something from the Mesytec DAQ
 				else if( my_vme_id == 1 ) {
 
-					ProcessMesytecData();
-					FinishMesytecData();
+					if( ProcessMesytecData() )
+						FinishMesytecData();
 
 				}
 
@@ -1137,7 +1138,7 @@ void ISSConverter::GetVMEChanID(){
 
 }
 
-void ISSConverter::ProcessCAENData(){
+bool ISSConverter::ProcessCAENData(){
 
 	// CAEN data format
 	my_adc_data = word_0 & 0xFFFF; // 16 bits from 0
@@ -1149,7 +1150,7 @@ void ISSConverter::ProcessCAENData(){
 		std::cout << "Bad CAEN event with mod_id=" << (int) my_mod_id;
 		std::cout << " ch_id=" << (int) my_ch_id;
 		std::cout << " data_id=" << (int) my_data_id << std::endl;
-		return;
+		return false;
 
 	}
 
@@ -1294,7 +1295,7 @@ void ISSConverter::ProcessCAENData(){
 
 	}
 
-	return;
+	return true;
 
 }
 
@@ -1425,6 +1426,8 @@ void ISSConverter::FinishCAENData(){
 		std::cout << " baseline    = " << flag_caen_data2 << std::endl;
 		std::cout << " fine timing = " << flag_caen_data3 << std::endl;
 		std::cout << " trace data  = " << flag_caen_trace << std::endl;
+		std::cout << " current ts  = " << my_tm_stp << std::endl;
+		std::cout << " previous ts = " << caen_data->GetTimeStamp() << std::endl;
 
 	}
 
@@ -1447,19 +1450,19 @@ void ISSConverter::FinishCAENData(){
 
 }
 
-void ISSConverter::ProcessMesytecData(){
+bool ISSConverter::ProcessMesytecData(){
 
 	// Mesytec data format
 	my_adc_data = word_0 & 0xFFFF; // 16 bits from 0
 
 	// Check things make sense
 	if( my_mod_id >= set->GetNumberOfMesytecModules() ||
-		my_ch_id >= set->GetNumberOfMesytecChannels() ) {
+		my_ch_id >= set->GetNumberOfMesytecChannels() + set->GetNumberOfMesytecLogicInputs() ) {
 
 		std::cout << "Bad Mesytec event with mod_id=" << (int) my_mod_id;
 		std::cout << " ch_id=" << (int) my_ch_id;
 		std::cout << " data_id=" << (int) my_data_id << std::endl;
-		return;
+		return false;
 
 	}
 
@@ -1469,6 +1472,15 @@ void ISSConverter::ProcessMesytecData(){
 
 	// Mesytec timestamps are 4 ns precision? TBD
 	my_tm_stp = my_tm_stp*4;
+
+	// If it's a logic input, process that properly and don't do the rest
+	if( my_ch_id >= set->GetNumberOfMesytecChannels() &&
+	   my_ch_id < set->GetNumberOfMesytecChannels() + set->GetNumberOfMesytecLogicInputs() ) {
+
+		ProcessMesytecLogicItem();
+		return false;
+
+	}
 
 	// First of the data items
 	if( !flag_mesy_data0 && !flag_mesy_data1 && !flag_mesy_data2 && !flag_mesy_data3 ){
@@ -1485,7 +1497,8 @@ void ISSConverter::ProcessMesytecData(){
 	// already occured before we found traces. This means that there
 	// is not trace data. So set the flag to be true and finish the
 	// event with an empty trace.
-	else if( flag_mesy_data0 && flag_mesy_data1 && flag_mesy_data3 ){
+	//else if( flag_mesy_data0 && flag_mesy_data1 && flag_mesy_data3 ){
+	else if( flag_mesy_data0 && flag_mesy_data3 ){
 
 		// Fake trace flag, but with an empty trace
 		flag_mesy_trace = true;
@@ -1549,14 +1562,23 @@ void ISSConverter::ProcessMesytecData(){
 
 	}
 
+	return true;
+
+}
+
+void ISSConverter::ProcessMesytecLogicItem(){
+
+	// For now, we just return, but eventually we need to map some stuff
+	// to these channels and do something with the data.
 	return;
 
 }
 
+
 void ISSConverter::FinishMesytecData(){
 
 	// Got all items
-	if( ( flag_mesy_data0 && flag_mesy_data1 && flag_mesy_data3 ) || flag_mesy_trace ){
+	if( ( flag_mesy_data0 && flag_mesy_data3 ) || flag_mesy_trace ){
 
 		// Fill histograms
 		hmesy_hit[mesy_data->GetModule()]->Fill( ctr_mesy_hit[mesy_data->GetModule()], mesy_data->GetTime(), 1 );
@@ -1598,6 +1620,8 @@ void ISSConverter::FinishMesytecData(){
 		std::cout << " Qshort      = " << flag_mesy_data1 << std::endl;
 		std::cout << " fine timing = " << flag_mesy_data3 << std::endl;
 		std::cout << " trace data  = " << flag_mesy_trace << std::endl;
+		std::cout << " current ts  = " << my_tm_stp << std::endl;
+		std::cout << " previous ts = " << mesy_data->GetTimeStamp() << std::endl;
 
 	}
 
@@ -1610,6 +1634,7 @@ void ISSConverter::FinishMesytecData(){
 	// Assuming it did finish, in a good way or bad, clean up.
 	flag_mesy_data0 = false;
 	flag_mesy_data1 = false;
+	flag_mesy_data2 = false;
 	flag_mesy_data3 = false;
 	flag_mesy_trace = false;
 	info_data->ClearData();
