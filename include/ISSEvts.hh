@@ -8,6 +8,7 @@
 
 #include "TVector2.h"
 #include "TVector3.h"
+#include "TRandom3.h"
 #include "TObject.h"
 
 // Some physical detector geometry for array
@@ -17,6 +18,14 @@ const double wafer_guard = 1.508;	///< width of the inactive region around edge 
 const double pstrip_pitch = 0.953;	///< pitch of a single p-side strip (mm)
 const double nstrip_pitch = 2.0;	///< pitch of a single n-side strip (mm)
 const double array_radius = 27.0;	///< radius to top surface of silicon (mm)
+
+// Some physical geometry of the CD
+const double cd_inner_radius = 11.0;	///< radius of hole in centre of S3 (mm)
+const double cd_ring_width = 0.886;		///< width of the active area of the rings (mm)
+const double cd_ring_gap = 0.114;		///< width of the dead area between the rings (mm)
+const double cd_sector_pitch = 11.00;	///< pitch of the active area of the sectors (degrees)
+const double cd_sector_gap = 0.25;		///< pitch of the dead area between the sectors (degrees)
+const double cd_phi_offset = 180.0;		///< angle of the centre of sector 0 with respect to the vertical (degrees)
 
 class ISSArrayEvt : public TObject {
 
@@ -373,6 +382,13 @@ public:
 
 	inline void 			SetRing( unsigned char s ){ ring = s; };
 	inline unsigned char	GetRing(){ return ring; };
+
+	// Geometry
+	float		GetX( bool randomised = false );
+	float		GetY( bool randomised = false );
+	float		GetPhi( bool randomised = false );
+	TVector2	GetPhiXY( bool randomised = false );
+
 
 protected:
 

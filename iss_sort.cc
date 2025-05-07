@@ -585,7 +585,7 @@ void do_hist(){
 												 name_input_file.find_last_of(".") );
 		name_input_file = datadir_name + "/" + name_input_file + "_events.root";
 
-		ftest.open( name_input_file.data() );
+		ftest.open( name_input_file );
 		if( !ftest.is_open() ) {
 
 			std::cerr << name_input_file << " does not exist" << std::endl;
@@ -649,7 +649,7 @@ void do_nptool(){
 		name_input_file = input_names.at(i);
 
 		// Check if the input file exists
-		ftest.open( name_input_file.data() );
+		ftest.open( name_input_file );
 		if( !ftest.is_open() ) {
 
 			std::cerr << name_input_file << " does not exist" << std::endl;
@@ -670,7 +670,7 @@ void do_nptool(){
 		// If it doesn't exist, we have to sort it anyway
 		else {
 
-			ftest.open( name_output_file.data() );
+			ftest.open( name_output_file );
 			if( !ftest.is_open() ) force_events = true;
 			else {
 
@@ -729,7 +729,7 @@ void do_pace4(){
 
 		name_input_file = input_names.at(i);
 
-		ftest.open( name_input_file.data() );
+		ftest.open( name_input_file );
 		if( !ftest.is_open() ) {
 
 			std::cerr << name_input_file << " does not exist" << std::endl;
@@ -789,7 +789,7 @@ void do_autocal(){
 	  name_input_file = datadir_name + "/" + name_input_file + "_source.root";
 
 		// Add to list if the converted file exists
-		ftest.open( name_input_file.data() );
+		ftest.open( name_input_file );
 		if( ftest.is_open() ) {
 
 			ftest.close();
@@ -995,7 +995,7 @@ int main( int argc, char *argv[] ){
 
 		// Test if the file exists
 		std::ifstream ftest;
-		ftest.open( name_set_file.data() );
+		ftest.open( name_set_file );
 		if( !ftest.is_open() ) {
 
 			std::cout << name_set_file << " does not exist.";

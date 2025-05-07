@@ -344,6 +344,10 @@ private:
 	TH1F* fission_E_eloss;
 	TH2F* fission_fission_dEdE;
 	TH2F* fission_fission_dEdE_array;
+	TH2F* fission_dE_vs_ring;
+	TH2F* fission_xy_map;
+	TH2F* fission_xy_map_cutH;
+	TH2F* fission_xy_map_cutL;
 
 	// Array - E vs. z
 	std::vector<TH2F*> E_vs_z_mod;

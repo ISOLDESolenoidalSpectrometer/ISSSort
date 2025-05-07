@@ -1644,6 +1644,26 @@ void ISSHistogrammer::MakeHists() {
 		fission_fission_dEdE_array = new TH2F( hname.data(), htitle.data(),
 										8000, 0, 800000, 8000, 0, 800000 );
 
+		hname = "fission_dE_vs_ring";
+		htitle = "fission dE versus ring number";
+		htitle += ";Ring number;Fragment dE [keV];Counts";
+		fission_dE_vs_ring = new TH2F( hname.data(), htitle.data(),
+									  set->GetNumberOfCDRings(), -0.5, set->GetNumberOfCDRings() - 0.5,
+									  8000, 0, 800000 );
+
+		hname = "fission_xy_map";
+		htitle = "Fission fragment X-Y hit map;y (horizontal) [mm];x (vertical) [mm];Counts";
+		fission_xy_map = new TH2F( hname.data(), htitle.data(), 361, -45.125, 45.125, 361, -45.125, 45.125 );
+
+		hname = "fission_xy_map_cutH";
+		htitle = "Fission fragment X-Y hit map, with cut on heavy fragment;y (horizontal) [mm];x (vertical) [mm];Counts";
+		fission_xy_map_cutH = new TH2F( hname.data(), htitle.data(), 361, -45.125, 45.125, 361, -45.125, 45.125 );
+
+		hname = "fission_xy_map_cutL";
+		htitle = "Fission fragment X-Y hit map, with cut on light fragment;y (horizontal) [mm];x (vertical) [mm];Counts";
+		fission_xy_map_cutL = new TH2F( hname.data(), htitle.data(), 361, -45.125, 45.125, 361, -45.125, 45.125 );
+
+
 		// Timing plots
 		output_file->cd( "Timing" );
 		fission_array_td.resize( set->GetNumberOfArrayModules() );
@@ -2034,6 +2054,10 @@ void ISSHistogrammer::ResetHists() {
 		fission_E_eloss->Reset("ICESM");
 		fission_fission_dEdE->Reset("ICESM");
 		fission_fission_dEdE_array->Reset("ICESM");
+		fission_dE_vs_ring->Reset("ICESM");
+		fission_xy_map->Reset("ICESM");
+		fission_xy_map_cutH->Reset("ICESM");
+		fission_xy_map_cutL->Reset("ICESM");
 
 	}
 
@@ -3515,9 +3539,16 @@ unsigned long ISSHistogrammer::FillHists() {
 				t1_td_fission->Fill( cd_evt1->GetTime() - read_evts->GetT1() );
 				sc_td_fission->Fill( cd_evt1->GetTime() - read_evts->GetSC() );
 
+				// Hit map
+				fission_xy_map->Fill( cd_evt1->GetY(true), cd_evt1->GetX(true) );
+
+				// Energy loss versus ring number
+				fission_dE_vs_ring->Fill( cd_evt1->GetRing(),
+										  cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+
 				// Energy EdE plot, unconditioned
-				fission_EdE->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
-								   cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+				fission_EdE->Fill( cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ),
+								   cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
 
 				// Energy dE versus T1 time
 				fission_dE_vs_T1->Fill( cd_evt1->GetTime() - read_evts->GetT1(),
@@ -3527,15 +3558,23 @@ unsigned long ISSHistogrammer::FillHists() {
 				for( unsigned int k = 0; k < cd_evt1->GetEnergies().size(); ++k )
 					fission_bragg->Fill( cd_evt1->GetID(k), cd_evt1->GetEnergy(k) );
 
-				// Energy EdE plot, after cut on heavy fragment
-				if( FissionCutHeavy( cd_evt1 ) )
-					fission_EdE_cutH->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
-										    cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+				// Energy EdE plot and hit map, after cut on heavy fragment
+				if( FissionCutHeavy( cd_evt1 ) ) {
 
-				// Energy EdE plot, after cut on light fragment
-				if( FissionCutLight( cd_evt1 ) )
-					fission_EdE_cutL->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
-										    cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+					fission_xy_map_cutH->Fill( cd_evt1->GetY(true), cd_evt1->GetX(true) );
+					fission_EdE_cutH->Fill( cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ),
+										    cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
+
+				}
+
+				// Energy EdE plot and hit map, after cut on light fragment
+				if( FissionCutLight( cd_evt1 ) ) {
+
+					fission_xy_map_cutL->Fill( cd_evt1->GetY(true), cd_evt1->GetX(true) );
+					fission_EdE_cutL->Fill( cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ),
+										    cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
+
+				}
 
 				fission_dE_eloss->Fill( cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 				fission_E_eloss->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
