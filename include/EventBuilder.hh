@@ -419,8 +419,9 @@ private:
 	TH1F *gamma_gamma_td;	///< Gamma-gamma time difference
 
 	// LUME histograms
-	std::vector<TH1F*> lume_E;		///< The LUME spectrum histogram
-	std::vector<TH2F*> lume_E_vs_x;	///< Energy vs hit position for LUME
+	std::vector<TH1F*> lume_E;			///< The LUME spectrum histogram
+	std::vector<TH2F*> lume_E_vs_x;		///< Energy vs hit position for LUME
+	std::vector<TH2F*> lume_ne_vs_fe;	///< Near-side energy vs far-side energy for LUME
 
 	// CD histograms
 	std::vector<TH2F*> cd_rs_mult;	///< CD ring-strip multiplicity for each layer
