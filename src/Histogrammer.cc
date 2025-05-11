@@ -939,7 +939,7 @@ void ISSHistogrammer::MakeHists() {
 	} // recoil mode
 
 	// Fission mode
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		dirname = "FissionMode";
 		output_file->mkdir( dirname.data() );
@@ -1579,7 +1579,7 @@ void ISSHistogrammer::MakeHists() {
 	} // recoils: not fission
 
 	// For fission fragment sectors
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		dirname = "FissionDetector";
 		output_file->mkdir( dirname.data() );
@@ -1614,7 +1614,8 @@ void ISSHistogrammer::MakeHists() {
 		htitle = "fission Bragg plot";
 		htitle += ";Bragg ID;Energy loss, dE [keV];Counts";
 		fission_bragg = new TH2F( hname.data(), htitle.data(),
-								 set->GetNumberOfCDLayers(), -0.5, set->GetNumberOfCDLayers()-0.5, 4000, 0, 800000 );
+								 set->GetNumberOfCDLayers(), -0.5, set->GetNumberOfCDLayers()-0.5,
+								 4000, 0, 800000 );
 
 		hname = "fission_dE_vs_T1";
 		htitle = "fission dE plot versus T1 time";
@@ -1756,17 +1757,17 @@ void ISSHistogrammer::MakeHists() {
 	ebis_td_array = new TH1F( "ebis_td_array", "Array time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	ebis_td_elum = new TH1F( "ebis_td_elum", "ELUM time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	ebis_td_lume = new TH1F( "ebis_td_lume", "LUME time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
-	if( react->IsFission() )
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 )
 		ebis_td_fission = new TH1F( "ebis_td_fission", "Fission fragment time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
-	else
+	else if( !react->IsFission() )
 		ebis_td_recoil = new TH1F( "ebis_td_recoil", "Recoil time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 
 	// Supercycle and proton pulses
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 		t1_td_fission = new TH1F( "t1_td_fission", "Fission fragment time difference with respect to the T1;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
 		sc_td_fission = new TH1F( "sc_td_fission", "Fission fragment time difference with respect to the SuperCycle;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
 	}
-	else {
+	else if( !react->IsFission() ) {
 		t1_td_recoil = new TH1F( "t1_td_recoil", "Recoil time difference with respect to the T1;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
 		sc_td_recoil = new TH1F( "sc_td_recoil", "Recoil time difference with respect to the SuperCycle;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
 	}
@@ -2021,7 +2022,7 @@ void ISSHistogrammer::ResetHists() {
 	}
 
 	// Fission
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		ebis_td_fission->Reset("ICESM");
 		t1_td_fission->Reset("ICESM");
@@ -2087,7 +2088,7 @@ void ISSHistogrammer::ResetHists() {
 
 	}
 
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		E_vs_z_fission->Reset("ICESM");
 		E_vs_z_fissionT->Reset("ICESM");
@@ -2173,7 +2174,7 @@ void ISSHistogrammer::ResetHists() {
 
 	}
 
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		Ex_vs_theta_fission->Reset("ICESM");
 		Ex_vs_theta_fissionT->Reset("ICESM");
@@ -2273,7 +2274,7 @@ void ISSHistogrammer::ResetHists() {
 
 	}
 
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		E_vs_theta_fission->Reset("ICESM");
 		E_vs_theta_fissionT->Reset("ICESM");
@@ -2373,7 +2374,7 @@ void ISSHistogrammer::ResetHists() {
 
 	}
 
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		Ex_vs_z_fission->Reset("ICESM");
 		Ex_vs_z_fissionT->Reset("ICESM");
@@ -2474,7 +2475,7 @@ void ISSHistogrammer::ResetHists() {
 
 	}
 
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		Ex_fission->Reset("ICESM");
 		Ex_fissionT->Reset("ICESM");
@@ -2577,7 +2578,7 @@ void ISSHistogrammer::ResetHists() {
 
 	}
 
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		Theta_fission->Reset("ICESM");
 		Theta_fissionT->Reset("ICESM");
@@ -2678,7 +2679,7 @@ void ISSHistogrammer::ResetHists() {
 
 	}
 
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		lume_fission->Reset("ICESM");
 		lume_elastic->Reset("ICESM");
@@ -3003,7 +3004,7 @@ unsigned long ISSHistogrammer::FillHists() {
 			bool randomcheckE = false;
 
 			// If we have fission mode, rather than recoil mode
-			if( react->IsFission() ) {
+			if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 				// Loop over CD events to check for random and prompt coincidences
 				for( unsigned int k = 0; k < read_evts->GetCDMultiplicity(); ++k ){
@@ -3526,7 +3527,7 @@ unsigned long ISSHistogrammer::FillHists() {
 		} // ELUM
 
 		// Fission mode
-		if( react->IsFission() ) {
+		if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 			// Loop over CD events
 			for( unsigned int j = 0; j < read_evts->GetCDMultiplicity(); ++j ){
@@ -3704,7 +3705,7 @@ unsigned long ISSHistogrammer::FillHists() {
 			bool energycheck = false;
 
 			// If we have fission mode, rather than recoil mode
-			if( react->IsFission() ) {
+			if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 				// Loop over CD events to check for random and prompt coincidences
 				for( unsigned int k = 0; k < read_evts->GetCDMultiplicity(); ++k ){
