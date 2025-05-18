@@ -939,7 +939,7 @@ void ISSHistogrammer::MakeHists() {
 	} // recoil mode
 
 	// Fission mode
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		dirname = "FissionMode";
 		output_file->mkdir( dirname.data() );
@@ -1579,7 +1579,7 @@ void ISSHistogrammer::MakeHists() {
 	} // recoils: not fission
 
 	// For fission fragment sectors
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		dirname = "FissionDetector";
 		output_file->mkdir( dirname.data() );
@@ -1614,7 +1614,8 @@ void ISSHistogrammer::MakeHists() {
 		htitle = "fission Bragg plot";
 		htitle += ";Bragg ID;Energy loss, dE [keV];Counts";
 		fission_bragg = new TH2F( hname.data(), htitle.data(),
-								 set->GetNumberOfCDLayers(), -0.5, set->GetNumberOfCDLayers()-0.5, 4000, 0, 800000 );
+								 set->GetNumberOfCDLayers(), -0.5, set->GetNumberOfCDLayers()-0.5,
+								 4000, 0, 800000 );
 
 		hname = "fission_dE_vs_T1";
 		htitle = "fission dE plot versus T1 time";
@@ -1643,6 +1644,26 @@ void ISSHistogrammer::MakeHists() {
 		htitle += " - coincidence with each other and an array event;Fragment 1 dE [keV];Fragment 2 dE [keV];Counts";
 		fission_fission_dEdE_array = new TH2F( hname.data(), htitle.data(),
 										8000, 0, 800000, 8000, 0, 800000 );
+
+		hname = "fission_dE_vs_ring";
+		htitle = "fission dE versus ring number";
+		htitle += ";Ring number;Fragment dE [keV];Counts";
+		fission_dE_vs_ring = new TH2F( hname.data(), htitle.data(),
+									  set->GetNumberOfCDRings(), -0.5, set->GetNumberOfCDRings() - 0.5,
+									  8000, 0, 800000 );
+
+		hname = "fission_xy_map";
+		htitle = "Fission fragment X-Y hit map;y (horizontal) [mm];x (vertical) [mm];Counts";
+		fission_xy_map = new TH2F( hname.data(), htitle.data(), 361, -45.125, 45.125, 361, -45.125, 45.125 );
+
+		hname = "fission_xy_map_cutH";
+		htitle = "Fission fragment X-Y hit map, with cut on heavy fragment;y (horizontal) [mm];x (vertical) [mm];Counts";
+		fission_xy_map_cutH = new TH2F( hname.data(), htitle.data(), 361, -45.125, 45.125, 361, -45.125, 45.125 );
+
+		hname = "fission_xy_map_cutL";
+		htitle = "Fission fragment X-Y hit map, with cut on light fragment;y (horizontal) [mm];x (vertical) [mm];Counts";
+		fission_xy_map_cutL = new TH2F( hname.data(), htitle.data(), 361, -45.125, 45.125, 361, -45.125, 45.125 );
+
 
 		// Timing plots
 		output_file->cd( "Timing" );
@@ -1736,17 +1757,17 @@ void ISSHistogrammer::MakeHists() {
 	ebis_td_array = new TH1F( "ebis_td_array", "Array time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	ebis_td_elum = new TH1F( "ebis_td_elum", "ELUM time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 	ebis_td_lume = new TH1F( "ebis_td_lume", "LUME time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
-	if( react->IsFission() )
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 )
 		ebis_td_fission = new TH1F( "ebis_td_fission", "Fission fragment time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
-	else
+	else if( !react->IsFission() )
 		ebis_td_recoil = new TH1F( "ebis_td_recoil", "Recoil time with respect to EBIS;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e8, 1e8  );
 
 	// Supercycle and proton pulses
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 		t1_td_fission = new TH1F( "t1_td_fission", "Fission fragment time difference with respect to the T1;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
 		sc_td_fission = new TH1F( "sc_td_fission", "Fission fragment time difference with respect to the SuperCycle;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
 	}
-	else {
+	else if( !react->IsFission() ) {
 		t1_td_recoil = new TH1F( "t1_td_recoil", "Recoil time difference with respect to the T1;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
 		sc_td_recoil = new TH1F( "sc_td_recoil", "Recoil time difference with respect to the SuperCycle;#Deltat;Counts per 20 #mus", 5.5e3, -0.1e11, 1e11 );
 	}
@@ -2001,7 +2022,7 @@ void ISSHistogrammer::ResetHists() {
 	}
 
 	// Fission
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		ebis_td_fission->Reset("ICESM");
 		t1_td_fission->Reset("ICESM");
@@ -2034,6 +2055,10 @@ void ISSHistogrammer::ResetHists() {
 		fission_E_eloss->Reset("ICESM");
 		fission_fission_dEdE->Reset("ICESM");
 		fission_fission_dEdE_array->Reset("ICESM");
+		fission_dE_vs_ring->Reset("ICESM");
+		fission_xy_map->Reset("ICESM");
+		fission_xy_map_cutH->Reset("ICESM");
+		fission_xy_map_cutL->Reset("ICESM");
 
 	}
 
@@ -2063,7 +2088,7 @@ void ISSHistogrammer::ResetHists() {
 
 	}
 
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		E_vs_z_fission->Reset("ICESM");
 		E_vs_z_fissionT->Reset("ICESM");
@@ -2149,7 +2174,7 @@ void ISSHistogrammer::ResetHists() {
 
 	}
 
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		Ex_vs_theta_fission->Reset("ICESM");
 		Ex_vs_theta_fissionT->Reset("ICESM");
@@ -2249,7 +2274,7 @@ void ISSHistogrammer::ResetHists() {
 
 	}
 
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		E_vs_theta_fission->Reset("ICESM");
 		E_vs_theta_fissionT->Reset("ICESM");
@@ -2349,7 +2374,7 @@ void ISSHistogrammer::ResetHists() {
 
 	}
 
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		Ex_vs_z_fission->Reset("ICESM");
 		Ex_vs_z_fissionT->Reset("ICESM");
@@ -2450,7 +2475,7 @@ void ISSHistogrammer::ResetHists() {
 
 	}
 
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		Ex_fission->Reset("ICESM");
 		Ex_fissionT->Reset("ICESM");
@@ -2553,7 +2578,7 @@ void ISSHistogrammer::ResetHists() {
 
 	}
 
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		Theta_fission->Reset("ICESM");
 		Theta_fissionT->Reset("ICESM");
@@ -2654,7 +2679,7 @@ void ISSHistogrammer::ResetHists() {
 
 	}
 
-	if( react->IsFission() ) {
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 		lume_fission->Reset("ICESM");
 		lume_elastic->Reset("ICESM");
@@ -2979,7 +3004,7 @@ unsigned long ISSHistogrammer::FillHists() {
 			bool randomcheckE = false;
 
 			// If we have fission mode, rather than recoil mode
-			if( react->IsFission() ) {
+			if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 				// Loop over CD events to check for random and prompt coincidences
 				for( unsigned int k = 0; k < read_evts->GetCDMultiplicity(); ++k ){
@@ -3502,7 +3527,7 @@ unsigned long ISSHistogrammer::FillHists() {
 		} // ELUM
 
 		// Fission mode
-		if( react->IsFission() ) {
+		if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 			// Loop over CD events
 			for( unsigned int j = 0; j < read_evts->GetCDMultiplicity(); ++j ){
@@ -3515,9 +3540,16 @@ unsigned long ISSHistogrammer::FillHists() {
 				t1_td_fission->Fill( cd_evt1->GetTime() - read_evts->GetT1() );
 				sc_td_fission->Fill( cd_evt1->GetTime() - read_evts->GetSC() );
 
+				// Hit map
+				fission_xy_map->Fill( cd_evt1->GetY(true), cd_evt1->GetX(true) );
+
+				// Energy loss versus ring number
+				fission_dE_vs_ring->Fill( cd_evt1->GetRing(),
+										  cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+
 				// Energy EdE plot, unconditioned
-				fission_EdE->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
-								   cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+				fission_EdE->Fill( cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ),
+								   cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
 
 				// Energy dE versus T1 time
 				fission_dE_vs_T1->Fill( cd_evt1->GetTime() - read_evts->GetT1(),
@@ -3527,15 +3559,23 @@ unsigned long ISSHistogrammer::FillHists() {
 				for( unsigned int k = 0; k < cd_evt1->GetEnergies().size(); ++k )
 					fission_bragg->Fill( cd_evt1->GetID(k), cd_evt1->GetEnergy(k) );
 
-				// Energy EdE plot, after cut on heavy fragment
-				if( FissionCutHeavy( cd_evt1 ) )
-					fission_EdE_cutH->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
-										    cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+				// Energy EdE plot and hit map, after cut on heavy fragment
+				if( FissionCutHeavy( cd_evt1 ) ) {
 
-				// Energy EdE plot, after cut on light fragment
-				if( FissionCutLight( cd_evt1 ) )
-					fission_EdE_cutL->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
-										    cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+					fission_xy_map_cutH->Fill( cd_evt1->GetY(true), cd_evt1->GetX(true) );
+					fission_EdE_cutH->Fill( cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ),
+										    cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
+
+				}
+
+				// Energy EdE plot and hit map, after cut on light fragment
+				if( FissionCutLight( cd_evt1 ) ) {
+
+					fission_xy_map_cutL->Fill( cd_evt1->GetY(true), cd_evt1->GetX(true) );
+					fission_EdE_cutL->Fill( cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ),
+										    cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
+
+				}
 
 				fission_dE_eloss->Fill( cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 				fission_E_eloss->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
@@ -3665,7 +3705,7 @@ unsigned long ISSHistogrammer::FillHists() {
 			bool energycheck = false;
 
 			// If we have fission mode, rather than recoil mode
-			if( react->IsFission() ) {
+			if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
 
 				// Loop over CD events to check for random and prompt coincidences
 				for( unsigned int k = 0; k < read_evts->GetCDMultiplicity(); ++k ){

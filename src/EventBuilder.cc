@@ -2695,6 +2695,7 @@ void ISSEventBuilder::LumeFinder() {
 			double x = ( fe_energy - ne_energy ) / ( ne_energy + fe_energy );
 			lume_evt->SetX(x);
 			lume_E_vs_x[be_id]->Fill(x, be_energy);
+			lume_ne_vs_fe[be_id]->Fill(fe_energy, ne_energy);
 		}
 
 		write_evts->AddEvt( lume_evt );
@@ -3358,6 +3359,7 @@ void ISSEventBuilder::MakeHists(){
 
 	lume_E.resize( set->GetNumberOfLUMEDetectors() );
 	lume_E_vs_x.resize( set->GetNumberOfLUMEDetectors() );
+	lume_ne_vs_fe.resize( set->GetNumberOfLUMEDetectors() );
 
 	// Loop over number of LUME detectors
 	for( unsigned int i = 0; i < set->GetNumberOfLUMEDetectors(); ++i ) {
@@ -3369,6 +3371,10 @@ void ISSEventBuilder::MakeHists(){
 		hname = "lume_E_vs_x_" + std::to_string(i);
 		htitle = "LUME energy vs position spectrum;Position;Energy [keV]";
 		lume_E_vs_x[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 4100, -200, 8000 );
+
+		hname = "lume_ne_vs_fe" + std::to_string(i);
+		htitle = "LUME near-side energy vs far-side energy;Energy [keV];Energy [keV]";
+		lume_ne_vs_fe[i] = new TH2F( hname.data(), htitle.data(), 4100, -200, 8000, 4100, -200, 8000 );
 
 	}
 
@@ -3592,6 +3598,10 @@ void ISSEventBuilder::CleanHists() {
 		delete (lume_E_vs_x[i]);
 	lume_E_vs_x.clear();
 
+	for( unsigned int i = 0; i < lume_ne_vs_fe.size(); i++ )
+		delete (lume_ne_vs_fe[i]);
+	lume_ne_vs_fe.clear();
+
 
 	for( unsigned int i = 0; i < cd_rs_mult.size(); i++ )
 		delete (cd_rs_mult[i]);
@@ -3753,6 +3763,9 @@ void ISSEventBuilder::ResetHists() {
 
 	for( unsigned int i = 0; i < lume_E_vs_x.size(); i++ )
 		lume_E_vs_x[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < lume_ne_vs_fe.size(); i++ )
+		lume_ne_vs_fe[i]->Reset("ICESM");
 
 	for( unsigned int i = 0; i < cd_rs_mult.size(); i++ )
 		cd_rs_mult[i]->Reset("ICESM");

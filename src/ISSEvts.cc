@@ -639,6 +639,62 @@ void ISSCDEvt::SetEvent( std::vector<float> myenergy,
 
 }
 
+// CD Geometry
+float ISSCDEvt::GetX( bool randomised ){
+
+	return GetPhiXY( randomised ).X();
+
+}
+
+float ISSCDEvt::GetY( bool randomised ){
+
+	return GetPhiXY( randomised ).Y();
+
+}
+
+float ISSCDEvt::GetPhi( bool randomised ){
+
+	return GetPhiXY( randomised ).Phi();
+
+}
+
+TVector2 ISSCDEvt::GetPhiXY( bool randomised ){
+
+	/// Get the phi angle of the interaction, and in the meantime define x,y too
+	/// Note that there is no radial correction yet implemented
+	/// the origin is at the target position
+	/// z is positive in the beam direction
+	/// x is positive in the vertical direction towards the sky
+	/// y is positive in the horizontal direction towards XT03 (right)
+	/// phi is positive in the clockwise direction, looking from the origin to positive z (beam direction)
+
+	// Get the ring and sector ids
+	float ringpos = (float)ring + 0.5;
+	float secpos = (float)sec + 0.5;
+
+	// and check if we need to randomise them
+	if( randomised ) {
+
+		ringpos = (float)ring + gRandom->Rndm();
+		secpos = (float)sec + gRandom->Rndm();
+
+	}
+
+	// Start with a sector pointing to the sky
+	double x = cd_inner_radius + ringpos * cd_ring_width + ring * cd_ring_gap;
+	TVector2 vec( x, 0 );
+
+	// This vector can now be rotated to the correct position
+	double phi = cd_phi_offset + secpos * cd_sector_pitch + sec * cd_sector_gap;
+	phi *= TMath::DegToRad();
+	vec = vec.Rotate( phi );
+
+	return vec;
+
+}
+
+
+
 // Get minimum time from any old event
 double ISSEvts::GetTime(){
 
