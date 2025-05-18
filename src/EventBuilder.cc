@@ -2725,9 +2725,12 @@ void ISSEventBuilder::CdFinder() {
 			cd_rs_mult[i]->Fill( cdren_list[i].size(), cdsen_list[i].size() );
 
 		// Plot each sector energy against each ring energy
+		// and ring/sector ID against energy
 		for( unsigned int j = 0; j < cdsen_list[i].size(); j++ ) {
 
-			for( unsigned int k = 0; k < cdren_list[i].size(); k++ ) {
+		    cd_s_en[i]->Fill( cdsid_list[i][j], cdsen_list[i][j]);
+
+			  for( unsigned int k = 0; k < cdren_list[i].size(); k++ ) {
 
 				cd_rs_en[i]->Fill( cdren_list[i][k], cdsen_list[i][j] );
 				cd_rs_td[i]->Fill( cdrtd_list[i][k] - cdstd_list[i][j] );
@@ -2735,6 +2738,12 @@ void ISSEventBuilder::CdFinder() {
 			} // k - rings
 
 		} // j - sectors
+
+		// Do not double count ring ID vs energy events
+		for( unsigned int k = 0; k < cdren_list[i].size(); k++ ) {
+
+		  cd_r_en[i]->Fill( cdrid_list[i][k], cdren_list[i][k]);
+		} // k - rings
 
 	} // i - layer
 
@@ -3374,6 +3383,8 @@ void ISSEventBuilder::MakeHists(){
 	cd_rs_mult.resize( set->GetNumberOfCDLayers() );
 	cd_rs_en.resize( set->GetNumberOfCDLayers() );
 	cd_rs_td.resize( set->GetNumberOfCDLayers() );
+	cd_r_en.resize( set->GetNumberOfCDLayers() );
+	cd_s_en.resize( set->GetNumberOfCDLayers() );
 
 	for( unsigned int i = 0; i < set->GetNumberOfCDLayers(); ++i ) {
 
@@ -3391,6 +3402,16 @@ void ISSEventBuilder::MakeHists(){
 		htitle = "ring vs. sector time difference (layer ";
 		htitle += std::to_string(i) + ");Time difference, #Deltat = t_{ring} - t_{sector} (ns)";
 		cd_rs_td[i] = new TH1F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
+
+		hname = "cd_r_en_" + std::to_string(i);
+		htitle = "ring ID vs. energy (layer ";
+		htitle += std::to_string(i) + ");Ring ID; Energy (10 keV)";
+		cd_r_en[i] = new TH2F( hname.data(), htitle.data(), set->GetNumberOfCDRings(), 0, set->GetNumberOfCDRings()-1, 2e3, 0, 2e4 );
+
+		hname = "cd_s_en_" + std::to_string(i);
+		htitle = "Sector ID vs. energy (layer ";
+		htitle += std::to_string(i) + ");Sector ID; Energy (10 keV)";
+		cd_s_en[i] = new TH2F( hname.data(), htitle.data(), set->GetNumberOfCDSectors(), 0, set->GetNumberOfCDSectors()-1, 2e3, 0, 2e4 );
 
 	}
 
