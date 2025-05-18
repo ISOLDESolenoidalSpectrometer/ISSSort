@@ -102,6 +102,7 @@ $(function(){ initResizable(false); });
 <code>#include &lt;memory&gt;</code><br />
 <code>#include &quot;TVector2.h&quot;</code><br />
 <code>#include &quot;TVector3.h&quot;</code><br />
+<code>#include &quot;TRandom3.h&quot;</code><br />
 <code>#include &quot;TObject.h&quot;</code><br />
 </div>
 <p><a href="ISSEvts_8hh_source.html">Go to the source code of this file.</a></p>
@@ -153,6 +154,24 @@ Variables</h2></td></tr>
 <tr class="memitem:a2d3721b60d5268ab0f4fd5e063589def" id="r_a2d3721b60d5268ab0f4fd5e063589def"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d3721b60d5268ab0f4fd5e063589def">array_radius</a> = 27.0</td></tr>
 <tr class="memdesc:a2d3721b60d5268ab0f4fd5e063589def"><td class="mdescLeft">&#160;</td><td class="mdescRight">radius to top surface of silicon (mm)  <br /></td></tr>
 <tr class="separator:a2d3721b60d5268ab0f4fd5e063589def"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af9e4525bbaf7396ad20043b1fbdf237d" id="r_af9e4525bbaf7396ad20043b1fbdf237d"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af9e4525bbaf7396ad20043b1fbdf237d">cd_inner_radius</a> = 11.0</td></tr>
+<tr class="memdesc:af9e4525bbaf7396ad20043b1fbdf237d"><td class="mdescLeft">&#160;</td><td class="mdescRight">radius of hole in centre of S3 (mm)  <br /></td></tr>
+<tr class="separator:af9e4525bbaf7396ad20043b1fbdf237d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13c6c03fcd18b6e0b458434b8e6ce4ae" id="r_a13c6c03fcd18b6e0b458434b8e6ce4ae"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13c6c03fcd18b6e0b458434b8e6ce4ae">cd_ring_width</a> = 0.886</td></tr>
+<tr class="memdesc:a13c6c03fcd18b6e0b458434b8e6ce4ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">width of the active area of the rings (mm)  <br /></td></tr>
+<tr class="separator:a13c6c03fcd18b6e0b458434b8e6ce4ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aceb8062b545eec163d36d0ff6da9c8e2" id="r_aceb8062b545eec163d36d0ff6da9c8e2"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aceb8062b545eec163d36d0ff6da9c8e2">cd_ring_gap</a> = 0.114</td></tr>
+<tr class="memdesc:aceb8062b545eec163d36d0ff6da9c8e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">width of the dead area between the rings (mm)  <br /></td></tr>
+<tr class="separator:aceb8062b545eec163d36d0ff6da9c8e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0641e68737d63342e5f2262e5585a21d" id="r_a0641e68737d63342e5f2262e5585a21d"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0641e68737d63342e5f2262e5585a21d">cd_sector_pitch</a> = 11.00</td></tr>
+<tr class="memdesc:a0641e68737d63342e5f2262e5585a21d"><td class="mdescLeft">&#160;</td><td class="mdescRight">pitch of the active area of the sectors (degrees)  <br /></td></tr>
+<tr class="separator:a0641e68737d63342e5f2262e5585a21d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a402666438aa7b3d8e756a43edfd415b0" id="r_a402666438aa7b3d8e756a43edfd415b0"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a402666438aa7b3d8e756a43edfd415b0">cd_sector_gap</a> = 0.25</td></tr>
+<tr class="memdesc:a402666438aa7b3d8e756a43edfd415b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">pitch of the dead area between the sectors (degrees)  <br /></td></tr>
+<tr class="separator:a402666438aa7b3d8e756a43edfd415b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af79e64da61b312e754e7f32f20486f05" id="r_af79e64da61b312e754e7f32f20486f05"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af79e64da61b312e754e7f32f20486f05">cd_phi_offset</a> = 180.0</td></tr>
+<tr class="memdesc:af79e64da61b312e754e7f32f20486f05"><td class="mdescLeft">&#160;</td><td class="mdescRight">angle of the centre of sector 0 with respect to the vertical (degrees)  <br /></td></tr>
+<tr class="separator:af79e64da61b312e754e7f32f20486f05"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Variable Documentation</h2>
 <a id="a2d3721b60d5268ab0f4fd5e063589def" name="a2d3721b60d5268ab0f4fd5e063589def"></a>
@@ -169,7 +188,115 @@ Variables</h2></td></tr>
 
 <p>radius to top surface of silicon (mm) </p>
 
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00019">19</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00020">20</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+
+</div>
+</div>
+<a id="af9e4525bbaf7396ad20043b1fbdf237d" name="af9e4525bbaf7396ad20043b1fbdf237d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af9e4525bbaf7396ad20043b1fbdf237d">&#9670;&#160;</a></span>cd_inner_radius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double cd_inner_radius = 11.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>radius of hole in centre of S3 (mm) </p>
+
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00023">23</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+
+</div>
+</div>
+<a id="af79e64da61b312e754e7f32f20486f05" name="af79e64da61b312e754e7f32f20486f05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af79e64da61b312e754e7f32f20486f05">&#9670;&#160;</a></span>cd_phi_offset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double cd_phi_offset = 180.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>angle of the centre of sector 0 with respect to the vertical (degrees) </p>
+
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00028">28</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+
+</div>
+</div>
+<a id="aceb8062b545eec163d36d0ff6da9c8e2" name="aceb8062b545eec163d36d0ff6da9c8e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aceb8062b545eec163d36d0ff6da9c8e2">&#9670;&#160;</a></span>cd_ring_gap</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double cd_ring_gap = 0.114</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>width of the dead area between the rings (mm) </p>
+
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00025">25</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+
+</div>
+</div>
+<a id="a13c6c03fcd18b6e0b458434b8e6ce4ae" name="a13c6c03fcd18b6e0b458434b8e6ce4ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13c6c03fcd18b6e0b458434b8e6ce4ae">&#9670;&#160;</a></span>cd_ring_width</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double cd_ring_width = 0.886</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>width of the active area of the rings (mm) </p>
+
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00024">24</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+
+</div>
+</div>
+<a id="a402666438aa7b3d8e756a43edfd415b0" name="a402666438aa7b3d8e756a43edfd415b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a402666438aa7b3d8e756a43edfd415b0">&#9670;&#160;</a></span>cd_sector_gap</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double cd_sector_gap = 0.25</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>pitch of the dead area between the sectors (degrees) </p>
+
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00027">27</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+
+</div>
+</div>
+<a id="a0641e68737d63342e5f2262e5585a21d" name="a0641e68737d63342e5f2262e5585a21d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0641e68737d63342e5f2262e5585a21d">&#9670;&#160;</a></span>cd_sector_pitch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const double cd_sector_pitch = 11.00</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>pitch of the active area of the sectors (degrees) </p>
+
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00026">26</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
 
 </div>
 </div>
@@ -187,7 +314,7 @@ Variables</h2></td></tr>
 
 <p>pitch of a single n-side strip (mm) </p>
 
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00018">18</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00019">19</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
 
 </div>
 </div>
@@ -205,7 +332,7 @@ Variables</h2></td></tr>
 
 <p>pitch of a single p-side strip (mm) </p>
 
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00017">17</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00018">18</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
 
 </div>
 </div>
@@ -223,7 +350,7 @@ Variables</h2></td></tr>
 
 <p>gap between silicon wafers (mm) </p>
 
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00015">15</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00016">16</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
 
 </div>
 </div>
@@ -241,7 +368,7 @@ Variables</h2></td></tr>
 
 <p>width of the inactive region around edge of silicon (mm) </p>
 
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00016">16</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00017">17</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
 
 </div>
 </div>
@@ -259,7 +386,7 @@ Variables</h2></td></tr>
 
 <p>total length of silicon (mm) </p>
 
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00014">14</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00015">15</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
 
 </div>
 </div>

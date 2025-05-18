@@ -56,8 +56,9 @@ var searchData=
   ['lume_5ffission_5fratio_53',['lume_fission_ratio',['../classISSReaction.html#a6aa7b72df44b52b3aaaba85619b4933c',1,'ISSReaction']]],
   ['lume_5fhit_5fwindow_54',['lume_hit_window',['../classISSSettings.html#a9481b747044ddb15d410a1a587dec5d7',1,'ISSSettings']]],
   ['lume_5fmod_55',['lume_mod',['../classISSSettings.html#aa4deeec8db25ed8b077b5f5006c94df8',1,'ISSSettings']]],
-  ['lume_5ftype_56',['lume_type',['../classISSSettings.html#a5205d7f17dc03dad6696f33eb8df350f',1,'ISSSettings']]],
-  ['lume_5ftype_5flist_57',['lume_type_list',['../classISSSettings.html#a08dcdfc1a42ecdf3586892ecb50e8fab',1,'ISSSettings']]],
-  ['lume_5fvme_58',['lume_vme',['../classISSSettings.html#a0d57360142ecacffcdb46e1d8c79f88b',1,'ISSSettings']]],
-  ['lume_5fvs_5ft1_59',['lume_vs_T1',['../classISSHistogrammer.html#a87b873bb0483f7e8190a8c44aa53add9',1,'ISSHistogrammer']]]
+  ['lume_5fne_5fvs_5ffe_56',['lume_ne_vs_fe',['../classISSEventBuilder.html#abe1adcdb89987ad4919a5a2189c5dcea',1,'ISSEventBuilder']]],
+  ['lume_5ftype_57',['lume_type',['../classISSSettings.html#a5205d7f17dc03dad6696f33eb8df350f',1,'ISSSettings']]],
+  ['lume_5ftype_5flist_58',['lume_type_list',['../classISSSettings.html#a08dcdfc1a42ecdf3586892ecb50e8fab',1,'ISSSettings']]],
+  ['lume_5fvme_59',['lume_vme',['../classISSSettings.html#a0d57360142ecacffcdb46e1d8c79f88b',1,'ISSSettings']]],
+  ['lume_5fvs_5ft1_60',['lume_vs_T1',['../classISSHistogrammer.html#a87b873bb0483f7e8190a8c44aa53add9',1,'ISSHistogrammer']]]
 ];

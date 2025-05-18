@@ -789,6 +789,9 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:ab72fca874829a0bedbcdb7304b73a894" id="r_ab72fca874829a0bedbcdb7304b73a894"><td class="memItemLeft" align="right" valign="top">std::vector&lt; TH2F * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab72fca874829a0bedbcdb7304b73a894">lume_E_vs_x</a></td></tr>
 <tr class="memdesc:ab72fca874829a0bedbcdb7304b73a894"><td class="mdescLeft">&#160;</td><td class="mdescRight">Energy vs hit position for LUME.  <br /></td></tr>
 <tr class="separator:ab72fca874829a0bedbcdb7304b73a894"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe1adcdb89987ad4919a5a2189c5dcea" id="r_abe1adcdb89987ad4919a5a2189c5dcea"><td class="memItemLeft" align="right" valign="top">std::vector&lt; TH2F * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe1adcdb89987ad4919a5a2189c5dcea">lume_ne_vs_fe</a></td></tr>
+<tr class="memdesc:abe1adcdb89987ad4919a5a2189c5dcea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Near-side energy vs far-side energy for LUME.  <br /></td></tr>
+<tr class="separator:abe1adcdb89987ad4919a5a2189c5dcea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac6ac7a1b8f3c6c5bc1839570f0fda179" id="r_ac6ac7a1b8f3c6c5bc1839570f0fda179"><td class="memItemLeft" align="right" valign="top">std::vector&lt; TH2F * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6ac7a1b8f3c6c5bc1839570f0fda179">cd_rs_mult</a></td></tr>
 <tr class="memdesc:ac6ac7a1b8f3c6c5bc1839570f0fda179"><td class="mdescLeft">&#160;</td><td class="mdescRight">CD ring-strip multiplicity for each layer.  <br /></td></tr>
 <tr class="separator:ac6ac7a1b8f3c6c5bc1839570f0fda179"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1073,7 +1076,7 @@ Private Attributes</h2></td></tr>
 <p>Processes all hits on the CD that fall within the build window. </p>
 <p>This function takes a series of E and dE signals on the silicon CD (fission fragments) detector and determines what hits to keep from these using sensible conditions including a prompt coincidence window. Signals are triggered by the dE detector, but if a corresponding E signal is not found, then a hit at E = 0 is still recorded. We can try to build a number of particles per event by comparing energies, times and sector IDs. This is difficult, but maybe by going through this excercise we can improve how things are done for recoils? </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02713">2713</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02714">2714</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1095,7 +1098,7 @@ Private Attributes</h2></td></tr>
 <p>Deletes histograms from memory and clears vectors that store histograms. </p>
 <p>This function cleans up all of the histograms used in the EventBuilder class, by deleting them and clearing all histogram vectors. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03433">3433</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03439">3439</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1290,7 +1293,7 @@ Private Attributes</h2></td></tr>
 <p>Creates histograms for events that occur. </p>
 <p><em>This function doesn't fill any histograms</em>, but just creates them. Called by the <a class="el" href="#ace857f3c92c6cc8678725312c1cafb4b" title="Configures the output for the class.">ISSEventBuilder::SetOutput</a> function </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02976">2976</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02977">2977</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1385,7 +1388,7 @@ Private Attributes</h2></td></tr>
 <p>Empties the histograms during the <a class="el" href="classDataSpy.html">DataSpy</a>. </p>
 <p>This function empties the histograms used in the EventBuilder class; used during the <a class="el" href="classDataSpy.html">DataSpy</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03644">3644</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03654">3654</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -2267,7 +2270,7 @@ Private Attributes</h2></td></tr>
 
 <p>Histogram for the CD E+dE vs E (calibrated) </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00432">432</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00433">433</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
 
 </div>
 </div>
@@ -2293,7 +2296,7 @@ Private Attributes</h2></td></tr>
 
 <p>Histogram for the CD E-dE that are real (calibrated) </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00431">431</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00432">432</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
 
 </div>
 </div>
@@ -2344,7 +2347,7 @@ Private Attributes</h2></td></tr>
 
 <p>CD ring-energy for each layer. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00429">429</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00430">430</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
 
 </div>
 </div>
@@ -2370,7 +2373,7 @@ Private Attributes</h2></td></tr>
 
 <p>CD ring-strip energy matrix for each layer. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00427">427</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00428">428</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
 
 </div>
 </div>
@@ -2396,7 +2399,7 @@ Private Attributes</h2></td></tr>
 
 <p>CD ring-strip multiplicity for each layer. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00426">426</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00427">427</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
 
 </div>
 </div>
@@ -2422,7 +2425,7 @@ Private Attributes</h2></td></tr>
 
 <p>CD ring-strip time difference for each layer. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00428">428</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00429">429</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
 
 </div>
 </div>
@@ -2448,7 +2451,7 @@ Private Attributes</h2></td></tr>
 
 <p>CD strip-energy for each layer. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00430">430</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00431">431</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
 
 </div>
 </div>
@@ -3871,6 +3874,32 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00168">168</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
+
+</div>
+</div>
+<a id="abe1adcdb89987ad4919a5a2189c5dcea" name="abe1adcdb89987ad4919a5a2189c5dcea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe1adcdb89987ad4919a5a2189c5dcea">&#9670;&#160;</a></span>lume_ne_vs_fe</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;TH2F*&gt; ISSEventBuilder::lume_ne_vs_fe</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Near-side energy vs far-side energy for LUME. </p>
+
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00424">424</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
 
 </div>
 </div>

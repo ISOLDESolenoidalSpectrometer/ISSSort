@@ -118,6 +118,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9b7fe348edc1cd0253413e0832105bc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac838cfffb0723bacad2d70a63d5ffe87" id="r_ac838cfffb0723bacad2d70a63d5ffe87"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac838cfffb0723bacad2d70a63d5ffe87">GetRing</a> ()</td></tr>
 <tr class="separator:ac838cfffb0723bacad2d70a63d5ffe87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa18431de0eca827723527a2deec0deb" id="r_aaa18431de0eca827723527a2deec0deb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa18431de0eca827723527a2deec0deb">GetX</a> (bool randomised=false)</td></tr>
+<tr class="separator:aaa18431de0eca827723527a2deec0deb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3e7af4188511f41fcd681d9ab673334" id="r_ab3e7af4188511f41fcd681d9ab673334"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab3e7af4188511f41fcd681d9ab673334">GetY</a> (bool randomised=false)</td></tr>
+<tr class="separator:ab3e7af4188511f41fcd681d9ab673334"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97214e87dedf1d0408b29c11587eedff" id="r_a97214e87dedf1d0408b29c11587eedff"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a97214e87dedf1d0408b29c11587eedff">GetPhi</a> (bool randomised=false)</td></tr>
+<tr class="separator:a97214e87dedf1d0408b29c11587eedff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb151a9769dca1e46b25bad381b1535c" id="r_abb151a9769dca1e46b25bad381b1535c"><td class="memItemLeft" align="right" valign="top">TVector2&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abb151a9769dca1e46b25bad381b1535c">GetPhiXY</a> (bool randomised=false)</td></tr>
+<tr class="separator:abb151a9769dca1e46b25bad381b1535c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classISSMultiLayerDetectorEvt"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classISSMultiLayerDetectorEvt')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classISSMultiLayerDetectorEvt.html">ISSMultiLayerDetectorEvt</a></td></tr>
 <tr class="memitem:a89b97487da8156790a016bb5fb88c29d inherit pub_methods_classISSMultiLayerDetectorEvt" id="r_a89b97487da8156790a016bb5fb88c29d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classISSMultiLayerDetectorEvt.html#a89b97487da8156790a016bb5fb88c29d">ISSMultiLayerDetectorEvt</a> ()</td></tr>
 <tr class="separator:a89b97487da8156790a016bb5fb88c29d inherit pub_methods_classISSMultiLayerDetectorEvt"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -189,7 +197,7 @@ Protected Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00362">362</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00371">371</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="afbb6cc442877cd97ff26e341fc7c4742" name="afbb6cc442877cd97ff26e341fc7c4742"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afbb6cc442877cd97ff26e341fc7c4742">&#9670;&#160;</a></span>ISSCDEvt()</h2>
@@ -259,6 +267,45 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a97214e87dedf1d0408b29c11587eedff" name="a97214e87dedf1d0408b29c11587eedff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97214e87dedf1d0408b29c11587eedff">&#9670;&#160;</a></span>GetPhi()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float ISSCDEvt::GetPhi </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>randomised</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8cc_source.html#l00655">655</a> of file <a class="el" href="ISSEvts_8cc_source.html">ISSEvts.cc</a>.</p>
+
+</div>
+</div>
+<a id="abb151a9769dca1e46b25bad381b1535c" name="abb151a9769dca1e46b25bad381b1535c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb151a9769dca1e46b25bad381b1535c">&#9670;&#160;</a></span>GetPhiXY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">TVector2 ISSCDEvt::GetPhiXY </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>randomised</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the phi angle of the interaction, and in the meantime define x,y too Note that there is no radial correction yet implemented the origin is at the target position z is positive in the beam direction x is positive in the vertical direction towards the sky y is positive in the horizontal direction towards XT03 (right) phi is positive in the clockwise direction, looking from the origin to positive z (beam direction)</p>
+
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8cc_source.html#l00661">661</a> of file <a class="el" href="ISSEvts_8cc_source.html">ISSEvts.cc</a>.</p>
+
+</div>
+</div>
 <a id="ac838cfffb0723bacad2d70a63d5ffe87" name="ac838cfffb0723bacad2d70a63d5ffe87"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac838cfffb0723bacad2d70a63d5ffe87">&#9670;&#160;</a></span>GetRing()</h2>
 
@@ -282,7 +329,45 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00375">375</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00384">384</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+
+</div>
+</div>
+<a id="aaa18431de0eca827723527a2deec0deb" name="aaa18431de0eca827723527a2deec0deb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa18431de0eca827723527a2deec0deb">&#9670;&#160;</a></span>GetX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float ISSCDEvt::GetX </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>randomised</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8cc_source.html#l00643">643</a> of file <a class="el" href="ISSEvts_8cc_source.html">ISSEvts.cc</a>.</p>
+
+</div>
+</div>
+<a id="ab3e7af4188511f41fcd681d9ab673334" name="ab3e7af4188511f41fcd681d9ab673334"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3e7af4188511f41fcd681d9ab673334">&#9670;&#160;</a></span>GetY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float ISSCDEvt::GetY </td>
+          <td>(</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>randomised</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8cc_source.html#l00649">649</a> of file <a class="el" href="ISSEvts_8cc_source.html">ISSEvts.cc</a>.</p>
 
 </div>
 </div>
@@ -352,7 +437,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00374">374</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00383">383</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
 
 </div>
 </div>
@@ -379,7 +464,7 @@ Protected Attributes</h2></td></tr>
 
 <p>ring of the CD detector </p>
 
-<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00380">380</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ISSEvts_8hh_source.html#l00396">396</a> of file <a class="el" href="ISSEvts_8hh_source.html">ISSEvts.hh</a>.</p>
 
 </div>
 </div>
