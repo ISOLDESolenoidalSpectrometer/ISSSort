@@ -278,16 +278,16 @@ void* monitor_run( void* ptr ){
 			// Only do the rest if it is not a source run
 			if( !flag_source ) {
 
-				// Event builder
-				TTree *sorted_tree = conv_mon->GetSortedTree()->CloneTree();
-				eb_mon->SetInputTree( sorted_tree );
-				eb_mon->GetTree()->Reset();
-
 				// Set output
 				if( bFirstRun ) {
 					eb_mon->SetOutput( "monitor_events.root" );
 					eb_mon->StartFile();
 				}
+
+				// Event builder
+				TTree *sorted_tree = conv_mon->GetSortedTree()->CloneTree();
+				eb_mon->SetInputTree( sorted_tree );
+				eb_mon->GetTree()->Reset();
 
 				// Build!
 				nbuild = eb_mon->BuildEvents();
@@ -297,14 +297,14 @@ void* monitor_run( void* ptr ){
 				// Histogrammer
 				if( nbuild ) {
 
-					// Set input
-					TTree *evt_tree = eb_mon->GetTree()->CloneTree();
-					hist_mon->SetInputTree( evt_tree );
-
 					// Set output
 					if( bFirstRun ) {
 						hist_mon->SetOutput( "monitor_hists.root" );
 					}
+
+					// Set input
+					TTree *evt_tree = eb_mon->GetTree()->CloneTree();
+					hist_mon->SetInputTree( evt_tree );
 
 					// Do physics
 					hist_mon->FillHists();
