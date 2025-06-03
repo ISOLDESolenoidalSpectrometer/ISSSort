@@ -81,7 +81,8 @@ public:
 
 	void	SetOutput( std::string output_file_name ); ///< Configures the output for the class
 
-	void	StartFile();	///< Called for every file
+	void	StartFile();		///< Called for every file
+	void	ConfigureInput();	///< Called when we set the input tree and need settings and calibration files
 	void	Initialise();	///< Called for every event
 	void	MakeHists(); ///< Creates histograms for events that occur
 	void	ResetHists(); ///< Empties the histograms during the DataSpy

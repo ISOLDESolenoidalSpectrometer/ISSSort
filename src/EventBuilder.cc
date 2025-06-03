@@ -186,25 +186,9 @@ void ISSEventBuilder::StartFile(){
 
 }
 
-////////////////////////////////////////////////////////////////////////////////
-/// The ROOT file is opened in read-only mode to avoid modification. If the file is not found, an error message is printed and the function does not set an input tree, and does not call ISSEventBuilder::StartFile.
-/// \param [in] input_file_name The ROOT file containing the time-sorted events from that run (typical suffix is "_sort.root")
-void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
-
-	/// Overloaded function for a single file or multiple files
-	//input_tree = new TTree( "iss" );
-	//input_tree->Add( input_file_name.data() );
-
-	// Open next Root input file.
-	input_file = new TFile( input_file_name.data(), "read" );
-	if( input_file->IsZombie() ) {
-
-		std::cout << "Cannot open " << input_file_name << std::endl;
-		return;
-
-	}
-
-	flag_input_file = true;
+/////////////////////
+/// Initialisation of the process with first file or things
+void ISSEventBuilder::ConfigureInput() {
 
 	// Read settings from file
 	if( !overwrite_set ) {
@@ -230,9 +214,33 @@ void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
 	// Do the array mapping just once after settings
 	ArrayMapping();
 
+	// Setup counters
+	StartFile();
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// The ROOT file is opened in read-only mode to avoid modification. If the file is not found, an error message is printed and the function does not set an input tree, and does not call ISSEventBuilder::StartFile.
+/// \param [in] input_file_name The ROOT file containing the time-sorted events from that run (typical suffix is "_sort.root")
+void ISSEventBuilder::SetInputFile( std::string input_file_name ) {
+
+	/// Overloaded function for a single file or multiple files
+	//input_tree = new TTree( "iss" );
+	//input_tree->Add( input_file_name.data() );
+
+	// Open next Root input file.
+	input_file = new TFile( input_file_name.data(), "read" );
+	if( input_file->IsZombie() ) {
+
+		std::cout << "Cannot open " << input_file_name << std::endl;
+		return;
+
+	}
+
+	flag_input_file = true;
+
 	// Set the input tree
 	SetInputTree( (TTree*)input_file->Get("iss_sort") );
-	StartFile();
 
 	return;
 
@@ -246,6 +254,9 @@ void ISSEventBuilder::SetInputTree( TTree *user_tree ){
 	// Find the tree and set branch addresses
 	input_tree = user_tree;
 	input_tree->SetBranchAddress( "data", &in_data );
+
+	// Configure the input files
+	ConfigureInput();
 
 	return;
 
@@ -270,7 +281,6 @@ void ISSEventBuilder::SetNPToolFile( std::string input_file_name ) {
 
 	// Set the input tree
 	SetNPToolTree( (TTree*)input_file->Get("SimulatedTree") );
-	StartFile();
 
 	return;
 
@@ -284,6 +294,9 @@ void ISSEventBuilder::SetNPToolTree( TTree *user_tree ){
 	// Find the tree and set branch addresses
 	nptool_tree = user_tree;
 	nptool_tree->SetBranchAddress( "ISS", &sim_data );
+
+	// Configure the input files
+	ConfigureInput();
 
 	return;
 

@@ -1668,7 +1668,7 @@ void ISSHistogrammer::MakeHists() {
 		// Timing plots
 		output_file->cd( "Timing" );
 		fission_array_td.resize( set->GetNumberOfArrayModules() );
-		fission_lume_td.resize( set->GetNumberOfELUMSectors() );
+		fission_lume_td.resize( set->GetNumberOfLUMEDetectors() );
 
 		// Fission-fission time difference
 		hname = "fission_fission_td";
@@ -1697,8 +1697,8 @@ void ISSHistogrammer::MakeHists() {
 
 		}
 
-		// For ELUM sectors
-		for( unsigned int j = 0; j < set->GetNumberOfELUMSectors(); ++j ) {
+		// For LUME sectors
+		for( unsigned int j = 0; j < set->GetNumberOfLUMEDetectors(); ++j ) {
 
 			hname = "td_fission_lume_det" + std::to_string(j);
 			htitle = "Time difference between fission detector ";
@@ -3677,6 +3677,7 @@ unsigned long ISSHistogrammer::FillHists() {
 			if( OnBeam( lume_evt ) ){
 
 				lume_vs_T1->Fill( lume_evt->GetTime() - read_evts->GetT1(), lume_evt->GetBE() );
+				lume_ebis->Fill( lume_evt->GetBE() );
 				lume_ebis_on->Fill( lume_evt->GetBE() );
 				lume_E_vs_x_ebis->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
 				lume_E_vs_x_ebis_on->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
@@ -3689,6 +3690,7 @@ unsigned long ISSHistogrammer::FillHists() {
 
 			else {
 
+				lume_ebis->Fill( lume_evt->GetBE(), -1.* react->GetEBISFillRatio() );
 				lume_ebis_off->Fill( lume_evt->GetBE() );
 				lume_ebis_off_det[det_id]->Fill( lume_evt->GetBE() );
 
