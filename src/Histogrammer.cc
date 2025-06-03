@@ -3677,6 +3677,7 @@ unsigned long ISSHistogrammer::FillHists() {
 			if( OnBeam( lume_evt ) ){
 
 				lume_vs_T1->Fill( lume_evt->GetTime() - read_evts->GetT1(), lume_evt->GetBE() );
+				lume_ebis->Fill( lume_evt->GetBE() );
 				lume_ebis_on->Fill( lume_evt->GetBE() );
 				lume_E_vs_x_ebis->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
 				lume_E_vs_x_ebis_on->Fill( lume_evt->GetX(),lume_evt->GetBE(),1. );
@@ -3689,6 +3690,7 @@ unsigned long ISSHistogrammer::FillHists() {
 
 			else {
 
+				lume_ebis->Fill( lume_evt->GetBE(), -1.* react->GetEBISFillRatio() );
 				lume_ebis_off->Fill( lume_evt->GetBE() );
 				lume_ebis_off_det[det_id]->Fill( lume_evt->GetBE() );
 
