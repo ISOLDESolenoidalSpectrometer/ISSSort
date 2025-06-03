@@ -1668,7 +1668,7 @@ void ISSHistogrammer::MakeHists() {
 		// Timing plots
 		output_file->cd( "Timing" );
 		fission_array_td.resize( set->GetNumberOfArrayModules() );
-		fission_lume_td.resize( set->GetNumberOfELUMSectors() );
+		fission_lume_td.resize( set->GetNumberOfLUMEDetectors() );
 
 		// Fission-fission time difference
 		hname = "fission_fission_td";
@@ -1697,8 +1697,8 @@ void ISSHistogrammer::MakeHists() {
 
 		}
 
-		// For ELUM sectors
-		for( unsigned int j = 0; j < set->GetNumberOfELUMSectors(); ++j ) {
+		// For LUME sectors
+		for( unsigned int j = 0; j < set->GetNumberOfLUMEDetectors(); ++j ) {
 
 			hname = "td_fission_lume_det" + std::to_string(j);
 			htitle = "Time difference between fission detector ";
