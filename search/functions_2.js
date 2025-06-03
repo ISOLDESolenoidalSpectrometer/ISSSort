@@ -19,13 +19,14 @@ var searchData=
   ['close_16',['Close',['../classDataSpy.html#a8b4dfe008033b29e17ecd4004ddade2c',1,'DataSpy']]],
   ['closeoutput_17',['CloseOutput',['../classISSConverter.html#a7082018e292291dd2f2c6d8aa4246866',1,'ISSConverter::CloseOutput()'],['../classISSEventBuilder.html#afb9c50f491cccc3942614d92ab792fc3',1,'ISSEventBuilder::CloseOutput()'],['../classISSHistogrammer.html#ab036a59de1676e1c5c26655a72d823c3',1,'ISSHistogrammer::CloseOutput()']]],
   ['commandlineinterface_18',['CommandLineInterface',['../classCommandLineInterface.html#aa242712bc60f8d45d65c92af14e32691',1,'CommandLineInterface']]],
-  ['convertblock_19',['ConvertBlock',['../classISSConverter.html#a2126e8d47342287342924ec2b4a770a5',1,'ISSConverter']]],
-  ['convertfile_20',['ConvertFile',['../classISSConverter.html#a2e69438b12ac6630015b3a32e761711b',1,'ISSConverter']]],
-  ['copybeam_21',['CopyBeam',['../classISSReaction.html#a5b801fddfe8ae6e5bc7f279d4148e794',1,'ISSReaction']]],
-  ['copyejectile_22',['CopyEjectile',['../classISSReaction.html#a7c8dc6e733c898434ff791bf92013308',1,'ISSReaction']]],
-  ['copyevent_23',['CopyEvent',['../classISSArrayEvt.html#a9c6ea46ca6c2e10e54af330866a498d4',1,'ISSArrayEvt']]],
-  ['copyrecoil_24',['CopyRecoil',['../classISSReaction.html#ae3859998e082f9d917ff61aa48d20b49',1,'ISSReaction']]],
-  ['copytarget_25',['CopyTarget',['../classISSReaction.html#a78023f974ce2738a71ec297e04090e01',1,'ISSReaction']]],
-  ['crystalballfunction_26',['CrystalBallFunction',['../FitFunctions_8hh.html#a2f7cb12a3b48eb43664d129d3ca06c46',1,'CrystalBallFunction(double x, double sigma, double alpha, double n, double amp, double mean):&#160;FitFunctions.hh'],['../FitFunctions_8hh.html#a347ce096c06c0dfa4834ae17237af514',1,'CrystalBallFunction(double *x, double *p):&#160;FitFunctions.hh']]],
-  ['crystalballfunctionbg_27',['CrystalBallFunctionBG',['../FitFunctions_8hh.html#a30a1eff206e425e5223ad55ed74f6eac',1,'FitFunctions.hh']]]
+  ['configureinput_19',['ConfigureInput',['../classISSEventBuilder.html#a164023f2334fc2aed2cfaa635439072a',1,'ISSEventBuilder']]],
+  ['convertblock_20',['ConvertBlock',['../classISSConverter.html#a2126e8d47342287342924ec2b4a770a5',1,'ISSConverter']]],
+  ['convertfile_21',['ConvertFile',['../classISSConverter.html#a2e69438b12ac6630015b3a32e761711b',1,'ISSConverter']]],
+  ['copybeam_22',['CopyBeam',['../classISSReaction.html#a5b801fddfe8ae6e5bc7f279d4148e794',1,'ISSReaction']]],
+  ['copyejectile_23',['CopyEjectile',['../classISSReaction.html#a7c8dc6e733c898434ff791bf92013308',1,'ISSReaction']]],
+  ['copyevent_24',['CopyEvent',['../classISSArrayEvt.html#a9c6ea46ca6c2e10e54af330866a498d4',1,'ISSArrayEvt']]],
+  ['copyrecoil_25',['CopyRecoil',['../classISSReaction.html#ae3859998e082f9d917ff61aa48d20b49',1,'ISSReaction']]],
+  ['copytarget_26',['CopyTarget',['../classISSReaction.html#a78023f974ce2738a71ec297e04090e01',1,'ISSReaction']]],
+  ['crystalballfunction_27',['CrystalBallFunction',['../FitFunctions_8hh.html#a2f7cb12a3b48eb43664d129d3ca06c46',1,'CrystalBallFunction(double x, double sigma, double alpha, double n, double amp, double mean):&#160;FitFunctions.hh'],['../FitFunctions_8hh.html#a347ce096c06c0dfa4834ae17237af514',1,'CrystalBallFunction(double *x, double *p):&#160;FitFunctions.hh']]],
+  ['crystalballfunctionbg_28',['CrystalBallFunctionBG',['../FitFunctions_8hh.html#a30a1eff206e425e5223ad55ed74f6eac',1,'FitFunctions.hh']]]
 ];

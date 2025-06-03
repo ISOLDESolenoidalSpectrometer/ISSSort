@@ -1770,7 +1770,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l01668" name="l01668"></a><span class="lineno"> 1668</span>        <span class="comment">// Timing plots</span></div>
 <div class="line"><a id="l01669" name="l01669"></a><span class="lineno"> 1669</span>        <a class="code hl_variable" href="classISSHistogrammer.html#acc16d8a4d3d2bc134e6d3161eedfe650">output_file</a>-&gt;cd( <span class="stringliteral">&quot;Timing&quot;</span> );</div>
 <div class="line"><a id="l01670" name="l01670"></a><span class="lineno"> 1670</span>        <a class="code hl_variable" href="classISSHistogrammer.html#ae028b3e78c2231b527369b91199ab6e1">fission_array_td</a>.resize( <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a>-&gt;GetNumberOfArrayModules() );</div>
-<div class="line"><a id="l01671" name="l01671"></a><span class="lineno"> 1671</span>        <a class="code hl_variable" href="classISSHistogrammer.html#ade254681639d20c575ec1cacf3a806a4">fission_lume_td</a>.resize( <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a>-&gt;GetNumberOfELUMSectors() );</div>
+<div class="line"><a id="l01671" name="l01671"></a><span class="lineno"> 1671</span>        <a class="code hl_variable" href="classISSHistogrammer.html#ade254681639d20c575ec1cacf3a806a4">fission_lume_td</a>.resize( <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a>-&gt;GetNumberOfLUMEDetectors() );</div>
 <div class="line"><a id="l01672" name="l01672"></a><span class="lineno"> 1672</span> </div>
 <div class="line"><a id="l01673" name="l01673"></a><span class="lineno"> 1673</span>        <span class="comment">// Fission-fission time difference</span></div>
 <div class="line"><a id="l01674" name="l01674"></a><span class="lineno"> 1674</span>        hname = <span class="stringliteral">&quot;fission_fission_td&quot;</span>;</div>
@@ -1799,8 +1799,8 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l01697" name="l01697"></a><span class="lineno"> 1697</span> </div>
 <div class="line"><a id="l01698" name="l01698"></a><span class="lineno"> 1698</span>        }</div>
 <div class="line"><a id="l01699" name="l01699"></a><span class="lineno"> 1699</span> </div>
-<div class="line"><a id="l01700" name="l01700"></a><span class="lineno"> 1700</span>        <span class="comment">// For ELUM sectors</span></div>
-<div class="line"><a id="l01701" name="l01701"></a><span class="lineno"> 1701</span>        <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j = 0; j &lt; <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a>-&gt;GetNumberOfELUMSectors(); ++j ) {</div>
+<div class="line"><a id="l01700" name="l01700"></a><span class="lineno"> 1700</span>        <span class="comment">// For LUME sectors</span></div>
+<div class="line"><a id="l01701" name="l01701"></a><span class="lineno"> 1701</span>        <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> j = 0; j &lt; <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a>-&gt;GetNumberOfLUMEDetectors(); ++j ) {</div>
 <div class="line"><a id="l01702" name="l01702"></a><span class="lineno"> 1702</span> </div>
 <div class="line"><a id="l01703" name="l01703"></a><span class="lineno"> 1703</span>            hname = <span class="stringliteral">&quot;td_fission_lume_det&quot;</span> + std::to_string(j);</div>
 <div class="line"><a id="l01704" name="l01704"></a><span class="lineno"> 1704</span>            htitle = <span class="stringliteral">&quot;Time difference between fission detector &quot;</span>;</div>
@@ -3782,465 +3782,467 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l03677" name="l03677"></a><span class="lineno"> 3677</span>            <span class="keywordflow">if</span>( <a class="code hl_function" href="classISSHistogrammer.html#a0b29ec3a54e71550bccb76017dfb4896">OnBeam</a>( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a> ) ){</div>
 <div class="line"><a id="l03678" name="l03678"></a><span class="lineno"> 3678</span> </div>
 <div class="line"><a id="l03679" name="l03679"></a><span class="lineno"> 3679</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a87b873bb0483f7e8190a8c44aa53add9">lume_vs_T1</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetTime() - <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#a090f100dca2911b93d37c3b9528f7891">GetT1</a>(), <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
-<div class="line"><a id="l03680" name="l03680"></a><span class="lineno"> 3680</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a39174cc00b7bf7984ec392c193d53877">lume_ebis_on</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
-<div class="line"><a id="l03681" name="l03681"></a><span class="lineno"> 3681</span>                <a class="code hl_variable" href="classISSHistogrammer.html#ae55dfae1e297f57adbb717644a3a22f8">lume_E_vs_x_ebis</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),1. );</div>
-<div class="line"><a id="l03682" name="l03682"></a><span class="lineno"> 3682</span>                <a class="code hl_variable" href="classISSHistogrammer.html#abe828ac56c2ed11eb79b1a7903a83188">lume_E_vs_x_ebis_on</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),1. );</div>
-<div class="line"><a id="l03683" name="l03683"></a><span class="lineno"> 3683</span> </div>
-<div class="line"><a id="l03684" name="l03684"></a><span class="lineno"> 3684</span>                <a class="code hl_variable" href="classISSHistogrammer.html#afae2075a64b4358f592a226624a4c853">lume_ebis_on_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
-<div class="line"><a id="l03685" name="l03685"></a><span class="lineno"> 3685</span>                <a class="code hl_variable" href="classISSHistogrammer.html#aca81383923a55c5275926607783884e2">lume_E_vs_x_ebis_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),1. );</div>
-<div class="line"><a id="l03686" name="l03686"></a><span class="lineno"> 3686</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a354072e8ceed0b1225c87ce60569472b">lume_E_vs_x_ebis_on_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),1. );</div>
-<div class="line"><a id="l03687" name="l03687"></a><span class="lineno"> 3687</span> </div>
-<div class="line"><a id="l03688" name="l03688"></a><span class="lineno"> 3688</span>            }</div>
-<div class="line"><a id="l03689" name="l03689"></a><span class="lineno"> 3689</span> </div>
-<div class="line"><a id="l03690" name="l03690"></a><span class="lineno"> 3690</span>            <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l03691" name="l03691"></a><span class="lineno"> 3691</span> </div>
-<div class="line"><a id="l03692" name="l03692"></a><span class="lineno"> 3692</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a0e6a61129fc4823232de2786fc98eea8">lume_ebis_off</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
-<div class="line"><a id="l03693" name="l03693"></a><span class="lineno"> 3693</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a888c302effad058c4689cef3b89d648e">lume_ebis_off_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
-<div class="line"><a id="l03694" name="l03694"></a><span class="lineno"> 3694</span> </div>
-<div class="line"><a id="l03695" name="l03695"></a><span class="lineno"> 3695</span>                <a class="code hl_variable" href="classISSHistogrammer.html#ae55dfae1e297f57adbb717644a3a22f8">lume_E_vs_x_ebis</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),-1.* <a class="code hl_variable" href="classISSHistogrammer.html#a8160f9c555d1827533d6514c79ff587d">react</a>-&gt;GetEBISFillRatio() );</div>
-<div class="line"><a id="l03696" name="l03696"></a><span class="lineno"> 3696</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a577c9cc715505be4d584afd14ab77470">lume_E_vs_x_ebis_off</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),1. );</div>
-<div class="line"><a id="l03697" name="l03697"></a><span class="lineno"> 3697</span>                <a class="code hl_variable" href="classISSHistogrammer.html#aca81383923a55c5275926607783884e2">lume_E_vs_x_ebis_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),-1.* <a class="code hl_variable" href="classISSHistogrammer.html#a8160f9c555d1827533d6514c79ff587d">react</a>-&gt;GetEBISFillRatio() );</div>
-<div class="line"><a id="l03698" name="l03698"></a><span class="lineno"> 3698</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a83340b131daac64f5f8c315b85b2dfe1">lume_E_vs_x_ebis_off_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),1. );</div>
-<div class="line"><a id="l03699" name="l03699"></a><span class="lineno"> 3699</span> </div>
-<div class="line"><a id="l03700" name="l03700"></a><span class="lineno"> 3700</span>            } <span class="comment">// ebis</span></div>
+<div class="line"><a id="l03680" name="l03680"></a><span class="lineno"> 3680</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a07ac322f653bf8bd2e15c3adce24d23a">lume_ebis</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
+<div class="line"><a id="l03681" name="l03681"></a><span class="lineno"> 3681</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a39174cc00b7bf7984ec392c193d53877">lume_ebis_on</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
+<div class="line"><a id="l03682" name="l03682"></a><span class="lineno"> 3682</span>                <a class="code hl_variable" href="classISSHistogrammer.html#ae55dfae1e297f57adbb717644a3a22f8">lume_E_vs_x_ebis</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),1. );</div>
+<div class="line"><a id="l03683" name="l03683"></a><span class="lineno"> 3683</span>                <a class="code hl_variable" href="classISSHistogrammer.html#abe828ac56c2ed11eb79b1a7903a83188">lume_E_vs_x_ebis_on</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),1. );</div>
+<div class="line"><a id="l03684" name="l03684"></a><span class="lineno"> 3684</span> </div>
+<div class="line"><a id="l03685" name="l03685"></a><span class="lineno"> 3685</span>                <a class="code hl_variable" href="classISSHistogrammer.html#afae2075a64b4358f592a226624a4c853">lume_ebis_on_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
+<div class="line"><a id="l03686" name="l03686"></a><span class="lineno"> 3686</span>                <a class="code hl_variable" href="classISSHistogrammer.html#aca81383923a55c5275926607783884e2">lume_E_vs_x_ebis_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),1. );</div>
+<div class="line"><a id="l03687" name="l03687"></a><span class="lineno"> 3687</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a354072e8ceed0b1225c87ce60569472b">lume_E_vs_x_ebis_on_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),1. );</div>
+<div class="line"><a id="l03688" name="l03688"></a><span class="lineno"> 3688</span> </div>
+<div class="line"><a id="l03689" name="l03689"></a><span class="lineno"> 3689</span>            }</div>
+<div class="line"><a id="l03690" name="l03690"></a><span class="lineno"> 3690</span> </div>
+<div class="line"><a id="l03691" name="l03691"></a><span class="lineno"> 3691</span>            <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l03692" name="l03692"></a><span class="lineno"> 3692</span> </div>
+<div class="line"><a id="l03693" name="l03693"></a><span class="lineno"> 3693</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a07ac322f653bf8bd2e15c3adce24d23a">lume_ebis</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(), -1.* <a class="code hl_variable" href="classISSHistogrammer.html#a8160f9c555d1827533d6514c79ff587d">react</a>-&gt;GetEBISFillRatio() );</div>
+<div class="line"><a id="l03694" name="l03694"></a><span class="lineno"> 3694</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a0e6a61129fc4823232de2786fc98eea8">lume_ebis_off</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
+<div class="line"><a id="l03695" name="l03695"></a><span class="lineno"> 3695</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a888c302effad058c4689cef3b89d648e">lume_ebis_off_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
+<div class="line"><a id="l03696" name="l03696"></a><span class="lineno"> 3696</span> </div>
+<div class="line"><a id="l03697" name="l03697"></a><span class="lineno"> 3697</span>                <a class="code hl_variable" href="classISSHistogrammer.html#ae55dfae1e297f57adbb717644a3a22f8">lume_E_vs_x_ebis</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),-1.* <a class="code hl_variable" href="classISSHistogrammer.html#a8160f9c555d1827533d6514c79ff587d">react</a>-&gt;GetEBISFillRatio() );</div>
+<div class="line"><a id="l03698" name="l03698"></a><span class="lineno"> 3698</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a577c9cc715505be4d584afd14ab77470">lume_E_vs_x_ebis_off</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),1. );</div>
+<div class="line"><a id="l03699" name="l03699"></a><span class="lineno"> 3699</span>                <a class="code hl_variable" href="classISSHistogrammer.html#aca81383923a55c5275926607783884e2">lume_E_vs_x_ebis_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),-1.* <a class="code hl_variable" href="classISSHistogrammer.html#a8160f9c555d1827533d6514c79ff587d">react</a>-&gt;GetEBISFillRatio() );</div>
+<div class="line"><a id="l03700" name="l03700"></a><span class="lineno"> 3700</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a83340b131daac64f5f8c315b85b2dfe1">lume_E_vs_x_ebis_off_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetX(),<a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE(),1. );</div>
 <div class="line"><a id="l03701" name="l03701"></a><span class="lineno"> 3701</span> </div>
-<div class="line"><a id="l03702" name="l03702"></a><span class="lineno"> 3702</span>            <span class="comment">// Loop over fission events</span></div>
-<div class="line"><a id="l03703" name="l03703"></a><span class="lineno"> 3703</span>            <span class="keywordtype">bool</span> promptcheck = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l03704" name="l03704"></a><span class="lineno"> 3704</span>            <span class="keywordtype">bool</span> randomcheck = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l03705" name="l03705"></a><span class="lineno"> 3705</span>            <span class="keywordtype">bool</span> energycheck = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l03706" name="l03706"></a><span class="lineno"> 3706</span> </div>
-<div class="line"><a id="l03707" name="l03707"></a><span class="lineno"> 3707</span>            <span class="comment">// If we have fission mode, rather than recoil mode</span></div>
-<div class="line"><a id="l03708" name="l03708"></a><span class="lineno"> 3708</span>            <span class="keywordflow">if</span>( <a class="code hl_variable" href="classISSHistogrammer.html#a8160f9c555d1827533d6514c79ff587d">react</a>-&gt;IsFission() &amp;&amp; <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a>-&gt;GetNumberOfCDLayers() &gt; 0 ) {</div>
-<div class="line"><a id="l03709" name="l03709"></a><span class="lineno"> 3709</span> </div>
-<div class="line"><a id="l03710" name="l03710"></a><span class="lineno"> 3710</span>                <span class="comment">// Loop over CD events to check for random and prompt coincidences</span></div>
-<div class="line"><a id="l03711" name="l03711"></a><span class="lineno"> 3711</span>                <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> k = 0; k &lt; <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#a58c6432b4f2b0f8d45cc8ee326ab7f1b">GetCDMultiplicity</a>(); ++k ){</div>
-<div class="line"><a id="l03712" name="l03712"></a><span class="lineno"> 3712</span> </div>
-<div class="line"><a id="l03713" name="l03713"></a><span class="lineno"> 3713</span>                    <span class="comment">// Get CD event</span></div>
-<div class="line"><a id="l03714" name="l03714"></a><span class="lineno"> 3714</span>                    <a class="code hl_variable" href="classISSHistogrammer.html#ab1e3dce30233dcfe49eaca42575a91dd">cd_evt1</a> = <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#ab5e67caaa91a58df41729d481927fc94">GetCDEvt</a>(k);</div>
-<div class="line"><a id="l03715" name="l03715"></a><span class="lineno"> 3715</span> </div>
-<div class="line"><a id="l03716" name="l03716"></a><span class="lineno"> 3716</span>                    <span class="comment">// Time differences</span></div>
-<div class="line"><a id="l03717" name="l03717"></a><span class="lineno"> 3717</span>                    tdiff = <a class="code hl_variable" href="classISSHistogrammer.html#ab1e3dce30233dcfe49eaca42575a91dd">cd_evt1</a>-&gt;GetTime() - <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetTime();</div>
-<div class="line"><a id="l03718" name="l03718"></a><span class="lineno"> 3718</span>                    <a class="code hl_variable" href="classISSHistogrammer.html#ade254681639d20c575ec1cacf3a806a4">fission_lume_td</a>[det_id]-&gt;Fill( tdiff );</div>
-<div class="line"><a id="l03719" name="l03719"></a><span class="lineno"> 3719</span> </div>
-<div class="line"><a id="l03720" name="l03720"></a><span class="lineno"> 3720</span>                    <span class="comment">// Loop over coincident CD events</span></div>
-<div class="line"><a id="l03721" name="l03721"></a><span class="lineno"> 3721</span>                    <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> l = 0; l &lt; <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#a58c6432b4f2b0f8d45cc8ee326ab7f1b">GetCDMultiplicity</a>(); ++l ){</div>
-<div class="line"><a id="l03722" name="l03722"></a><span class="lineno"> 3722</span> </div>
-<div class="line"><a id="l03723" name="l03723"></a><span class="lineno"> 3723</span>                        <span class="comment">// Skip self-coincidences</span></div>
-<div class="line"><a id="l03724" name="l03724"></a><span class="lineno"> 3724</span>                        <span class="keywordflow">if</span>( k == l ) <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l03725" name="l03725"></a><span class="lineno"> 3725</span> </div>
-<div class="line"><a id="l03726" name="l03726"></a><span class="lineno"> 3726</span>                        <span class="comment">// Get CD event</span></div>
-<div class="line"><a id="l03727" name="l03727"></a><span class="lineno"> 3727</span>                        <a class="code hl_variable" href="classISSHistogrammer.html#a0336bfdd5db0a2817749d56e1893d636">cd_evt2</a> = <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#ab5e67caaa91a58df41729d481927fc94">GetCDEvt</a>(l);</div>
-<div class="line"><a id="l03728" name="l03728"></a><span class="lineno"> 3728</span> </div>
-<div class="line"><a id="l03729" name="l03729"></a><span class="lineno"> 3729</span>                        <span class="comment">// Check for prompt events with coincident fissions</span></div>
-<div class="line"><a id="l03730" name="l03730"></a><span class="lineno"> 3730</span>                        <span class="keywordflow">if</span>( <a class="code hl_function" href="classISSHistogrammer.html#a54ef2e8cd3840e758e5c29691e5669b6">PromptCoincidence</a>( <a class="code hl_variable" href="classISSHistogrammer.html#ab1e3dce30233dcfe49eaca42575a91dd">cd_evt1</a>, <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a> ) &amp;&amp; <a class="code hl_function" href="classISSHistogrammer.html#a54ef2e8cd3840e758e5c29691e5669b6">PromptCoincidence</a>( <a class="code hl_variable" href="classISSHistogrammer.html#ab1e3dce30233dcfe49eaca42575a91dd">cd_evt1</a>, <a class="code hl_variable" href="classISSHistogrammer.html#a0336bfdd5db0a2817749d56e1893d636">cd_evt2</a> ) )</div>
-<div class="line"><a id="l03731" name="l03731"></a><span class="lineno"> 3731</span>                            promptcheck = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l03732" name="l03732"></a><span class="lineno"> 3732</span> </div>
-<div class="line"><a id="l03733" name="l03733"></a><span class="lineno"> 3733</span>                        <span class="comment">// Check for random events with coincident fissions</span></div>
-<div class="line"><a id="l03734" name="l03734"></a><span class="lineno"> 3734</span>                        <span class="keywordflow">if</span>( <a class="code hl_function" href="classISSHistogrammer.html#a63cfa32f12f3dbba185660d01ac6d5dd">RandomCoincidence</a>( <a class="code hl_variable" href="classISSHistogrammer.html#ab1e3dce30233dcfe49eaca42575a91dd">cd_evt1</a>, <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a> ) &amp;&amp; <a class="code hl_function" href="classISSHistogrammer.html#a54ef2e8cd3840e758e5c29691e5669b6">PromptCoincidence</a>( <a class="code hl_variable" href="classISSHistogrammer.html#ab1e3dce30233dcfe49eaca42575a91dd">cd_evt1</a>, <a class="code hl_variable" href="classISSHistogrammer.html#a0336bfdd5db0a2817749d56e1893d636">cd_evt2</a> ) )</div>
-<div class="line"><a id="l03735" name="l03735"></a><span class="lineno"> 3735</span>                            randomcheck = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l03736" name="l03736"></a><span class="lineno"> 3736</span> </div>
-<div class="line"><a id="l03737" name="l03737"></a><span class="lineno"> 3737</span>                        <span class="comment">// Check energy gate</span></div>
-<div class="line"><a id="l03738" name="l03738"></a><span class="lineno"> 3738</span>                        <span class="keywordflow">if</span>( <a class="code hl_function" href="classISSHistogrammer.html#a842d92eb6848b53072a6889a6a75f84c">FissionCutHeavy</a>( <a class="code hl_variable" href="classISSHistogrammer.html#ab1e3dce30233dcfe49eaca42575a91dd">cd_evt1</a> ) &amp;&amp; <a class="code hl_function" href="classISSHistogrammer.html#aaa381d8e0787053cb5e494dc0db36953">FissionCutLight</a>( <a class="code hl_variable" href="classISSHistogrammer.html#a0336bfdd5db0a2817749d56e1893d636">cd_evt2</a> ) )</div>
-<div class="line"><a id="l03739" name="l03739"></a><span class="lineno"> 3739</span>                            energycheck = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l03740" name="l03740"></a><span class="lineno"> 3740</span> </div>
-<div class="line"><a id="l03741" name="l03741"></a><span class="lineno"> 3741</span>                    } <span class="comment">// cd events 2</span></div>
+<div class="line"><a id="l03702" name="l03702"></a><span class="lineno"> 3702</span>            } <span class="comment">// ebis</span></div>
+<div class="line"><a id="l03703" name="l03703"></a><span class="lineno"> 3703</span> </div>
+<div class="line"><a id="l03704" name="l03704"></a><span class="lineno"> 3704</span>            <span class="comment">// Loop over fission events</span></div>
+<div class="line"><a id="l03705" name="l03705"></a><span class="lineno"> 3705</span>            <span class="keywordtype">bool</span> promptcheck = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l03706" name="l03706"></a><span class="lineno"> 3706</span>            <span class="keywordtype">bool</span> randomcheck = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l03707" name="l03707"></a><span class="lineno"> 3707</span>            <span class="keywordtype">bool</span> energycheck = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l03708" name="l03708"></a><span class="lineno"> 3708</span> </div>
+<div class="line"><a id="l03709" name="l03709"></a><span class="lineno"> 3709</span>            <span class="comment">// If we have fission mode, rather than recoil mode</span></div>
+<div class="line"><a id="l03710" name="l03710"></a><span class="lineno"> 3710</span>            <span class="keywordflow">if</span>( <a class="code hl_variable" href="classISSHistogrammer.html#a8160f9c555d1827533d6514c79ff587d">react</a>-&gt;IsFission() &amp;&amp; <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a>-&gt;GetNumberOfCDLayers() &gt; 0 ) {</div>
+<div class="line"><a id="l03711" name="l03711"></a><span class="lineno"> 3711</span> </div>
+<div class="line"><a id="l03712" name="l03712"></a><span class="lineno"> 3712</span>                <span class="comment">// Loop over CD events to check for random and prompt coincidences</span></div>
+<div class="line"><a id="l03713" name="l03713"></a><span class="lineno"> 3713</span>                <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> k = 0; k &lt; <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#a58c6432b4f2b0f8d45cc8ee326ab7f1b">GetCDMultiplicity</a>(); ++k ){</div>
+<div class="line"><a id="l03714" name="l03714"></a><span class="lineno"> 3714</span> </div>
+<div class="line"><a id="l03715" name="l03715"></a><span class="lineno"> 3715</span>                    <span class="comment">// Get CD event</span></div>
+<div class="line"><a id="l03716" name="l03716"></a><span class="lineno"> 3716</span>                    <a class="code hl_variable" href="classISSHistogrammer.html#ab1e3dce30233dcfe49eaca42575a91dd">cd_evt1</a> = <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#ab5e67caaa91a58df41729d481927fc94">GetCDEvt</a>(k);</div>
+<div class="line"><a id="l03717" name="l03717"></a><span class="lineno"> 3717</span> </div>
+<div class="line"><a id="l03718" name="l03718"></a><span class="lineno"> 3718</span>                    <span class="comment">// Time differences</span></div>
+<div class="line"><a id="l03719" name="l03719"></a><span class="lineno"> 3719</span>                    tdiff = <a class="code hl_variable" href="classISSHistogrammer.html#ab1e3dce30233dcfe49eaca42575a91dd">cd_evt1</a>-&gt;GetTime() - <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetTime();</div>
+<div class="line"><a id="l03720" name="l03720"></a><span class="lineno"> 3720</span>                    <a class="code hl_variable" href="classISSHistogrammer.html#ade254681639d20c575ec1cacf3a806a4">fission_lume_td</a>[det_id]-&gt;Fill( tdiff );</div>
+<div class="line"><a id="l03721" name="l03721"></a><span class="lineno"> 3721</span> </div>
+<div class="line"><a id="l03722" name="l03722"></a><span class="lineno"> 3722</span>                    <span class="comment">// Loop over coincident CD events</span></div>
+<div class="line"><a id="l03723" name="l03723"></a><span class="lineno"> 3723</span>                    <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> l = 0; l &lt; <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#a58c6432b4f2b0f8d45cc8ee326ab7f1b">GetCDMultiplicity</a>(); ++l ){</div>
+<div class="line"><a id="l03724" name="l03724"></a><span class="lineno"> 3724</span> </div>
+<div class="line"><a id="l03725" name="l03725"></a><span class="lineno"> 3725</span>                        <span class="comment">// Skip self-coincidences</span></div>
+<div class="line"><a id="l03726" name="l03726"></a><span class="lineno"> 3726</span>                        <span class="keywordflow">if</span>( k == l ) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l03727" name="l03727"></a><span class="lineno"> 3727</span> </div>
+<div class="line"><a id="l03728" name="l03728"></a><span class="lineno"> 3728</span>                        <span class="comment">// Get CD event</span></div>
+<div class="line"><a id="l03729" name="l03729"></a><span class="lineno"> 3729</span>                        <a class="code hl_variable" href="classISSHistogrammer.html#a0336bfdd5db0a2817749d56e1893d636">cd_evt2</a> = <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#ab5e67caaa91a58df41729d481927fc94">GetCDEvt</a>(l);</div>
+<div class="line"><a id="l03730" name="l03730"></a><span class="lineno"> 3730</span> </div>
+<div class="line"><a id="l03731" name="l03731"></a><span class="lineno"> 3731</span>                        <span class="comment">// Check for prompt events with coincident fissions</span></div>
+<div class="line"><a id="l03732" name="l03732"></a><span class="lineno"> 3732</span>                        <span class="keywordflow">if</span>( <a class="code hl_function" href="classISSHistogrammer.html#a54ef2e8cd3840e758e5c29691e5669b6">PromptCoincidence</a>( <a class="code hl_variable" href="classISSHistogrammer.html#ab1e3dce30233dcfe49eaca42575a91dd">cd_evt1</a>, <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a> ) &amp;&amp; <a class="code hl_function" href="classISSHistogrammer.html#a54ef2e8cd3840e758e5c29691e5669b6">PromptCoincidence</a>( <a class="code hl_variable" href="classISSHistogrammer.html#ab1e3dce30233dcfe49eaca42575a91dd">cd_evt1</a>, <a class="code hl_variable" href="classISSHistogrammer.html#a0336bfdd5db0a2817749d56e1893d636">cd_evt2</a> ) )</div>
+<div class="line"><a id="l03733" name="l03733"></a><span class="lineno"> 3733</span>                            promptcheck = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l03734" name="l03734"></a><span class="lineno"> 3734</span> </div>
+<div class="line"><a id="l03735" name="l03735"></a><span class="lineno"> 3735</span>                        <span class="comment">// Check for random events with coincident fissions</span></div>
+<div class="line"><a id="l03736" name="l03736"></a><span class="lineno"> 3736</span>                        <span class="keywordflow">if</span>( <a class="code hl_function" href="classISSHistogrammer.html#a63cfa32f12f3dbba185660d01ac6d5dd">RandomCoincidence</a>( <a class="code hl_variable" href="classISSHistogrammer.html#ab1e3dce30233dcfe49eaca42575a91dd">cd_evt1</a>, <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a> ) &amp;&amp; <a class="code hl_function" href="classISSHistogrammer.html#a54ef2e8cd3840e758e5c29691e5669b6">PromptCoincidence</a>( <a class="code hl_variable" href="classISSHistogrammer.html#ab1e3dce30233dcfe49eaca42575a91dd">cd_evt1</a>, <a class="code hl_variable" href="classISSHistogrammer.html#a0336bfdd5db0a2817749d56e1893d636">cd_evt2</a> ) )</div>
+<div class="line"><a id="l03737" name="l03737"></a><span class="lineno"> 3737</span>                            randomcheck = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l03738" name="l03738"></a><span class="lineno"> 3738</span> </div>
+<div class="line"><a id="l03739" name="l03739"></a><span class="lineno"> 3739</span>                        <span class="comment">// Check energy gate</span></div>
+<div class="line"><a id="l03740" name="l03740"></a><span class="lineno"> 3740</span>                        <span class="keywordflow">if</span>( <a class="code hl_function" href="classISSHistogrammer.html#a842d92eb6848b53072a6889a6a75f84c">FissionCutHeavy</a>( <a class="code hl_variable" href="classISSHistogrammer.html#ab1e3dce30233dcfe49eaca42575a91dd">cd_evt1</a> ) &amp;&amp; <a class="code hl_function" href="classISSHistogrammer.html#aaa381d8e0787053cb5e494dc0db36953">FissionCutLight</a>( <a class="code hl_variable" href="classISSHistogrammer.html#a0336bfdd5db0a2817749d56e1893d636">cd_evt2</a> ) )</div>
+<div class="line"><a id="l03741" name="l03741"></a><span class="lineno"> 3741</span>                            energycheck = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l03742" name="l03742"></a><span class="lineno"> 3742</span> </div>
-<div class="line"><a id="l03743" name="l03743"></a><span class="lineno"> 3743</span>                } <span class="comment">// cd events 1</span></div>
+<div class="line"><a id="l03743" name="l03743"></a><span class="lineno"> 3743</span>                    } <span class="comment">// cd events 2</span></div>
 <div class="line"><a id="l03744" name="l03744"></a><span class="lineno"> 3744</span> </div>
-<div class="line"><a id="l03745" name="l03745"></a><span class="lineno"> 3745</span>                <span class="comment">// Fill prompt hists</span></div>
-<div class="line"><a id="l03746" name="l03746"></a><span class="lineno"> 3746</span>                <span class="keywordflow">if</span>( promptcheck == <span class="keyword">true</span> &amp;&amp; randomcheck == <span class="keyword">false</span> ){</div>
-<div class="line"><a id="l03747" name="l03747"></a><span class="lineno"> 3747</span> </div>
-<div class="line"><a id="l03748" name="l03748"></a><span class="lineno"> 3748</span>                    <a class="code hl_variable" href="classISSHistogrammer.html#a660ff2d41254107e66ce69ca05882ced">lume_elastic</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
-<div class="line"><a id="l03749" name="l03749"></a><span class="lineno"> 3749</span>                    <a class="code hl_variable" href="classISSHistogrammer.html#a31ad64b3e2fdd2b8ed8251f147daabc6">lume_elastic_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
-<div class="line"><a id="l03750" name="l03750"></a><span class="lineno"> 3750</span> </div>
-<div class="line"><a id="l03751" name="l03751"></a><span class="lineno"> 3751</span>                    <span class="comment">// Fill energy gate hists</span></div>
-<div class="line"><a id="l03752" name="l03752"></a><span class="lineno"> 3752</span>                    <span class="keywordflow">if</span>( energycheck == <span class="keyword">true</span> ) {</div>
-<div class="line"><a id="l03753" name="l03753"></a><span class="lineno"> 3753</span> </div>
-<div class="line"><a id="l03754" name="l03754"></a><span class="lineno"> 3754</span>                        <a class="code hl_variable" href="classISSHistogrammer.html#ada1fec66a920608b2ad3f4a3a7f87e53">lume_fission</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
-<div class="line"><a id="l03755" name="l03755"></a><span class="lineno"> 3755</span>                        <a class="code hl_variable" href="classISSHistogrammer.html#a274af2483e67c69d174cc6fccdd71e93">lume_fission_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
-<div class="line"><a id="l03756" name="l03756"></a><span class="lineno"> 3756</span> </div>
-<div class="line"><a id="l03757" name="l03757"></a><span class="lineno"> 3757</span>                    } <span class="comment">// energy cuts</span></div>
+<div class="line"><a id="l03745" name="l03745"></a><span class="lineno"> 3745</span>                } <span class="comment">// cd events 1</span></div>
+<div class="line"><a id="l03746" name="l03746"></a><span class="lineno"> 3746</span> </div>
+<div class="line"><a id="l03747" name="l03747"></a><span class="lineno"> 3747</span>                <span class="comment">// Fill prompt hists</span></div>
+<div class="line"><a id="l03748" name="l03748"></a><span class="lineno"> 3748</span>                <span class="keywordflow">if</span>( promptcheck == <span class="keyword">true</span> &amp;&amp; randomcheck == <span class="keyword">false</span> ){</div>
+<div class="line"><a id="l03749" name="l03749"></a><span class="lineno"> 3749</span> </div>
+<div class="line"><a id="l03750" name="l03750"></a><span class="lineno"> 3750</span>                    <a class="code hl_variable" href="classISSHistogrammer.html#a660ff2d41254107e66ce69ca05882ced">lume_elastic</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
+<div class="line"><a id="l03751" name="l03751"></a><span class="lineno"> 3751</span>                    <a class="code hl_variable" href="classISSHistogrammer.html#a31ad64b3e2fdd2b8ed8251f147daabc6">lume_elastic_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
+<div class="line"><a id="l03752" name="l03752"></a><span class="lineno"> 3752</span> </div>
+<div class="line"><a id="l03753" name="l03753"></a><span class="lineno"> 3753</span>                    <span class="comment">// Fill energy gate hists</span></div>
+<div class="line"><a id="l03754" name="l03754"></a><span class="lineno"> 3754</span>                    <span class="keywordflow">if</span>( energycheck == <span class="keyword">true</span> ) {</div>
+<div class="line"><a id="l03755" name="l03755"></a><span class="lineno"> 3755</span> </div>
+<div class="line"><a id="l03756" name="l03756"></a><span class="lineno"> 3756</span>                        <a class="code hl_variable" href="classISSHistogrammer.html#ada1fec66a920608b2ad3f4a3a7f87e53">lume_fission</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
+<div class="line"><a id="l03757" name="l03757"></a><span class="lineno"> 3757</span>                        <a class="code hl_variable" href="classISSHistogrammer.html#a274af2483e67c69d174cc6fccdd71e93">lume_fission_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
 <div class="line"><a id="l03758" name="l03758"></a><span class="lineno"> 3758</span> </div>
-<div class="line"><a id="l03759" name="l03759"></a><span class="lineno"> 3759</span>                } <span class="comment">// prompt</span></div>
+<div class="line"><a id="l03759" name="l03759"></a><span class="lineno"> 3759</span>                    } <span class="comment">// energy cuts</span></div>
 <div class="line"><a id="l03760" name="l03760"></a><span class="lineno"> 3760</span> </div>
-<div class="line"><a id="l03761" name="l03761"></a><span class="lineno"> 3761</span>                <span class="comment">// Fill random hists, but only if we didn&#39;t fill it already as a prompt hit</span></div>
-<div class="line"><a id="l03762" name="l03762"></a><span class="lineno"> 3762</span>                <span class="keywordflow">else</span> <span class="keywordflow">if</span>( randomcheck == <span class="keyword">true</span> &amp;&amp; promptcheck == <span class="keyword">false</span> ){</div>
-<div class="line"><a id="l03763" name="l03763"></a><span class="lineno"> 3763</span> </div>
-<div class="line"><a id="l03764" name="l03764"></a><span class="lineno"> 3764</span>                    <a class="code hl_variable" href="classISSHistogrammer.html#a17d6ed9fb3cbce9b640f629d5074137b">lume_elastic_random</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
-<div class="line"><a id="l03765" name="l03765"></a><span class="lineno"> 3765</span>                    <a class="code hl_variable" href="classISSHistogrammer.html#ab9bc09cc3f5b88db57ee150253d12d8e">lume_elastic_random_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
-<div class="line"><a id="l03766" name="l03766"></a><span class="lineno"> 3766</span> </div>
-<div class="line"><a id="l03767" name="l03767"></a><span class="lineno"> 3767</span>                    <span class="comment">// Fill energy gate hists</span></div>
-<div class="line"><a id="l03768" name="l03768"></a><span class="lineno"> 3768</span>                    <span class="keywordflow">if</span>( energycheck == <span class="keyword">true</span> ) {</div>
-<div class="line"><a id="l03769" name="l03769"></a><span class="lineno"> 3769</span> </div>
-<div class="line"><a id="l03770" name="l03770"></a><span class="lineno"> 3770</span>                        <a class="code hl_variable" href="classISSHistogrammer.html#a1171124d41d0f82677640d0d2dda6960">lume_fission_random</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
-<div class="line"><a id="l03771" name="l03771"></a><span class="lineno"> 3771</span>                        <a class="code hl_variable" href="classISSHistogrammer.html#a2ebd32faba94c86271ef2991d65f9033">lume_fission_random_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
-<div class="line"><a id="l03772" name="l03772"></a><span class="lineno"> 3772</span> </div>
-<div class="line"><a id="l03773" name="l03773"></a><span class="lineno"> 3773</span>                    } <span class="comment">// energy cuts</span></div>
+<div class="line"><a id="l03761" name="l03761"></a><span class="lineno"> 3761</span>                } <span class="comment">// prompt</span></div>
+<div class="line"><a id="l03762" name="l03762"></a><span class="lineno"> 3762</span> </div>
+<div class="line"><a id="l03763" name="l03763"></a><span class="lineno"> 3763</span>                <span class="comment">// Fill random hists, but only if we didn&#39;t fill it already as a prompt hit</span></div>
+<div class="line"><a id="l03764" name="l03764"></a><span class="lineno"> 3764</span>                <span class="keywordflow">else</span> <span class="keywordflow">if</span>( randomcheck == <span class="keyword">true</span> &amp;&amp; promptcheck == <span class="keyword">false</span> ){</div>
+<div class="line"><a id="l03765" name="l03765"></a><span class="lineno"> 3765</span> </div>
+<div class="line"><a id="l03766" name="l03766"></a><span class="lineno"> 3766</span>                    <a class="code hl_variable" href="classISSHistogrammer.html#a17d6ed9fb3cbce9b640f629d5074137b">lume_elastic_random</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
+<div class="line"><a id="l03767" name="l03767"></a><span class="lineno"> 3767</span>                    <a class="code hl_variable" href="classISSHistogrammer.html#ab9bc09cc3f5b88db57ee150253d12d8e">lume_elastic_random_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
+<div class="line"><a id="l03768" name="l03768"></a><span class="lineno"> 3768</span> </div>
+<div class="line"><a id="l03769" name="l03769"></a><span class="lineno"> 3769</span>                    <span class="comment">// Fill energy gate hists</span></div>
+<div class="line"><a id="l03770" name="l03770"></a><span class="lineno"> 3770</span>                    <span class="keywordflow">if</span>( energycheck == <span class="keyword">true</span> ) {</div>
+<div class="line"><a id="l03771" name="l03771"></a><span class="lineno"> 3771</span> </div>
+<div class="line"><a id="l03772" name="l03772"></a><span class="lineno"> 3772</span>                        <a class="code hl_variable" href="classISSHistogrammer.html#a1171124d41d0f82677640d0d2dda6960">lume_fission_random</a>-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
+<div class="line"><a id="l03773" name="l03773"></a><span class="lineno"> 3773</span>                        <a class="code hl_variable" href="classISSHistogrammer.html#a2ebd32faba94c86271ef2991d65f9033">lume_fission_random_det</a>[det_id]-&gt;Fill( <a class="code hl_variable" href="classISSHistogrammer.html#ae8300889acc3f9b4ab9531231e0e7a1e">lume_evt</a>-&gt;GetBE() );</div>
 <div class="line"><a id="l03774" name="l03774"></a><span class="lineno"> 3774</span> </div>
-<div class="line"><a id="l03775" name="l03775"></a><span class="lineno"> 3775</span>                } <span class="comment">// random</span></div>
+<div class="line"><a id="l03775" name="l03775"></a><span class="lineno"> 3775</span>                    } <span class="comment">// energy cuts</span></div>
 <div class="line"><a id="l03776" name="l03776"></a><span class="lineno"> 3776</span> </div>
-<div class="line"><a id="l03777" name="l03777"></a><span class="lineno"> 3777</span>            } <span class="comment">// fission mode finished</span></div>
+<div class="line"><a id="l03777" name="l03777"></a><span class="lineno"> 3777</span>                } <span class="comment">// random</span></div>
 <div class="line"><a id="l03778" name="l03778"></a><span class="lineno"> 3778</span> </div>
-<div class="line"><a id="l03779" name="l03779"></a><span class="lineno"> 3779</span>        }</div>
+<div class="line"><a id="l03779" name="l03779"></a><span class="lineno"> 3779</span>            } <span class="comment">// fission mode finished</span></div>
 <div class="line"><a id="l03780" name="l03780"></a><span class="lineno"> 3780</span> </div>
-<div class="line"><a id="l03781" name="l03781"></a><span class="lineno"> 3781</span>        <span class="comment">// Progress bar</span></div>
-<div class="line"><a id="l03782" name="l03782"></a><span class="lineno"> 3782</span>        <span class="keywordtype">bool</span> update_progress = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l03783" name="l03783"></a><span class="lineno"> 3783</span>        <span class="keywordflow">if</span>( <a class="code hl_variable" href="classISSHistogrammer.html#ad3ecb1a9486ed9876f9504af6a5b52a2">n_entries</a> &lt; 200 )</div>
-<div class="line"><a id="l03784" name="l03784"></a><span class="lineno"> 3784</span>            update_progress = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l03785" name="l03785"></a><span class="lineno"> 3785</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>( i % (<a class="code hl_variable" href="classISSHistogrammer.html#ad3ecb1a9486ed9876f9504af6a5b52a2">n_entries</a>/100) == 0 || i+1 == <a class="code hl_variable" href="classISSHistogrammer.html#ad3ecb1a9486ed9876f9504af6a5b52a2">n_entries</a> )</div>
+<div class="line"><a id="l03781" name="l03781"></a><span class="lineno"> 3781</span>        }</div>
+<div class="line"><a id="l03782" name="l03782"></a><span class="lineno"> 3782</span> </div>
+<div class="line"><a id="l03783" name="l03783"></a><span class="lineno"> 3783</span>        <span class="comment">// Progress bar</span></div>
+<div class="line"><a id="l03784" name="l03784"></a><span class="lineno"> 3784</span>        <span class="keywordtype">bool</span> update_progress = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l03785" name="l03785"></a><span class="lineno"> 3785</span>        <span class="keywordflow">if</span>( <a class="code hl_variable" href="classISSHistogrammer.html#ad3ecb1a9486ed9876f9504af6a5b52a2">n_entries</a> &lt; 200 )</div>
 <div class="line"><a id="l03786" name="l03786"></a><span class="lineno"> 3786</span>            update_progress = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l03787" name="l03787"></a><span class="lineno"> 3787</span> </div>
-<div class="line"><a id="l03788" name="l03788"></a><span class="lineno"> 3788</span>        <span class="keywordflow">if</span>( update_progress ) {</div>
+<div class="line"><a id="l03787" name="l03787"></a><span class="lineno"> 3787</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>( i % (<a class="code hl_variable" href="classISSHistogrammer.html#ad3ecb1a9486ed9876f9504af6a5b52a2">n_entries</a>/100) == 0 || i+1 == <a class="code hl_variable" href="classISSHistogrammer.html#ad3ecb1a9486ed9876f9504af6a5b52a2">n_entries</a> )</div>
+<div class="line"><a id="l03788" name="l03788"></a><span class="lineno"> 3788</span>            update_progress = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l03789" name="l03789"></a><span class="lineno"> 3789</span> </div>
-<div class="line"><a id="l03790" name="l03790"></a><span class="lineno"> 3790</span>            <span class="comment">// Percent complete</span></div>
-<div class="line"><a id="l03791" name="l03791"></a><span class="lineno"> 3791</span>            <span class="keywordtype">float</span> percent = (float)(i+1)*100.0/(float)<a class="code hl_variable" href="classISSHistogrammer.html#ad3ecb1a9486ed9876f9504af6a5b52a2">n_entries</a>;</div>
-<div class="line"><a id="l03792" name="l03792"></a><span class="lineno"> 3792</span> </div>
-<div class="line"><a id="l03793" name="l03793"></a><span class="lineno"> 3793</span>            <span class="comment">// Progress bar in GUI</span></div>
-<div class="line"><a id="l03794" name="l03794"></a><span class="lineno"> 3794</span>            <span class="keywordflow">if</span>( <a class="code hl_variable" href="classISSHistogrammer.html#a376c53b5db5098c11d95cf3aa33be86f">_prog_</a> ) {</div>
-<div class="line"><a id="l03795" name="l03795"></a><span class="lineno"> 3795</span> </div>
-<div class="line"><a id="l03796" name="l03796"></a><span class="lineno"> 3796</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a7907ab873384e5ad4f84d3137c115383">prog</a>-&gt;SetPosition( percent );</div>
-<div class="line"><a id="l03797" name="l03797"></a><span class="lineno"> 3797</span>                gSystem-&gt;ProcessEvents();</div>
-<div class="line"><a id="l03798" name="l03798"></a><span class="lineno"> 3798</span> </div>
-<div class="line"><a id="l03799" name="l03799"></a><span class="lineno"> 3799</span>            }</div>
+<div class="line"><a id="l03790" name="l03790"></a><span class="lineno"> 3790</span>        <span class="keywordflow">if</span>( update_progress ) {</div>
+<div class="line"><a id="l03791" name="l03791"></a><span class="lineno"> 3791</span> </div>
+<div class="line"><a id="l03792" name="l03792"></a><span class="lineno"> 3792</span>            <span class="comment">// Percent complete</span></div>
+<div class="line"><a id="l03793" name="l03793"></a><span class="lineno"> 3793</span>            <span class="keywordtype">float</span> percent = (float)(i+1)*100.0/(float)<a class="code hl_variable" href="classISSHistogrammer.html#ad3ecb1a9486ed9876f9504af6a5b52a2">n_entries</a>;</div>
+<div class="line"><a id="l03794" name="l03794"></a><span class="lineno"> 3794</span> </div>
+<div class="line"><a id="l03795" name="l03795"></a><span class="lineno"> 3795</span>            <span class="comment">// Progress bar in GUI</span></div>
+<div class="line"><a id="l03796" name="l03796"></a><span class="lineno"> 3796</span>            <span class="keywordflow">if</span>( <a class="code hl_variable" href="classISSHistogrammer.html#a376c53b5db5098c11d95cf3aa33be86f">_prog_</a> ) {</div>
+<div class="line"><a id="l03797" name="l03797"></a><span class="lineno"> 3797</span> </div>
+<div class="line"><a id="l03798" name="l03798"></a><span class="lineno"> 3798</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a7907ab873384e5ad4f84d3137c115383">prog</a>-&gt;SetPosition( percent );</div>
+<div class="line"><a id="l03799" name="l03799"></a><span class="lineno"> 3799</span>                gSystem-&gt;ProcessEvents();</div>
 <div class="line"><a id="l03800" name="l03800"></a><span class="lineno"> 3800</span> </div>
-<div class="line"><a id="l03801" name="l03801"></a><span class="lineno"> 3801</span>            <span class="comment">// Progress bar in terminal</span></div>
-<div class="line"><a id="l03802" name="l03802"></a><span class="lineno"> 3802</span>            std::cout &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; std::setw(6) &lt;&lt; std::setprecision(4);</div>
-<div class="line"><a id="l03803" name="l03803"></a><span class="lineno"> 3803</span>            std::cout &lt;&lt; percent &lt;&lt; <span class="stringliteral">&quot;%    \r&quot;</span>;</div>
-<div class="line"><a id="l03804" name="l03804"></a><span class="lineno"> 3804</span>            std::cout.flush();</div>
-<div class="line"><a id="l03805" name="l03805"></a><span class="lineno"> 3805</span> </div>
-<div class="line"><a id="l03806" name="l03806"></a><span class="lineno"> 3806</span>        }</div>
+<div class="line"><a id="l03801" name="l03801"></a><span class="lineno"> 3801</span>            }</div>
+<div class="line"><a id="l03802" name="l03802"></a><span class="lineno"> 3802</span> </div>
+<div class="line"><a id="l03803" name="l03803"></a><span class="lineno"> 3803</span>            <span class="comment">// Progress bar in terminal</span></div>
+<div class="line"><a id="l03804" name="l03804"></a><span class="lineno"> 3804</span>            std::cout &lt;&lt; <span class="stringliteral">&quot; &quot;</span> &lt;&lt; std::setw(6) &lt;&lt; std::setprecision(4);</div>
+<div class="line"><a id="l03805" name="l03805"></a><span class="lineno"> 3805</span>            std::cout &lt;&lt; percent &lt;&lt; <span class="stringliteral">&quot;%    \r&quot;</span>;</div>
+<div class="line"><a id="l03806" name="l03806"></a><span class="lineno"> 3806</span>            std::cout.flush();</div>
 <div class="line"><a id="l03807" name="l03807"></a><span class="lineno"> 3807</span> </div>
-<div class="line"><a id="l03808" name="l03808"></a><span class="lineno"> 3808</span>    } <span class="comment">// all events</span></div>
+<div class="line"><a id="l03808" name="l03808"></a><span class="lineno"> 3808</span>        }</div>
 <div class="line"><a id="l03809" name="l03809"></a><span class="lineno"> 3809</span> </div>
-<div class="line"><a id="l03810" name="l03810"></a><span class="lineno"> 3810</span>    <span class="comment">// Force the rest of the events in the buffer to disk</span></div>
-<div class="line"><a id="l03811" name="l03811"></a><span class="lineno"> 3811</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a3d7d6003c6798eff36fd133bfef0d2f7">output_tree</a>-&gt;FlushBaskets();</div>
-<div class="line"><a id="l03812" name="l03812"></a><span class="lineno"> 3812</span>    <a class="code hl_variable" href="classISSHistogrammer.html#acc16d8a4d3d2bc134e6d3161eedfe650">output_file</a>-&gt;Write( 0, TObject::kWriteDelete );</div>
-<div class="line"><a id="l03813" name="l03813"></a><span class="lineno"> 3813</span> </div>
-<div class="line"><a id="l03814" name="l03814"></a><span class="lineno"> 3814</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classISSHistogrammer.html#ad3ecb1a9486ed9876f9504af6a5b52a2">n_entries</a>;</div>
+<div class="line"><a id="l03810" name="l03810"></a><span class="lineno"> 3810</span>    } <span class="comment">// all events</span></div>
+<div class="line"><a id="l03811" name="l03811"></a><span class="lineno"> 3811</span> </div>
+<div class="line"><a id="l03812" name="l03812"></a><span class="lineno"> 3812</span>    <span class="comment">// Force the rest of the events in the buffer to disk</span></div>
+<div class="line"><a id="l03813" name="l03813"></a><span class="lineno"> 3813</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a3d7d6003c6798eff36fd133bfef0d2f7">output_tree</a>-&gt;FlushBaskets();</div>
+<div class="line"><a id="l03814" name="l03814"></a><span class="lineno"> 3814</span>    <a class="code hl_variable" href="classISSHistogrammer.html#acc16d8a4d3d2bc134e6d3161eedfe650">output_file</a>-&gt;Write( 0, TObject::kWriteDelete );</div>
 <div class="line"><a id="l03815" name="l03815"></a><span class="lineno"> 3815</span> </div>
-<div class="line"><a id="l03816" name="l03816"></a><span class="lineno"> 3816</span>}</div>
-</div>
+<div class="line"><a id="l03816" name="l03816"></a><span class="lineno"> 3816</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="classISSHistogrammer.html#ad3ecb1a9486ed9876f9504af6a5b52a2">n_entries</a>;</div>
 <div class="line"><a id="l03817" name="l03817"></a><span class="lineno"> 3817</span> </div>
-<div class="foldopen" id="foldopen03818" data-start="{" data-end="}">
-<div class="line"><a id="l03818" name="l03818"></a><span class="lineno"><a class="line" href="classISSHistogrammer.html#ab5eee16250cef22f754b69fcd189e132"> 3818</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSHistogrammer.html#ab5eee16250cef22f754b69fcd189e132">ISSHistogrammer::SetInputTree</a>( TTree *user_tree ){</div>
+<div class="line"><a id="l03818" name="l03818"></a><span class="lineno"> 3818</span>}</div>
+</div>
 <div class="line"><a id="l03819" name="l03819"></a><span class="lineno"> 3819</span> </div>
-<div class="line"><a id="l03820" name="l03820"></a><span class="lineno"> 3820</span>    <span class="comment">// Find the tree and set branch addresses</span></div>
-<div class="line"><a id="l03821" name="l03821"></a><span class="lineno"> 3821</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a> = (TChain*)user_tree;</div>
-<div class="line"><a id="l03822" name="l03822"></a><span class="lineno"> 3822</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;SetBranchAddress( <span class="stringliteral">&quot;ISSEvts&quot;</span>, &amp;<a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a> );</div>
-<div class="line"><a id="l03823" name="l03823"></a><span class="lineno"> 3823</span> </div>
-<div class="line"><a id="l03824" name="l03824"></a><span class="lineno"> 3824</span>    <span class="keywordflow">return</span>;</div>
+<div class="foldopen" id="foldopen03820" data-start="{" data-end="}">
+<div class="line"><a id="l03820" name="l03820"></a><span class="lineno"><a class="line" href="classISSHistogrammer.html#ab5eee16250cef22f754b69fcd189e132"> 3820</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSHistogrammer.html#ab5eee16250cef22f754b69fcd189e132">ISSHistogrammer::SetInputTree</a>( TTree *user_tree ){</div>
+<div class="line"><a id="l03821" name="l03821"></a><span class="lineno"> 3821</span> </div>
+<div class="line"><a id="l03822" name="l03822"></a><span class="lineno"> 3822</span>    <span class="comment">// Find the tree and set branch addresses</span></div>
+<div class="line"><a id="l03823" name="l03823"></a><span class="lineno"> 3823</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a> = (TChain*)user_tree;</div>
+<div class="line"><a id="l03824" name="l03824"></a><span class="lineno"> 3824</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;SetBranchAddress( <span class="stringliteral">&quot;ISSEvts&quot;</span>, &amp;<a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a> );</div>
 <div class="line"><a id="l03825" name="l03825"></a><span class="lineno"> 3825</span> </div>
-<div class="line"><a id="l03826" name="l03826"></a><span class="lineno"> 3826</span>}</div>
-</div>
+<div class="line"><a id="l03826" name="l03826"></a><span class="lineno"> 3826</span>    <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l03827" name="l03827"></a><span class="lineno"> 3827</span> </div>
-<div class="foldopen" id="foldopen03828" data-start="{" data-end="}">
-<div class="line"><a id="l03828" name="l03828"></a><span class="lineno"><a class="line" href="classISSHistogrammer.html#a0fdb1a625faf3edc6158491331158b23"> 3828</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSHistogrammer.html#a0fdb1a625faf3edc6158491331158b23">ISSHistogrammer::SetInputFile</a>( std::vector&lt;std::string&gt; input_file_names ) {</div>
+<div class="line"><a id="l03828" name="l03828"></a><span class="lineno"> 3828</span>}</div>
+</div>
 <div class="line"><a id="l03829" name="l03829"></a><span class="lineno"> 3829</span> </div>
-<div class="line"><a id="l03831" name="l03831"></a><span class="lineno"> 3831</span>    TFile *input_file = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a id="l03832" name="l03832"></a><span class="lineno"> 3832</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a> = <span class="keyword">new</span> TChain( <span class="stringliteral">&quot;evt_tree&quot;</span> );</div>
-<div class="line"><a id="l03833" name="l03833"></a><span class="lineno"> 3833</span>    <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; input_file_names.size(); i++ ) {</div>
-<div class="line"><a id="l03834" name="l03834"></a><span class="lineno"> 3834</span> </div>
-<div class="line"><a id="l03835" name="l03835"></a><span class="lineno"> 3835</span>        <span class="comment">// Add to the chain</span></div>
-<div class="line"><a id="l03836" name="l03836"></a><span class="lineno"> 3836</span>        <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;Add( input_file_names[i].data() );</div>
-<div class="line"><a id="l03837" name="l03837"></a><span class="lineno"> 3837</span> </div>
-<div class="line"><a id="l03838" name="l03838"></a><span class="lineno"> 3838</span>        <span class="comment">// Read settings from first file in chain (that works)</span></div>
-<div class="line"><a id="l03839" name="l03839"></a><span class="lineno"> 3839</span>        <span class="keywordflow">if</span>( <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a>.get() == <span class="keyword">nullptr</span> ) {</div>
-<div class="line"><a id="l03840" name="l03840"></a><span class="lineno"> 3840</span> </div>
-<div class="line"><a id="l03841" name="l03841"></a><span class="lineno"> 3841</span>            input_file = <span class="keyword">new</span> TFile( input_file_names[0].data() );</div>
-<div class="line"><a id="l03842" name="l03842"></a><span class="lineno"> 3842</span>            <span class="keywordflow">if</span>( input_file-&gt;GetListOfKeys()-&gt;Contains( <span class="stringliteral">&quot;Settings&quot;</span> ) )</div>
-<div class="line"><a id="l03843" name="l03843"></a><span class="lineno"> 3843</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a> = std::make_shared&lt;ISSSettings&gt;( (<a class="code hl_class" href="classISSSettings.html">ISSSettings</a>*)input_file-&gt;Get( <span class="stringliteral">&quot;Settings&quot;</span> ) );</div>
-<div class="line"><a id="l03844" name="l03844"></a><span class="lineno"> 3844</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03845" name="l03845"></a><span class="lineno"> 3845</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a> = std::make_shared&lt;ISSSettings&gt;();</div>
-<div class="line"><a id="l03846" name="l03846"></a><span class="lineno"> 3846</span> </div>
-<div class="line"><a id="l03847" name="l03847"></a><span class="lineno"> 3847</span>            <span class="comment">// Close input file again</span></div>
-<div class="line"><a id="l03848" name="l03848"></a><span class="lineno"> 3848</span>            input_file-&gt;Close();</div>
-<div class="line"><a id="l03849" name="l03849"></a><span class="lineno"> 3849</span> </div>
-<div class="line"><a id="l03850" name="l03850"></a><span class="lineno"> 3850</span>        }</div>
+<div class="foldopen" id="foldopen03830" data-start="{" data-end="}">
+<div class="line"><a id="l03830" name="l03830"></a><span class="lineno"><a class="line" href="classISSHistogrammer.html#a0fdb1a625faf3edc6158491331158b23"> 3830</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSHistogrammer.html#a0fdb1a625faf3edc6158491331158b23">ISSHistogrammer::SetInputFile</a>( std::vector&lt;std::string&gt; input_file_names ) {</div>
+<div class="line"><a id="l03831" name="l03831"></a><span class="lineno"> 3831</span> </div>
+<div class="line"><a id="l03833" name="l03833"></a><span class="lineno"> 3833</span>    TFile *input_file = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l03834" name="l03834"></a><span class="lineno"> 3834</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a> = <span class="keyword">new</span> TChain( <span class="stringliteral">&quot;evt_tree&quot;</span> );</div>
+<div class="line"><a id="l03835" name="l03835"></a><span class="lineno"> 3835</span>    <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; input_file_names.size(); i++ ) {</div>
+<div class="line"><a id="l03836" name="l03836"></a><span class="lineno"> 3836</span> </div>
+<div class="line"><a id="l03837" name="l03837"></a><span class="lineno"> 3837</span>        <span class="comment">// Add to the chain</span></div>
+<div class="line"><a id="l03838" name="l03838"></a><span class="lineno"> 3838</span>        <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;Add( input_file_names[i].data() );</div>
+<div class="line"><a id="l03839" name="l03839"></a><span class="lineno"> 3839</span> </div>
+<div class="line"><a id="l03840" name="l03840"></a><span class="lineno"> 3840</span>        <span class="comment">// Read settings from first file in chain (that works)</span></div>
+<div class="line"><a id="l03841" name="l03841"></a><span class="lineno"> 3841</span>        <span class="keywordflow">if</span>( <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a>.get() == <span class="keyword">nullptr</span> ) {</div>
+<div class="line"><a id="l03842" name="l03842"></a><span class="lineno"> 3842</span> </div>
+<div class="line"><a id="l03843" name="l03843"></a><span class="lineno"> 3843</span>            input_file = <span class="keyword">new</span> TFile( input_file_names[0].data() );</div>
+<div class="line"><a id="l03844" name="l03844"></a><span class="lineno"> 3844</span>            <span class="keywordflow">if</span>( input_file-&gt;GetListOfKeys()-&gt;Contains( <span class="stringliteral">&quot;Settings&quot;</span> ) )</div>
+<div class="line"><a id="l03845" name="l03845"></a><span class="lineno"> 3845</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a> = std::make_shared&lt;ISSSettings&gt;( (<a class="code hl_class" href="classISSSettings.html">ISSSettings</a>*)input_file-&gt;Get( <span class="stringliteral">&quot;Settings&quot;</span> ) );</div>
+<div class="line"><a id="l03846" name="l03846"></a><span class="lineno"> 3846</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03847" name="l03847"></a><span class="lineno"> 3847</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a> = std::make_shared&lt;ISSSettings&gt;();</div>
+<div class="line"><a id="l03848" name="l03848"></a><span class="lineno"> 3848</span> </div>
+<div class="line"><a id="l03849" name="l03849"></a><span class="lineno"> 3849</span>            <span class="comment">// Close input file again</span></div>
+<div class="line"><a id="l03850" name="l03850"></a><span class="lineno"> 3850</span>            input_file-&gt;Close();</div>
 <div class="line"><a id="l03851" name="l03851"></a><span class="lineno"> 3851</span> </div>
-<div class="line"><a id="l03852" name="l03852"></a><span class="lineno"> 3852</span>    }</div>
+<div class="line"><a id="l03852" name="l03852"></a><span class="lineno"> 3852</span>        }</div>
 <div class="line"><a id="l03853" name="l03853"></a><span class="lineno"> 3853</span> </div>
-<div class="line"><a id="l03854" name="l03854"></a><span class="lineno"> 3854</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;SetBranchAddress( <span class="stringliteral">&quot;ISSEvts&quot;</span>, &amp;<a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a> );</div>
+<div class="line"><a id="l03854" name="l03854"></a><span class="lineno"> 3854</span>    }</div>
 <div class="line"><a id="l03855" name="l03855"></a><span class="lineno"> 3855</span> </div>
-<div class="line"><a id="l03856" name="l03856"></a><span class="lineno"> 3856</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l03856" name="l03856"></a><span class="lineno"> 3856</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;SetBranchAddress( <span class="stringliteral">&quot;ISSEvts&quot;</span>, &amp;<a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a> );</div>
 <div class="line"><a id="l03857" name="l03857"></a><span class="lineno"> 3857</span> </div>
-<div class="line"><a id="l03858" name="l03858"></a><span class="lineno"> 3858</span>}</div>
-</div>
+<div class="line"><a id="l03858" name="l03858"></a><span class="lineno"> 3858</span>    <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l03859" name="l03859"></a><span class="lineno"> 3859</span> </div>
-<div class="foldopen" id="foldopen03860" data-start="{" data-end="}">
-<div class="line"><a id="l03860" name="l03860"></a><span class="lineno"><a class="line" href="classISSHistogrammer.html#afe6fbdd4320da4c46714f78567d38334"> 3860</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSHistogrammer.html#a0fdb1a625faf3edc6158491331158b23">ISSHistogrammer::SetInputFile</a>( std::string input_file_name ) {</div>
+<div class="line"><a id="l03860" name="l03860"></a><span class="lineno"> 3860</span>}</div>
+</div>
 <div class="line"><a id="l03861" name="l03861"></a><span class="lineno"> 3861</span> </div>
-<div class="line"><a id="l03863" name="l03863"></a><span class="lineno"> 3863</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a> = <span class="keyword">new</span> TChain( <span class="stringliteral">&quot;evt_tree&quot;</span> );</div>
-<div class="line"><a id="l03864" name="l03864"></a><span class="lineno"> 3864</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;Add( input_file_name.data() );</div>
-<div class="line"><a id="l03865" name="l03865"></a><span class="lineno"> 3865</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;SetBranchAddress( <span class="stringliteral">&quot;ISSEvts&quot;</span>, &amp;<a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a> );</div>
-<div class="line"><a id="l03866" name="l03866"></a><span class="lineno"> 3866</span> </div>
-<div class="line"><a id="l03867" name="l03867"></a><span class="lineno"> 3867</span>    <span class="comment">// Read settings from file if needed</span></div>
-<div class="line"><a id="l03868" name="l03868"></a><span class="lineno"> 3868</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a>.get() == <span class="keyword">nullptr</span> ) {</div>
-<div class="line"><a id="l03869" name="l03869"></a><span class="lineno"> 3869</span> </div>
-<div class="line"><a id="l03870" name="l03870"></a><span class="lineno"> 3870</span>        TFile *input_file = <span class="keyword">new</span> TFile( input_file_name.data() );</div>
-<div class="line"><a id="l03871" name="l03871"></a><span class="lineno"> 3871</span>        <span class="keywordflow">if</span>( input_file-&gt;GetListOfKeys()-&gt;Contains( <span class="stringliteral">&quot;Settings&quot;</span> ) )</div>
-<div class="line"><a id="l03872" name="l03872"></a><span class="lineno"> 3872</span>            <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a> = std::make_shared&lt;ISSSettings&gt;( (<a class="code hl_class" href="classISSSettings.html">ISSSettings</a>*)input_file-&gt;Get( <span class="stringliteral">&quot;Settings&quot;</span> ) );</div>
-<div class="line"><a id="l03873" name="l03873"></a><span class="lineno"> 3873</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l03874" name="l03874"></a><span class="lineno"> 3874</span>            <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a> = std::make_shared&lt;ISSSettings&gt;();</div>
-<div class="line"><a id="l03875" name="l03875"></a><span class="lineno"> 3875</span> </div>
-<div class="line"><a id="l03876" name="l03876"></a><span class="lineno"> 3876</span>        <span class="comment">// Close input file again</span></div>
-<div class="line"><a id="l03877" name="l03877"></a><span class="lineno"> 3877</span>        input_file-&gt;Close();</div>
-<div class="line"><a id="l03878" name="l03878"></a><span class="lineno"> 3878</span> </div>
-<div class="line"><a id="l03879" name="l03879"></a><span class="lineno"> 3879</span>    }</div>
+<div class="foldopen" id="foldopen03862" data-start="{" data-end="}">
+<div class="line"><a id="l03862" name="l03862"></a><span class="lineno"><a class="line" href="classISSHistogrammer.html#afe6fbdd4320da4c46714f78567d38334"> 3862</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSHistogrammer.html#a0fdb1a625faf3edc6158491331158b23">ISSHistogrammer::SetInputFile</a>( std::string input_file_name ) {</div>
+<div class="line"><a id="l03863" name="l03863"></a><span class="lineno"> 3863</span> </div>
+<div class="line"><a id="l03865" name="l03865"></a><span class="lineno"> 3865</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a> = <span class="keyword">new</span> TChain( <span class="stringliteral">&quot;evt_tree&quot;</span> );</div>
+<div class="line"><a id="l03866" name="l03866"></a><span class="lineno"> 3866</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;Add( input_file_name.data() );</div>
+<div class="line"><a id="l03867" name="l03867"></a><span class="lineno"> 3867</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;SetBranchAddress( <span class="stringliteral">&quot;ISSEvts&quot;</span>, &amp;<a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a> );</div>
+<div class="line"><a id="l03868" name="l03868"></a><span class="lineno"> 3868</span> </div>
+<div class="line"><a id="l03869" name="l03869"></a><span class="lineno"> 3869</span>    <span class="comment">// Read settings from file if needed</span></div>
+<div class="line"><a id="l03870" name="l03870"></a><span class="lineno"> 3870</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a>.get() == <span class="keyword">nullptr</span> ) {</div>
+<div class="line"><a id="l03871" name="l03871"></a><span class="lineno"> 3871</span> </div>
+<div class="line"><a id="l03872" name="l03872"></a><span class="lineno"> 3872</span>        TFile *input_file = <span class="keyword">new</span> TFile( input_file_name.data() );</div>
+<div class="line"><a id="l03873" name="l03873"></a><span class="lineno"> 3873</span>        <span class="keywordflow">if</span>( input_file-&gt;GetListOfKeys()-&gt;Contains( <span class="stringliteral">&quot;Settings&quot;</span> ) )</div>
+<div class="line"><a id="l03874" name="l03874"></a><span class="lineno"> 3874</span>            <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a> = std::make_shared&lt;ISSSettings&gt;( (<a class="code hl_class" href="classISSSettings.html">ISSSettings</a>*)input_file-&gt;Get( <span class="stringliteral">&quot;Settings&quot;</span> ) );</div>
+<div class="line"><a id="l03875" name="l03875"></a><span class="lineno"> 3875</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l03876" name="l03876"></a><span class="lineno"> 3876</span>            <a class="code hl_variable" href="classISSHistogrammer.html#a1c688e4982bcc23c3a1fb09aed07e3ec">set</a> = std::make_shared&lt;ISSSettings&gt;();</div>
+<div class="line"><a id="l03877" name="l03877"></a><span class="lineno"> 3877</span> </div>
+<div class="line"><a id="l03878" name="l03878"></a><span class="lineno"> 3878</span>        <span class="comment">// Close input file again</span></div>
+<div class="line"><a id="l03879" name="l03879"></a><span class="lineno"> 3879</span>        input_file-&gt;Close();</div>
 <div class="line"><a id="l03880" name="l03880"></a><span class="lineno"> 3880</span> </div>
-<div class="line"><a id="l03881" name="l03881"></a><span class="lineno"> 3881</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l03881" name="l03881"></a><span class="lineno"> 3881</span>    }</div>
 <div class="line"><a id="l03882" name="l03882"></a><span class="lineno"> 3882</span> </div>
-<div class="line"><a id="l03883" name="l03883"></a><span class="lineno"> 3883</span>}</div>
-</div>
+<div class="line"><a id="l03883" name="l03883"></a><span class="lineno"> 3883</span>    <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l03884" name="l03884"></a><span class="lineno"> 3884</span> </div>
-<div class="foldopen" id="foldopen03885" data-start="{" data-end="}">
-<div class="line"><a id="l03885" name="l03885"></a><span class="lineno"><a class="line" href="classISSHistogrammer.html#a251a03fbd6222b9cfd9830f35dc3d34a"> 3885</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSHistogrammer.html#a251a03fbd6222b9cfd9830f35dc3d34a">ISSHistogrammer::SetPace4File</a>( std::vector&lt;std::string&gt; input_file_names ) {</div>
+<div class="line"><a id="l03885" name="l03885"></a><span class="lineno"> 3885</span>}</div>
+</div>
 <div class="line"><a id="l03886" name="l03886"></a><span class="lineno"> 3886</span> </div>
-<div class="line"><a id="l03888" name="l03888"></a><span class="lineno"> 3888</span>    TTree *pace4tree = <span class="keyword">new</span> TTree( <span class="stringliteral">&quot;evt_tree&quot;</span>, <span class="stringliteral">&quot;evt_tree&quot;</span> );</div>
-<div class="line"><a id="l03889" name="l03889"></a><span class="lineno"> 3889</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a> = (TChain*)pace4tree;</div>
-<div class="line"><a id="l03890" name="l03890"></a><span class="lineno"> 3890</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a> = <span class="keyword">new</span> <a class="code hl_class" href="classISSEvts.html">ISSEvts</a>;</div>
-<div class="line"><a id="l03891" name="l03891"></a><span class="lineno"> 3891</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;Branch( <span class="stringliteral">&quot;ISSEvts&quot;</span>, <span class="stringliteral">&quot;ISSEvts&quot;</span>, &amp;<a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a> );</div>
-<div class="line"><a id="l03892" name="l03892"></a><span class="lineno"> 3892</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;SetDirectory(0);</div>
-<div class="line"><a id="l03893" name="l03893"></a><span class="lineno"> 3893</span> </div>
-<div class="line"><a id="l03894" name="l03894"></a><span class="lineno"> 3894</span>    <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; input_file_names.size(); i++ ) {</div>
+<div class="foldopen" id="foldopen03887" data-start="{" data-end="}">
+<div class="line"><a id="l03887" name="l03887"></a><span class="lineno"><a class="line" href="classISSHistogrammer.html#a251a03fbd6222b9cfd9830f35dc3d34a"> 3887</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSHistogrammer.html#a251a03fbd6222b9cfd9830f35dc3d34a">ISSHistogrammer::SetPace4File</a>( std::vector&lt;std::string&gt; input_file_names ) {</div>
+<div class="line"><a id="l03888" name="l03888"></a><span class="lineno"> 3888</span> </div>
+<div class="line"><a id="l03890" name="l03890"></a><span class="lineno"> 3890</span>    TTree *pace4tree = <span class="keyword">new</span> TTree( <span class="stringliteral">&quot;evt_tree&quot;</span>, <span class="stringliteral">&quot;evt_tree&quot;</span> );</div>
+<div class="line"><a id="l03891" name="l03891"></a><span class="lineno"> 3891</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a> = (TChain*)pace4tree;</div>
+<div class="line"><a id="l03892" name="l03892"></a><span class="lineno"> 3892</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a> = <span class="keyword">new</span> <a class="code hl_class" href="classISSEvts.html">ISSEvts</a>;</div>
+<div class="line"><a id="l03893" name="l03893"></a><span class="lineno"> 3893</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;Branch( <span class="stringliteral">&quot;ISSEvts&quot;</span>, <span class="stringliteral">&quot;ISSEvts&quot;</span>, &amp;<a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a> );</div>
+<div class="line"><a id="l03894" name="l03894"></a><span class="lineno"> 3894</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;SetDirectory(0);</div>
 <div class="line"><a id="l03895" name="l03895"></a><span class="lineno"> 3895</span> </div>
-<div class="line"><a id="l03896" name="l03896"></a><span class="lineno"> 3896</span>        <a class="code hl_function" href="classISSHistogrammer.html#ab3bfa565e91e698d9da75d72fc284e90">ReadPace4File</a>( input_file_names[i] );</div>
+<div class="line"><a id="l03896" name="l03896"></a><span class="lineno"> 3896</span>    <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; input_file_names.size(); i++ ) {</div>
 <div class="line"><a id="l03897" name="l03897"></a><span class="lineno"> 3897</span> </div>
-<div class="line"><a id="l03898" name="l03898"></a><span class="lineno"> 3898</span>    }</div>
+<div class="line"><a id="l03898" name="l03898"></a><span class="lineno"> 3898</span>        <a class="code hl_function" href="classISSHistogrammer.html#ab3bfa565e91e698d9da75d72fc284e90">ReadPace4File</a>( input_file_names[i] );</div>
 <div class="line"><a id="l03899" name="l03899"></a><span class="lineno"> 3899</span> </div>
-<div class="line"><a id="l03900" name="l03900"></a><span class="lineno"> 3900</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l03900" name="l03900"></a><span class="lineno"> 3900</span>    }</div>
 <div class="line"><a id="l03901" name="l03901"></a><span class="lineno"> 3901</span> </div>
-<div class="line"><a id="l03902" name="l03902"></a><span class="lineno"> 3902</span>}</div>
-</div>
+<div class="line"><a id="l03902" name="l03902"></a><span class="lineno"> 3902</span>    <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l03903" name="l03903"></a><span class="lineno"> 3903</span> </div>
-<div class="foldopen" id="foldopen03904" data-start="{" data-end="}">
-<div class="line"><a id="l03904" name="l03904"></a><span class="lineno"><a class="line" href="classISSHistogrammer.html#a719a8b8311e0ae1dc8ac01868cd18f1e"> 3904</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSHistogrammer.html#a251a03fbd6222b9cfd9830f35dc3d34a">ISSHistogrammer::SetPace4File</a>( std::string input_file_name ) {</div>
-<div class="line"><a id="l03905" name="l03905"></a><span class="lineno"> 3905</span> </div>
-<div class="line"><a id="l03907" name="l03907"></a><span class="lineno"> 3907</span>    TTree *pace4tree = <span class="keyword">new</span> TTree( <span class="stringliteral">&quot;evt_tree&quot;</span>, <span class="stringliteral">&quot;evt_tree&quot;</span> );</div>
-<div class="line"><a id="l03908" name="l03908"></a><span class="lineno"> 3908</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a> = (TChain*)pace4tree;</div>
-<div class="line"><a id="l03909" name="l03909"></a><span class="lineno"> 3909</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a> = <span class="keyword">new</span> <a class="code hl_class" href="classISSEvts.html">ISSEvts</a>;</div>
-<div class="line"><a id="l03910" name="l03910"></a><span class="lineno"> 3910</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;Branch( <span class="stringliteral">&quot;ISSEvts&quot;</span>, <span class="stringliteral">&quot;ISSEvts&quot;</span>, &amp;<a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a> );</div>
-<div class="line"><a id="l03911" name="l03911"></a><span class="lineno"> 3911</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;SetDirectory(0);</div>
-<div class="line"><a id="l03912" name="l03912"></a><span class="lineno"> 3912</span> </div>
-<div class="line"><a id="l03913" name="l03913"></a><span class="lineno"> 3913</span>    <a class="code hl_function" href="classISSHistogrammer.html#ab3bfa565e91e698d9da75d72fc284e90">ReadPace4File</a>( input_file_name );</div>
-<div class="line"><a id="l03914" name="l03914"></a><span class="lineno"> 3914</span> </div>
-<div class="line"><a id="l03915" name="l03915"></a><span class="lineno"> 3915</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l03916" name="l03916"></a><span class="lineno"> 3916</span> </div>
-<div class="line"><a id="l03917" name="l03917"></a><span class="lineno"> 3917</span>}</div>
+<div class="line"><a id="l03904" name="l03904"></a><span class="lineno"> 3904</span>}</div>
 </div>
+<div class="line"><a id="l03905" name="l03905"></a><span class="lineno"> 3905</span> </div>
+<div class="foldopen" id="foldopen03906" data-start="{" data-end="}">
+<div class="line"><a id="l03906" name="l03906"></a><span class="lineno"><a class="line" href="classISSHistogrammer.html#a719a8b8311e0ae1dc8ac01868cd18f1e"> 3906</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSHistogrammer.html#a251a03fbd6222b9cfd9830f35dc3d34a">ISSHistogrammer::SetPace4File</a>( std::string input_file_name ) {</div>
+<div class="line"><a id="l03907" name="l03907"></a><span class="lineno"> 3907</span> </div>
+<div class="line"><a id="l03909" name="l03909"></a><span class="lineno"> 3909</span>    TTree *pace4tree = <span class="keyword">new</span> TTree( <span class="stringliteral">&quot;evt_tree&quot;</span>, <span class="stringliteral">&quot;evt_tree&quot;</span> );</div>
+<div class="line"><a id="l03910" name="l03910"></a><span class="lineno"> 3910</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a> = (TChain*)pace4tree;</div>
+<div class="line"><a id="l03911" name="l03911"></a><span class="lineno"> 3911</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a> = <span class="keyword">new</span> <a class="code hl_class" href="classISSEvts.html">ISSEvts</a>;</div>
+<div class="line"><a id="l03912" name="l03912"></a><span class="lineno"> 3912</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;Branch( <span class="stringliteral">&quot;ISSEvts&quot;</span>, <span class="stringliteral">&quot;ISSEvts&quot;</span>, &amp;<a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a> );</div>
+<div class="line"><a id="l03913" name="l03913"></a><span class="lineno"> 3913</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;SetDirectory(0);</div>
+<div class="line"><a id="l03914" name="l03914"></a><span class="lineno"> 3914</span> </div>
+<div class="line"><a id="l03915" name="l03915"></a><span class="lineno"> 3915</span>    <a class="code hl_function" href="classISSHistogrammer.html#ab3bfa565e91e698d9da75d72fc284e90">ReadPace4File</a>( input_file_name );</div>
+<div class="line"><a id="l03916" name="l03916"></a><span class="lineno"> 3916</span> </div>
+<div class="line"><a id="l03917" name="l03917"></a><span class="lineno"> 3917</span>    <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l03918" name="l03918"></a><span class="lineno"> 3918</span> </div>
-<div class="foldopen" id="foldopen03919" data-start="{" data-end="}">
-<div class="line"><a id="l03919" name="l03919"></a><span class="lineno"><a class="line" href="classISSHistogrammer.html#ab3bfa565e91e698d9da75d72fc284e90"> 3919</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSHistogrammer.html#ab3bfa565e91e698d9da75d72fc284e90">ISSHistogrammer::ReadPace4File</a>( std::string input_file_name ) {</div>
+<div class="line"><a id="l03919" name="l03919"></a><span class="lineno"> 3919</span>}</div>
+</div>
 <div class="line"><a id="l03920" name="l03920"></a><span class="lineno"> 3920</span> </div>
-<div class="line"><a id="l03921" name="l03921"></a><span class="lineno"> 3921</span>    <span class="comment">// Get a copy of the reaction stuff</span></div>
-<div class="line"><a id="l03922" name="l03922"></a><span class="lineno"> 3922</span>    <span class="comment">// TODO: Make sure this is done inside the loop to get accurate energy losses</span></div>
-<div class="line"><a id="l03923" name="l03923"></a><span class="lineno"> 3923</span>    <span class="comment">// for that, we need to have a working copy constructor.</span></div>
-<div class="line"><a id="l03924" name="l03924"></a><span class="lineno"> 3924</span>    <span class="comment">//ISSReaction pace4react( *react );</span></div>
-<div class="line"><a id="l03925" name="l03925"></a><span class="lineno"> 3925</span> </div>
-<div class="line"><a id="l03926" name="l03926"></a><span class="lineno"> 3926</span>    <span class="comment">// for now, we just point to the original, which is fine for everything except energy losses</span></div>
-<div class="line"><a id="l03927" name="l03927"></a><span class="lineno"> 3927</span>    std::shared_ptr&lt;ISSReaction&gt; pace4react = <a class="code hl_variable" href="classISSHistogrammer.html#a8160f9c555d1827533d6514c79ff587d">react</a>;</div>
-<div class="line"><a id="l03928" name="l03928"></a><span class="lineno"> 3928</span> </div>
-<div class="line"><a id="l03929" name="l03929"></a><span class="lineno"> 3929</span>    <span class="comment">// Remember the ejectile</span></div>
-<div class="line"><a id="l03930" name="l03930"></a><span class="lineno"> 3930</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> Zp = pace4react-&gt;GetEjectile()-&gt;GetZ();</div>
-<div class="line"><a id="l03931" name="l03931"></a><span class="lineno"> 3931</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> Ap = pace4react-&gt;GetEjectile()-&gt;GetA();</div>
-<div class="line"><a id="l03932" name="l03932"></a><span class="lineno"> 3932</span> </div>
-<div class="line"><a id="l03933" name="l03933"></a><span class="lineno"> 3933</span>    <span class="comment">// Default reaction stuff</span></div>
-<div class="line"><a id="l03934" name="l03934"></a><span class="lineno"> 3934</span>    <span class="keywordtype">double</span> z0 = pace4react-&gt;GetArrayDistance();</div>
-<div class="line"><a id="l03935" name="l03935"></a><span class="lineno"> 3935</span> </div>
-<div class="line"><a id="l03936" name="l03936"></a><span class="lineno"> 3936</span>    <span class="comment">// Need an array event objects for later</span></div>
-<div class="line"><a id="l03937" name="l03937"></a><span class="lineno"> 3937</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a2d2f40c95e9847efb3c298c900ff4d57">array_evt</a> = std::make_unique&lt;ISSArrayEvt&gt;();</div>
-<div class="line"><a id="l03938" name="l03938"></a><span class="lineno"> 3938</span>    <a class="code hl_variable" href="classISSHistogrammer.html#aaa607a17d1605d4a076ccfe8f81f9bcf">arrayp_evt</a> = std::make_unique&lt;ISSArrayPEvt&gt;();</div>
-<div class="line"><a id="l03939" name="l03939"></a><span class="lineno"> 3939</span> </div>
-<div class="line"><a id="l03940" name="l03940"></a><span class="lineno"> 3940</span>    <span class="comment">// Random generator</span></div>
-<div class="line"><a id="l03941" name="l03941"></a><span class="lineno"> 3941</span>    TRandom3 rand;</div>
-<div class="line"><a id="l03942" name="l03942"></a><span class="lineno"> 3942</span> </div>
-<div class="line"><a id="l03943" name="l03943"></a><span class="lineno"> 3943</span>    <span class="comment">// Open the file</span></div>
-<div class="line"><a id="l03944" name="l03944"></a><span class="lineno"> 3944</span>    std::ifstream pace4file;</div>
-<div class="line"><a id="l03945" name="l03945"></a><span class="lineno"> 3945</span>    pace4file.open( input_file_name );</div>
-<div class="line"><a id="l03946" name="l03946"></a><span class="lineno"> 3946</span> </div>
-<div class="line"><a id="l03947" name="l03947"></a><span class="lineno"> 3947</span>    <span class="comment">// Check it is open</span></div>
-<div class="line"><a id="l03948" name="l03948"></a><span class="lineno"> 3948</span>    <span class="keywordflow">if</span>( !pace4file.is_open() ) {</div>
-<div class="line"><a id="l03949" name="l03949"></a><span class="lineno"> 3949</span> </div>
-<div class="line"><a id="l03950" name="l03950"></a><span class="lineno"> 3950</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;Couldn&#39;t open PACE4 file: &quot;</span> &lt;&lt; input_file_name &lt;&lt; std::endl;</div>
-<div class="line"><a id="l03951" name="l03951"></a><span class="lineno"> 3951</span>        <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l03952" name="l03952"></a><span class="lineno"> 3952</span> </div>
-<div class="line"><a id="l03953" name="l03953"></a><span class="lineno"> 3953</span>    }</div>
+<div class="foldopen" id="foldopen03921" data-start="{" data-end="}">
+<div class="line"><a id="l03921" name="l03921"></a><span class="lineno"><a class="line" href="classISSHistogrammer.html#ab3bfa565e91e698d9da75d72fc284e90"> 3921</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classISSHistogrammer.html#ab3bfa565e91e698d9da75d72fc284e90">ISSHistogrammer::ReadPace4File</a>( std::string input_file_name ) {</div>
+<div class="line"><a id="l03922" name="l03922"></a><span class="lineno"> 3922</span> </div>
+<div class="line"><a id="l03923" name="l03923"></a><span class="lineno"> 3923</span>    <span class="comment">// Get a copy of the reaction stuff</span></div>
+<div class="line"><a id="l03924" name="l03924"></a><span class="lineno"> 3924</span>    <span class="comment">// TODO: Make sure this is done inside the loop to get accurate energy losses</span></div>
+<div class="line"><a id="l03925" name="l03925"></a><span class="lineno"> 3925</span>    <span class="comment">// for that, we need to have a working copy constructor.</span></div>
+<div class="line"><a id="l03926" name="l03926"></a><span class="lineno"> 3926</span>    <span class="comment">//ISSReaction pace4react( *react );</span></div>
+<div class="line"><a id="l03927" name="l03927"></a><span class="lineno"> 3927</span> </div>
+<div class="line"><a id="l03928" name="l03928"></a><span class="lineno"> 3928</span>    <span class="comment">// for now, we just point to the original, which is fine for everything except energy losses</span></div>
+<div class="line"><a id="l03929" name="l03929"></a><span class="lineno"> 3929</span>    std::shared_ptr&lt;ISSReaction&gt; pace4react = <a class="code hl_variable" href="classISSHistogrammer.html#a8160f9c555d1827533d6514c79ff587d">react</a>;</div>
+<div class="line"><a id="l03930" name="l03930"></a><span class="lineno"> 3930</span> </div>
+<div class="line"><a id="l03931" name="l03931"></a><span class="lineno"> 3931</span>    <span class="comment">// Remember the ejectile</span></div>
+<div class="line"><a id="l03932" name="l03932"></a><span class="lineno"> 3932</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> Zp = pace4react-&gt;GetEjectile()-&gt;GetZ();</div>
+<div class="line"><a id="l03933" name="l03933"></a><span class="lineno"> 3933</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> Ap = pace4react-&gt;GetEjectile()-&gt;GetA();</div>
+<div class="line"><a id="l03934" name="l03934"></a><span class="lineno"> 3934</span> </div>
+<div class="line"><a id="l03935" name="l03935"></a><span class="lineno"> 3935</span>    <span class="comment">// Default reaction stuff</span></div>
+<div class="line"><a id="l03936" name="l03936"></a><span class="lineno"> 3936</span>    <span class="keywordtype">double</span> z0 = pace4react-&gt;GetArrayDistance();</div>
+<div class="line"><a id="l03937" name="l03937"></a><span class="lineno"> 3937</span> </div>
+<div class="line"><a id="l03938" name="l03938"></a><span class="lineno"> 3938</span>    <span class="comment">// Need an array event objects for later</span></div>
+<div class="line"><a id="l03939" name="l03939"></a><span class="lineno"> 3939</span>    <a class="code hl_variable" href="classISSHistogrammer.html#a2d2f40c95e9847efb3c298c900ff4d57">array_evt</a> = std::make_unique&lt;ISSArrayEvt&gt;();</div>
+<div class="line"><a id="l03940" name="l03940"></a><span class="lineno"> 3940</span>    <a class="code hl_variable" href="classISSHistogrammer.html#aaa607a17d1605d4a076ccfe8f81f9bcf">arrayp_evt</a> = std::make_unique&lt;ISSArrayPEvt&gt;();</div>
+<div class="line"><a id="l03941" name="l03941"></a><span class="lineno"> 3941</span> </div>
+<div class="line"><a id="l03942" name="l03942"></a><span class="lineno"> 3942</span>    <span class="comment">// Random generator</span></div>
+<div class="line"><a id="l03943" name="l03943"></a><span class="lineno"> 3943</span>    TRandom3 rand;</div>
+<div class="line"><a id="l03944" name="l03944"></a><span class="lineno"> 3944</span> </div>
+<div class="line"><a id="l03945" name="l03945"></a><span class="lineno"> 3945</span>    <span class="comment">// Open the file</span></div>
+<div class="line"><a id="l03946" name="l03946"></a><span class="lineno"> 3946</span>    std::ifstream pace4file;</div>
+<div class="line"><a id="l03947" name="l03947"></a><span class="lineno"> 3947</span>    pace4file.open( input_file_name );</div>
+<div class="line"><a id="l03948" name="l03948"></a><span class="lineno"> 3948</span> </div>
+<div class="line"><a id="l03949" name="l03949"></a><span class="lineno"> 3949</span>    <span class="comment">// Check it is open</span></div>
+<div class="line"><a id="l03950" name="l03950"></a><span class="lineno"> 3950</span>    <span class="keywordflow">if</span>( !pace4file.is_open() ) {</div>
+<div class="line"><a id="l03951" name="l03951"></a><span class="lineno"> 3951</span> </div>
+<div class="line"><a id="l03952" name="l03952"></a><span class="lineno"> 3952</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;Couldn&#39;t open PACE4 file: &quot;</span> &lt;&lt; input_file_name &lt;&lt; std::endl;</div>
+<div class="line"><a id="l03953" name="l03953"></a><span class="lineno"> 3953</span>        <span class="keywordflow">return</span>;</div>
 <div class="line"><a id="l03954" name="l03954"></a><span class="lineno"> 3954</span> </div>
-<div class="line"><a id="l03955" name="l03955"></a><span class="lineno"> 3955</span>    <span class="comment">// Read data on each line of the file</span></div>
-<div class="line"><a id="l03956" name="l03956"></a><span class="lineno"> 3956</span>    std::string line;</div>
-<div class="line"><a id="l03957" name="l03957"></a><span class="lineno"> 3957</span>    std::stringstream line_ss;</div>
-<div class="line"><a id="l03958" name="l03958"></a><span class="lineno"> 3958</span>    <span class="keywordtype">double</span> decay_mode, N_mode, N_All, chain, Z_f, N_f;</div>
-<div class="line"><a id="l03959" name="l03959"></a><span class="lineno"> 3959</span>    <span class="keywordtype">double</span> Z_c, N_c, J_c, J_f, M_Jc, fiss_prob;</div>
-<div class="line"><a id="l03960" name="l03960"></a><span class="lineno"> 3960</span>    <span class="keywordtype">double</span> Ex_i, Ex_f, Ep_lab, Ap_lab;</div>
-<div class="line"><a id="l03961" name="l03961"></a><span class="lineno"> 3961</span> </div>
-<div class="line"><a id="l03962" name="l03962"></a><span class="lineno"> 3962</span>    <span class="comment">// First two lines are headers</span></div>
-<div class="line"><a id="l03963" name="l03963"></a><span class="lineno"> 3963</span>    <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; 2; i++ )</div>
-<div class="line"><a id="l03964" name="l03964"></a><span class="lineno"> 3964</span>        std::getline( pace4file, line );</div>
-<div class="line"><a id="l03965" name="l03965"></a><span class="lineno"> 3965</span> </div>
-<div class="line"><a id="l03966" name="l03966"></a><span class="lineno"> 3966</span>    <span class="comment">// Record position in the file to return to later</span></div>
-<div class="line"><a id="l03967" name="l03967"></a><span class="lineno"> 3967</span>    std::streampos data_start = pace4file.tellg();</div>
-<div class="line"><a id="l03968" name="l03968"></a><span class="lineno"> 3968</span>    std::ios_base::iostate file_state = pace4file.rdstate();</div>
-<div class="line"><a id="l03969" name="l03969"></a><span class="lineno"> 3969</span> </div>
-<div class="line"><a id="l03970" name="l03970"></a><span class="lineno"> 3970</span>    <span class="comment">// Count the number of data</span></div>
-<div class="line"><a id="l03971" name="l03971"></a><span class="lineno"> 3971</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> number_of_data = 0;</div>
-<div class="line"><a id="l03972" name="l03972"></a><span class="lineno"> 3972</span>    <span class="keywordflow">while</span>( std::getline( pace4file, line ) &amp;&amp; !pace4file.eof() )</div>
-<div class="line"><a id="l03973" name="l03973"></a><span class="lineno"> 3973</span>        number_of_data++;</div>
-<div class="line"><a id="l03974" name="l03974"></a><span class="lineno"> 3974</span>    std::cout &lt;&lt; <span class="stringliteral">&quot;Found &quot;</span> &lt;&lt; number_of_data &lt;&lt; <span class="stringliteral">&quot; PACE4 events&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l03975" name="l03975"></a><span class="lineno"> 3975</span> </div>
-<div class="line"><a id="l03976" name="l03976"></a><span class="lineno"> 3976</span>    <span class="comment">// Go back to the start of the data</span></div>
-<div class="line"><a id="l03977" name="l03977"></a><span class="lineno"> 3977</span>    pace4file.clear();</div>
-<div class="line"><a id="l03978" name="l03978"></a><span class="lineno"> 3978</span>    pace4file.seekg( data_start );</div>
-<div class="line"><a id="l03979" name="l03979"></a><span class="lineno"> 3979</span>    pace4file.setstate( file_state );</div>
-<div class="line"><a id="l03980" name="l03980"></a><span class="lineno"> 3980</span> </div>
-<div class="line"><a id="l03981" name="l03981"></a><span class="lineno"> 3981</span>    <span class="comment">// The rest should be data</span></div>
-<div class="line"><a id="l03982" name="l03982"></a><span class="lineno"> 3982</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> current_data = 0;</div>
-<div class="line"><a id="l03983" name="l03983"></a><span class="lineno"> 3983</span>    <span class="keywordflow">while</span>( std::getline( pace4file, line ) &amp;&amp; !pace4file.eof() ){</div>
-<div class="line"><a id="l03984" name="l03984"></a><span class="lineno"> 3984</span> </div>
-<div class="line"><a id="l03985" name="l03985"></a><span class="lineno"> 3985</span>        <span class="comment">// Clear the old data and increment counter</span></div>
-<div class="line"><a id="l03986" name="l03986"></a><span class="lineno"> 3986</span>        <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#a0ce8e3ec65e07f70d970995d6015f059">ClearEvt</a>();</div>
-<div class="line"><a id="l03987" name="l03987"></a><span class="lineno"> 3987</span>        current_data++;</div>
-<div class="line"><a id="l03988" name="l03988"></a><span class="lineno"> 3988</span> </div>
-<div class="line"><a id="l03989" name="l03989"></a><span class="lineno"> 3989</span>        <span class="comment">// Skip over really short lines</span></div>
-<div class="line"><a id="l03990" name="l03990"></a><span class="lineno"> 3990</span>        <span class="keywordflow">if</span>( line.length() &lt; 10 ) <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l03991" name="l03991"></a><span class="lineno"> 3991</span> </div>
-<div class="line"><a id="l03992" name="l03992"></a><span class="lineno"> 3992</span>        <span class="comment">// Read in data</span></div>
-<div class="line"><a id="l03993" name="l03993"></a><span class="lineno"> 3993</span>        line_ss.clear();</div>
-<div class="line"><a id="l03994" name="l03994"></a><span class="lineno"> 3994</span>        line_ss.str(<span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a id="l03995" name="l03995"></a><span class="lineno"> 3995</span>        line_ss &lt;&lt; line;</div>
-<div class="line"><a id="l03996" name="l03996"></a><span class="lineno"> 3996</span>        line_ss &gt;&gt; decay_mode &gt;&gt; N_mode &gt;&gt; N_All &gt;&gt; chain;</div>
-<div class="line"><a id="l03997" name="l03997"></a><span class="lineno"> 3997</span>        line_ss &gt;&gt; Z_f &gt;&gt; N_f &gt;&gt; Z_c &gt;&gt; N_c &gt;&gt; J_c &gt;&gt; J_f;</div>
-<div class="line"><a id="l03998" name="l03998"></a><span class="lineno"> 3998</span>        line_ss &gt;&gt; M_Jc &gt;&gt; fiss_prob &gt;&gt; Ex_i &gt;&gt; Ex_f &gt;&gt; Ep_lab &gt;&gt; Ap_lab;</div>
-<div class="line"><a id="l03999" name="l03999"></a><span class="lineno"> 3999</span> </div>
-<div class="line"><a id="l04000" name="l04000"></a><span class="lineno"> 4000</span>        <span class="comment">// sensible results?</span></div>
-<div class="line"><a id="l04001" name="l04001"></a><span class="lineno"> 4001</span>        <span class="keywordflow">if</span>( Ep_lab &lt; 0 || Ap_lab &lt; 0 || decay_mode &lt;= 0 || decay_mode &gt;= 4 )</div>
-<div class="line"><a id="l04002" name="l04002"></a><span class="lineno"> 4002</span>            <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l04003" name="l04003"></a><span class="lineno"> 4003</span> </div>
-<div class="line"><a id="l04004" name="l04004"></a><span class="lineno"> 4004</span>        <span class="comment">// Check for fission when Z_c is negative</span></div>
-<div class="line"><a id="l04005" name="l04005"></a><span class="lineno"> 4005</span>        <span class="keywordflow">if</span>( Z_c &lt; 0 ) <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l04006" name="l04006"></a><span class="lineno"> 4006</span> </div>
-<div class="line"><a id="l04007" name="l04007"></a><span class="lineno"> 4007</span>        <span class="comment">// Energy is in MeV, we need keV</span></div>
-<div class="line"><a id="l04008" name="l04008"></a><span class="lineno"> 4008</span>        Ep_lab *= 1e3;</div>
-<div class="line"><a id="l04009" name="l04009"></a><span class="lineno"> 4009</span> </div>
-<div class="line"><a id="l04010" name="l04010"></a><span class="lineno"> 4010</span>        <span class="comment">// Now randomise the energy because PACE4 gives strange descrete values</span></div>
-<div class="line"><a id="l04011" name="l04011"></a><span class="lineno"> 4011</span>        <span class="keywordflow">if</span>( Ep_lab &lt; 400. ) Ep_lab += ( rand.Rndm() - 0.5 ) * 400.;</div>
-<div class="line"><a id="l04012" name="l04012"></a><span class="lineno"> 4012</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>( Ep_lab &lt; 800. ) Ep_lab += ( rand.Rndm() - 0.5 ) * 800.;</div>
-<div class="line"><a id="l04013" name="l04013"></a><span class="lineno"> 4013</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>( Ep_lab &lt; 1200. ) Ep_lab += ( rand.Rndm() - 0.5 ) * 1200.;</div>
-<div class="line"><a id="l04014" name="l04014"></a><span class="lineno"> 4014</span>        <span class="keywordflow">else</span> Ep_lab += ( rand.Rndm() - 0.5 ) * 1600.;</div>
-<div class="line"><a id="l04015" name="l04015"></a><span class="lineno"> 4015</span> </div>
-<div class="line"><a id="l04016" name="l04016"></a><span class="lineno"> 4016</span>        <span class="comment">// Threshold the energy at 200 keV</span></div>
-<div class="line"><a id="l04017" name="l04017"></a><span class="lineno"> 4017</span>        <span class="comment">// This is lower than reality, but reasonable for simulation</span></div>
-<div class="line"><a id="l04018" name="l04018"></a><span class="lineno"> 4018</span>        <span class="keywordflow">if</span>( Ep_lab &lt; 200. ) <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l04019" name="l04019"></a><span class="lineno"> 4019</span> </div>
-<div class="line"><a id="l04020" name="l04020"></a><span class="lineno"> 4020</span>        <span class="comment">// Randomise angle across the 0.1 degree precision</span></div>
-<div class="line"><a id="l04021" name="l04021"></a><span class="lineno"> 4021</span>        <span class="comment">// and convert from degrees to radians</span></div>
-<div class="line"><a id="l04022" name="l04022"></a><span class="lineno"> 4022</span>        Ap_lab += rand.Rndm() * 8.0 - 4.0;</div>
-<div class="line"><a id="l04023" name="l04023"></a><span class="lineno"> 4023</span>        <span class="keywordflow">if</span>( Ap_lab &gt; 180.0 ) Ap_lab -= 2.0 * ( Ap_lab - 180.0 );</div>
-<div class="line"><a id="l04024" name="l04024"></a><span class="lineno"> 4024</span>        <span class="keywordflow">if</span>( Ap_lab &lt; 0.0 ) Ap_lab *= -1.0;</div>
-<div class="line"><a id="l04025" name="l04025"></a><span class="lineno"> 4025</span>        Ap_lab *= TMath::DegToRad();</div>
-<div class="line"><a id="l04026" name="l04026"></a><span class="lineno"> 4026</span> </div>
-<div class="line"><a id="l04027" name="l04027"></a><span class="lineno"> 4027</span>        <span class="comment">// particle ID is decay_mode</span></div>
-<div class="line"><a id="l04028" name="l04028"></a><span class="lineno"> 4028</span>        <span class="comment">// 1: neutron - we don&#39;t care about these</span></div>
-<div class="line"><a id="l04029" name="l04029"></a><span class="lineno"> 4029</span>        <span class="keywordflow">if</span>( decay_mode == 1 ) <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l04030" name="l04030"></a><span class="lineno"> 4030</span> </div>
-<div class="line"><a id="l04031" name="l04031"></a><span class="lineno"> 4031</span>        <span class="comment">// 2: proton</span></div>
-<div class="line"><a id="l04032" name="l04032"></a><span class="lineno"> 4032</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>( decay_mode == 2 ) {</div>
-<div class="line"><a id="l04033" name="l04033"></a><span class="lineno"> 4033</span> </div>
-<div class="line"><a id="l04034" name="l04034"></a><span class="lineno"> 4034</span>            pace4react-&gt;GetEjectile()-&gt;SetZ(1);</div>
-<div class="line"><a id="l04035" name="l04035"></a><span class="lineno"> 4035</span>            pace4react-&gt;GetEjectile()-&gt;SetA(1);</div>
-<div class="line"><a id="l04036" name="l04036"></a><span class="lineno"> 4036</span> </div>
-<div class="line"><a id="l04037" name="l04037"></a><span class="lineno"> 4037</span>        }</div>
+<div class="line"><a id="l03955" name="l03955"></a><span class="lineno"> 3955</span>    }</div>
+<div class="line"><a id="l03956" name="l03956"></a><span class="lineno"> 3956</span> </div>
+<div class="line"><a id="l03957" name="l03957"></a><span class="lineno"> 3957</span>    <span class="comment">// Read data on each line of the file</span></div>
+<div class="line"><a id="l03958" name="l03958"></a><span class="lineno"> 3958</span>    std::string line;</div>
+<div class="line"><a id="l03959" name="l03959"></a><span class="lineno"> 3959</span>    std::stringstream line_ss;</div>
+<div class="line"><a id="l03960" name="l03960"></a><span class="lineno"> 3960</span>    <span class="keywordtype">double</span> decay_mode, N_mode, N_All, chain, Z_f, N_f;</div>
+<div class="line"><a id="l03961" name="l03961"></a><span class="lineno"> 3961</span>    <span class="keywordtype">double</span> Z_c, N_c, J_c, J_f, M_Jc, fiss_prob;</div>
+<div class="line"><a id="l03962" name="l03962"></a><span class="lineno"> 3962</span>    <span class="keywordtype">double</span> Ex_i, Ex_f, Ep_lab, Ap_lab;</div>
+<div class="line"><a id="l03963" name="l03963"></a><span class="lineno"> 3963</span> </div>
+<div class="line"><a id="l03964" name="l03964"></a><span class="lineno"> 3964</span>    <span class="comment">// First two lines are headers</span></div>
+<div class="line"><a id="l03965" name="l03965"></a><span class="lineno"> 3965</span>    <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; 2; i++ )</div>
+<div class="line"><a id="l03966" name="l03966"></a><span class="lineno"> 3966</span>        std::getline( pace4file, line );</div>
+<div class="line"><a id="l03967" name="l03967"></a><span class="lineno"> 3967</span> </div>
+<div class="line"><a id="l03968" name="l03968"></a><span class="lineno"> 3968</span>    <span class="comment">// Record position in the file to return to later</span></div>
+<div class="line"><a id="l03969" name="l03969"></a><span class="lineno"> 3969</span>    std::streampos data_start = pace4file.tellg();</div>
+<div class="line"><a id="l03970" name="l03970"></a><span class="lineno"> 3970</span>    std::ios_base::iostate file_state = pace4file.rdstate();</div>
+<div class="line"><a id="l03971" name="l03971"></a><span class="lineno"> 3971</span> </div>
+<div class="line"><a id="l03972" name="l03972"></a><span class="lineno"> 3972</span>    <span class="comment">// Count the number of data</span></div>
+<div class="line"><a id="l03973" name="l03973"></a><span class="lineno"> 3973</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> number_of_data = 0;</div>
+<div class="line"><a id="l03974" name="l03974"></a><span class="lineno"> 3974</span>    <span class="keywordflow">while</span>( std::getline( pace4file, line ) &amp;&amp; !pace4file.eof() )</div>
+<div class="line"><a id="l03975" name="l03975"></a><span class="lineno"> 3975</span>        number_of_data++;</div>
+<div class="line"><a id="l03976" name="l03976"></a><span class="lineno"> 3976</span>    std::cout &lt;&lt; <span class="stringliteral">&quot;Found &quot;</span> &lt;&lt; number_of_data &lt;&lt; <span class="stringliteral">&quot; PACE4 events&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l03977" name="l03977"></a><span class="lineno"> 3977</span> </div>
+<div class="line"><a id="l03978" name="l03978"></a><span class="lineno"> 3978</span>    <span class="comment">// Go back to the start of the data</span></div>
+<div class="line"><a id="l03979" name="l03979"></a><span class="lineno"> 3979</span>    pace4file.clear();</div>
+<div class="line"><a id="l03980" name="l03980"></a><span class="lineno"> 3980</span>    pace4file.seekg( data_start );</div>
+<div class="line"><a id="l03981" name="l03981"></a><span class="lineno"> 3981</span>    pace4file.setstate( file_state );</div>
+<div class="line"><a id="l03982" name="l03982"></a><span class="lineno"> 3982</span> </div>
+<div class="line"><a id="l03983" name="l03983"></a><span class="lineno"> 3983</span>    <span class="comment">// The rest should be data</span></div>
+<div class="line"><a id="l03984" name="l03984"></a><span class="lineno"> 3984</span>    <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> current_data = 0;</div>
+<div class="line"><a id="l03985" name="l03985"></a><span class="lineno"> 3985</span>    <span class="keywordflow">while</span>( std::getline( pace4file, line ) &amp;&amp; !pace4file.eof() ){</div>
+<div class="line"><a id="l03986" name="l03986"></a><span class="lineno"> 3986</span> </div>
+<div class="line"><a id="l03987" name="l03987"></a><span class="lineno"> 3987</span>        <span class="comment">// Clear the old data and increment counter</span></div>
+<div class="line"><a id="l03988" name="l03988"></a><span class="lineno"> 3988</span>        <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#a0ce8e3ec65e07f70d970995d6015f059">ClearEvt</a>();</div>
+<div class="line"><a id="l03989" name="l03989"></a><span class="lineno"> 3989</span>        current_data++;</div>
+<div class="line"><a id="l03990" name="l03990"></a><span class="lineno"> 3990</span> </div>
+<div class="line"><a id="l03991" name="l03991"></a><span class="lineno"> 3991</span>        <span class="comment">// Skip over really short lines</span></div>
+<div class="line"><a id="l03992" name="l03992"></a><span class="lineno"> 3992</span>        <span class="keywordflow">if</span>( line.length() &lt; 10 ) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l03993" name="l03993"></a><span class="lineno"> 3993</span> </div>
+<div class="line"><a id="l03994" name="l03994"></a><span class="lineno"> 3994</span>        <span class="comment">// Read in data</span></div>
+<div class="line"><a id="l03995" name="l03995"></a><span class="lineno"> 3995</span>        line_ss.clear();</div>
+<div class="line"><a id="l03996" name="l03996"></a><span class="lineno"> 3996</span>        line_ss.str(<span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l03997" name="l03997"></a><span class="lineno"> 3997</span>        line_ss &lt;&lt; line;</div>
+<div class="line"><a id="l03998" name="l03998"></a><span class="lineno"> 3998</span>        line_ss &gt;&gt; decay_mode &gt;&gt; N_mode &gt;&gt; N_All &gt;&gt; chain;</div>
+<div class="line"><a id="l03999" name="l03999"></a><span class="lineno"> 3999</span>        line_ss &gt;&gt; Z_f &gt;&gt; N_f &gt;&gt; Z_c &gt;&gt; N_c &gt;&gt; J_c &gt;&gt; J_f;</div>
+<div class="line"><a id="l04000" name="l04000"></a><span class="lineno"> 4000</span>        line_ss &gt;&gt; M_Jc &gt;&gt; fiss_prob &gt;&gt; Ex_i &gt;&gt; Ex_f &gt;&gt; Ep_lab &gt;&gt; Ap_lab;</div>
+<div class="line"><a id="l04001" name="l04001"></a><span class="lineno"> 4001</span> </div>
+<div class="line"><a id="l04002" name="l04002"></a><span class="lineno"> 4002</span>        <span class="comment">// sensible results?</span></div>
+<div class="line"><a id="l04003" name="l04003"></a><span class="lineno"> 4003</span>        <span class="keywordflow">if</span>( Ep_lab &lt; 0 || Ap_lab &lt; 0 || decay_mode &lt;= 0 || decay_mode &gt;= 4 )</div>
+<div class="line"><a id="l04004" name="l04004"></a><span class="lineno"> 4004</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l04005" name="l04005"></a><span class="lineno"> 4005</span> </div>
+<div class="line"><a id="l04006" name="l04006"></a><span class="lineno"> 4006</span>        <span class="comment">// Check for fission when Z_c is negative</span></div>
+<div class="line"><a id="l04007" name="l04007"></a><span class="lineno"> 4007</span>        <span class="keywordflow">if</span>( Z_c &lt; 0 ) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l04008" name="l04008"></a><span class="lineno"> 4008</span> </div>
+<div class="line"><a id="l04009" name="l04009"></a><span class="lineno"> 4009</span>        <span class="comment">// Energy is in MeV, we need keV</span></div>
+<div class="line"><a id="l04010" name="l04010"></a><span class="lineno"> 4010</span>        Ep_lab *= 1e3;</div>
+<div class="line"><a id="l04011" name="l04011"></a><span class="lineno"> 4011</span> </div>
+<div class="line"><a id="l04012" name="l04012"></a><span class="lineno"> 4012</span>        <span class="comment">// Now randomise the energy because PACE4 gives strange descrete values</span></div>
+<div class="line"><a id="l04013" name="l04013"></a><span class="lineno"> 4013</span>        <span class="keywordflow">if</span>( Ep_lab &lt; 400. ) Ep_lab += ( rand.Rndm() - 0.5 ) * 400.;</div>
+<div class="line"><a id="l04014" name="l04014"></a><span class="lineno"> 4014</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>( Ep_lab &lt; 800. ) Ep_lab += ( rand.Rndm() - 0.5 ) * 800.;</div>
+<div class="line"><a id="l04015" name="l04015"></a><span class="lineno"> 4015</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>( Ep_lab &lt; 1200. ) Ep_lab += ( rand.Rndm() - 0.5 ) * 1200.;</div>
+<div class="line"><a id="l04016" name="l04016"></a><span class="lineno"> 4016</span>        <span class="keywordflow">else</span> Ep_lab += ( rand.Rndm() - 0.5 ) * 1600.;</div>
+<div class="line"><a id="l04017" name="l04017"></a><span class="lineno"> 4017</span> </div>
+<div class="line"><a id="l04018" name="l04018"></a><span class="lineno"> 4018</span>        <span class="comment">// Threshold the energy at 200 keV</span></div>
+<div class="line"><a id="l04019" name="l04019"></a><span class="lineno"> 4019</span>        <span class="comment">// This is lower than reality, but reasonable for simulation</span></div>
+<div class="line"><a id="l04020" name="l04020"></a><span class="lineno"> 4020</span>        <span class="keywordflow">if</span>( Ep_lab &lt; 200. ) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l04021" name="l04021"></a><span class="lineno"> 4021</span> </div>
+<div class="line"><a id="l04022" name="l04022"></a><span class="lineno"> 4022</span>        <span class="comment">// Randomise angle across the 0.1 degree precision</span></div>
+<div class="line"><a id="l04023" name="l04023"></a><span class="lineno"> 4023</span>        <span class="comment">// and convert from degrees to radians</span></div>
+<div class="line"><a id="l04024" name="l04024"></a><span class="lineno"> 4024</span>        Ap_lab += rand.Rndm() * 8.0 - 4.0;</div>
+<div class="line"><a id="l04025" name="l04025"></a><span class="lineno"> 4025</span>        <span class="keywordflow">if</span>( Ap_lab &gt; 180.0 ) Ap_lab -= 2.0 * ( Ap_lab - 180.0 );</div>
+<div class="line"><a id="l04026" name="l04026"></a><span class="lineno"> 4026</span>        <span class="keywordflow">if</span>( Ap_lab &lt; 0.0 ) Ap_lab *= -1.0;</div>
+<div class="line"><a id="l04027" name="l04027"></a><span class="lineno"> 4027</span>        Ap_lab *= TMath::DegToRad();</div>
+<div class="line"><a id="l04028" name="l04028"></a><span class="lineno"> 4028</span> </div>
+<div class="line"><a id="l04029" name="l04029"></a><span class="lineno"> 4029</span>        <span class="comment">// particle ID is decay_mode</span></div>
+<div class="line"><a id="l04030" name="l04030"></a><span class="lineno"> 4030</span>        <span class="comment">// 1: neutron - we don&#39;t care about these</span></div>
+<div class="line"><a id="l04031" name="l04031"></a><span class="lineno"> 4031</span>        <span class="keywordflow">if</span>( decay_mode == 1 ) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l04032" name="l04032"></a><span class="lineno"> 4032</span> </div>
+<div class="line"><a id="l04033" name="l04033"></a><span class="lineno"> 4033</span>        <span class="comment">// 2: proton</span></div>
+<div class="line"><a id="l04034" name="l04034"></a><span class="lineno"> 4034</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>( decay_mode == 2 ) {</div>
+<div class="line"><a id="l04035" name="l04035"></a><span class="lineno"> 4035</span> </div>
+<div class="line"><a id="l04036" name="l04036"></a><span class="lineno"> 4036</span>            pace4react-&gt;GetEjectile()-&gt;SetZ(1);</div>
+<div class="line"><a id="l04037" name="l04037"></a><span class="lineno"> 4037</span>            pace4react-&gt;GetEjectile()-&gt;SetA(1);</div>
 <div class="line"><a id="l04038" name="l04038"></a><span class="lineno"> 4038</span> </div>
-<div class="line"><a id="l04039" name="l04039"></a><span class="lineno"> 4039</span>        <span class="comment">// 3: alpha</span></div>
-<div class="line"><a id="l04040" name="l04040"></a><span class="lineno"> 4040</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>( decay_mode == 3 ) {</div>
-<div class="line"><a id="l04041" name="l04041"></a><span class="lineno"> 4041</span> </div>
-<div class="line"><a id="l04042" name="l04042"></a><span class="lineno"> 4042</span>            pace4react-&gt;GetEjectile()-&gt;SetZ(2);</div>
-<div class="line"><a id="l04043" name="l04043"></a><span class="lineno"> 4043</span>            pace4react-&gt;GetEjectile()-&gt;SetA(4);</div>
-<div class="line"><a id="l04044" name="l04044"></a><span class="lineno"> 4044</span> </div>
-<div class="line"><a id="l04045" name="l04045"></a><span class="lineno"> 4045</span>        }</div>
+<div class="line"><a id="l04039" name="l04039"></a><span class="lineno"> 4039</span>        }</div>
+<div class="line"><a id="l04040" name="l04040"></a><span class="lineno"> 4040</span> </div>
+<div class="line"><a id="l04041" name="l04041"></a><span class="lineno"> 4041</span>        <span class="comment">// 3: alpha</span></div>
+<div class="line"><a id="l04042" name="l04042"></a><span class="lineno"> 4042</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>( decay_mode == 3 ) {</div>
+<div class="line"><a id="l04043" name="l04043"></a><span class="lineno"> 4043</span> </div>
+<div class="line"><a id="l04044" name="l04044"></a><span class="lineno"> 4044</span>            pace4react-&gt;GetEjectile()-&gt;SetZ(2);</div>
+<div class="line"><a id="l04045" name="l04045"></a><span class="lineno"> 4045</span>            pace4react-&gt;GetEjectile()-&gt;SetA(4);</div>
 <div class="line"><a id="l04046" name="l04046"></a><span class="lineno"> 4046</span> </div>
-<div class="line"><a id="l04047" name="l04047"></a><span class="lineno"> 4047</span>        <span class="comment">// Randomly generate the phi angle</span></div>
-<div class="line"><a id="l04048" name="l04048"></a><span class="lineno"> 4048</span>        <span class="keywordtype">double</span> phi_lab = rand.Rndm() * TMath::TwoPi();</div>
-<div class="line"><a id="l04049" name="l04049"></a><span class="lineno"> 4049</span>        <span class="keywordtype">double</span> phi_det = TMath::TwoPi() - phi_lab; <span class="comment">// almost true</span></div>
-<div class="line"><a id="l04050" name="l04050"></a><span class="lineno"> 4050</span> </div>
-<div class="line"><a id="l04051" name="l04051"></a><span class="lineno"> 4051</span>        <span class="comment">// Simulate the particle emission and get the detected energy</span></div>
-<div class="line"><a id="l04052" name="l04052"></a><span class="lineno"> 4052</span>        <span class="keywordtype">double</span> Edet = pace4react-&gt;SimulateEmission( Ep_lab, Ap_lab, phi_lab, 0 );</div>
-<div class="line"><a id="l04053" name="l04053"></a><span class="lineno"> 4053</span> </div>
-<div class="line"><a id="l04054" name="l04054"></a><span class="lineno"> 4054</span>        <span class="comment">// Important z values</span></div>
-<div class="line"><a id="l04055" name="l04055"></a><span class="lineno"> 4055</span>        <span class="keywordtype">double</span> z_meas = pace4react-&gt;GetZmeasured();</div>
-<div class="line"><a id="l04056" name="l04056"></a><span class="lineno"> 4056</span> </div>
-<div class="line"><a id="l04057" name="l04057"></a><span class="lineno"> 4057</span>        <span class="comment">// If we&#39;re not in the same hemisphere, forget it</span></div>
-<div class="line"><a id="l04058" name="l04058"></a><span class="lineno"> 4058</span>        <span class="keywordflow">if</span>( z0 * z_meas &lt; 0 ) <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l04059" name="l04059"></a><span class="lineno"> 4059</span> </div>
-<div class="line"><a id="l04060" name="l04060"></a><span class="lineno"> 4060</span>        <span class="comment">// Shift the z in to the array reference</span></div>
-<div class="line"><a id="l04061" name="l04061"></a><span class="lineno"> 4061</span>        <span class="keywordflow">if</span>( z0 &lt; 0. ) z_meas = -1.0 * z_meas + z0;</div>
-<div class="line"><a id="l04062" name="l04062"></a><span class="lineno"> 4062</span>        <span class="keywordflow">else</span> z_meas -= z0;</div>
-<div class="line"><a id="l04063" name="l04063"></a><span class="lineno"> 4063</span> </div>
-<div class="line"><a id="l04064" name="l04064"></a><span class="lineno"> 4064</span>        <span class="comment">// Find out where we hit the array</span></div>
-<div class="line"><a id="l04065" name="l04065"></a><span class="lineno"> 4065</span>        <span class="keywordtype">int</span> mod = <a class="code hl_variable" href="classISSHistogrammer.html#a2d2f40c95e9847efb3c298c900ff4d57">array_evt</a>-&gt;FindModule( phi_det );</div>
-<div class="line"><a id="l04066" name="l04066"></a><span class="lineno"> 4066</span>        <span class="keywordtype">int</span> row = <a class="code hl_variable" href="classISSHistogrammer.html#a2d2f40c95e9847efb3c298c900ff4d57">array_evt</a>-&gt;FindRow( z_meas );</div>
-<div class="line"><a id="l04067" name="l04067"></a><span class="lineno"> 4067</span>        <span class="keywordtype">int</span> pid = <a class="code hl_variable" href="classISSHistogrammer.html#a2d2f40c95e9847efb3c298c900ff4d57">array_evt</a>-&gt;FindPID( z_meas );</div>
-<div class="line"><a id="l04068" name="l04068"></a><span class="lineno"> 4068</span>        <span class="keywordtype">int</span> nid = <a class="code hl_variable" href="classISSHistogrammer.html#a2d2f40c95e9847efb3c298c900ff4d57">array_evt</a>-&gt;FindNID( phi_det );</div>
-<div class="line"><a id="l04069" name="l04069"></a><span class="lineno"> 4069</span> </div>
-<div class="line"><a id="l04070" name="l04070"></a><span class="lineno"> 4070</span>        <span class="comment">// Create an array event assuming that it hits it</span></div>
-<div class="line"><a id="l04071" name="l04071"></a><span class="lineno"> 4071</span>        <span class="keywordflow">if</span>( mod &gt;= 0 &amp;&amp; row &gt;= 0 &amp;&amp; pid &gt;= 0 &amp;&amp; nid &gt;= 0 ){</div>
-<div class="line"><a id="l04072" name="l04072"></a><span class="lineno"> 4072</span> </div>
-<div class="line"><a id="l04073" name="l04073"></a><span class="lineno"> 4073</span>            <span class="comment">//std::cout &lt;&lt; &quot;Ep_lab = &quot; &lt;&lt; Ep_lab;</span></div>
-<div class="line"><a id="l04074" name="l04074"></a><span class="lineno"> 4074</span>            <span class="comment">//std::cout &lt;&lt; &quot;, Ep_det = &quot; &lt;&lt; Edet;</span></div>
-<div class="line"><a id="l04075" name="l04075"></a><span class="lineno"> 4075</span>            <span class="comment">//std::cout &lt;&lt; &quot;, theta_lab = &quot; &lt;&lt; Ap_lab;</span></div>
-<div class="line"><a id="l04076" name="l04076"></a><span class="lineno"> 4076</span>            <span class="comment">//std::cout &lt;&lt; &quot;, z_meas = &quot; &lt;&lt; pace4react.GetZmeasured();</span></div>
-<div class="line"><a id="l04077" name="l04077"></a><span class="lineno"> 4077</span>            <span class="comment">//std::cout &lt;&lt; &quot;, mod = &quot; &lt;&lt; (int)mod &lt;&lt; &quot;, row = &quot; &lt;&lt; (int)row;</span></div>
-<div class="line"><a id="l04078" name="l04078"></a><span class="lineno"> 4078</span>            <span class="comment">//std::cout &lt;&lt; &quot;, pid = &quot; &lt;&lt; (int)pid &lt;&lt; &quot;, nid = &quot; &lt;&lt; (int)nid;</span></div>
-<div class="line"><a id="l04079" name="l04079"></a><span class="lineno"> 4079</span>            <span class="comment">//std::cout &lt;&lt; std::endl;</span></div>
-<div class="line"><a id="l04080" name="l04080"></a><span class="lineno"> 4080</span> </div>
-<div class="line"><a id="l04081" name="l04081"></a><span class="lineno"> 4081</span>            <a class="code hl_variable" href="classISSHistogrammer.html#a2d2f40c95e9847efb3c298c900ff4d57">array_evt</a>-&gt;SetEvent( Edet, Edet, pid, nid, 1e6, 1e6, <span class="keyword">true</span>, <span class="keyword">true</span>, mod, row );</div>
-<div class="line"><a id="l04082" name="l04082"></a><span class="lineno"> 4082</span>            <a class="code hl_variable" href="classISSHistogrammer.html#aaa607a17d1605d4a076ccfe8f81f9bcf">arrayp_evt</a>-&gt;SetEvent( Edet, Edet, pid, nid, 1e6, 1e6, <span class="keyword">true</span>, <span class="keyword">true</span>, mod, row );</div>
-<div class="line"><a id="l04083" name="l04083"></a><span class="lineno"> 4083</span>            <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#aa45daef84e93877f8e2968852db0adc3">AddEvt</a>( <a class="code hl_variable" href="classISSHistogrammer.html#a2d2f40c95e9847efb3c298c900ff4d57">array_evt</a> );</div>
-<div class="line"><a id="l04084" name="l04084"></a><span class="lineno"> 4084</span>            <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#aa45daef84e93877f8e2968852db0adc3">AddEvt</a>( <a class="code hl_variable" href="classISSHistogrammer.html#aaa607a17d1605d4a076ccfe8f81f9bcf">arrayp_evt</a> );</div>
-<div class="line"><a id="l04085" name="l04085"></a><span class="lineno"> 4085</span> </div>
-<div class="line"><a id="l04086" name="l04086"></a><span class="lineno"> 4086</span>            <span class="comment">// Fill the tree</span></div>
-<div class="line"><a id="l04087" name="l04087"></a><span class="lineno"> 4087</span>            <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;Fill();</div>
-<div class="line"><a id="l04088" name="l04088"></a><span class="lineno"> 4088</span> </div>
-<div class="line"><a id="l04089" name="l04089"></a><span class="lineno"> 4089</span>        }</div>
+<div class="line"><a id="l04047" name="l04047"></a><span class="lineno"> 4047</span>        }</div>
+<div class="line"><a id="l04048" name="l04048"></a><span class="lineno"> 4048</span> </div>
+<div class="line"><a id="l04049" name="l04049"></a><span class="lineno"> 4049</span>        <span class="comment">// Randomly generate the phi angle</span></div>
+<div class="line"><a id="l04050" name="l04050"></a><span class="lineno"> 4050</span>        <span class="keywordtype">double</span> phi_lab = rand.Rndm() * TMath::TwoPi();</div>
+<div class="line"><a id="l04051" name="l04051"></a><span class="lineno"> 4051</span>        <span class="keywordtype">double</span> phi_det = TMath::TwoPi() - phi_lab; <span class="comment">// almost true</span></div>
+<div class="line"><a id="l04052" name="l04052"></a><span class="lineno"> 4052</span> </div>
+<div class="line"><a id="l04053" name="l04053"></a><span class="lineno"> 4053</span>        <span class="comment">// Simulate the particle emission and get the detected energy</span></div>
+<div class="line"><a id="l04054" name="l04054"></a><span class="lineno"> 4054</span>        <span class="keywordtype">double</span> Edet = pace4react-&gt;SimulateEmission( Ep_lab, Ap_lab, phi_lab, 0 );</div>
+<div class="line"><a id="l04055" name="l04055"></a><span class="lineno"> 4055</span> </div>
+<div class="line"><a id="l04056" name="l04056"></a><span class="lineno"> 4056</span>        <span class="comment">// Important z values</span></div>
+<div class="line"><a id="l04057" name="l04057"></a><span class="lineno"> 4057</span>        <span class="keywordtype">double</span> z_meas = pace4react-&gt;GetZmeasured();</div>
+<div class="line"><a id="l04058" name="l04058"></a><span class="lineno"> 4058</span> </div>
+<div class="line"><a id="l04059" name="l04059"></a><span class="lineno"> 4059</span>        <span class="comment">// If we&#39;re not in the same hemisphere, forget it</span></div>
+<div class="line"><a id="l04060" name="l04060"></a><span class="lineno"> 4060</span>        <span class="keywordflow">if</span>( z0 * z_meas &lt; 0 ) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l04061" name="l04061"></a><span class="lineno"> 4061</span> </div>
+<div class="line"><a id="l04062" name="l04062"></a><span class="lineno"> 4062</span>        <span class="comment">// Shift the z in to the array reference</span></div>
+<div class="line"><a id="l04063" name="l04063"></a><span class="lineno"> 4063</span>        <span class="keywordflow">if</span>( z0 &lt; 0. ) z_meas = -1.0 * z_meas + z0;</div>
+<div class="line"><a id="l04064" name="l04064"></a><span class="lineno"> 4064</span>        <span class="keywordflow">else</span> z_meas -= z0;</div>
+<div class="line"><a id="l04065" name="l04065"></a><span class="lineno"> 4065</span> </div>
+<div class="line"><a id="l04066" name="l04066"></a><span class="lineno"> 4066</span>        <span class="comment">// Find out where we hit the array</span></div>
+<div class="line"><a id="l04067" name="l04067"></a><span class="lineno"> 4067</span>        <span class="keywordtype">int</span> mod = <a class="code hl_variable" href="classISSHistogrammer.html#a2d2f40c95e9847efb3c298c900ff4d57">array_evt</a>-&gt;FindModule( phi_det );</div>
+<div class="line"><a id="l04068" name="l04068"></a><span class="lineno"> 4068</span>        <span class="keywordtype">int</span> row = <a class="code hl_variable" href="classISSHistogrammer.html#a2d2f40c95e9847efb3c298c900ff4d57">array_evt</a>-&gt;FindRow( z_meas );</div>
+<div class="line"><a id="l04069" name="l04069"></a><span class="lineno"> 4069</span>        <span class="keywordtype">int</span> pid = <a class="code hl_variable" href="classISSHistogrammer.html#a2d2f40c95e9847efb3c298c900ff4d57">array_evt</a>-&gt;FindPID( z_meas );</div>
+<div class="line"><a id="l04070" name="l04070"></a><span class="lineno"> 4070</span>        <span class="keywordtype">int</span> nid = <a class="code hl_variable" href="classISSHistogrammer.html#a2d2f40c95e9847efb3c298c900ff4d57">array_evt</a>-&gt;FindNID( phi_det );</div>
+<div class="line"><a id="l04071" name="l04071"></a><span class="lineno"> 4071</span> </div>
+<div class="line"><a id="l04072" name="l04072"></a><span class="lineno"> 4072</span>        <span class="comment">// Create an array event assuming that it hits it</span></div>
+<div class="line"><a id="l04073" name="l04073"></a><span class="lineno"> 4073</span>        <span class="keywordflow">if</span>( mod &gt;= 0 &amp;&amp; row &gt;= 0 &amp;&amp; pid &gt;= 0 &amp;&amp; nid &gt;= 0 ){</div>
+<div class="line"><a id="l04074" name="l04074"></a><span class="lineno"> 4074</span> </div>
+<div class="line"><a id="l04075" name="l04075"></a><span class="lineno"> 4075</span>            <span class="comment">//std::cout &lt;&lt; &quot;Ep_lab = &quot; &lt;&lt; Ep_lab;</span></div>
+<div class="line"><a id="l04076" name="l04076"></a><span class="lineno"> 4076</span>            <span class="comment">//std::cout &lt;&lt; &quot;, Ep_det = &quot; &lt;&lt; Edet;</span></div>
+<div class="line"><a id="l04077" name="l04077"></a><span class="lineno"> 4077</span>            <span class="comment">//std::cout &lt;&lt; &quot;, theta_lab = &quot; &lt;&lt; Ap_lab;</span></div>
+<div class="line"><a id="l04078" name="l04078"></a><span class="lineno"> 4078</span>            <span class="comment">//std::cout &lt;&lt; &quot;, z_meas = &quot; &lt;&lt; pace4react.GetZmeasured();</span></div>
+<div class="line"><a id="l04079" name="l04079"></a><span class="lineno"> 4079</span>            <span class="comment">//std::cout &lt;&lt; &quot;, mod = &quot; &lt;&lt; (int)mod &lt;&lt; &quot;, row = &quot; &lt;&lt; (int)row;</span></div>
+<div class="line"><a id="l04080" name="l04080"></a><span class="lineno"> 4080</span>            <span class="comment">//std::cout &lt;&lt; &quot;, pid = &quot; &lt;&lt; (int)pid &lt;&lt; &quot;, nid = &quot; &lt;&lt; (int)nid;</span></div>
+<div class="line"><a id="l04081" name="l04081"></a><span class="lineno"> 4081</span>            <span class="comment">//std::cout &lt;&lt; std::endl;</span></div>
+<div class="line"><a id="l04082" name="l04082"></a><span class="lineno"> 4082</span> </div>
+<div class="line"><a id="l04083" name="l04083"></a><span class="lineno"> 4083</span>            <a class="code hl_variable" href="classISSHistogrammer.html#a2d2f40c95e9847efb3c298c900ff4d57">array_evt</a>-&gt;SetEvent( Edet, Edet, pid, nid, 1e6, 1e6, <span class="keyword">true</span>, <span class="keyword">true</span>, mod, row );</div>
+<div class="line"><a id="l04084" name="l04084"></a><span class="lineno"> 4084</span>            <a class="code hl_variable" href="classISSHistogrammer.html#aaa607a17d1605d4a076ccfe8f81f9bcf">arrayp_evt</a>-&gt;SetEvent( Edet, Edet, pid, nid, 1e6, 1e6, <span class="keyword">true</span>, <span class="keyword">true</span>, mod, row );</div>
+<div class="line"><a id="l04085" name="l04085"></a><span class="lineno"> 4085</span>            <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#aa45daef84e93877f8e2968852db0adc3">AddEvt</a>( <a class="code hl_variable" href="classISSHistogrammer.html#a2d2f40c95e9847efb3c298c900ff4d57">array_evt</a> );</div>
+<div class="line"><a id="l04086" name="l04086"></a><span class="lineno"> 4086</span>            <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#aa45daef84e93877f8e2968852db0adc3">AddEvt</a>( <a class="code hl_variable" href="classISSHistogrammer.html#aaa607a17d1605d4a076ccfe8f81f9bcf">arrayp_evt</a> );</div>
+<div class="line"><a id="l04087" name="l04087"></a><span class="lineno"> 4087</span> </div>
+<div class="line"><a id="l04088" name="l04088"></a><span class="lineno"> 4088</span>            <span class="comment">// Fill the tree</span></div>
+<div class="line"><a id="l04089" name="l04089"></a><span class="lineno"> 4089</span>            <a class="code hl_variable" href="classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46">input_tree</a>-&gt;Fill();</div>
 <div class="line"><a id="l04090" name="l04090"></a><span class="lineno"> 4090</span> </div>
-<div class="line"><a id="l04091" name="l04091"></a><span class="lineno"> 4091</span>        <span class="comment">// Progress bar</span></div>
-<div class="line"><a id="l04092" name="l04092"></a><span class="lineno"> 4092</span>        <span class="keywordtype">bool</span> update_progress = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l04093" name="l04093"></a><span class="lineno"> 4093</span>        <span class="keywordflow">if</span>( number_of_data &lt; 200 )</div>
-<div class="line"><a id="l04094" name="l04094"></a><span class="lineno"> 4094</span>            update_progress = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l04095" name="l04095"></a><span class="lineno"> 4095</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>( current_data % (number_of_data/100) == 0 ||</div>
-<div class="line"><a id="l04096" name="l04096"></a><span class="lineno"> 4096</span>                current_data == number_of_data )</div>
-<div class="line"><a id="l04097" name="l04097"></a><span class="lineno"> 4097</span>            update_progress = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l04098" name="l04098"></a><span class="lineno"> 4098</span> </div>
-<div class="line"><a id="l04099" name="l04099"></a><span class="lineno"> 4099</span>        <span class="keywordflow">if</span>( update_progress ) {</div>
+<div class="line"><a id="l04091" name="l04091"></a><span class="lineno"> 4091</span>        }</div>
+<div class="line"><a id="l04092" name="l04092"></a><span class="lineno"> 4092</span> </div>
+<div class="line"><a id="l04093" name="l04093"></a><span class="lineno"> 4093</span>        <span class="comment">// Progress bar</span></div>
+<div class="line"><a id="l04094" name="l04094"></a><span class="lineno"> 4094</span>        <span class="keywordtype">bool</span> update_progress = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l04095" name="l04095"></a><span class="lineno"> 4095</span>        <span class="keywordflow">if</span>( number_of_data &lt; 200 )</div>
+<div class="line"><a id="l04096" name="l04096"></a><span class="lineno"> 4096</span>            update_progress = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l04097" name="l04097"></a><span class="lineno"> 4097</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>( current_data % (number_of_data/100) == 0 ||</div>
+<div class="line"><a id="l04098" name="l04098"></a><span class="lineno"> 4098</span>                current_data == number_of_data )</div>
+<div class="line"><a id="l04099" name="l04099"></a><span class="lineno"> 4099</span>            update_progress = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l04100" name="l04100"></a><span class="lineno"> 4100</span> </div>
-<div class="line"><a id="l04101" name="l04101"></a><span class="lineno"> 4101</span>            <span class="comment">// Percent complete</span></div>
-<div class="line"><a id="l04102" name="l04102"></a><span class="lineno"> 4102</span>            <span class="keywordtype">float</span> percent = (float)current_data*100.0/(<span class="keywordtype">float</span>)number_of_data;</div>
-<div class="line"><a id="l04103" name="l04103"></a><span class="lineno"> 4103</span> </div>
-<div class="line"><a id="l04104" name="l04104"></a><span class="lineno"> 4104</span>            <span class="comment">// Progress bar in GUI</span></div>
-<div class="line"><a id="l04105" name="l04105"></a><span class="lineno"> 4105</span>            <span class="keywordflow">if</span>( <a class="code hl_variable" href="classISSHistogrammer.html#a376c53b5db5098c11d95cf3aa33be86f">_prog_</a> ) {</div>
-<div class="line"><a id="l04106" name="l04106"></a><span class="lineno"> 4106</span> </div>
-<div class="line"><a id="l04107" name="l04107"></a><span class="lineno"> 4107</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a7907ab873384e5ad4f84d3137c115383">prog</a>-&gt;SetPosition( percent );</div>
-<div class="line"><a id="l04108" name="l04108"></a><span class="lineno"> 4108</span>                gSystem-&gt;ProcessEvents();</div>
-<div class="line"><a id="l04109" name="l04109"></a><span class="lineno"> 4109</span> </div>
-<div class="line"><a id="l04110" name="l04110"></a><span class="lineno"> 4110</span>            }</div>
+<div class="line"><a id="l04101" name="l04101"></a><span class="lineno"> 4101</span>        <span class="keywordflow">if</span>( update_progress ) {</div>
+<div class="line"><a id="l04102" name="l04102"></a><span class="lineno"> 4102</span> </div>
+<div class="line"><a id="l04103" name="l04103"></a><span class="lineno"> 4103</span>            <span class="comment">// Percent complete</span></div>
+<div class="line"><a id="l04104" name="l04104"></a><span class="lineno"> 4104</span>            <span class="keywordtype">float</span> percent = (float)current_data*100.0/(<span class="keywordtype">float</span>)number_of_data;</div>
+<div class="line"><a id="l04105" name="l04105"></a><span class="lineno"> 4105</span> </div>
+<div class="line"><a id="l04106" name="l04106"></a><span class="lineno"> 4106</span>            <span class="comment">// Progress bar in GUI</span></div>
+<div class="line"><a id="l04107" name="l04107"></a><span class="lineno"> 4107</span>            <span class="keywordflow">if</span>( <a class="code hl_variable" href="classISSHistogrammer.html#a376c53b5db5098c11d95cf3aa33be86f">_prog_</a> ) {</div>
+<div class="line"><a id="l04108" name="l04108"></a><span class="lineno"> 4108</span> </div>
+<div class="line"><a id="l04109" name="l04109"></a><span class="lineno"> 4109</span>                <a class="code hl_variable" href="classISSHistogrammer.html#a7907ab873384e5ad4f84d3137c115383">prog</a>-&gt;SetPosition( percent );</div>
+<div class="line"><a id="l04110" name="l04110"></a><span class="lineno"> 4110</span>                gSystem-&gt;ProcessEvents();</div>
 <div class="line"><a id="l04111" name="l04111"></a><span class="lineno"> 4111</span> </div>
-<div class="line"><a id="l04112" name="l04112"></a><span class="lineno"> 4112</span>            <span class="comment">// Progress bar in terminal</span></div>
-<div class="line"><a id="l04113" name="l04113"></a><span class="lineno"> 4113</span>            std::cout &lt;&lt; <span class="stringliteral">&quot; Reading data: &quot;</span> &lt;&lt; std::setw(6) &lt;&lt; std::setprecision(4);</div>
-<div class="line"><a id="l04114" name="l04114"></a><span class="lineno"> 4114</span>            std::cout &lt;&lt; percent &lt;&lt; <span class="stringliteral">&quot;%    \r&quot;</span>;</div>
-<div class="line"><a id="l04115" name="l04115"></a><span class="lineno"> 4115</span>            std::cout.flush();</div>
-<div class="line"><a id="l04116" name="l04116"></a><span class="lineno"> 4116</span> </div>
-<div class="line"><a id="l04117" name="l04117"></a><span class="lineno"> 4117</span>        } <span class="comment">// progress bar</span></div>
+<div class="line"><a id="l04112" name="l04112"></a><span class="lineno"> 4112</span>            }</div>
+<div class="line"><a id="l04113" name="l04113"></a><span class="lineno"> 4113</span> </div>
+<div class="line"><a id="l04114" name="l04114"></a><span class="lineno"> 4114</span>            <span class="comment">// Progress bar in terminal</span></div>
+<div class="line"><a id="l04115" name="l04115"></a><span class="lineno"> 4115</span>            std::cout &lt;&lt; <span class="stringliteral">&quot; Reading data: &quot;</span> &lt;&lt; std::setw(6) &lt;&lt; std::setprecision(4);</div>
+<div class="line"><a id="l04116" name="l04116"></a><span class="lineno"> 4116</span>            std::cout &lt;&lt; percent &lt;&lt; <span class="stringliteral">&quot;%    \r&quot;</span>;</div>
+<div class="line"><a id="l04117" name="l04117"></a><span class="lineno"> 4117</span>            std::cout.flush();</div>
 <div class="line"><a id="l04118" name="l04118"></a><span class="lineno"> 4118</span> </div>
-<div class="line"><a id="l04119" name="l04119"></a><span class="lineno"> 4119</span>    }</div>
+<div class="line"><a id="l04119" name="l04119"></a><span class="lineno"> 4119</span>        } <span class="comment">// progress bar</span></div>
 <div class="line"><a id="l04120" name="l04120"></a><span class="lineno"> 4120</span> </div>
-<div class="line"><a id="l04121" name="l04121"></a><span class="lineno"> 4121</span>    <span class="comment">// Reset the ejectile before we finish</span></div>
-<div class="line"><a id="l04122" name="l04122"></a><span class="lineno"> 4122</span>    pace4react-&gt;GetEjectile()-&gt;SetZ(Zp);</div>
-<div class="line"><a id="l04123" name="l04123"></a><span class="lineno"> 4123</span>    pace4react-&gt;GetEjectile()-&gt;SetA(Ap);</div>
-<div class="line"><a id="l04124" name="l04124"></a><span class="lineno"> 4124</span> </div>
-<div class="line"><a id="l04125" name="l04125"></a><span class="lineno"> 4125</span> </div>
-<div class="line"><a id="l04126" name="l04126"></a><span class="lineno"> 4126</span>    <span class="comment">// Close file and return</span></div>
-<div class="line"><a id="l04127" name="l04127"></a><span class="lineno"> 4127</span>    pace4file.close();</div>
-<div class="line"><a id="l04128" name="l04128"></a><span class="lineno"> 4128</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l04129" name="l04129"></a><span class="lineno"> 4129</span> </div>
-<div class="line"><a id="l04130" name="l04130"></a><span class="lineno"> 4130</span>}</div>
+<div class="line"><a id="l04121" name="l04121"></a><span class="lineno"> 4121</span>    }</div>
+<div class="line"><a id="l04122" name="l04122"></a><span class="lineno"> 4122</span> </div>
+<div class="line"><a id="l04123" name="l04123"></a><span class="lineno"> 4123</span>    <span class="comment">// Reset the ejectile before we finish</span></div>
+<div class="line"><a id="l04124" name="l04124"></a><span class="lineno"> 4124</span>    pace4react-&gt;GetEjectile()-&gt;SetZ(Zp);</div>
+<div class="line"><a id="l04125" name="l04125"></a><span class="lineno"> 4125</span>    pace4react-&gt;GetEjectile()-&gt;SetA(Ap);</div>
+<div class="line"><a id="l04126" name="l04126"></a><span class="lineno"> 4126</span> </div>
+<div class="line"><a id="l04127" name="l04127"></a><span class="lineno"> 4127</span> </div>
+<div class="line"><a id="l04128" name="l04128"></a><span class="lineno"> 4128</span>    <span class="comment">// Close file and return</span></div>
+<div class="line"><a id="l04129" name="l04129"></a><span class="lineno"> 4129</span>    pace4file.close();</div>
+<div class="line"><a id="l04130" name="l04130"></a><span class="lineno"> 4130</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l04131" name="l04131"></a><span class="lineno"> 4131</span> </div>
+<div class="line"><a id="l04132" name="l04132"></a><span class="lineno"> 4132</span>}</div>
 </div>
 <div class="ttc" id="aHistogrammer_8hh_html"><div class="ttname"><a href="Histogrammer_8hh.html">Histogrammer.hh</a></div></div>
 <div class="ttc" id="aclassISSArrayEvt_html"><div class="ttname"><a href="classISSArrayEvt.html">ISSArrayEvt</a></div><div class="ttdef"><b>Definition</b> <a href="ISSEvts_8hh_source.html#l00030">ISSEvts.hh:30</a></div></div>
@@ -4286,7 +4288,7 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="aclassISSHistogrammer_html_a0d1babcf623c0c078d571f641a17f836"><div class="ttname"><a href="classISSHistogrammer.html#a0d1babcf623c0c078d571f641a17f836">ISSHistogrammer::Ex_vs_theta</a></div><div class="ttdeci">TH2F * Ex_vs_theta</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00442">Histogrammer.hh:442</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_a0e6a61129fc4823232de2786fc98eea8"><div class="ttname"><a href="classISSHistogrammer.html#a0e6a61129fc4823232de2786fc98eea8">ISSHistogrammer::lume_ebis_off</a></div><div class="ttdeci">TH1F * lume_ebis_off</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00573">Histogrammer.hh:573</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_a0e9d9e7d02582a4fc974d633dd7f6a00"><div class="ttname"><a href="classISSHistogrammer.html#a0e9d9e7d02582a4fc974d633dd7f6a00">ISSHistogrammer::Theta_recoilT_mod</a></div><div class="ttdeci">std::vector&lt; TH1F * &gt; Theta_recoilT_mod</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00520">Histogrammer.hh:520</a></div></div>
-<div class="ttc" id="aclassISSHistogrammer_html_a0fdb1a625faf3edc6158491331158b23"><div class="ttname"><a href="classISSHistogrammer.html#a0fdb1a625faf3edc6158491331158b23">ISSHistogrammer::SetInputFile</a></div><div class="ttdeci">void SetInputFile(std::vector&lt; std::string &gt; input_file_names)</div><div class="ttdef"><b>Definition</b> <a href="#l03828">Histogrammer.cc:3828</a></div></div>
+<div class="ttc" id="aclassISSHistogrammer_html_a0fdb1a625faf3edc6158491331158b23"><div class="ttname"><a href="classISSHistogrammer.html#a0fdb1a625faf3edc6158491331158b23">ISSHistogrammer::SetInputFile</a></div><div class="ttdeci">void SetInputFile(std::vector&lt; std::string &gt; input_file_names)</div><div class="ttdef"><b>Definition</b> <a href="#l03830">Histogrammer.cc:3830</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_a1171124d41d0f82677640d0d2dda6960"><div class="ttname"><a href="classISSHistogrammer.html#a1171124d41d0f82677640d0d2dda6960">ISSHistogrammer::lume_fission_random</a></div><div class="ttdeci">TH1F * lume_fission_random</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00578">Histogrammer.hh:578</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_a124f7702415cfb089d7c16ee84a9174e"><div class="ttname"><a href="classISSHistogrammer.html#a124f7702415cfb089d7c16ee84a9174e">ISSHistogrammer::Ex_fission_random</a></div><div class="ttdeci">TH1F * Ex_fission_random</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00511">Histogrammer.hh:511</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_a125ad9b1e8f260dd8deec99ee18d8e67"><div class="ttname"><a href="classISSHistogrammer.html#a125ad9b1e8f260dd8deec99ee18d8e67">ISSHistogrammer::Ex_vs_z_ebis_on_mod</a></div><div class="ttdeci">std::vector&lt; TH2F * &gt; Ex_vs_z_ebis_on_mod</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00451">Histogrammer.hh:451</a></div></div>
@@ -4316,7 +4318,7 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="aclassISSHistogrammer_html_a20089ed1bf9383b5bd08f3ae441cea2b"><div class="ttname"><a href="classISSHistogrammer.html#a20089ed1bf9383b5bd08f3ae441cea2b">ISSHistogrammer::fission_xy_map_cutL</a></div><div class="ttdeci">TH2F * fission_xy_map_cutL</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00350">Histogrammer.hh:350</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_a22579b2268cebca5d9ba3c515a5496c2"><div class="ttname"><a href="classISSHistogrammer.html#a22579b2268cebca5d9ba3c515a5496c2">ISSHistogrammer::recoil_dE_eloss</a></div><div class="ttdeci">std::vector&lt; TH1F * &gt; recoil_dE_eloss</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00333">Histogrammer.hh:333</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_a2308af58e7da9ab6f0a87c067ed993bb"><div class="ttname"><a href="classISSHistogrammer.html#a2308af58e7da9ab6f0a87c067ed993bb">ISSHistogrammer::Ex_vs_z_cut</a></div><div class="ttdeci">std::vector&lt; TH2F * &gt; Ex_vs_z_cut</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00461">Histogrammer.hh:461</a></div></div>
-<div class="ttc" id="aclassISSHistogrammer_html_a251a03fbd6222b9cfd9830f35dc3d34a"><div class="ttname"><a href="classISSHistogrammer.html#a251a03fbd6222b9cfd9830f35dc3d34a">ISSHistogrammer::SetPace4File</a></div><div class="ttdeci">void SetPace4File(std::vector&lt; std::string &gt; input_file_names)</div><div class="ttdef"><b>Definition</b> <a href="#l03885">Histogrammer.cc:3885</a></div></div>
+<div class="ttc" id="aclassISSHistogrammer_html_a251a03fbd6222b9cfd9830f35dc3d34a"><div class="ttname"><a href="classISSHistogrammer.html#a251a03fbd6222b9cfd9830f35dc3d34a">ISSHistogrammer::SetPace4File</a></div><div class="ttdeci">void SetPace4File(std::vector&lt; std::string &gt; input_file_names)</div><div class="ttdef"><b>Definition</b> <a href="#l03887">Histogrammer.cc:3887</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_a2546e585afbee0b854dbed6be2930a8d"><div class="ttname"><a href="classISSHistogrammer.html#a2546e585afbee0b854dbed6be2930a8d">ISSHistogrammer::E_vs_z_recoilT_cut</a></div><div class="ttdeci">std::vector&lt; TH2F * &gt; E_vs_z_recoilT_cut</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00370">Histogrammer.hh:370</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_a254c2726cc2ac98d9d7ff0bad0c47869"><div class="ttname"><a href="classISSHistogrammer.html#a254c2726cc2ac98d9d7ff0bad0c47869">ISSHistogrammer::Theta_recoilT_cut</a></div><div class="ttdeci">std::vector&lt; TH1F * &gt; Theta_recoilT_cut</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00532">Histogrammer.hh:532</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_a25680069e4f35b3e42b15e54bac28c04"><div class="ttname"><a href="classISSHistogrammer.html#a25680069e4f35b3e42b15e54bac28c04">ISSHistogrammer::Ex_vs_z_fissionT_random</a></div><div class="ttdeci">TH2F * Ex_vs_z_fissionT_random</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00478">Histogrammer.hh:478</a></div></div>
@@ -4519,11 +4521,11 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="aclassISSHistogrammer_html_ab31ca4568f5e4aaf51e962a81e06e299"><div class="ttname"><a href="classISSHistogrammer.html#ab31ca4568f5e4aaf51e962a81e06e299">ISSHistogrammer::E_vs_theta_cut</a></div><div class="ttdeci">std::vector&lt; TH2F * &gt; E_vs_theta_cut</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00397">Histogrammer.hh:397</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_ab31e0021f8b5dda1d8a4617d48c381aa"><div class="ttname"><a href="classISSHistogrammer.html#ab31e0021f8b5dda1d8a4617d48c381aa">ISSHistogrammer::Ex_vs_theta_fission_mod</a></div><div class="ttdeci">std::vector&lt; TH2F * &gt; Ex_vs_theta_fission_mod</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00425">Histogrammer.hh:425</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_ab350dd3197471f6279fac4280319ac78"><div class="ttname"><a href="classISSHistogrammer.html#ab350dd3197471f6279fac4280319ac78">ISSHistogrammer::fission_array_tw_hit0_prof</a></div><div class="ttdeci">TProfile * fission_array_tw_hit0_prof</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00322">Histogrammer.hh:322</a></div></div>
-<div class="ttc" id="aclassISSHistogrammer_html_ab3bfa565e91e698d9da75d72fc284e90"><div class="ttname"><a href="classISSHistogrammer.html#ab3bfa565e91e698d9da75d72fc284e90">ISSHistogrammer::ReadPace4File</a></div><div class="ttdeci">void ReadPace4File(std::string input_file_name)</div><div class="ttdef"><b>Definition</b> <a href="#l03919">Histogrammer.cc:3919</a></div></div>
+<div class="ttc" id="aclassISSHistogrammer_html_ab3bfa565e91e698d9da75d72fc284e90"><div class="ttname"><a href="classISSHistogrammer.html#ab3bfa565e91e698d9da75d72fc284e90">ISSHistogrammer::ReadPace4File</a></div><div class="ttdeci">void ReadPace4File(std::string input_file_name)</div><div class="ttdef"><b>Definition</b> <a href="#l03921">Histogrammer.cc:3921</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_ab480456970fafe44b3bd58a08dad684b"><div class="ttname"><a href="classISSHistogrammer.html#ab480456970fafe44b3bd58a08dad684b">ISSHistogrammer::elum_ebis_off_sec</a></div><div class="ttdeci">std::vector&lt; TH1F * &gt; elum_ebis_off_sec</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00550">Histogrammer.hh:550</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_ab4962c9baf6a27bbd4e34f694914a1f1"><div class="ttname"><a href="classISSHistogrammer.html#ab4962c9baf6a27bbd4e34f694914a1f1">ISSHistogrammer::Ex_vs_z_ebis</a></div><div class="ttdeci">TH2F * Ex_vs_z_ebis</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00474">Histogrammer.hh:474</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_ab5bfb61ac5b31f2be633a69be4781100"><div class="ttname"><a href="classISSHistogrammer.html#ab5bfb61ac5b31f2be633a69be4781100">ISSHistogrammer::Ex_recoilT</a></div><div class="ttdeci">TH1F * Ex_recoilT</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00508">Histogrammer.hh:508</a></div></div>
-<div class="ttc" id="aclassISSHistogrammer_html_ab5eee16250cef22f754b69fcd189e132"><div class="ttname"><a href="classISSHistogrammer.html#ab5eee16250cef22f754b69fcd189e132">ISSHistogrammer::SetInputTree</a></div><div class="ttdeci">void SetInputTree(TTree *user_tree)</div><div class="ttdef"><b>Definition</b> <a href="#l03818">Histogrammer.cc:3818</a></div></div>
+<div class="ttc" id="aclassISSHistogrammer_html_ab5eee16250cef22f754b69fcd189e132"><div class="ttname"><a href="classISSHistogrammer.html#ab5eee16250cef22f754b69fcd189e132">ISSHistogrammer::SetInputTree</a></div><div class="ttdeci">void SetInputTree(TTree *user_tree)</div><div class="ttdef"><b>Definition</b> <a href="#l03820">Histogrammer.cc:3820</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_ab5f8b76e95eb64578911cfc547453fa3"><div class="ttname"><a href="classISSHistogrammer.html#ab5f8b76e95eb64578911cfc547453fa3">ISSHistogrammer::elum_recoil_random</a></div><div class="ttdeci">TH1F * elum_recoil_random</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00557">Histogrammer.hh:557</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_ab64cdc18214a8c2f4b47f178b7ab30d6"><div class="ttname"><a href="classISSHistogrammer.html#ab64cdc18214a8c2f4b47f178b7ab30d6">ISSHistogrammer::Theta_fissionT_random</a></div><div class="ttdeci">TH1F * Theta_fissionT_random</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00544">Histogrammer.hh:544</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_ab7601316e9539e4c510dba927ec09623"><div class="ttname"><a href="classISSHistogrammer.html#ab7601316e9539e4c510dba927ec09623">ISSHistogrammer::Theta_recoil_random_mod</a></div><div class="ttdeci">std::vector&lt; TH1F * &gt; Theta_recoil_random_mod</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00521">Histogrammer.hh:521</a></div></div>
