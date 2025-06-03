@@ -205,6 +205,7 @@ void* monitor_run( void* ptr ){
 	conv_mon->SetOutput( "monitor_singles.root" );
 	conv_mon->MakeTree();
 	conv_mon->MakeHists();
+	conv_mon->StartFile();
 
 	// Update server settings
 	// title of web page
