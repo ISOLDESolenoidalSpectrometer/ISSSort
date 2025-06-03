@@ -1380,7 +1380,7 @@ void ISSConverter::FinishCAENData(){
 
 				// Add the time offset to this channel
 				info_data->SetTimeStamp( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
-				info_data->SetModule( caen_data->GetModule() + set->GetNumberOfArrayModules() );
+				info_data->SetModule( caen_data->GetModule() );
 				info_data->SetCode( my_info_code );
 				data_packet->SetData( info_data );
 				if( !flag_source ) output_tree->Fill();
@@ -1473,15 +1473,6 @@ bool ISSConverter::ProcessMesytecData(){
 	// Mesytec timestamps are 4 ns precision? TBD
 	my_tm_stp = my_tm_stp*4;
 
-	// If it's a logic input, process that properly and don't do the rest
-	if( my_ch_id >= set->GetNumberOfMesytecChannels() &&
-	   my_ch_id < set->GetNumberOfMesytecChannels() + set->GetNumberOfMesytecLogicInputs() ) {
-
-		ProcessMesytecLogicItem();
-		return false;
-
-	}
-
 	// First of the data items
 	if( !flag_mesy_data0 && !flag_mesy_data1 && !flag_mesy_data2 && !flag_mesy_data3 ){
 
@@ -1568,8 +1559,30 @@ bool ISSConverter::ProcessMesytecData(){
 
 void ISSConverter::ProcessMesytecLogicItem(){
 
-	// For now, we just return, but eventually we need to map some stuff
-	// to these channels and do something with the data.
+	flag_mesy_info = false;
+
+	// Check if this is a pulser
+	if( mesy_data->GetChannel() == set->GetMesytecPulserChannel() ){
+
+		my_info_code = 25; // Mesytec pulser is always 25 (defined here)
+		hmesy_ext[mesy_data->GetModule()]->Fill( ctr_mesy_ext[mesy_data->GetModule()], mesy_data->GetTime(), 1 );
+		ctr_mesy_ext[mesy_data->GetModule()]++;
+		flag_mesy_info = true;
+
+	}
+
+	// Check if we want to write it to the tree
+	if( flag_mesy_info ) {
+
+		info_data->SetTimeStamp( caen_data->GetTime() );
+		info_data->SetModule( mesy_data->GetModule() );
+		info_data->SetCode( my_info_code );
+		data_packet->SetData( info_data );
+		if( !flag_source ) output_tree->Fill();
+		data_packet->ClearData();
+
+	}
+
 	return;
 
 }
@@ -1580,35 +1593,48 @@ void ISSConverter::FinishMesytecData(){
 	// Got all items
 	if( ( flag_mesy_data0 && flag_mesy_data3 ) || flag_mesy_trace ){
 
-		// Fill histograms
-		hmesy_hit[mesy_data->GetModule()]->Fill( ctr_mesy_hit[mesy_data->GetModule()], mesy_data->GetTime(), 1 );
+		// If it's a logic input, process that properly
+		if( mesy_data->GetChannel() >= set->GetNumberOfMesytecChannels() &&
+		    mesy_data->GetChannel() < set->GetNumberOfMesytecChannels() + set->GetNumberOfMesytecLogicInputs() ) {
 
-		// Difference between Qlong and Qshort
-		int qdiff = (int)mesy_data->GetQlong() - (int)mesy_data->GetQshort();
-		hmesy_qdiff[mesy_data->GetModule()][mesy_data->GetChannel()]->Fill( qdiff );
+			ProcessMesytecLogicItem();
 
-		// Choose the energy we want to use
-		unsigned short adc_value = 0;
-		std::string entype = cal->MesytecType( mesy_data->GetModule(), mesy_data->GetChannel() );
-		if( entype == "Qlong" ) adc_value = mesy_data->GetQlong();
-		else if( entype == "Qshort" ) adc_value = mesy_data->GetQshort();
-		else if( entype == "Qdiff" ) adc_value = mesy_data->GetQdiff();
-		my_energy = cal->MesytecEnergy( mesy_data->GetModule(), mesy_data->GetChannel(), adc_value );
-		mesy_data->SetEnergy( my_energy );
-		hmesy_cal[mesy_data->GetModule()][mesy_data->GetChannel()]->Fill( my_energy );
+		} // logic item
 
-		// Check if it's over threshold
-		if( adc_value > cal->MesytecThreshold( mesy_data->GetModule(), mesy_data->GetChannel() ) )
-			mesy_data->SetThreshold( true );
-		else mesy_data->SetThreshold( false );
+		// Else deal with a proper ADC item
+		else if( mesy_data->GetChannel() < set->GetNumberOfMesytecChannels() ) {
+
+			// Fill histograms
+			hmesy_hit[mesy_data->GetModule()]->Fill( ctr_mesy_hit[mesy_data->GetModule()], mesy_data->GetTime(), 1 );
+
+			// Difference between Qlong and Qshort
+			int qdiff = (int)mesy_data->GetQlong() - (int)mesy_data->GetQshort();
+			hmesy_qdiff[mesy_data->GetModule()][mesy_data->GetChannel()]->Fill( qdiff );
+
+			// Choose the energy we want to use
+			unsigned short adc_value = 0;
+			std::string entype = cal->MesytecType( mesy_data->GetModule(), mesy_data->GetChannel() );
+			if( entype == "Qlong" ) adc_value = mesy_data->GetQlong();
+			else if( entype == "Qshort" ) adc_value = mesy_data->GetQshort();
+			else if( entype == "Qdiff" ) adc_value = mesy_data->GetQdiff();
+			my_energy = cal->MesytecEnergy( mesy_data->GetModule(), mesy_data->GetChannel(), adc_value );
+			mesy_data->SetEnergy( my_energy );
+			hmesy_cal[mesy_data->GetModule()][mesy_data->GetChannel()]->Fill( my_energy );
+
+			// Check if it's over threshold
+			if( adc_value > cal->MesytecThreshold( mesy_data->GetModule(), mesy_data->GetChannel() ) )
+				mesy_data->SetThreshold( true );
+			else mesy_data->SetThreshold( false );
 
 
-		// Set this data and fill event to tree
-		// Also add the time offset when we do this
-		mesy_data->SetTimeStamp( mesy_data->GetTime() + cal->MesytecTime( mesy_data->GetModule(), mesy_data->GetChannel() ) );
-		data_packet->SetData( mesy_data );
-		if( !flag_source ) output_tree->Fill();
-		data_packet->ClearData();
+			// Set this data and fill event to tree
+			// Also add the time offset when we do this
+			mesy_data->SetTimeStamp( mesy_data->GetTime() + cal->MesytecTime( mesy_data->GetModule(), mesy_data->GetChannel() ) );
+			data_packet->SetData( mesy_data );
+			if( !flag_source ) output_tree->Fill();
+			data_packet->ClearData();
+
+		} // adc item
 
 	}
 
