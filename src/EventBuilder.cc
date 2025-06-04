@@ -1035,11 +1035,11 @@ unsigned long ISSEventBuilder::BuildEvents() {
 					double fpga_tdiff = caen_time - fpga_time[j];
 					double asic_tdiff = caen_time - asic_time[j];
 
-					// If diff is greater than 5 ms, we have the wrong pair
-					if( fpga_tdiff > 5e6 ) fpga_tdiff = caen_prev - fpga_time[j];
-					else if( fpga_tdiff < -5e6 ) fpga_tdiff = caen_time - fpga_prev[j];
-					if( asic_tdiff > 5e6 ) asic_tdiff = caen_prev - asic_time[j];
-					else if( asic_tdiff < -5e6 ) asic_tdiff = caen_time - asic_prev[j];
+					// If diff is greater than 50 us, we have the wrong pair
+					if( fpga_tdiff > 5e4 ) fpga_tdiff = caen_prev - fpga_time[j];
+					else if( fpga_tdiff < -5e4 ) fpga_tdiff = caen_time - fpga_prev[j];
+					if( asic_tdiff > 5e4 ) asic_tdiff = caen_prev - asic_time[j];
+					else if( asic_tdiff < -5e4 ) asic_tdiff = caen_time - asic_prev[j];
 
 					// ??? Could be the case that |fpga_tdiff| > 5e6 after these conditional statements...change to while loop? Or have an extra condition?
 
@@ -1056,13 +1056,13 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				// Time differnce for Mesytec modules
 				for( unsigned int j = 0; j < set->GetNumberOfMesytecModules(); ++j ) {
 
-					double mesy_tdiff = caen_time - mesy_time[j];
-					std::cout << j << ": " << caen_time << " - " << mesy_time[j];
-					std::cout << " = " << mesy_tdiff << std::endl;
+					//double mesy_tdiff = caen_time - mesy_time[j];
+					//std::cout << j << ": " << caen_time << " - " << mesy_time[j];
+					//std::cout << " = " << mesy_tdiff << std::endl;
 
-					// If diff is greater than 5 ms, we have the wrong pair
-					if( mesy_tdiff > 5e6 ) mesy_tdiff = caen_prev - mesy_time[j];
-					else if( mesy_tdiff < -5e6 ) mesy_tdiff = caen_time - mesy_prev[j];
+					// If diff is greater than 50 us, we have the wrong pair
+					if( mesy_tdiff > 5e4 ) mesy_tdiff = caen_prev - mesy_time[j];
+					else if( mesy_tdiff < -5e4 ) mesy_tdiff = caen_time - mesy_prev[j];
 
 					mesy_td[j]->Fill( mesy_tdiff );
 					mesy_sync[j]->Fill( mesy_time[j], mesy_tdiff );
