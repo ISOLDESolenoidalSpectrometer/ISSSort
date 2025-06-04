@@ -1513,7 +1513,8 @@ bool ISSConverter::ProcessMesytecData(){
 			mesy_data->SetOverflowLong( true );
 
 		// Energy
-		hmesy_qlong[my_mod_id][my_ch_id]->Fill( my_adc_data );
+		if( my_ch_id < set->GetNumberOfMesytecChannels() )
+			hmesy_qlong[my_mod_id][my_ch_id]->Fill( my_adc_data );
 		mesy_data->SetQlong( my_adc_data );
 
 		// Mark data received
@@ -1534,7 +1535,8 @@ bool ISSConverter::ProcessMesytecData(){
 
 		// Energy
 		my_adc_data = my_adc_data & 0x7FFF; // 15 bits from 0
-		hmesy_qshort[my_mod_id][my_ch_id]->Fill( my_adc_data );
+		if( my_ch_id < set->GetNumberOfMesytecChannels() )
+			hmesy_qshort[my_mod_id][my_ch_id]->Fill( my_adc_data );
 		mesy_data->SetQshort( my_adc_data );
 
 		// Mark data received
