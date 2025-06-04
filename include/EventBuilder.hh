@@ -227,6 +227,8 @@ private:
 	double		laser_prev;	///< Holds time of previous Laser status pulse
 	double		caen_time;	///< Time from the caen DAQ
 	double		caen_prev;	///< Holds previous time from the CAEN DAQ
+	std::vector<double> mesy_time; 						///< Mesytec pulser time in a given module
+	std::vector<double> mesy_prev;						///< Previous Mesytec pulser time in a given module
 	std::vector<double> fpga_time; 						///< FPGA time on a given module of the array
 	std::vector<double> fpga_prev;						///< Previous FPGA time on a given module of the array
 	std::vector<double> asic_time;						///< ASIC time on a given module of the array
@@ -349,6 +351,7 @@ private:
 	unsigned long		n_t1; 			///< Number of T1 pulses in the time-sorted data input tree
 	unsigned long		n_sc; 			///< Number of SuperCycle pulses in the time-sorted data input tree
 	unsigned long		n_laser; 		///< Number of laser status pulses in the time-sorted data input tree
+	std::vector<unsigned long>	n_mesy_pulser;	///< Number of Mesytec sync pulses in the time-sorted data input tree (indexed by module in the array)
 	std::vector<unsigned long>	n_fpga_pulser;	///< Number of fpga pulses in the time-sorted data input tree (indexed by module in the array)
 	std::vector<unsigned long>	n_asic_pause;	///< Number of asic pause signals in the time-sorted data input tree (indexed by module in the array)
 	std::vector<unsigned long>	n_asic_resume;	///< Number of asic resume signals in the time-sorted data input tree (indexed by module in the array)
@@ -382,14 +385,18 @@ private:
 	TH1F *sc_period;				///< Histogram containg the period of SuperCycle pulses
 	TH1F *laser_period;				///< Histogram containg the period of Laser status signals
 	TH1F *supercycle;				///< Histogram of T1 - SuperCycle time to get the super cycle structure
-	std::vector<TH1F*> fpga_td; 	///<
 
-	std::vector<TH1F*> asic_td; 				///< Histogram containing the time difference between ASIC signals for a given module of the array
+	std::vector<TH1F*> mesy_td; 				///< Histogram containing the time difference between Mesytec sync pulses and CAEN sync pulses for a given module of the array
+	std::vector<TH1F*> fpga_td; 				///< Histogram containing the time difference between FPGA sync pulses and CAEN sync pulses for a given module of the array
+	std::vector<TH1F*> asic_td; 				///< Histogram containing the time difference between ASIC sync pulses and CAEN sync pulses for a given module of the array
+	std::vector<TProfile*> mesy_pulser_loss;	///< TProfile counting the difference between the number of Mesytec pulser pulses and CAEN pulses as a function of Mesytec pulser time for a given module
+	std::vector<TH1F*> mesy_period; 			///< Histogram containing the Mesytec pulser period as a function of Mesytec pulser time for a given module
+	std::vector<TProfile*> mesy_sync;			///< TProfile containing the time difference between Mesytec sync pulses as a function of Mesytec pulser time for a given module
 	std::vector<TProfile*> fpga_pulser_loss;	///< TProfile counting the difference between the number of FPGA pulses and CAEN pulses as a function of FPGA time for a given module of the array
-	std::vector<TH1F*> fpga_period; 			///<  Histogram containing the FPGA period as a function of FPGA time for a given module of the array
+	std::vector<TH1F*> fpga_period; 			///< Histogram containing the FPGA period as a function of FPGA time for a given module of the array
 	std::vector<TProfile*> fpga_sync;			///< TProfile containing the time difference between FPGA pulses as a function of FPGA time for a given module of the array
 	std::vector<TProfile*> asic_pulser_loss;	///< TProfile counting the difference between the number of ASIC pulses and CAEN pulses as a function of ASIC time for a given module of the array
-	std::vector<TH1F*> asic_period;				///<  Histogram containing the ASIC period as a function of ASIC time for a given module of the array
+	std::vector<TH1F*> asic_period;				///< Histogram containing the ASIC period as a function of ASIC time for a given module of the array
 	std::vector<TProfile*> asic_sync;			///< TProfile containing the time difference between ASIC pulses as a function of ASIC time for a given module of the array
 
 	// Recoil histograms

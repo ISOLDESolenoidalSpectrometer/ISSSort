@@ -200,6 +200,7 @@ private:
 	bool flag_mesy_data3;
 	bool flag_mesy_trace;
 	bool flag_caen_info;
+	bool flag_mesy_info;
 
 
 	// Raw data variables

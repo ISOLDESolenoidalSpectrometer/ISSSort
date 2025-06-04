@@ -51,8 +51,7 @@
 #PulserModuleCAEN: 1
 #PulserChannelCAEN: 13
 #PulserCodeCAEN: 20			# cannot be changed, info only
-#PulserModuleMesytec: 0
-#PulserChannelMesytec: 15
+#PulserChannelMesytec: 33	# channel 33 is the second logic input
 #PulserCodeMesytec: 25		# cannot be changed, info only
 #EBIS.Crate: 0				# 0 = CAEN VME crate, 1 = Mesytec VME crate
 #EBIS.Module: 1

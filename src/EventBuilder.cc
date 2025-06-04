@@ -122,6 +122,7 @@ void ISSEventBuilder::StartFile(){
 	build_window = set->GetEventWindow();
 
 	// Resize 17 vectors to match modules of detectors
+	n_mesy_pulser.resize( set->GetNumberOfMesytecModules(), 0 );
 	n_fpga_pulser.resize( set->GetNumberOfArrayModules(), 0 );
 	n_asic_pulser.resize( set->GetNumberOfArrayModules(), 0 );
 	n_asic_pause.resize( set->GetNumberOfArrayModules(), 0 );
@@ -137,6 +138,8 @@ void ISSEventBuilder::StartFile(){
 	asic_prev.resize( set->GetNumberOfArrayModules(), 0 );
 	fpga_time.resize( set->GetNumberOfArrayModules(), 0 );
 	fpga_prev.resize( set->GetNumberOfArrayModules(), 0 );
+	mesy_time.resize( set->GetNumberOfMesytecModules(), 0 );
+	mesy_prev.resize( set->GetNumberOfMesytecModules(), 0 );
 	vme_time_start.resize( set->GetNumberOfVmeCrates() );
 	vme_time_stop.resize( set->GetNumberOfVmeCrates() );
 
@@ -952,6 +955,21 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 			}
 
+			// Update Mesytec pulser time
+			else if( info_data->GetCode() == set->GetMesytecPulserCode() ) {
+
+				mesy_time[info_data->GetModule()] = info_data->GetTime();
+				info_tdiff = mesy_time[info_data->GetModule()] - mesy_prev[info_data->GetModule()];
+
+				if( mesy_prev[info_data->GetModule()] != 0 )
+					mesy_period[info_data->GetModule()]->Fill( info_tdiff );
+
+				n_mesy_pulser[info_data->GetModule()]++;
+
+			}
+
+
+
 			// Check the pause events for each module
 			else if( info_data->GetCode() == set->GetPauseCode() ) {
 
@@ -1011,6 +1029,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// If we have a pulser event from the CAEN DAQs, fill time difference
 			if( flag_caen_pulser ) {
 
+				// Time difference for array
 				for( unsigned int j = 0; j < set->GetNumberOfArrayModules(); ++j ) {
 
 					double fpga_tdiff = caen_time - fpga_time[j];
@@ -1034,6 +1053,23 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 				}
 
+				// Time differnce for Mesytec modules
+				for( unsigned int j = 0; j < set->GetNumberOfMesytecModules(); ++j ) {
+
+					double mesy_tdiff = caen_time - mesy_time[j];
+					std::cout << j << ": " << caen_time << " - " << mesy_time[j];
+					std::cout << " = " << mesy_tdiff << std::endl;
+
+					// If diff is greater than 5 ms, we have the wrong pair
+					if( mesy_tdiff > 5e6 ) mesy_tdiff = caen_prev - mesy_time[j];
+					else if( mesy_tdiff < -5e6 ) mesy_tdiff = caen_time - mesy_prev[j];
+
+					mesy_td[j]->Fill( mesy_tdiff );
+					mesy_sync[j]->Fill( mesy_time[j], mesy_tdiff );
+					mesy_pulser_loss[j]->Fill( mesy_time[j], (int)n_mesy_pulser[j] - (int)n_caen_pulser );
+
+				}
+
 				flag_caen_pulser = false;
 
 			}
@@ -1045,6 +1081,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				fpga_prev[info_data->GetModule()] = fpga_time[info_data->GetModule()];
 			if( info_data->GetCode() == set->GetArrayPulserCode0() )
 				asic_prev[info_data->GetModule()] = asic_time[info_data->GetModule()];
+			if( info_data->GetCode() == set->GetMesytecPulserCode() )
+				mesy_prev[info_data->GetModule()] = mesy_time[info_data->GetModule()];
 
 
 		}
@@ -1250,6 +1288,9 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	ss_log << "   LUME events = " << lume_ctr << std::endl;
 	ss_log << "   CD events = " << cd_ctr << std::endl;
 	ss_log << "   CAEN pulser = " << n_caen_pulser << std::endl;
+	ss_log << "   Mesytec pulser" << std::endl;
+	for( unsigned int i = 0; i < set->GetNumberOfMesytecModules(); ++i )
+		ss_log << "    Module " << i << " = " << n_mesy_pulser[i] << std::endl;
 	ss_log << "   FPGA pulser" << std::endl;
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i )
 		ss_log << "    Module " << i << " = " << n_fpga_pulser[i] << std::endl;
@@ -3005,6 +3046,36 @@ void ISSEventBuilder::MakeHists(){
 
 	caen_period = new TH1F( "caen_period", "Period of pulser in CAEN DAQ as a function of time;time [ns];f [Hz]", 1000, 0, 1e9 );
 
+	mesy_td.resize( set->GetNumberOfMesytecModules() );
+	mesy_period.resize( set->GetNumberOfMesytecModules() );
+	mesy_sync.resize( set->GetNumberOfMesytecModules() );
+	mesy_pulser_loss.resize( set->GetNumberOfMesytecModules() );
+
+	// Loop over Mesytec modules
+	for( unsigned int i = 0; i < set->GetNumberOfMesytecModules(); ++i ) {
+
+		hname = "mesy_td_" + std::to_string(i);
+		htitle = "Time difference between Mesytec and CAEN pulser events in module ";
+		htitle += std::to_string(i) + ";#Delta t [ns]";
+		mesy_td[i] = new TH1F( hname.data(), htitle.data(), 1.6e3 , -4e3, 4e3 );
+
+		hname = "mesy_period_" + std::to_string(i);
+		htitle = "Period of pulser in Mesytec DAQ in module ";
+		htitle += std::to_string(i) + ";time [ns];f [Hz]";
+		mesy_period[i] = new TH1F( hname.data(), htitle.data(), 1000, 0, 1e9 );
+
+		hname = "mesy_sync_" + std::to_string(i);
+		htitle = "Time difference between Mesytec and CAEN events as a function of time in module ";
+		htitle += std::to_string(i) + ";time [ns];#Delta t [ns]";
+		mesy_sync[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
+
+		hname = "mesy_pulser_loss_" + std::to_string(i);
+		htitle = "Number of missing/extra pulser events in Mesytec as a function of time in module ";
+		htitle += std::to_string(i) + ";#time [ns];(-ive CAEN missing, +ive Mesytec missing)";
+		mesy_pulser_loss[i] = new TProfile( hname.data(), htitle.data(), 10.8e4, 0, 10.8e12 );
+
+	}
+
 	asic_td.resize( set->GetNumberOfArrayModules() );
 	asic_period.resize( set->GetNumberOfArrayModules() );
 	asic_sync.resize( set->GetNumberOfArrayModules() );
@@ -3629,6 +3700,18 @@ void ISSEventBuilder::CleanHists() {
 	cd_rs_td.clear();
 
 
+	for( unsigned int i = 0; i < set->GetNumberOfMesytecModules(); i++ ){
+		delete (mesy_td[i]);
+		delete (mesy_pulser_loss[i]);
+		delete (mesy_period[i]);
+		delete (mesy_sync[i]);
+	}
+
+	mesy_td.clear();
+	mesy_sync.clear();
+	mesy_period.clear();
+	mesy_pulser_loss.clear();
+
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
 		delete (fpga_td[i]);
 		delete (asic_td[i]);
@@ -3791,6 +3874,13 @@ void ISSEventBuilder::ResetHists() {
 
 	cd_EdE->Reset("ICESM");
 	cd_dEsum->Reset("ICESM");
+
+	for( unsigned int i = 0; i < set->GetNumberOfMesytecModules(); i++ ){
+		mesy_td[i]->Reset("ICESM");
+		mesy_pulser_loss[i]->Reset("ICESM");
+		mesy_period[i]->Reset("ICESM");
+		mesy_sync[i]->Reset("ICESM");
+	}
 
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
 		fpga_td[i]->Reset("ICESM");

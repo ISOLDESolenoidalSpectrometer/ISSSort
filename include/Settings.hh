@@ -91,7 +91,6 @@ public:
 	inline unsigned char GetCAENPulserChannel(){ return caen_pulser_ch; };
 	inline unsigned char GetCAENPulserCode(){ return caen_pulser_code; };
 
-	inline unsigned char GetMesytecPulserModule(){ return mesy_pulser_mod; };
 	inline unsigned char GetMesytecPulserChannel(){ return mesy_pulser_ch; };
 	inline unsigned char GetMesytecPulserCode(){ return mesy_pulser_code; };
 
@@ -279,7 +278,6 @@ private:
 	unsigned char caen_pulser_mod;		///< Location of the pulser in the CAEN system (module)
 	unsigned char caen_pulser_ch;		///< Location of the pulser in the CAEN system (channel) - Daresbury test
 	unsigned char caen_pulser_code;		///< Info code when we have a pulser event in InfoData packets from CAEN
-	unsigned char mesy_pulser_mod;		///< Location of the pulser in the Mesytec system (module)
 	unsigned char mesy_pulser_ch;		///< Location of the pulser in the Mesytec system (channel) - Daresbury test
 	unsigned char mesy_pulser_code;		///< Info code when we have a pulser event in InfoData packets from CAEN
 	unsigned char vme_ebis_crate;		///< Location of the EBIS signal in the VME system (crate: 0 = CAEN; 1 = Mesytec)

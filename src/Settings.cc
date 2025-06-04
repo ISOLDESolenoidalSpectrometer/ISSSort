@@ -63,8 +63,7 @@ ISSSettings::ISSSettings( ISSSettings *myset ){
 	asic_pulser_thres = myset->GetArrayPulserThreshold();
 	caen_pulser_mod = myset->GetCAENPulserModule();
 	caen_pulser_ch = myset->GetCAENPulserChannel();
-	caen_pulser_code =GetCAENPulserCode();
-	mesy_pulser_mod = myset->GetMesytecPulserModule();
+	caen_pulser_code = myset->GetCAENPulserCode();
 	mesy_pulser_ch = myset->GetMesytecPulserChannel();
 	mesy_pulser_code = myset->GetMesytecPulserCode();
 	vme_ebis_crate = myset->GetEBISCrate();
@@ -221,8 +220,12 @@ void ISSSettings::ReadSettings() {
 	caen_pulser_mod = config->GetValue( "PulserModuleCAEN", 1 );
 	caen_pulser_ch = config->GetValue( "PulserChannelCAEN", 13 );
 	caen_pulser_code = config->GetValue( "PulserCodeCAEN", 20 );
-	mesy_pulser_mod = config->GetValue( "PulserModuleMesytec", 1 );
-	mesy_pulser_ch = config->GetValue( "PulserChannelMesytec", 13 );
+	mesy_pulser_ch = config->GetValue( "PulserChannelMesytec", 33 );
+	if( mesy_pulser_ch < n_mesy_ch ) {
+		std::cout << "Mesytec sync pulser should be in a logic input, ";
+		std::cout << "setting it to be last logic input by default" << std::endl;
+		mesy_pulser_ch = n_mesy_ch + n_mesy_logic - 1;
+	}
 	mesy_pulser_code = 25;
 	tmp_val_uchar = config->GetValue( "EBISCrate", 0 );
 	vme_ebis_crate = config->GetValue( "EBIS.Crate", tmp_val_uchar );
@@ -1235,6 +1238,8 @@ void ISSSettings::PrintSettings() {
 	PRINT_SETTING_INT(caen_pulser_mod);
 	PRINT_SETTING_INT(caen_pulser_ch);
 	PRINT_SETTING_INT(caen_pulser_code);
+	PRINT_SETTING_INT(mesy_pulser_ch);
+	PRINT_SETTING_INT(mesy_pulser_code);
 	PRINT_SETTING_INT(vme_ebis_crate);
 	PRINT_SETTING_INT(vme_ebis_mod);
 	PRINT_SETTING_INT(vme_ebis_ch);
