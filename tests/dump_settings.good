@@ -27,6 +27,8 @@ asic_pulser_thres:        232
 caen_pulser_mod:          1
 caen_pulser_ch:           13
 caen_pulser_code:         20
+mesy_pulser_ch:           33
+mesy_pulser_code:         25
 vme_ebis_crate:           0
 vme_ebis_mod:             1
 vme_ebis_ch:              14
