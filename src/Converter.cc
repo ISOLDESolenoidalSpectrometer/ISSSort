@@ -1576,7 +1576,7 @@ void ISSConverter::ProcessMesytecLogicItem(){
 	// Check if we want to write it to the tree
 	if( flag_mesy_info ) {
 
-		info_data->SetTimeStamp( caen_data->GetTime() );
+		info_data->SetTimeStamp( mesy_data->GetTime() );
 		info_data->SetModule( mesy_data->GetModule() );
 		info_data->SetCode( my_info_code );
 		data_packet->SetData( info_data );

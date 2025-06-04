@@ -1057,6 +1057,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				for( unsigned int j = 0; j < set->GetNumberOfMesytecModules(); ++j ) {
 
 					double mesy_tdiff = caen_time - mesy_time[j];
+					std::cout << j << ": " << caen_time << " - " << mesy_time[j];
+					std::cout << " = " << mesy_tdiff << std::endl;
 
 					// If diff is greater than 5 ms, we have the wrong pair
 					if( mesy_tdiff > 5e6 ) mesy_tdiff = caen_prev - mesy_time[j];
