@@ -868,12 +868,14 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 			// Decide if this is an ASIC or CAEN event
 			// ISS/R3B ASICs will have 28th bit of word_1 set to 1
 			// This is for data after to R3B data format change (June 2021)
-			// Otherwise, we read it in from the settings file
-			if( ((word_1 >> 28) & 0x00000001) == 0x00000001 ||
-			    set->IsASICOnly() ){
+			// Otherwise, this code will be broken
+			if( ((word_1 >> 28) & 0x00000001) == 0x00000001 ){
 
 				flag_asic_data = true;
-				ProcessASICData();
+
+				// Check if we want to use it or not
+				if( set->IsAllData() || set->IsASICOnly() )
+					ProcessASICData();
 
 			}
 
@@ -886,16 +888,26 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 				// We've got something from the CAEN DAQ
 				if( my_vme_id == 0 ) {
 
-					if( ProcessCAENData() )
-						FinishCAENData();
+					// Check if we want to use it or not
+					if( set->IsAllData() || set->IsCAENOnly() ) {
+
+						if( ProcessCAENData() )
+							FinishCAENData();
+
+					}
 
 				}
 
 				// or we've got something from the Mesytec DAQ
 				else if( my_vme_id == 1 ) {
 
-					if( ProcessMesytecData() )
-						FinishMesytecData();
+					// Check if we want to use it or not
+					if( set->IsAllData() || set->IsMesyOnly() ) {
+
+						if( ProcessMesytecData() )
+							FinishMesytecData();
+
+					}
 
 				}
 
@@ -963,26 +975,36 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 			// Add to the CAEN packet
 			if( my_vme_id == 0 ){
 
-				caen_data->SetModule( my_mod_id );
-				caen_data->SetChannel( my_ch_id );
-				for( unsigned int k = 0; k < samples.size(); k++ )
-					caen_data->AddSample( samples.at(k) );
-
-				flag_caen_trace = true;
-				FinishCAENData();
+				// Check if we want to use it or not
+				if( set->IsAllData() || set->IsCAENOnly() ) {
+					
+					caen_data->SetModule( my_mod_id );
+					caen_data->SetChannel( my_ch_id );
+					for( unsigned int k = 0; k < samples.size(); k++ )
+						caen_data->AddSample( samples.at(k) );
+					
+					flag_caen_trace = true;
+					FinishCAENData();
+					
+				}
 
 			}
 
 			// Add to the Mesytec packet
 			else if( my_vme_id == 1 ){
 
-				mesy_data->SetModule( my_mod_id );
-				mesy_data->SetChannel( my_ch_id );
-				for( unsigned int k = 0; k < samples.size(); k++ )
-					mesy_data->AddSample( samples.at(k) );
+				// Check if we want to use it or not
+				if( set->IsAllData() || set->IsMesyOnly() ) {
 
-				flag_mesy_trace = true;
-				FinishMesytecData();
+					mesy_data->SetModule( my_mod_id );
+					mesy_data->SetChannel( my_ch_id );
+					for( unsigned int k = 0; k < samples.size(); k++ )
+						mesy_data->AddSample( samples.at(k) );
+
+					flag_mesy_trace = true;
+					FinishMesytecData();
+
+				}
 
 			}
 
@@ -1047,7 +1069,7 @@ void ISSConverter::ProcessASICData(){
 	bool pulser_trigger = false;
 
 	if( my_asic_id == set->GetArrayPulserAsic0() &&
-	   my_ch_id == set->GetArrayPulserChannel0() ) {
+	    my_ch_id == set->GetArrayPulserChannel0() ) {
 
 		// Check energy to set threshold
 		asic_pulser_energy[my_mod_id][0]->Fill( my_adc_data );

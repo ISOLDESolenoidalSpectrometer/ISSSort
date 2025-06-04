@@ -134,6 +134,9 @@ public:
 	inline bool IsASICOnly(){ return flag_asic_only; };
 	inline bool IsCAENOnly(){ return flag_caen_only; };
 	inline bool IsMesyOnly(){ return flag_mesy_only; };
+	inline bool IsAllData(){
+		return ( !flag_asic_only && !flag_caen_only && !flag_mesy_only );
+	};
 
 
 	// Event rejection

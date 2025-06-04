@@ -276,9 +276,30 @@ void ISSSettings::ReadSettings() {
 
 	// Data things
 	block_size = config->GetValue( "DataBlockSize", 0x10000 );
-	flag_asic_only = config->GetValue( "ASICOnlyData", false );
-	flag_caen_only = config->GetValue( "CAENOnlyData", false );
-	flag_mesy_only = config->GetValue( "MesytecOnlyData", false );
+	flag_asic_only = config->GetValue( "ASICDataOnly", false );
+	flag_caen_only = config->GetValue( "CAENDataOnly", false );
+	flag_mesy_only = config->GetValue( "MesytecDataOnly", false );
+
+	std::cout << "\tASICOnlyData: " << flag_asic_only << std::endl;
+	std::cout << "\tCAENOnlyData: " << flag_caen_only << std::endl;
+	std::cout << "\tMesytecOnlyData: " << flag_mesy_only << std::endl;
+
+	// Test if we have more than one "only" flag set
+	if( ( flag_asic_only && flag_caen_only ) ||
+	   ( flag_caen_only && flag_mesy_only ) ||
+	   ( flag_asic_only && flag_mesy_only ) ) {
+
+		std::cout << "You must sort all data or data from only 1 DAQ" << std::endl;
+		std::cout << "\tASICOnlyData: " << flag_asic_only << std::endl;
+		std::cout << "\tCAENOnlyData: " << flag_caen_only << std::endl;
+		std::cout << "\tMesytecOnlyData: " << flag_mesy_only << std::endl;
+		std::cout << "Setting all these flags to false and continuing..." << std::endl;
+
+		flag_asic_only = false;
+		flag_caen_only = false;
+		flag_mesy_only = false;
+
+	}
 
 
 	// Event rejection
