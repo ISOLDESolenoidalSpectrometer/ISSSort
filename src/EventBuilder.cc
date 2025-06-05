@@ -2423,6 +2423,7 @@ void ISSEventBuilder::RecoilFinder() {
 			recoil_evt->ClearEvent();
 			recoil_evt->SetdETime( rtd_list[i] );
 			recoil_evt->SetSector( rsec_list[i] );
+			recoil_evt->SetRing( 0 );
 			recoil_evt->AddFragment( ren_list[i], rid_list[i] );
 
 			index.push_back(i);
@@ -2609,6 +2610,7 @@ void ISSEventBuilder::ZeroDegreeFinder() {
 			zd_evt->ClearEvent();
 			zd_evt->SetdETime( ztd_list[i] );
 			zd_evt->SetSector( 0 ); // always 0 ZeroDegree
+			zd_evt->SetRing( 0 ); // always 0 ZeroDegree
 			zd_evt->AddFragment( zen_list[i], 0 );
 
 			// Look for matching dE events
@@ -2798,6 +2800,7 @@ void ISSEventBuilder::CdFinder() {
 		for( unsigned int k = 0; k < cdren_list[i].size(); k++ ) {
 
 		  cd_r_en[i]->Fill( cdrid_list[i][k], cdren_list[i][k]);
+
 		} // k - rings
 
 	} // i - layer
@@ -3486,7 +3489,7 @@ void ISSEventBuilder::MakeHists(){
 		hname = "cd_rs_en_" + std::to_string(i);
 		htitle = "ring vs. sector energy (layer ";
 		htitle += std::to_string(i) + ");Energy rings (keV);Energy sectors (keV)";
-		cd_rs_en[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e5, 2e3, 0, 2e5 );
+		cd_rs_en[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e6, 2e3, 0, 2e6 );
 
 		hname = "cd_rs_td_" + std::to_string(i);
 		htitle = "ring vs. sector time difference (layer ";
@@ -3496,22 +3499,22 @@ void ISSEventBuilder::MakeHists(){
 		hname = "cd_r_en_" + std::to_string(i);
 		htitle = "ring ID vs. energy (layer ";
 		htitle += std::to_string(i) + ");Ring ID; Energy (10 keV)";
-		cd_r_en[i] = new TH2F( hname.data(), htitle.data(), set->GetNumberOfCDRings(), 0, set->GetNumberOfCDRings()-1, 2e3, 0, 2e4 );
+		cd_r_en[i] = new TH2F( hname.data(), htitle.data(), set->GetNumberOfCDRings(), 0, set->GetNumberOfCDRings()-1, 2e3, 0, 2e6 );
 
 		hname = "cd_s_en_" + std::to_string(i);
 		htitle = "Sector ID vs. energy (layer ";
 		htitle += std::to_string(i) + ");Sector ID; Energy (10 keV)";
-		cd_s_en[i] = new TH2F( hname.data(), htitle.data(), set->GetNumberOfCDSectors(), 0, set->GetNumberOfCDSectors()-1, 2e3, 0, 2e4 );
+		cd_s_en[i] = new TH2F( hname.data(), htitle.data(), set->GetNumberOfCDSectors(), 0, set->GetNumberOfCDSectors()-1, 2e3, 0, 2e6 );
 
 	}
 
 	hname = "cd_EdE";
 	htitle = "CD fission fragments dE vs E;Rest Energy [keV];Energy Loss [keV];Counts";
-	cd_EdE = new TH2F( hname.data(), htitle.data(), 2000, 0, 2e5, 4000, 0, 8e5 );
+	cd_EdE = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e6, 4000, 0, 4e6 );
 
 	hname = "cd_dEsum";
 	htitle = "CD fission fragments dE vs total energy;Total Energy [keV];Energy Loss [keV];Counts";
-	cd_dEsum = new TH2F( hname.data(), htitle.data(), 10000, 0, 2e6, 4000, 0, 8e5 );
+	cd_dEsum = new TH2F( hname.data(), htitle.data(), 10000, 0, 2e6, 4000, 0, 4e6 );
 
 
 	return;
