@@ -1982,6 +1982,8 @@ void ISSHistogrammer::MakeHists() {
 								 react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax() );
 		gamma_recoil = new TH1F( "gamma_recoil", "Gamma-ray singles, gated on recoils;Energy (keV);Counts",
 								react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax() );
+		gamma_recoilT = new TH1F( "gamma_recoilT", "Gamma-ray singles, gated on any recoils;Energy (keV);Counts",
+								react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax() );
 		gamma_array = new TH1F( "gamma_array", "Gamma-ray singles, gated on any array event;Energy (keV);Counts",
 							   react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax() );
 
@@ -2814,6 +2816,7 @@ void ISSHistogrammer::ResetHists() {
 		gamma_gamma_ebis->Reset("ICESM");
 		gamma_fission->Reset("ICESM");
 		gamma_recoil->Reset("ICESM");
+		gamma_recoilT->Reset("ICESM");
 		gamma_array->Reset("ICESM");
 		gamma_gamma_fission->Reset("ICESM");
 		gamma_gamma_recoil->Reset("ICESM");
@@ -4123,6 +4126,102 @@ unsigned long ISSHistogrammer::FillHists() {
 					} // k - gammas
 
 				} // EBIS off
+
+				// Loop over recoil events
+				bool promptcheckE = false;
+				bool randomcheckE = false;
+				bool promptcheckT = false;
+				bool randomcheckT = false;
+				double bg_frac;
+
+				// Check if we use the CD or the recoil detector
+				unsigned int generic_mult = 0;
+				if( react->RecoilType() == 0 ) {
+
+					generic_mult = read_evts->GetRecoilMultiplicity();
+					bg_frac = -1.0 * react->GetRecoilGammaFillRatio();
+
+				}
+				else if( react->RecoilType() == 1 ) {
+
+					generic_mult = read_evts->GetCDMultiplicity();
+					bg_frac = -1.0 * react->GetFissionGammaFillRatio();
+
+				}
+
+				// Loop over CD/Recoil events to check for random and prompt coincidences
+				for( unsigned int k = 0; k < generic_mult; ++k ){
+
+					// Get event
+					if( react->RecoilType() == 0 ) {
+
+						recoil_evt = read_evts->GetRecoilEvt(k);
+						generic_evt = recoil_evt;
+						promptcheckT = PromptCoincidence( gamma_evt1, recoil_evt );
+						randomcheckT = RandomCoincidence( gamma_evt1, recoil_evt );
+						gamma_recoil_td->Fill( gamma_evt1->GetTime() - recoil_evt->GetTime() );
+
+					}
+
+					else if( react->RecoilType() == 1 ) {
+
+						cd_evt1 = read_evts->GetCDEvt(k);
+						generic_evt = cd_evt1;
+						promptcheckT = PromptCoincidence( gamma_evt1, cd_evt1 );
+						randomcheckT = RandomCoincidence( gamma_evt1, cd_evt1 );
+						gamma_fission_td->Fill( gamma_evt1->GetTime() - cd_evt1->GetTime() );
+
+					}
+
+					else break;
+
+					// Check for prompt events with coincident recoils
+					if( promptcheckT ) {
+
+						// Check energy gate
+						if( RecoilCut( generic_evt ) )
+							promptcheckE = true;
+
+					}
+
+					// Check for random events with coincident recoils
+					if( randomcheckT ) {
+
+						// Check energy gate
+						if( RecoilCut( generic_evt ) )
+							randomcheckE = true;
+
+					}
+
+				} // generic recoil events
+
+				// Fill prompt hists
+				if( promptcheckT == true ){
+
+					gamma_recoilT->Fill( gamma_evt1->GetEnergy() );
+
+					// Fill energy gate hists
+					if( promptcheckE == true ) {
+
+						gamma_recoil->Fill( gamma_evt1->GetEnergy() );
+
+					} // energy cuts
+
+				} // prompt
+
+				// Fill random hists
+				else if( randomcheckT == true ){
+
+					gamma_recoilT->Fill( gamma_evt1->GetEnergy(), bg_frac );
+
+					// Fill energy gate hists
+					if( randomcheckE == true ) {
+
+						gamma_recoil->Fill( gamma_evt1->GetEnergy(), bg_frac );
+
+					} // energy cuts
+
+				} // random
 
 			} // j - gammas
 

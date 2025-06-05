@@ -428,6 +428,27 @@ public:
 		return fission_gamma_ratio;
 	};///< Getter for fission-gamma fill ratio (unused?)
 
+	// Recoil-gamma time difference
+	inline double GetRecoilGammaPromptTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return recoil_gamma_prompt[i];
+		else return 0;
+	};///< Getter for recoil-gamma prompt time difference, used for defining coincidence windows
+
+	inline double GetRecoilGammaRandomTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return recoil_gamma_random[i];
+		else return 0;
+	};///< Getter for recoil-gamma random time difference, used for defining coincidence windows
+
+	inline double GetRecoilGammaTimeRatio(){
+		return ( recoil_gamma_prompt[1] - recoil_gamma_prompt[0] ) / ( recoil_gamma_random[1] - recoil_gamma_random[0] );
+	};///< Returns prompt window/random window
+
+	inline double GetRecoilGammaFillRatio(){
+		return recoil_gamma_ratio;
+	};///< Getter for recoil-gamma fill ratio (unused?)
+
 	// Gamma-gamma time difference
 	inline double GetGammaGammaPromptTime( unsigned char i ){
 		// i = 0 for lower limit and i = 1 for upper limit
@@ -608,6 +629,9 @@ private:
 	double fission_gamma_prompt[2];		///< Prompt time window between fission-gamma events
 	double fission_gamma_random[2];		///< Random time window between fission-gamma events
 	double fission_gamma_ratio;			///< scaling factor for the fission-gamma random window
+	double recoil_gamma_prompt[2];		///< Prompt time window between recoil-gamma events
+	double recoil_gamma_random[2];		///< Random time window between recoil-gamma events
+	double recoil_gamma_ratio;			///< scaling factor for the recoil-gamma random window
 	double gamma_gamma_prompt[2];		///< Prompt time window between gamma-gamma events
 	double gamma_gamma_random[2];		///< Random time window between gamma-gamma events
 	double gamma_gamma_ratio;			///< scaling factor for the gamma-gamma random window

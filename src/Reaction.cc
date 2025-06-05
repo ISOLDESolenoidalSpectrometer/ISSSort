@@ -625,7 +625,16 @@ void ISSReaction::ReadReaction() {
 	fission_gamma_random[1] = config->GetValue( "FissionGamma_RandomTime.Max", 1200.0 );	// upper limit for fission-Gamma random time difference
 
 	// Fission-Gamma fill ratios
-	fission_gamma_ratio = config->GetValue( "FissionGamma_FillRatio", GetFissionFissionTimeRatio() );
+	fission_gamma_ratio = config->GetValue( "FissionGamma_FillRatio", GetFissionGammaTimeRatio() );
+
+	// Recoil-Gamma time windows
+	recoil_gamma_prompt[0] = config->GetValue( "RecoilGamma_PromptTime.Min", -300.0 );	// lower limit for fission-Gamma prompt time difference
+	recoil_gamma_prompt[1] = config->GetValue( "RecoilGamma_PromptTime.Max", 300.0 );		// upper limit for fission-Gamma prompt time difference
+	recoil_gamma_random[0] = config->GetValue( "RecoilGamma_RandomTime.Min", 600.0 );		// lower limit for fission-Gamma random time difference
+	recoil_gamma_random[1] = config->GetValue( "RecoilGamma_RandomTime.Max", 1200.0 );	// upper limit for fission-Gamma random time difference
+
+	// Recoil-Gamma fill ratios
+	recoil_gamma_ratio = config->GetValue( "RecoilGamma_FillRatio", GetRecoilGammaTimeRatio() );
 
 	// Gamma-Gamma time windows
 	gamma_gamma_prompt[0] = config->GetValue( "GammaGamma_PromptTime.Min", -300.0 );	// lower limit for gamma-gamma prompt time difference

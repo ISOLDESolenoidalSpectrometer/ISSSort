@@ -137,6 +137,13 @@ public:
 		else return false;
 	};
 
+	// Recoil - Gamma coincidence
+	inline bool	PromptCoincidence( std::shared_ptr<ISSGammaRayEvt> g, std::shared_ptr<ISSRecoilEvt> r ){
+		if( g->GetTime() - r->GetTime() > react->GetRecoilGammaPromptTime(0) &&
+		    g->GetTime() - r->GetTime() < react->GetRecoilGammaPromptTime(1) ) return true;
+		else return false;
+	};
+
 	// Gamma - Gamma coincidence
 	inline bool	PromptCoincidence( std::shared_ptr<ISSGammaRayEvt> g1, std::shared_ptr<ISSGammaRayEvt> g2 ){
 		if( g1->GetTime() - g2->GetTime() > react->GetGammaGammaPromptTime(0) &&
@@ -189,6 +196,12 @@ public:
 	inline bool	RandomCoincidence( std::shared_ptr<ISSGammaRayEvt> g1, std::shared_ptr<ISSGammaRayEvt> g2 ){
 		if( g1->GetTime() - g2->GetTime() > react->GetGammaGammaRandomTime(0) &&
 		    g1->GetTime() - g2->GetTime() < react->GetGammaGammaRandomTime(1) ) return true;
+		else return false;
+	};
+
+	inline bool	RandomCoincidence( std::shared_ptr<ISSGammaRayEvt> g, std::shared_ptr<ISSRecoilEvt> r ){
+		if( g->GetTime() - r->GetTime() > react->GetRecoilGammaRandomTime(0) &&
+		    g->GetTime() - r->GetTime() < react->GetRecoilGammaRandomTime(1) ) return true;
 		else return false;
 	};
 
@@ -632,7 +645,7 @@ private:
 	// Gamma rays
 	TH1F *gamma_ebis, *gamma_ebis_on, *gamma_ebis_off;
 	TH2F *gamma_gamma_ebis;
-	TH1F *gamma_fission, *gamma_recoil, *gamma_array;
+	TH1F *gamma_fission, *gamma_recoil, *gamma_recoilT, *gamma_array;
 	TH1F *gamma_gamma_td, *gamma_fission_td, *gamma_recoil_td, *gamma_array_td;
 	TH2F *gamma_gamma_fission, *gamma_gamma_recoil, *gamma_gamma_array;
 	TH2F *gamma_Ex_ebis, *gamma_Ex_fission, *gamma_Ex_recoil;
