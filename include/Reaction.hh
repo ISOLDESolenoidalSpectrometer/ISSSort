@@ -199,7 +199,9 @@ public:
 	double	SimulateEmission( double en, double theta_lab, double phi_lab, int detector = 0 );///< Called during the simulation of particle emission
 
 	// Getters
-	inline bool   IsFission(){ return fission; }; ///< returns true/false if we are studying fission of the recoiling nucleus
+	inline bool   		IsFission(){ return fission; }; ///< returns true/false if we are studying fission of the recoiling nucleus
+	inline unsigned int RecoilType(){ return recoil_evt_type; };
+
 	inline double GetField(){ return Mfield; };///< Getter for the magnetic field strength
 	inline double GetField_corr(){ return Mfield*T_to_mm; };///< Calculates magnetic field strength in MeV/ e*mm*c
 	inline double GetArrayDistance(){ return z0; };///< Getter for the distance between the array and first silicon wafer
@@ -232,6 +234,7 @@ public:
 
 	inline bool GetArrayHistMode(){ return array_hist_mode; }; ///< array mode, p-side only data or demand p/n coincidences
 	inline bool RxTreeEnabled(){ return rxtree_flag; }; ///< if the user output tree is enabled
+	inline bool GammaRayHistsEnabled(){ return hist_gamma; }; ///< if the gamma-ray histograms are enabled
 
 	inline unsigned int HistExBins(){ return hist_nbins_ex; }
 	inline double HistExMin(){ return hist_range_ex[0]; }
@@ -240,6 +243,10 @@ public:
 	inline unsigned int HistElabBins(){ return hist_nbins_elab; }
 	inline double HistElabMin(){ return hist_range_elab[0]; }
 	inline double HistElabMax(){ return hist_range_elab[1]; }
+
+	inline unsigned int HistGammaBins(){ return hist_nbins_gamma; }
+	inline double HistGammaMin(){ return hist_range_gamma[0]; }
+	inline double HistGammaMax(){ return hist_range_gamma[1]; }
 
 	inline double GetZmeasured(){ return z_meas; };///< Getter for the measured z (where the particle lands on the array)
 	inline double GetZprojected(){ return z; };///< Getter for the projected z (where the particle would intersect with the beam axis)
@@ -291,6 +298,28 @@ public:
 	};///< Getter for array-recoil fill ratio (unused?)
 
 
+	// Array-gamma time difference
+	inline double GetArrayGammaPromptTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return array_gamma_prompt[i];
+		else return 0;
+	};///< Getter for array-gamma prompt time difference, used for defining coincidence windows
+
+	inline double GetArrayGammaRandomTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return array_gamma_random[i];
+		else return 0;
+	};///< Getter for array-gamma random time difference, used for defining coincidence windows
+
+	inline double GetArrayGammaTimeRatio(){
+		return ( array_gamma_prompt[1] - array_gamma_prompt[0] ) / ( array_gamma_random[1] - array_gamma_random[0] );
+	};///< Returns prompt window/random window
+
+	inline double GetArrayGammaFillRatio(){
+		return array_gamma_ratio;
+	};///< Getter for array-gamma fill ratio (unused?)
+
+
 	// Array-fission time difference
 	inline double GetArrayFissionPromptTime( unsigned char i ){
 		// i = 0 for lower limit and i = 1 for upper limit
@@ -336,25 +365,25 @@ public:
 
 
 	// Lume-fission time difference
-	inline double GetLumeFissionPromptTime( unsigned char i ){
+	inline double GetLumeRecoilPromptTime( unsigned char i ){
 		// i = 0 for lower limit and i = 1 for upper limit
-		if( i < 2 ) return lume_fission_prompt[i];
+		if( i < 2 ) return lume_recoil_prompt[i];
 		else return 0;
-	};///< Getter for lume-fission prompt time difference, used for defining coincidence windows
+	};///< Getter for lume-recoil prompt time difference, used for defining coincidence windows
 
-	inline double GetLumeFissionRandomTime( unsigned char i ){
+	inline double GetLumeRecoilRandomTime( unsigned char i ){
 		// i = 0 for lower limit and i = 1 for upper limit
-		if( i < 2 ) return lume_fission_random[i];
+		if( i < 2 ) return lume_recoil_random[i];
 		else return 0;
-	};///< Getter for lume-fission random time difference, used for defining coincidence windows
+	};///< Getter for lume-recoil random time difference, used for defining coincidence windows
 
-	inline double GetLumeFissionTimeRatio(){
-		return ( lume_fission_prompt[1] - lume_fission_prompt[0] ) / ( lume_fission_random[1] - lume_fission_random[0] );
+	inline double GetLumeRecoilTimeRatio(){
+		return ( lume_recoil_prompt[1] - lume_recoil_prompt[0] ) / ( lume_recoil_random[1] - lume_recoil_random[0] );
 	};///< Returns prompt window/random window
 
-	inline double GetLumeFissionFillRatio(){
-		return lume_fission_ratio;
-	};///< Getter for lume-fission fill ratio (unused?)
+	inline double GetLumeRecoilFillRatio(){
+		return lume_recoil_ratio;
+	};///< Getter for lume-recoil fill ratio (unused?)
 
 
 	// fission-fission time difference
@@ -377,6 +406,48 @@ public:
 	inline double GetFissionFissionFillRatio(){
 		return fission_fission_ratio;
 	};///< Getter for fission-fission fill ratio (unused?)
+
+	// Fission-gamma time difference
+	inline double GetFissionGammaPromptTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return fission_gamma_prompt[i];
+		else return 0;
+	};///< Getter for fission-gamma prompt time difference, used for defining coincidence windows
+
+	inline double GetFissionGammaRandomTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return fission_gamma_random[i];
+		else return 0;
+	};///< Getter for fission-gamma random time difference, used for defining coincidence windows
+
+	inline double GetFissionGammaTimeRatio(){
+		return ( fission_gamma_prompt[1] - fission_gamma_prompt[0] ) / ( fission_gamma_random[1] - fission_gamma_random[0] );
+	};///< Returns prompt window/random window
+
+	inline double GetFissionGammaFillRatio(){
+		return fission_gamma_ratio;
+	};///< Getter for fission-gamma fill ratio (unused?)
+
+	// Gamma-gamma time difference
+	inline double GetGammaGammaPromptTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return gamma_gamma_prompt[i];
+		else return 0;
+	};///< Getter for gamma-gamma prompt time difference, used for defining coincidence windows
+
+	inline double GetGammaGammaRandomTime( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return gamma_gamma_random[i];
+		else return 0;
+	};///< Getter for gamma-gamma random time difference, used for defining coincidence windows
+
+	inline double GetGammaGammaTimeRatio(){
+		return ( gamma_gamma_prompt[1] - gamma_gamma_prompt[0] ) / ( gamma_gamma_random[1] - gamma_gamma_random[0] );
+	};///< Returns prompt window/random window
+
+	inline double GetGammaGammaFillRatio(){
+		return gamma_gamma_ratio;
+	};///< Getter for gamma-gamma fill ratio (unused?)
 
 
 	// Setters
@@ -407,7 +478,7 @@ public:
 		else return nullptr;
 	};///< Getter for particular recoil cuts
 
-	// Get fission fragmnet cuts
+	// Get fission fragment cuts
 	inline std::shared_ptr<TCutG> GetFissionCutHeavy(){
 		return fission_cutH;
 	};///< Getter for the heavy fission fragment cut
@@ -509,23 +580,37 @@ private:
 	unsigned int hist_nbins_ex;			///< number of bins in the Ex histograms
 	double hist_range_elab[2];			///< lower and upper limits of the Elab historgrams
 	unsigned int hist_nbins_elab;		///< number of bins in the Elab histograms
+	double hist_range_gamma[2];			///< lower and upper limits of the gamma-ray historgrams
+	unsigned int hist_nbins_gamma;		///< number of bins in the gamma-ray histograms
+
+	// Histogram options
+	bool hist_gamma;					///< option to turn on or off the gamma-ray histograms
 
 	// Coincidence windows
 	double array_recoil_prompt[2];		///< Prompt time window between recoil and array event
 	double array_recoil_random[2];		///< Random time window between recoil and array event
 	double array_recoil_ratio;			///< scaling factor for the recoil-array random window
+	double array_gamma_prompt[2];		///< Prompt time window between recoil and gamma event
+	double array_gamma_random[2];		///< Random time window between recoil and gamma event
+	double array_gamma_ratio;			///< scaling factor for the recoil-gamma random window
 	double array_fission_prompt[2]; 	///< Prompt time window between fission and array event
 	double array_fission_random[2]; 	///< Random time window between fission and array event
 	double array_fission_ratio;			///< scaling factor for the fission-array random window
 	double elum_recoil_prompt[2];		///< Prompt time window between recoil and elum event
 	double elum_recoil_random[2];		///< Random time window between recoil and elum event
 	double elum_recoil_ratio;			///< scaling factor for the recoil-elum random window
-	double lume_fission_prompt[2];		///< Prompt time window between fission and lume event
-	double lume_fission_random[2];		///< Random time window between fission and lume event
-	double lume_fission_ratio;			///< scaling factor for the fission-lume random window
+	double lume_recoil_prompt[2];		///< Prompt time window between recoil and lume event
+	double lume_recoil_random[2];		///< Random time window between recoil and lume event
+	double lume_recoil_ratio;			///< scaling factor for the recoil-lume random window
 	double fission_fission_prompt[2];	///< Prompt time window between two fission events
 	double fission_fission_random[2];	///< Random time window between two fission events
 	double fission_fission_ratio;		///< scaling factor for the fission-fission random window
+	double fission_gamma_prompt[2];		///< Prompt time window between fission-gamma events
+	double fission_gamma_random[2];		///< Random time window between fission-gamma events
+	double fission_gamma_ratio;			///< scaling factor for the fission-gamma random window
+	double gamma_gamma_prompt[2];		///< Prompt time window between gamma-gamma events
+	double gamma_gamma_random[2];		///< Random time window between gamma-gamma events
+	double gamma_gamma_ratio;			///< scaling factor for the gamma-gamma random window
 
 	// Experimental info on the ejectile
 	double r_meas;		///< Measured radius of the ejectile when it interects the array
@@ -544,6 +629,11 @@ private:
 	double elum_rin;		///< inner radius of the ELUM detector
 	double elum_rout;		///< outer radius of the ELUM detector
 	double elum_deadlayer;	///< Dead layer on ELUM in mm of Si equivalent
+
+	// Recoil detector type
+	unsigned int recoil_evt_type;	///< Which type of recoil detector are we using?
+									///< 0: is the normal recoil detector (QQQ1 or S14) with data in recoil_evt
+									///< 1: is the CD detector from the fission setup (S1) with data in cd_evt
 
 	// Cuts
 	unsigned int nrecoilcuts;						///< The number of recoil cuts

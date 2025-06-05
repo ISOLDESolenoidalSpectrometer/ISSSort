@@ -102,6 +102,13 @@ public:
 		else return false;
 	};
 
+	// Gamma - array coincidence
+	inline bool	PromptCoincidence( std::shared_ptr<ISSGammaRayEvt> g, std::shared_ptr<ISSArrayEvt> a ){
+		if( g->GetTime() - a->GetTime() > react->GetArrayGammaPromptTime(0) &&
+		    g->GetTime() - a->GetTime() < react->GetArrayGammaPromptTime(1) ) return true;
+		else return false;
+	};
+
 	// Recoil - elum coincidence
 	inline bool	PromptCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSElumEvt> e ){
 		if( r->GetTime() - e->GetTime() > react->GetElumRecoilPromptTime(0) &&
@@ -109,10 +116,10 @@ public:
 		else return false;
 	};
 
-	// Fission - lume coincidence
-	inline bool	PromptCoincidence( std::shared_ptr<ISSCDEvt> f, std::shared_ptr<ISSLumeEvt> l ){
-		if( f->GetTime() - l->GetTime() > react->GetLumeFissionPromptTime(0) &&
-		    f->GetTime() - l->GetTime() < react->GetLumeFissionPromptTime(1) ) return true;
+	// Recoil - lume coincidence
+	inline bool	PromptCoincidence( std::shared_ptr<ISSMultiLayerDetectorEvt> r, std::shared_ptr<ISSLumeEvt> l ){
+		if( r->GetTime() - l->GetTime() > react->GetLumeRecoilPromptTime(0) &&
+		    r->GetTime() - l->GetTime() < react->GetLumeRecoilPromptTime(1) ) return true;
 		else return false;
 	};
 
@@ -120,6 +127,20 @@ public:
 	inline bool	PromptCoincidence( std::shared_ptr<ISSCDEvt> f1, std::shared_ptr<ISSCDEvt> f2 ){
 		if( f1->GetTime() - f2->GetTime() > react->GetFissionFissionPromptTime(0) &&
 		    f1->GetTime() - f2->GetTime() < react->GetFissionFissionPromptTime(1) ) return true;
+		else return false;
+	};
+
+	// Fission - Gamma coincidence
+	inline bool	PromptCoincidence( std::shared_ptr<ISSGammaRayEvt> g, std::shared_ptr<ISSCDEvt> f ){
+		if( g->GetTime() - f->GetTime() > react->GetFissionGammaPromptTime(0) &&
+		    g->GetTime() - f->GetTime() < react->GetFissionGammaPromptTime(1) ) return true;
+		else return false;
+	};
+
+	// Gamma - Gamma coincidence
+	inline bool	PromptCoincidence( std::shared_ptr<ISSGammaRayEvt> g1, std::shared_ptr<ISSGammaRayEvt> g2 ){
+		if( g1->GetTime() - g2->GetTime() > react->GetGammaGammaPromptTime(0) &&
+		    g1->GetTime() - g2->GetTime() < react->GetGammaGammaPromptTime(1) ) return true;
 		else return false;
 	};
 
@@ -141,15 +162,33 @@ public:
 		else return false;
 	};
 
-	inline bool	RandomCoincidence( std::shared_ptr<ISSCDEvt> f, std::shared_ptr<ISSLumeEvt> l ){
-		if( f->GetTime() - l->GetTime() > react->GetLumeFissionRandomTime(0) &&
-		    f->GetTime() - l->GetTime() < react->GetLumeFissionRandomTime(1) ) return true;
+	inline bool	RandomCoincidence( std::shared_ptr<ISSMultiLayerDetectorEvt> r, std::shared_ptr<ISSLumeEvt> l ){
+		if( r->GetTime() - l->GetTime() > react->GetLumeRecoilRandomTime(0) &&
+		    r->GetTime() - l->GetTime() < react->GetLumeRecoilRandomTime(1) ) return true;
 		else return false;
 	};
 
 	inline bool	RandomCoincidence( std::shared_ptr<ISSCDEvt> f1, std::shared_ptr<ISSCDEvt> f2 ){
 		if( f1->GetTime() - f2->GetTime() > react->GetFissionFissionRandomTime(0) &&
 		    f1->GetTime() - f2->GetTime() < react->GetFissionFissionRandomTime(1) ) return true;
+		else return false;
+	};
+
+	inline bool	RandomCoincidence( std::shared_ptr<ISSGammaRayEvt> g, std::shared_ptr<ISSCDEvt> f ){
+		if( g->GetTime() - f->GetTime() > react->GetFissionGammaRandomTime(0) &&
+		    g->GetTime() - f->GetTime() < react->GetFissionGammaRandomTime(1) ) return true;
+		else return false;
+	};
+
+	inline bool	RandomCoincidence( std::shared_ptr<ISSGammaRayEvt> g, std::shared_ptr<ISSArrayEvt> a ){
+		if( g->GetTime() - a->GetTime() > react->GetArrayGammaRandomTime(0) &&
+		   g->GetTime() - a->GetTime() < react->GetArrayGammaRandomTime(1) ) return true;
+		else return false;
+	};
+
+	inline bool	RandomCoincidence( std::shared_ptr<ISSGammaRayEvt> g1, std::shared_ptr<ISSGammaRayEvt> g2 ){
+		if( g1->GetTime() - g2->GetTime() > react->GetGammaGammaRandomTime(0) &&
+		    g1->GetTime() - g2->GetTime() < react->GetGammaGammaRandomTime(1) ) return true;
 		else return false;
 	};
 
@@ -183,6 +222,11 @@ public:
 		    f->GetTime() - read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
 		else return false;
 	};
+	inline bool	OnBeam( std::shared_ptr<ISSGammaRayEvt> g ){
+		if( g->GetTime() - read_evts->GetEBIS() >= 0 &&
+		    g->GetTime() - read_evts->GetEBIS() < react->GetEBISOnTime() ) return true;
+		else return false;
+	};
 	inline bool	OffBeam( std::shared_ptr<ISSRecoilEvt> r ){
 		if( r->GetTime() - read_evts->GetEBIS() >= react->GetEBISOnTime() &&
 			r->GetTime() - read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
@@ -211,6 +255,11 @@ public:
 	inline bool	OffBeam( std::shared_ptr<ISSCDEvt> f ){
 		if( f->GetTime() - read_evts->GetEBIS() >= react->GetEBISOnTime() &&
 		    f->GetTime() - read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
+		else return false;
+	};
+	inline bool	OffBeam( std::shared_ptr<ISSGammaRayEvt> g ){
+		if( g->GetTime() - read_evts->GetEBIS() >= react->GetEBISOnTime() &&
+		    g->GetTime() - read_evts->GetEBIS() < react->GetEBISOffTime() ) return true;
 		else return false;
 	};
 	inline bool	T1Cut( std::shared_ptr<ISSRecoilEvt> r ){
@@ -247,7 +296,7 @@ public:
 	inline bool	LaserOff(){ return !read_evts->GetLaserStatus(); };
 
 	// Recoil energy gate
-	inline bool RecoilCut( std::shared_ptr<ISSRecoilEvt> r ){
+	inline bool RecoilCut( std::shared_ptr<ISSMultiLayerDetectorEvt> r ){
 		return react->GetRecoilCut( r->GetSector() )
 					->IsInside( r->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
 								r->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
@@ -278,12 +327,15 @@ private:
 	/// Input tree
 	TChain *input_tree;
 	ISSEvts *read_evts = nullptr;
+	std::shared_ptr<ISSMultiLayerDetectorEvt> generic_evt;
 	std::shared_ptr<ISSArrayEvt> array_evt;
 	std::shared_ptr<ISSArrayPEvt> arrayp_evt;
 	std::shared_ptr<ISSRecoilEvt> recoil_evt;
 	std::shared_ptr<ISSElumEvt> elum_evt;
 	std::shared_ptr<ISSZeroDegreeEvt> zd_evt;
 	std::shared_ptr<ISSLumeEvt> lume_evt;
+	std::shared_ptr<ISSGammaRayEvt> gamma_evt1; // need two gamma_evts so
+	std::shared_ptr<ISSGammaRayEvt> gamma_evt2; // we can look for coincidences
 	std::shared_ptr<ISSCDEvt> cd_evt1; // need two cd_evt's because
 	std::shared_ptr<ISSCDEvt> cd_evt2; // we look for coincidences
 
@@ -309,7 +361,7 @@ private:
 	std::vector<std::vector<TH1F*>> recoil_array_td;
 	std::vector<std::vector<TH1F*>> recoil_elum_td;
 	std::vector<TH1F*> fission_array_td;
-	std::vector<TH1F*> fission_lume_td;
+	std::vector<TH1F*> recoil_lume_td;
 	TH1F *fission_fission_td;
 	TH2F *fission_fission_td_sec;
 	TH2F *recoil_array_tw_hit0, *recoil_array_tw_hit1;
@@ -562,10 +614,10 @@ private:
 	std::vector<TH1F*> lume_ebis_det;
 	std::vector<TH1F*> lume_ebis_on_det;
 	std::vector<TH1F*> lume_ebis_off_det;
-	std::vector<TH1F*> lume_fission_det;
-	std::vector<TH1F*> lume_elastic_det;
-	std::vector<TH1F*> lume_fission_random_det;
-	std::vector<TH1F*> lume_elastic_random_det;
+	std::vector<TH1F*> lume_recoil_det;
+	std::vector<TH1F*> lume_recoilT_det;
+	std::vector<TH1F*> lume_recoil_random_det;
+	std::vector<TH1F*> lume_recoilT_random_det;
 	std::vector<TH2F*> lume_E_vs_x_det;
 	std::vector<TH2F*> lume_E_vs_x_ebis_det;
 	std::vector<TH2F*> lume_E_vs_x_ebis_on_det;
@@ -574,8 +626,18 @@ private:
     TH2F *lume_E_vs_x, *lume_vs_T1, *lume_E_vs_x_ebis;
     TH2F *lume_E_vs_x_ebis_on, *lume_E_vs_x_ebis_off;
     TH2F *lume_E_vs_x_wide;
-	TH1F *lume_fission, *lume_elastic;
-	TH1F *lume_fission_random, *lume_elastic_random;
+	TH1F *lume_recoil, *lume_recoilT;
+	TH1F *lume_recoil_random, *lume_recoilT_random;
+
+	// Gamma rays
+	TH1F *gamma_ebis, *gamma_ebis_on, *gamma_ebis_off;
+	TH2F *gamma_gamma_ebis;
+	TH1F *gamma_fission, *gamma_recoil, *gamma_array;
+	TH1F *gamma_gamma_td, *gamma_fission_td, *gamma_recoil_td, *gamma_array_td;
+	TH2F *gamma_gamma_fission, *gamma_gamma_recoil, *gamma_gamma_array;
+	TH2F *gamma_Ex_ebis, *gamma_Ex_fission, *gamma_Ex_recoil;
+	std::vector<TH1F*> gamma_array_cut;
+	std::vector<TH2F*> gamma_gamma_array_cut;
 
 };
 

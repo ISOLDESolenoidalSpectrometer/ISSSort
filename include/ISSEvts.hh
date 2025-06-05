@@ -154,7 +154,8 @@ public:
 	~ISSMultiLayerDetectorEvt();
 
 	void SetEvent( std::vector<float> myenergy,
-				  std::vector<unsigned char> myid, unsigned char mysec,
+				  std::vector<unsigned char> myid,
+				  unsigned char mysec, unsigned char myring,
 				  double mydetime, double myetime );
 
 	void ClearEvent();
@@ -167,13 +168,14 @@ public:
 	inline void SetSector( unsigned char s ){ sec = s; };
 	inline void SetdETime( double t ){ detime = t; };
 	inline void SetETime( double t ){ etime = t; };
-
+	inline void SetRing( unsigned char s ){ ring = s; };
 
 	inline unsigned char	GetDepth(){ return energy.size(); };
 	inline unsigned char	GetSector(){ return sec; };
 	inline double			GetTime(){ return detime; };
 	inline double			GetdETime(){ return detime; };
 	inline double			GetETime(){ return etime; };
+	inline unsigned char	GetRing(){ return ring; };
 
 	inline std::vector<float>			GetEnergies(){ return energy; };
 	inline std::vector<unsigned char>	GetIDs(){ return id; };
@@ -223,7 +225,10 @@ protected:
 	double						detime;	///< time stamp of dE event
 	double						etime;	///< time stamp of E event
 
-	ClassDef( ISSMultiLayerDetectorEvt, 1 )
+	// extra variables for CD events
+	unsigned char				ring;	///< ring of the CD detector
+
+	ClassDef( ISSMultiLayerDetectorEvt, 2 )
 
 };
 
@@ -375,14 +380,6 @@ public:
 	ISSCDEvt();
 	~ISSCDEvt();
 
-	void SetEvent( std::vector<float> myenergy,
-		       std::vector<unsigned char> myid,
-		       unsigned char mysec, unsigned char myring,
-		       double mydetime, double myetime );
-
-	inline void 			SetRing( unsigned char s ){ ring = s; };
-	inline unsigned char	GetRing(){ return ring; };
-
 	// Geometry
 	float		GetX( bool randomised = false );
 	float		GetY( bool randomised = false );
@@ -392,10 +389,7 @@ public:
 
 protected:
 
-	// extra variables for CD events
-	unsigned char				ring;	///< ring of the CD detector
-
-	ClassDef( ISSCDEvt, 3 );
+	ClassDef( ISSCDEvt, 4 );
 
 };
 
