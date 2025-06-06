@@ -93,6 +93,7 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSRecoilEvt> event ) {
 	fill_evt.SetEvent( event->GetEnergies(),
 					  event->GetIDs(),
 					  event->GetSector(),
+					  event->GetRing(),
 					  event->GetdETime(),
 					  event->GetETime() );
 
@@ -132,6 +133,7 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSZeroDegreeEvt> event ) {
 	fill_evt.SetEvent( event->GetEnergies(),
 					  event->GetIDs(),
 					  event->GetSector(),
+					  event->GetRing(),
 					  event->GetdETime(),
 					  event->GetETime() );
 
@@ -204,8 +206,10 @@ void ISSSingleLayerDetectorEvt::SetEvent( float myenergy, unsigned char myid,
 ISSMultiLayerDetectorEvt::ISSMultiLayerDetectorEvt(){}
 ISSMultiLayerDetectorEvt::~ISSMultiLayerDetectorEvt(){}
 
+
 void ISSMultiLayerDetectorEvt::SetEvent( std::vector<float> myenergy,
-										std::vector<unsigned char> myid, unsigned char mysec,
+										std::vector<unsigned char> myid,
+										unsigned char mysec, unsigned char myring,
 										double mydetime, double myetime ) {
 
 	if( myenergy.size() != myid.size() ) {
@@ -220,6 +224,7 @@ void ISSMultiLayerDetectorEvt::SetEvent( std::vector<float> myenergy,
 	energy = myenergy;
 	id = myid;
 	sec = mysec;
+	ring = myring;
 	detime = mydetime;
 	etime = myetime;
 
@@ -612,32 +617,6 @@ void ISSLumeEvt::SetEvent( float myenergy, unsigned char myid,
 
 ISSCDEvt::ISSCDEvt(){}
 ISSCDEvt::~ISSCDEvt(){}
-
-void ISSCDEvt::SetEvent( std::vector<float> myenergy,
-			 std::vector<unsigned char> myid,
-			 unsigned char mysec, unsigned char myring,
-			 double mydetime, double myetime ) {
-
-
-	if( myenergy.size() != myid.size() ) {
-
-		std::cerr << __PRETTY_FUNCTION__;
-		std::cerr << " error: The vectors for energy and id must have the same size!";
-		std::cerr << std::endl;
-		return;
-
-	}
-
-	energy = myenergy;
-	id = myid;
-	sec = mysec;
-	ring = myring;
-	detime = mydetime;
-	etime = myetime;
-
-	return;
-
-}
 
 // CD Geometry
 float ISSCDEvt::GetX( bool randomised ){

@@ -46,6 +46,10 @@
 #ELUM.Deadlayer: 0.0004		# Dead layer on surface of the ELUM in mm of Al (0.4 µm from data sheets)
 
 
+# Recoil detector type
+# Recoil.Type: 0			# type = 0 for normal recoil detector events with sector readout (QQQ1 or S14)
+							# type = 1 for using the CD detector events from the fission setup to apply recoil gates
+
 ## EBIS windows
 #EBIS.On: 1.20e6		# slow extraction is about 1.2 ms
 #EBIS.Off: 2.52e7		# Off window is 20 times the On window
@@ -66,6 +70,12 @@
 #ArrayRecoil_RandomTime.Min: 600
 #ArrayRecoil_RandomTime.Max: 1200
 
+## Array-Gamma windows
+#ArrayGamma_PromptTime.Min: -500
+#ArrayGamma_PromptTime.Max: 500
+#ArrayGamma_RandomTime.Min: 1000
+#ArrayGamma_RandomTime.Max: 2000
+
 ## ELUM-Recoil windows
 #ElumRecoil_PromptTime.Min: -300
 #ElumRecoil_PromptTime.Max: 300
@@ -78,11 +88,11 @@
 #ArrayFission_RandomTime.Min: 600
 #ArrayFission_RandomTime.Max: 1200
 
-## ELUM-Fission windows
-#ElumFission_PromptTime.Min: -300
-#ElumFission_PromptTime.Max: 300
-#ElumFission_RandomTime.Min: 600
-#ElumFission_RandomTime.Max: 1200
+## LUME-Recoil windows
+#LumeRecoil_PromptTime.Min: -300
+#LumeRecoil_PromptTime.Max: 300
+#LumeRecoil_RandomTime.Min: 600
+#LumeRecoil_RandomTime.Max: 1200
 
 ## Fission-Fission windows
 #FissionFission_PromptTime.Min: -300
@@ -90,7 +100,27 @@
 #FissionFission_RandomTime.Min: 600
 #FissionFission_RandomTime.Max: 1200
 
+## Fission-Gamma windows
+#FissionGamma_PromptTime.Min: -300
+#FissionGamma_PromptTime.Max: 300
+#FissionGamma_RandomTime.Min: 600
+#FissionGamma_RandomTime.Max: 1200
+
+## Recoil-Gamma windows
+#RecoilGamma_PromptTime.Min: -300
+#RecoilGamma_PromptTime.Max: 300
+#RecoilGamma_RandomTime.Min: 600
+#RecoilGamma_RandomTime.Max: 1200
+
+## Gamma-Gamma windows
+#GammaGamma_PromptTime.Min: -300
+#GammaGamma_PromptTime.Max: 300
+#GammaGamma_RandomTime.Min: 600
+#GammaGamma_RandomTime.Max: 1200
+
 ## Recoil cut files
+# For the normal recoil detector (Recoill.Type = 1), you need to give a cut file for each sector
+# For the Fission CD setup, you just need to give information for RecoilCut_0 and it applies to all sectors
 #RecoilCut_0.File: NULL	# ROOT file containing the 2D recoil energy cut for sector 0
 #RecoilCut_0.Name: CUTG	# name of the TCutG object inside the ROOT file for sector 0
 #RecoilCut_1.File: NULL	# sector 1
@@ -114,11 +144,15 @@ FissionCut.Light.Name: CUTG
 
 
 ## Histogramming options
-#Hists.ArrayMode: 0			# 0 - demand p/n coincidences, 1 - p-side only
-#Hists.OutputTree: 0		# 0 - off, 1 - reaction data output to tree
-#Hists.Ex.Min: -5000		# Minimum of the Ex spectra in keV
-#Hists.Ex.Max: 15000		# Maximum of the Ex spectra in keV
-#Hists.Ex.Bins: 1000		# Number of bins in the Ex spectra
-#Hists.Elab.Min: 0			# Minimum of the Elab spectra in keV
-#Hists.Elab.Max: 16000		# Maximum of the Elab spectra in keV
-#Hists.Elab.Bins: 800		# Number of bins in the Elab spectra
+#Hists.ArrayMode: 0				# 0 - demand p/n coincidences, 1 - p-side only
+#Hists.OutputTree: 0			# 0 - off, 1 - reaction data output to tree
+#Hists.GammaRays: false			# Make and fill gamma-ray spectra? (default: false)
+#Hists.Ex.Min: -5000			# Minimum of the Ex spectra in keV
+#Hists.Ex.Max: 15000			# Maximum of the Ex spectra in keV
+#Hists.Ex.Bins: 1000			# Number of bins in the Ex spectra
+#Hists.Elab.Min: 0				# Minimum of the Elab spectra in keV
+#Hists.Elab.Max: 16000			# Maximum of the Elab spectra in keV
+#Hists.Elab.Bins: 800			# Number of bins in the Elab spectra
+#Hists.GammaRays.Min: 0			# Minimum of the Elab spectra in keV
+#Hists.GammaRays.Max: 4000		# Maximum of the Elab spectra in keV
+#Hists.GammaRays.Bins: 2000		# Number of bins in the Elab spectra

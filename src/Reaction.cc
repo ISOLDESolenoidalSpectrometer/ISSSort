@@ -507,9 +507,14 @@ void ISSReaction::ReadReaction() {
 	fission_cutH = ReadCutFile( fissioncutHfile, fissioncutHname );
 	fission_cutL = ReadCutFile( fissioncutLfile, fissioncutLname );
 
+	// Recoil event type
+	recoil_evt_type	= config->GetValue( "Recoil.Type", 0 ); // 0 for normal recoil, 1 for CD with recoil gate
 
 	// Get recoil energy cut
-	nrecoilcuts = set->GetNumberOfRecoilSectors();
+	if( recoil_evt_type == 0 )
+		nrecoilcuts = set->GetNumberOfRecoilSectors();
+	else if( recoil_evt_type == 1 )
+		nrecoilcuts = 1;
 	recoil_cut.resize( nrecoilcuts );
 	recoilcutfile.resize( nrecoilcuts );
 	recoilcutname.resize( nrecoilcuts );
@@ -519,6 +524,7 @@ void ISSReaction::ReadReaction() {
 		recoilcutname.at(i) = config->GetValue( Form( "RecoilCut_%d.Name", i ), "CUTG" );
 
 		recoil_cut[i] = ReadCutFile(recoilcutfile.at(i), recoilcutname.at(i));
+
 	}
 
 	// Get E versus z cuts
@@ -532,6 +538,7 @@ void ISSReaction::ReadReaction() {
 		evszcutname.at(i) = config->GetValue( Form( "EvsZCut_%d.Name", i ), "CUTG" );
 
 		e_vs_z_cut[i] = ReadCutFile( evszcutfile.at(i), evszcutname.at(i) );
+
 	}
 
 	// EBIS time window
@@ -551,6 +558,7 @@ void ISSReaction::ReadReaction() {
 	// Histogramming options
 	array_hist_mode = config->GetValue( "Hists.ArrayMode", 0 ); // default = 0 (require n-side), others: 1 (p-side only)
 	rxtree_flag = config->GetValue( "Hists.OutputTree", 0 ); // default = 0 (off); 1 or true to enable the output tree
+	hist_gamma = config->GetValue( "Hists.GammaRays", false ); // default = false; 1 or true to enable the filling of gamma-ray histograms
 
 	// Histogramming ranges
 	hist_nbins_ex = config->GetValue( "Hists.Ex.Bins", 1000 );		// number of bins in Ex histograms
@@ -559,6 +567,9 @@ void ISSReaction::ReadReaction() {
 	hist_nbins_elab = config->GetValue( "Hists.Elab.Bins", 800 );	// number of bins in Elab histograms
 	hist_range_elab[0] = config->GetValue( "Hists.Elab.Min", 0.0 );		// lower limit for Elab histograms
 	hist_range_elab[1] = config->GetValue( "Hists.Elab.Max", 16000.0 );	// upper limit for Elab histograms
+	hist_nbins_gamma = config->GetValue( "Hists.GammaRays.Bins", 2000 );	// number of bins in gamma-ray histograms
+	hist_range_gamma[0] = config->GetValue( "Hists.GammaRays.Min", 0.0 );		// lower limit for gamma-ray histograms
+	hist_range_gamma[1] = config->GetValue( "Hists.GammaRays.Max", 4000.0 );	// upper limit for gamma-ray histograms
 
 	// Array-Recoil time windows
 	array_recoil_prompt[0] = config->GetValue( "ArrayRecoil_PromptTime.Min", -300.0 );	// lower limit for array-recoil prompt time difference
@@ -568,6 +579,15 @@ void ISSReaction::ReadReaction() {
 
 	// Array-Recoil fill ratios
 	array_recoil_ratio = config->GetValue( "ArrayRecoil_FillRatio", GetArrayRecoilTimeRatio() );
+
+	// Array-Gamma time windows
+	array_gamma_prompt[0] = config->GetValue( "ArrayGamma_PromptTime.Min", -500.0 );	// lower limit for array-gamma prompt time difference
+	array_gamma_prompt[1] = config->GetValue( "ArrayGamma_PromptTime.Max", 500.0 );		// upper limit for array-gamma prompt time difference
+	array_gamma_random[0] = config->GetValue( "ArrayGamma_RandomTime.Min", 1000.0 );		// lower limit for array-gamma random time difference
+	array_gamma_random[1] = config->GetValue( "ArrayGamma_RandomTime.Max", 2000.0 );	// upper limit for array-gamma random time difference
+
+	// Array-Gamma fill ratios
+	array_gamma_ratio = config->GetValue( "ArrayGamma_FillRatio", GetArrayGammaTimeRatio() );
 
 	// ELUM-Recoil time windows
 	elum_recoil_prompt[0] = config->GetValue( "ElumRecoil_PromptTime.Min", -300.0 );	// lower limit for elum-recoil prompt time difference
@@ -587,14 +607,14 @@ void ISSReaction::ReadReaction() {
 	// Array-Fission fill ratios
 	array_fission_ratio = config->GetValue( "ArrayFission_FillRatio", GetArrayFissionTimeRatio() );
 
-	// Lume-Fission time windows
-	lume_fission_prompt[0] = config->GetValue( "LumeFission_PromptTime.Min", -300.0 );	// lower limit for lume-fission prompt time difference
-	lume_fission_prompt[1] = config->GetValue( "LumeFission_PromptTime.Max", 300.0 );		// upper limit for lume-fission prompt time difference
-	lume_fission_random[0] = config->GetValue( "LumeFission_RandomTime.Min", 600.0 );		// lower limit for lume-fission random time difference
-	lume_fission_random[1] = config->GetValue( "LumeFission_RandomTime.Max", 1200.0 );	// upper limit for lume-fission random time difference
+	// Lume-Recoil time windows
+	lume_recoil_prompt[0] = config->GetValue( "LumeRecoil_PromptTime.Min", -300.0 );	// lower limit for lume-recoil prompt time difference
+	lume_recoil_prompt[1] = config->GetValue( "LumeRecoil_PromptTime.Max", 300.0 );		// upper limit for lume-recoil prompt time difference
+	lume_recoil_random[0] = config->GetValue( "LumeRecoil_RandomTime.Min", 600.0 );		// lower limit for lume-recoil random time difference
+	lume_recoil_random[1] = config->GetValue( "LumeRecoil_RandomTime.Max", 1200.0 );	// upper limit for lume-recoil random time difference
 
-	// ELUM-Fission fill ratios
-	lume_fission_ratio = config->GetValue( "LumeFission_FillRatio", GetLumeFissionTimeRatio() );
+	// Lume-Recoil fill ratios
+	lume_recoil_ratio = config->GetValue( "LumeRecoil_FillRatio", GetLumeRecoilTimeRatio() );
 
 	// Fission-Fission time windows
 	fission_fission_prompt[0] = config->GetValue( "FissionFission_PromptTime.Min", -300.0 );	// lower limit for fission-fission prompt time difference
@@ -604,6 +624,33 @@ void ISSReaction::ReadReaction() {
 
 	// Fission-Fission fill ratios
 	fission_fission_ratio = config->GetValue( "FissionFission_FillRatio", GetFissionFissionTimeRatio() );
+
+	// Fission-Gamma time windows
+	fission_gamma_prompt[0] = config->GetValue( "FissionGamma_PromptTime.Min", -300.0 );	// lower limit for fission-Gamma prompt time difference
+	fission_gamma_prompt[1] = config->GetValue( "FissionGamma_PromptTime.Max", 300.0 );		// upper limit for fission-Gamma prompt time difference
+	fission_gamma_random[0] = config->GetValue( "FissionGamma_RandomTime.Min", 600.0 );		// lower limit for fission-Gamma random time difference
+	fission_gamma_random[1] = config->GetValue( "FissionGamma_RandomTime.Max", 1200.0 );	// upper limit for fission-Gamma random time difference
+
+	// Fission-Gamma fill ratios
+	fission_gamma_ratio = config->GetValue( "FissionGamma_FillRatio", GetFissionGammaTimeRatio() );
+
+	// Recoil-Gamma time windows
+	recoil_gamma_prompt[0] = config->GetValue( "RecoilGamma_PromptTime.Min", -300.0 );	// lower limit for fission-Gamma prompt time difference
+	recoil_gamma_prompt[1] = config->GetValue( "RecoilGamma_PromptTime.Max", 300.0 );		// upper limit for fission-Gamma prompt time difference
+	recoil_gamma_random[0] = config->GetValue( "RecoilGamma_RandomTime.Min", 600.0 );		// lower limit for fission-Gamma random time difference
+	recoil_gamma_random[1] = config->GetValue( "RecoilGamma_RandomTime.Max", 1200.0 );	// upper limit for fission-Gamma random time difference
+
+	// Recoil-Gamma fill ratios
+	recoil_gamma_ratio = config->GetValue( "RecoilGamma_FillRatio", GetRecoilGammaTimeRatio() );
+
+	// Gamma-Gamma time windows
+	gamma_gamma_prompt[0] = config->GetValue( "GammaGamma_PromptTime.Min", -300.0 );	// lower limit for gamma-gamma prompt time difference
+	gamma_gamma_prompt[1] = config->GetValue( "GammaGamma_PromptTime.Max", 300.0 );		// upper limit for gamma-gamma prompt time difference
+	gamma_gamma_random[0] = config->GetValue( "GammaGamma_RandomTime.Min", 600.0 );		// lower limit for gamma-gamma random time difference
+	gamma_gamma_random[1] = config->GetValue( "GammaGamma_RandomTime.Max", 1200.0 );	// upper limit for gamma-gamma random time difference
+
+	// Gamma-Gamma fill ratios
+	gamma_gamma_ratio = config->GetValue( "GammaGamma_FillRatio", GetFissionFissionTimeRatio() );
 
 	// Target thickness and offsets
 	target_thickness = config->GetValue( "TargetThickness", 0.200 ); // units of mg/cm^2

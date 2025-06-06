@@ -280,10 +280,6 @@ void ISSSettings::ReadSettings() {
 	flag_caen_only = config->GetValue( "CAENDataOnly", false );
 	flag_mesy_only = config->GetValue( "MesytecDataOnly", false );
 
-	std::cout << "\tASICOnlyData: " << flag_asic_only << std::endl;
-	std::cout << "\tCAENOnlyData: " << flag_caen_only << std::endl;
-	std::cout << "\tMesytecOnlyData: " << flag_mesy_only << std::endl;
-
 	// Test if we have more than one "only" flag set
 	if( ( flag_asic_only && flag_caen_only ) ||
 	   ( flag_caen_only && flag_mesy_only ) ||
