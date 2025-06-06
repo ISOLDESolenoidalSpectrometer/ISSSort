@@ -72,6 +72,15 @@ public:
 	void FinishMesytecData();
 	void GetVMEChanID();
 
+	inline void EBISOnly(){ flag_ebis = true; };
+	inline bool EBISWindow( long long int t ){
+		if( ebis_period == 0 ) return false;
+		else {
+			long long test_t = ( t - ebis_tm_stp ) % ebis_period;
+			return ( test_t < 4000000 && test_t > 0 );
+		}
+	};
+
 	void SetOutput( std::string output_file_name );
 
 	inline void CloseOutput(){
@@ -154,8 +163,8 @@ private:
 	};
 
 
-	// Flag for source run
-	bool flag_source;
+	// Flags for source or EBIS run
+	bool flag_source, flag_ebis;
 
 	// Logs
 	std::stringstream sslogs;
@@ -213,6 +222,9 @@ private:
 	UInt_t header_DataLen; // 4 byte.
 
 	// Interpretated variables
+	long long ebis_tm_stp = 0;
+	unsigned int ebis_period = 0;
+	unsigned int ebis_first = 0;
 	unsigned long long my_tm_stp;
 	unsigned long my_tm_stp_lsb;
 	unsigned long my_tm_stp_msb;
