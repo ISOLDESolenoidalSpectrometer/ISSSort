@@ -3520,7 +3520,6 @@ unsigned long ISSHistogrammer::FillHists() {
 				// or else don't bother
 				else break;
 
-
 				// Check for prompt events with recoils
 				if( promptcheckT ){
 
@@ -3562,6 +3561,26 @@ unsigned long ISSHistogrammer::FillHists() {
 				Ex_vs_z_recoilT->Fill( react->GetZmeasured(), react->GetEx() );
 				Ex_vs_z_recoilT_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 
+				// Look for gamma-rays in coincidence with the array and recoil
+				if( react->GammaRayHistsEnabled() ) {
+
+					// Loop over gamma-ray events
+					for( unsigned int k = 0; k < read_evts->GetGammaRayMultiplicity(); ++k ) {
+
+						// Get event
+						gamma_evt1 = read_evts->GetGammaRayEvt(k);
+
+						// Ex versus Egamma (no Doppler correction yet applied)
+						if( PromptCoincidence( gamma_evt1, array_evt )  )
+							gamma_Ex_recoilT->Fill( gamma_evt1->GetEnergy(), react->GetEx() );
+
+						else if( RandomCoincidence( gamma_evt1, array_evt ) )
+							gamma_Ex_recoilT->Fill( gamma_evt1->GetEnergy(), react->GetEx(), -1.0 * react->GetArrayGammaFillRatio() );
+
+					} // k
+
+				} // gamma-ray hists enabled
+
 				// Check the E vs z cuts from the user
 				for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
 
@@ -3594,6 +3613,26 @@ unsigned long ISSHistogrammer::FillHists() {
 					Ex_vs_theta_recoil_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
 					Ex_vs_z_recoil->Fill( react->GetZmeasured(), react->GetEx() );
 					Ex_vs_z_recoil_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
+
+					// Look for gamma-rays in coincidence with the array and recoil
+					if( react->GammaRayHistsEnabled() ) {
+
+						// Loop over gamma-ray events
+						for( unsigned int k = 0; k < read_evts->GetGammaRayMultiplicity(); ++k ) {
+
+							// Get event
+							gamma_evt1 = read_evts->GetGammaRayEvt(k);
+
+							// Ex versus Egamma (no Doppler correction yet applied)
+							if( PromptCoincidence( gamma_evt1, array_evt )  )
+								gamma_Ex_recoil->Fill( gamma_evt1->GetEnergy(), react->GetEx() );
+
+							else if( RandomCoincidence( gamma_evt1, array_evt ) )
+								gamma_Ex_recoil->Fill( gamma_evt1->GetEnergy(), react->GetEx(), -1.0 * react->GetArrayGammaFillRatio() );
+
+						} // k
+
+					} // gamma-ray hists enabled
 
 					// Check the E vs z cuts from the user
 					for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
@@ -3639,6 +3678,26 @@ unsigned long ISSHistogrammer::FillHists() {
 				Ex_vs_z_recoilT_random->Fill( react->GetZmeasured(), react->GetEx() );
 				Ex_vs_z_recoilT_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
 
+				// Look for gamma-rays in coincidence with the array and recoil
+				if( react->GammaRayHistsEnabled() ) {
+
+					// Loop over gamma-ray events
+					for( unsigned int k = 0; k < read_evts->GetGammaRayMultiplicity(); ++k ) {
+
+						// Get event
+						gamma_evt1 = read_evts->GetGammaRayEvt(k);
+
+						// Ex versus Egamma (no Doppler correction yet applied)
+						if( PromptCoincidence( gamma_evt1, array_evt )  )
+							gamma_Ex_recoilT->Fill( gamma_evt1->GetEnergy(), react->GetEx(), -1.0 * react->GetArrayRecoilFillRatio() );
+
+						else if( RandomCoincidence( gamma_evt1, array_evt ) )
+							gamma_Ex_recoilT->Fill( gamma_evt1->GetEnergy(), react->GetEx(), react->GetArrayRecoilFillRatio() * react->GetArrayGammaFillRatio() );
+
+					} // k
+
+				} // gamma-ray hists enabled
+
 				// Check the E vs z cuts from the user
 				for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
 
@@ -3671,6 +3730,26 @@ unsigned long ISSHistogrammer::FillHists() {
 					Ex_vs_theta_recoil_random_mod[array_evt->GetModule()]->Fill( react->GetThetaCM() * TMath::RadToDeg(), react->GetEx() );
 					Ex_vs_z_recoil_random->Fill( react->GetZmeasured(), react->GetEx() );
 					Ex_vs_z_recoil_random_mod[array_evt->GetModule()]->Fill( react->GetZmeasured(), react->GetEx() );
+
+					// Look for gamma-rays in coincidence with the array and recoil
+					if( react->GammaRayHistsEnabled() ) {
+
+						// Loop over gamma-ray events
+						for( unsigned int k = 0; k < read_evts->GetGammaRayMultiplicity(); ++k ) {
+
+							// Get event
+							gamma_evt1 = read_evts->GetGammaRayEvt(k);
+
+							// Ex versus Egamma (no Doppler correction yet applied)
+							if( PromptCoincidence( gamma_evt1, array_evt )  )
+								gamma_Ex_recoil->Fill( gamma_evt1->GetEnergy(), react->GetEx(), -1.0 * react->GetArrayRecoilFillRatio() );
+
+							else if( RandomCoincidence( gamma_evt1, array_evt ) )
+								gamma_Ex_recoil->Fill( gamma_evt1->GetEnergy(), react->GetEx(), react->GetArrayRecoilFillRatio() * react->GetArrayGammaFillRatio() );
+
+						} // k
+
+					} // gamma-ray hists enabled
 
 					// Check the E vs z cuts from the user
 					for( unsigned int l = 0; l < react->GetNumberOfEvsZCuts(); ++l ){
