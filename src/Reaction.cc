@@ -507,9 +507,14 @@ void ISSReaction::ReadReaction() {
 	fission_cutH = ReadCutFile( fissioncutHfile, fissioncutHname );
 	fission_cutL = ReadCutFile( fissioncutLfile, fissioncutLname );
 
+	// Recoil event type
+	recoil_evt_type	= config->GetValue( "Recoil.Type", 0 ); // 0 for normal recoil, 1 for CD with recoil gate
 
 	// Get recoil energy cut
-	nrecoilcuts = set->GetNumberOfRecoilSectors();
+	if( recoil_evt_type == 0 )
+		nrecoilcuts = set->GetNumberOfRecoilSectors();
+	else if( recoil_evt_type == 1 )
+		nrecoilcuts = 1;
 	recoil_cut.resize( nrecoilcuts );
 	recoilcutfile.resize( nrecoilcuts );
 	recoilcutname.resize( nrecoilcuts );
@@ -519,6 +524,7 @@ void ISSReaction::ReadReaction() {
 		recoilcutname.at(i) = config->GetValue( Form( "RecoilCut_%d.Name", i ), "CUTG" );
 
 		recoil_cut[i] = ReadCutFile(recoilcutfile.at(i), recoilcutname.at(i));
+
 	}
 
 	// Get E versus z cuts
@@ -532,6 +538,7 @@ void ISSReaction::ReadReaction() {
 		evszcutname.at(i) = config->GetValue( Form( "EvsZCut_%d.Name", i ), "CUTG" );
 
 		e_vs_z_cut[i] = ReadCutFile( evszcutfile.at(i), evszcutname.at(i) );
+
 	}
 
 	// EBIS time window
@@ -655,9 +662,6 @@ void ISSReaction::ReadReaction() {
 	elum_rin  		= config->GetValue( "ELUM.InnerRadius", 24.0 ); // units of mm
 	elum_rout 		= config->GetValue( "ELUM.OuterRadius", 48.0 ); // units of mm
 	elum_deadlayer	= config->GetValue( "ELUM.Deadlayer", 0.00095 ); // units of mm of Si equivalent
-
-	// Recoil event type
-	recoil_evt_type	= config->GetValue( "Recoil.Type", 0 ); // 0 for normal recoil, 1 for CD with recoil gate
 
 	// If it's a source run, we can ignore most of that
 	// or better still, initialise everything and overwrite what we need

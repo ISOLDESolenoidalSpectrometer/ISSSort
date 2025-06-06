@@ -3241,6 +3241,7 @@ unsigned long ISSHistogrammer::FillHists() {
 			bool randomcheckT = false;
 			bool promptcheckE = false;
 			bool randomcheckE = false;
+			bool energycut = false;
 
 			// If we have fission mode
 			if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
@@ -3475,13 +3476,17 @@ unsigned long ISSHistogrammer::FillHists() {
 				generic_mult = read_evts->GetCDMultiplicity();
 
 			// Find recoil
+			double bg_frac, bg_frac2;
 			for( unsigned int k = 0; k < generic_mult; ++k ){
 
 				// Get event depending on type, first is normal recoil detector
-				if( react->RecoilType() == 0 ) {
+				if( react->RecoilType() == 0 && set->GetNumberOfRecoilSectors() > 0 ) {
 
 					recoil_evt = read_evts->GetRecoilEvt(k);
 					generic_evt = recoil_evt;
+					energycut = RecoilCut( recoil_evt );
+					bg_frac = react->GetRecoilGammaFillRatio();
+					bg_frac2 = react->GetArrayRecoilFillRatio();
 
 					// Time differences
 					tdiff = generic_evt->GetTime() - array_evt->GetTime();
@@ -3508,12 +3513,15 @@ unsigned long ISSHistogrammer::FillHists() {
 				} // normal recoil detector
 
 				// Then the CD as a recoil detector
-				else if( react->RecoilType() == 1 ) {
+				else if( react->RecoilType() == 1 && set->GetNumberOfCDLayers() > 0 ) {
 
 					cd_evt1 = read_evts->GetCDEvt(k);
 					generic_evt = cd_evt1;
 					promptcheckT = PromptCoincidence( cd_evt1, array_evt );
 					randomcheckT = RandomCoincidence( cd_evt1, array_evt );
+					energycut = RecoilCut( cd_evt1 );
+					bg_frac = react->GetFissionGammaFillRatio();
+					bg_frac2 = react->GetArrayFissionFillRatio();
 
 				}
 
@@ -3521,22 +3529,14 @@ unsigned long ISSHistogrammer::FillHists() {
 				else break;
 
 				// Check for prompt events with recoils
-				if( promptcheckT ){
-
-					// Check energy gate
-					if( RecoilCut( generic_evt ) )
+				if( promptcheckT )
+					if( energycut )
 						promptcheckE = true;
 
-				}
-
 				// Check for random events with recoils
-				if( randomcheckT ){
-
-					// Check energy gate
-					if( RecoilCut( generic_evt ) )
+				if( randomcheckT )
+					if( energycut )
 						randomcheckE = true;
-
-				}
 
 			} // k
 
@@ -3689,10 +3689,10 @@ unsigned long ISSHistogrammer::FillHists() {
 
 						// Ex versus Egamma (no Doppler correction yet applied)
 						if( PromptCoincidence( gamma_evt1, array_evt )  )
-							gamma_Ex_recoilT->Fill( gamma_evt1->GetEnergy(), react->GetEx(), -1.0 * react->GetArrayRecoilFillRatio() );
+							gamma_Ex_recoilT->Fill( gamma_evt1->GetEnergy(), react->GetEx(), -1.0 * bg_frac2 );
 
 						else if( RandomCoincidence( gamma_evt1, array_evt ) )
-							gamma_Ex_recoilT->Fill( gamma_evt1->GetEnergy(), react->GetEx(), react->GetArrayRecoilFillRatio() * react->GetArrayGammaFillRatio() );
+							gamma_Ex_recoilT->Fill( gamma_evt1->GetEnergy(), react->GetEx(), bg_frac2 * react->GetArrayGammaFillRatio() );
 
 					} // k
 
@@ -4049,6 +4049,7 @@ unsigned long ISSHistogrammer::FillHists() {
 			bool randomcheckE = false;
 			bool promptcheckT = false;
 			bool randomcheckT = false;
+			bool energycut = false;
 
 			// Check if we use the CD or the recoil detector
 			unsigned int generic_mult = 0;
@@ -4061,19 +4062,21 @@ unsigned long ISSHistogrammer::FillHists() {
 			for( unsigned int k = 0; k < generic_mult; ++k ){
 
 				// Get event
-				if( react->RecoilType() == 0 ) {
+				if( react->RecoilType() == 0 && set->GetNumberOfRecoilSectors() > 0 ) {
 
 					recoil_evt = read_evts->GetRecoilEvt(k);
 					generic_evt = recoil_evt;
+					energycut = RecoilCut( recoil_evt );
 					promptcheckT = PromptCoincidence( recoil_evt, lume_evt );
 					randomcheckT = RandomCoincidence( recoil_evt, lume_evt );
 
 				}
 
-				else if( react->RecoilType() == 1 ) {
+				else if( react->RecoilType() == 1 && set->GetNumberOfCDLayers() > 0 ) {
 
 					cd_evt1 = read_evts->GetCDEvt(k);
 					generic_evt = cd_evt1;
+					energycut = RecoilCut( cd_evt1 );
 					promptcheckT = PromptCoincidence( cd_evt1, lume_evt );
 					randomcheckT = RandomCoincidence( cd_evt1, lume_evt );
 
@@ -4086,22 +4089,14 @@ unsigned long ISSHistogrammer::FillHists() {
 				recoil_lume_td[det_id]->Fill( tdiff );
 
 				// Check for prompt events with coincident recoils
-				if( promptcheckT ) {
-
-					// Check energy gate
-					if( RecoilCut( generic_evt ) )
+				if( promptcheckT )
+					if( energycut )
 						promptcheckE = true;
 
-				}
-
 				// Check for random events with coincident recoils
-				if( randomcheckT ) {
-
-					// Check energy gate
-					if( RecoilCut( generic_evt ) )
+				if( randomcheckT )
+					if( energycut )
 						randomcheckE = true;
-
-				}
 
 			} // generic recoil events
 
@@ -4220,6 +4215,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				bool randomcheckE = false;
 				bool promptcheckT = false;
 				bool randomcheckT = false;
+				bool energycut = false;
 				double bg_frac;
 
 				// Check if we use the CD or the recoil detector
@@ -4227,13 +4223,13 @@ unsigned long ISSHistogrammer::FillHists() {
 				if( react->RecoilType() == 0 ) {
 
 					generic_mult = read_evts->GetRecoilMultiplicity();
-					bg_frac = -1.0 * react->GetRecoilGammaFillRatio();
+					bg_frac = react->GetRecoilGammaFillRatio();
 
 				}
 				else if( react->RecoilType() == 1 ) {
 
 					generic_mult = read_evts->GetCDMultiplicity();
-					bg_frac = -1.0 * react->GetFissionGammaFillRatio();
+					bg_frac = react->GetFissionGammaFillRatio();
 
 				}
 
@@ -4241,22 +4237,24 @@ unsigned long ISSHistogrammer::FillHists() {
 				for( unsigned int k = 0; k < generic_mult; ++k ){
 
 					// Get event
-					if( react->RecoilType() == 0 ) {
+					if( react->RecoilType() == 0 && set->GetNumberOfRecoilSectors() > 0 ) {
 
 						recoil_evt = read_evts->GetRecoilEvt(k);
 						generic_evt = recoil_evt;
 						promptcheckT = PromptCoincidence( gamma_evt1, recoil_evt );
 						randomcheckT = RandomCoincidence( gamma_evt1, recoil_evt );
+						energycut = RecoilCut( recoil_evt );
 						gamma_recoil_td->Fill( gamma_evt1->GetTime() - recoil_evt->GetTime() );
 
 					}
 
-					else if( react->RecoilType() == 1 ) {
+					else if( react->RecoilType() == 1 && set->GetNumberOfCDLayers() > 0 ) {
 
 						cd_evt1 = read_evts->GetCDEvt(k);
 						generic_evt = cd_evt1;
 						promptcheckT = PromptCoincidence( gamma_evt1, cd_evt1 );
 						randomcheckT = RandomCoincidence( gamma_evt1, cd_evt1 );
+						energycut = RecoilCut( cd_evt1 );
 						gamma_fission_td->Fill( gamma_evt1->GetTime() - cd_evt1->GetTime() );
 
 					}
@@ -4264,22 +4262,14 @@ unsigned long ISSHistogrammer::FillHists() {
 					else break;
 
 					// Check for prompt events with coincident recoils
-					if( promptcheckT ) {
-
-						// Check energy gate
-						if( RecoilCut( generic_evt ) )
+					if( promptcheckT )
+						if( energycut )
 							promptcheckE = true;
 
-					}
-
 					// Check for random events with coincident recoils
-					if( randomcheckT ) {
-
-						// Check energy gate
-						if( RecoilCut( generic_evt ) )
+					if( randomcheckT )
+						if( energycut )
 							randomcheckE = true;
-
-					}
 
 				} // generic recoil events
 
@@ -4300,12 +4290,12 @@ unsigned long ISSHistogrammer::FillHists() {
 				// Fill random hists
 				else if( randomcheckT == true ){
 
-					gamma_recoilT->Fill( gamma_evt1->GetEnergy(), bg_frac );
+					gamma_recoilT->Fill( gamma_evt1->GetEnergy(), -1.0 * bg_frac );
 
 					// Fill energy gate hists
 					if( randomcheckE == true ) {
 
-						gamma_recoil->Fill( gamma_evt1->GetEnergy(), bg_frac );
+						gamma_recoil->Fill( gamma_evt1->GetEnergy(), -1.0 * bg_frac );
 
 					} // energy cuts
 
@@ -4337,10 +4327,10 @@ unsigned long ISSHistogrammer::FillHists() {
 
 						// Egamma matrix (no Doppler correction yet applied)
 						if( PromptCoincidence( gamma_evt1, gamma_evt2 ) )
-							gamma_gamma_recoil->Fill( gamma_evt1->GetEnergy(), gamma_evt2->GetEnergy(), -1.0 * react->GetRecoilGammaFillRatio() );
+							gamma_gamma_recoil->Fill( gamma_evt1->GetEnergy(), gamma_evt2->GetEnergy(), -1.0 * bg_frac );
 
 						else if( RandomCoincidence( gamma_evt1, gamma_evt2 ) )
-							gamma_gamma_recoil->Fill( gamma_evt1->GetEnergy(), gamma_evt2->GetEnergy(), react->GetRecoilGammaFillRatio() * react->GetGammaGammaFillRatio() );
+							gamma_gamma_recoil->Fill( gamma_evt1->GetEnergy(), gamma_evt2->GetEnergy(), bg_frac * react->GetGammaGammaFillRatio() );
 
 					} // random
 

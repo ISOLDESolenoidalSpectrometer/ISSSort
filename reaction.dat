@@ -119,6 +119,8 @@
 #GammaGamma_RandomTime.Max: 1200
 
 ## Recoil cut files
+# For the normal recoil detector (Recoill.Type = 1), you need to give a cut file for each sector
+# For the Fission CD setup, you just need to give information for RecoilCut_0 and it applies to all sectors
 #RecoilCut_0.File: NULL	# ROOT file containing the 2D recoil energy cut for sector 0
 #RecoilCut_0.Name: CUTG	# name of the TCutG object inside the ROOT file for sector 0
 #RecoilCut_1.File: NULL	# sector 1

@@ -309,22 +309,31 @@ public:
 	inline bool	LaserOff(){ return !read_evts->GetLaserStatus(); };
 
 	// Recoil energy gate
-	inline bool RecoilCut( std::shared_ptr<ISSMultiLayerDetectorEvt> r ){
-		return react->GetRecoilCut( r->GetSector() )
-					->IsInside( r->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
-								r->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+	inline bool RecoilCut( std::shared_ptr<ISSRecoilEvt> r ){
+		std::shared_ptr<TCutG> mycut = react->GetRecoilCut( r->GetSector() );
+		if( mycut.get() == nullptr ) return false;
+		return mycut->IsInside( r->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
+							    r->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+	}
+	inline bool RecoilCut( std::shared_ptr<ISSCDEvt> r ){
+		std::shared_ptr<TCutG> mycut = react->GetRecoilCut(0);
+		if( mycut.get() == nullptr ) return false;
+		else return mycut->IsInside( r->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
+									 r->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
 	}
 
 	// Fission fragment energy gates
 	inline bool FissionCutHeavy( std::shared_ptr<ISSCDEvt> f ){
-		return react->GetFissionCutHeavy()
-		->IsInside( f->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
-				    f->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
+		std::shared_ptr<TCutG> mycut = react->GetFissionCutHeavy();
+		if( mycut.get() == nullptr ) return false;
+		return mycut->IsInside( f->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
+							    f->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
 	}
 	inline bool FissionCutLight( std::shared_ptr<ISSCDEvt> f ){
-		return react->GetFissionCutLight()
-		->IsInside( f->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
-				    f->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
+		std::shared_ptr<TCutG> mycut = react->GetFissionCutLight();
+		if( mycut.get() == nullptr ) return false;
+		return mycut->IsInside( f->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
+							    f->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
 	}
 
 
