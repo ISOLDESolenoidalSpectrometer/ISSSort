@@ -648,7 +648,7 @@ private:
 	TH1F *gamma_fission, *gamma_recoil, *gamma_recoilT, *gamma_array;
 	TH1F *gamma_gamma_td, *gamma_fission_td, *gamma_recoil_td, *gamma_array_td;
 	TH2F *gamma_gamma_fission, *gamma_gamma_recoil, *gamma_gamma_array;
-	TH2F *gamma_Ex_ebis, *gamma_Ex_fission, *gamma_Ex_recoil;
+	TH2F *gamma_Ex_ebis, *gamma_Ex_fission, *gamma_Ex_recoilT, *gamma_Ex_recoil;
 	std::vector<TH1F*> gamma_array_cut;
 	std::vector<TH2F*> gamma_gamma_array_cut;
 
