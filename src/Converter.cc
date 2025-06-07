@@ -2,8 +2,9 @@
 
 ISSConverter::ISSConverter() {
 
-	// Default that we do not have a source only run
+	// Default that we do not have a source only run or EBIS run
 	flag_source = false;
+	flag_ebis = false;
 
 	// No progress bar by default
 	_prog_ = false;
@@ -1129,11 +1130,17 @@ void ISSConverter::ProcessASICData(){
 			asic_data->SetThreshold( true );
 		else asic_data->SetThreshold( false );
 
+		
 		// Set this data and fill event to tree
-		data_packet->SetData( asic_data );
-		if( !flag_source ) output_tree->Fill();
-		asic_data->Clear();
-		data_packet->ClearData();
+		// only if we are in the EBIS window, if the flag is set by the user
+		if( !flag_ebis || EBISWindow( asic_data->GetTime() ) ) {
+
+			data_packet->SetData( asic_data );
+			if( !flag_source ) output_tree->Fill();
+			asic_data->Clear();
+			data_packet->ClearData();
+
+		}
 
 		// Count asic hit per module
 		ctr_asic_hit[my_mod_id]++;
@@ -1367,6 +1374,19 @@ void ISSConverter::FinishCAENData(){
 			//my_info_code = set->GetEBISCode();
 			my_info_code = 21; // CAEN EBIS is always 21 (defined here), Array EBIS is 15
 
+			// Check EBIS time and period from the CAEN copy of the pulse
+			if( ebis_tm_stp != 0 && ebis_period == 0 &&
+			   caen_data->GetTime() > (long long)ebis_tm_stp ){
+
+				ebis_period = caen_data->GetTime() - ebis_tm_stp;
+				ebis_first = ebis_tm_stp;
+				std::cout << "EBIS period detected = " << ebis_period;
+				std::cout << " ns" << std::endl;
+
+			}
+
+			ebis_tm_stp = caen_data->GetTime();
+
 		}
 
 		else if( caen_data->GetModule() == set->GetT1Module() &&
@@ -1423,7 +1443,8 @@ void ISSConverter::FinishCAENData(){
 		}
 
 		// Otherwise it is real data, so fill a caen event
-		else {
+		// only if we are in the EBIS window, if the flag is set by the user
+		else if( !flag_ebis || EBISWindow( caen_data->GetTime() ) ) {
 
 			// Set this data and fill event to tree
 			// Also add the time offset when we do this
@@ -1653,10 +1674,15 @@ void ISSConverter::FinishMesytecData(){
 
 			// Set this data and fill event to tree
 			// Also add the time offset when we do this
-			mesy_data->SetTimeStamp( mesy_data->GetTime() + cal->MesytecTime( mesy_data->GetModule(), mesy_data->GetChannel() ) );
-			data_packet->SetData( mesy_data );
-			if( !flag_source ) output_tree->Fill();
-			data_packet->ClearData();
+			// only if we are in the EBIS window, if the flag is set by the user
+			if( !flag_ebis || EBISWindow( mesy_data->GetTime() ) ) {
+
+				mesy_data->SetTimeStamp( mesy_data->GetTime() + cal->MesytecTime( mesy_data->GetModule(), mesy_data->GetChannel() ) );
+				data_packet->SetData( mesy_data );
+				if( !flag_source ) output_tree->Fill();
+				data_packet->ClearData();
+
+			}
 
 		} // adc item
 

@@ -82,6 +82,8 @@ bool flag_autocal = false;
 bool flag_data = false;
 bool flag_pace4 = false;
 bool flag_nptool = false;
+bool flag_ebis = false;
+
 
 // select what steps of the analysis to be forced
 std::vector<bool> force_convert;
@@ -169,6 +171,7 @@ void* monitor_run( void* ptr ){
 	conv_mon = std::make_shared<ISSConverter>();
 	conv_mon->AddSettings( calfiles->myset );
 	conv_mon->AddCalibration( calfiles->mycal );
+	if( flag_ebis ) conv_mon->EBISOnly();
 
 	// Setup the event builder step
 	eb_mon = std::make_shared<ISSEventBuilder>();
@@ -385,6 +388,7 @@ void do_convert(){
 	conv.AddSettings( myset );
 	conv.AddCalibration( mycal );
 	if( flag_source ) conv.SourceOnly();
+	if( flag_ebis ) conv.EBISOnly();
 	std::cout << "\n +++ ISS Analysis:: processing Converter +++" << std::endl;
 
 	TFile *rtest;
@@ -838,6 +842,7 @@ int main( int argc, char *argv[] ){
 	interface->Add("-r", "Reaction file", &name_react_file );
 	interface->Add("-nptool", "Flag for NPTool simulation input", &flag_nptool );
 	interface->Add("-pace4", "Flag for PACE4 particle input", &flag_pace4 );
+	interface->Add("-ebis", "Flag to define an EBIS only run, discarding data >4ms after an EBIS event", &flag_ebis );
 	interface->Add("-f", "Flag to force new ROOT conversion", &flag_convert );
 	interface->Add("-e", "Flag to force new event builder (new calibration)", &flag_events );
 	interface->Add("-source", "Flag to define an source only run", &flag_source );
