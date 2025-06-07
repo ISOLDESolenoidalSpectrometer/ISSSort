@@ -1650,13 +1650,13 @@ void ISSHistogrammer::MakeHists() {
 		htitle = "fission-fission dE-dE plot";
 		htitle += " - coincidence with each other;Fragment 1 dE [keV];Fragment 2 dE [keV];Counts";
 		fission_fission_dEdE = new TH2F( hname.data(), htitle.data(),
-										8000, 0, 800000, 8000, 0, 800000 );
+										4000, 0, 800000, 4000, 0, 800000 );
 
 		hname = "fission_fission_dEdE_array";
 		htitle = "fission-fission dE-dE plot";
 		htitle += " - coincidence with each other and an array event;Fragment 1 dE [keV];Fragment 2 dE [keV];Counts";
 		fission_fission_dEdE_array = new TH2F( hname.data(), htitle.data(),
-											  8000, 0, 800000, 8000, 0, 800000 );
+											  4000, 0, 800000, 4000, 0, 800000 );
 
 		hname = "fission_dE_vs_ring";
 		htitle = "fission dE versus ring number";
