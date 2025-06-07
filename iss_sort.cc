@@ -388,6 +388,7 @@ void do_convert(){
 	conv.AddSettings( myset );
 	conv.AddCalibration( mycal );
 	if( flag_source ) conv.SourceOnly();
+	if( flag_ebis ) conv.EBISOnly();
 	std::cout << "\n +++ ISS Analysis:: processing Converter +++" << std::endl;
 
 	TFile *rtest;

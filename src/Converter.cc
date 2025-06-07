@@ -1387,7 +1387,6 @@ void ISSConverter::FinishCAENData(){
 
 			ebis_tm_stp = caen_data->GetTime();
 
-
 		}
 
 		else if( caen_data->GetModule() == set->GetT1Module() &&
