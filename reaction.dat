@@ -158,7 +158,7 @@ FissionCut.Light.Name: CUTG
 #Hists.GammaRays.Bins: 2000		# Number of bins in the gamma-ray spectra
 #Hists.Fission.Min: 0			# Minimum of the CD/Fission spectra in keV
 #Hists.Fission.Max: 4000		# Maximum of the CD/Fission spectra in keV
-#Hists.Fission.Bins: 2000		# Number of bins in the CD/Fission spectra
+#Hists.Fission.Bins: 80e3		# Number of bins in the CD/Fission spectra
 #Hists.LUME.Min: 0				# Minimum of the LUME spectra in keV
-#Hists.LUME.Max: 12000			# Maximum of the LUME spectra in keV
+#Hists.LUME.Max: 12e3			# Maximum of the LUME spectra in keV
 #Hists.LUME.Bins: 6000			# Number of bins in the LUME spectra
