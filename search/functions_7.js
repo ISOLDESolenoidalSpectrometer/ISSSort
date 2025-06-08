@@ -14,5 +14,8 @@ var searchData=
   ['histgammamin_11',['HistGammaMin',['../classISSReaction.html#ad30ed7d66a39f688c6c82176ce727c18',1,'ISSReaction']]],
   ['histlumebins_12',['HistLumeBins',['../classISSReaction.html#acf76311289d93e14452d67736aae3971',1,'ISSReaction']]],
   ['histlumemax_13',['HistLumeMax',['../classISSReaction.html#a985604c93eedc4bf0dec8fe68d800abc',1,'ISSReaction']]],
-  ['histlumemin_14',['HistLumeMin',['../classISSReaction.html#af2bb9d4607a09a5a3e1d71f02e4efb96',1,'ISSReaction']]]
+  ['histlumemin_14',['HistLumeMin',['../classISSReaction.html#af2bb9d4607a09a5a3e1d71f02e4efb96',1,'ISSReaction']]],
+  ['histrecoilbins_15',['HistRecoilBins',['../classISSReaction.html#adb05a9b33247e3eeac28be2620813497',1,'ISSReaction']]],
+  ['histrecoilmax_16',['HistRecoilMax',['../classISSReaction.html#aeae8bdd4b9f1dacc1db0a8460593202b',1,'ISSReaction']]],
+  ['histrecoilmin_17',['HistRecoilMin',['../classISSReaction.html#a7d9e61246f641179ef2139fed0b724f0',1,'ISSReaction']]]
 ];

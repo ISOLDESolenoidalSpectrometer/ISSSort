@@ -832,6 +832,9 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a4283c279fa9022d0fff8fe0de3013908" id="r_a4283c279fa9022d0fff8fe0de3013908"><td class="memItemLeft" align="right" valign="top">std::vector&lt; TH2F * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4283c279fa9022d0fff8fe0de3013908">cd_s_en</a></td></tr>
 <tr class="memdesc:a4283c279fa9022d0fff8fe0de3013908"><td class="mdescLeft">&#160;</td><td class="mdescRight">CD strip-energy for each layer.  <br /></td></tr>
 <tr class="separator:a4283c279fa9022d0fff8fe0de3013908"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae93fe9e356e1e0e5dc9dd0566f0912e1" id="r_ae93fe9e356e1e0e5dc9dd0566f0912e1"><td class="memItemLeft" align="right" valign="top">TH2F *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae93fe9e356e1e0e5dc9dd0566f0912e1">cd_id_td</a></td></tr>
+<tr class="memdesc:ae93fe9e356e1e0e5dc9dd0566f0912e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">CD time difference between dE and all other layers.  <br /></td></tr>
+<tr class="separator:ae93fe9e356e1e0e5dc9dd0566f0912e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9df074537d6021c2f642965691e486b2" id="r_a9df074537d6021c2f642965691e486b2"><td class="memItemLeft" align="right" valign="top">TH2F *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9df074537d6021c2f642965691e486b2">cd_EdE</a></td></tr>
 <tr class="memdesc:a9df074537d6021c2f642965691e486b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Histogram for the CD E-dE that are real (calibrated)  <br /></td></tr>
 <tr class="separator:a9df074537d6021c2f642965691e486b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1123,7 +1126,7 @@ Private Attributes</h2></td></tr>
 <p>Deletes histograms from memory and clears vectors that store histograms. </p>
 <p>This function cleans up all of the histograms used in the EventBuilder class, by deleting them and clearing all histogram vectors. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03526">3526</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03553">3553</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1340,7 +1343,7 @@ Private Attributes</h2></td></tr>
 <p>Creates histograms for events that occur. </p>
 <p><em>This function doesn't fill any histograms</em>, but just creates them. Called by the <a class="el" href="#ace857f3c92c6cc8678725312c1cafb4b" title="Configures the output for the class.">ISSEventBuilder::SetOutput</a> function </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03034">3034</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03050">3050</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1435,7 +1438,7 @@ Private Attributes</h2></td></tr>
 <p>Empties the histograms during the <a class="el" href="classDataSpy.html">DataSpy</a>. </p>
 <p>This function empties the histograms used in the EventBuilder class; used during the <a class="el" href="classDataSpy.html">DataSpy</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03753">3753</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03780">3780</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -2317,7 +2320,7 @@ Private Attributes</h2></td></tr>
 
 <p>Histogram for the CD E+dE vs E (calibrated) </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00441">441</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00442">442</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
 
 </div>
 </div>
@@ -2343,7 +2346,7 @@ Private Attributes</h2></td></tr>
 
 <p>Histogram for the CD E-dE that are real (calibrated) </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00440">440</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00441">441</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
 
 </div>
 </div>
@@ -2369,6 +2372,32 @@ Private Attributes</h2></td></tr>
 <p>Special case of the CD, because we need to handle multiple event simultaneously This is because the detector is a single wafer, we need multiple hits and we have to check charge-sharing (chaos!) </p>
 
 <p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00173">173</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
+
+</div>
+</div>
+<a id="ae93fe9e356e1e0e5dc9dd0566f0912e1" name="ae93fe9e356e1e0e5dc9dd0566f0912e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae93fe9e356e1e0e5dc9dd0566f0912e1">&#9670;&#160;</a></span>cd_id_td</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">TH2F* ISSEventBuilder::cd_id_td</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>CD time difference between dE and all other layers. </p>
+
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00440">440</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
 
 </div>
 </div>
