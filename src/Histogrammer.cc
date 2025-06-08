@@ -3030,16 +3030,16 @@ unsigned long ISSHistogrammer::FillHists() {
 
 								// Egamma matrix (no Doppler correction yet applied)
 								if( PromptCoincidence( gamma_evt1, array_evt ) && PromptCoincidence( gamma_evt1, gamma_evt2 ) )
-									gamma_gamma_array_cut[m]->Fill( gamma_evt1->GetEnergy(), gamma_evt2->GetEnergy() );
+									gamma_gamma_array_cut[k]->Fill( gamma_evt1->GetEnergy(), gamma_evt2->GetEnergy() );
 
 								else if( RandomCoincidence( gamma_evt1, array_evt ) && PromptCoincidence( gamma_evt1, gamma_evt2 ) )
-									gamma_gamma_array_cut[m]->Fill( gamma_evt1->GetEnergy(), gamma_evt2->GetEnergy(), -1.0 * react->GetArrayGammaFillRatio() );
+									gamma_gamma_array_cut[k]->Fill( gamma_evt1->GetEnergy(), gamma_evt2->GetEnergy(), -1.0 * react->GetArrayGammaFillRatio() );
 
 								else if( PromptCoincidence( gamma_evt1, array_evt ) && RandomCoincidence( gamma_evt1, gamma_evt2 ) )
-									gamma_gamma_array_cut[m]->Fill( gamma_evt1->GetEnergy(), gamma_evt2->GetEnergy(), -1.0 * react->GetGammaGammaFillRatio() );
+									gamma_gamma_array_cut[k]->Fill( gamma_evt1->GetEnergy(), gamma_evt2->GetEnergy(), -1.0 * react->GetGammaGammaFillRatio() );
 
 								else if( RandomCoincidence( gamma_evt1, array_evt ) && RandomCoincidence( gamma_evt1, gamma_evt2 ) )
-									gamma_gamma_array_cut[m]->Fill( gamma_evt1->GetEnergy(), gamma_evt2->GetEnergy(), react->GetGammaGammaFillRatio() * react->GetArrayGammaFillRatio());
+									gamma_gamma_array_cut[k]->Fill( gamma_evt1->GetEnergy(), gamma_evt2->GetEnergy(), react->GetGammaGammaFillRatio() * react->GetArrayGammaFillRatio());
 
 							} // m
 
