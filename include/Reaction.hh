@@ -248,6 +248,14 @@ public:
 	inline double HistGammaMin(){ return hist_range_gamma[0]; }
 	inline double HistGammaMax(){ return hist_range_gamma[1]; }
 
+	inline unsigned int HistFissionBins(){ return hist_nbins_cd; }
+	inline double HistFissionMin(){ return hist_range_cd[0]; }
+	inline double HistFissionMax(){ return hist_range_cd[1]; }
+
+	inline unsigned int HistLumeBins(){ return hist_nbins_lume; }
+	inline double HistLumeMin(){ return hist_range_lume[0]; }
+	inline double HistLumeMax(){ return hist_range_lume[1]; }
+
 	inline double GetZmeasured(){ return z_meas; };///< Getter for the measured z (where the particle lands on the array)
 	inline double GetZprojected(){ return z; };///< Getter for the projected z (where the particle would intersect with the beam axis)
 
@@ -603,6 +611,10 @@ private:
 	unsigned int hist_nbins_elab;		///< number of bins in the Elab histograms
 	double hist_range_gamma[2];			///< lower and upper limits of the gamma-ray historgrams
 	unsigned int hist_nbins_gamma;		///< number of bins in the gamma-ray histograms
+	double hist_range_cd[2];			///< lower and upper limits of the CD/FIssion historgrams
+	unsigned int hist_nbins_cd;			///< number of bins in the CD/FIssion histograms
+	double hist_range_lume[2];			///< lower and upper limits of the LUME historgrams
+	unsigned int hist_nbins_lume;		///< number of bins in the LUME histograms
 
 	// Histogram options
 	bool hist_gamma;					///< option to turn on or off the gamma-ray histograms
