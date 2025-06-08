@@ -437,6 +437,7 @@ private:
 	std::vector<TH1F*> cd_rs_td;	///< CD ring-strip time difference for each layer
     std::vector<TH2F*> cd_r_en;     ///< CD ring-energy for each layer
     std::vector<TH2F*> cd_s_en;     ///< CD strip-energy for each layer
+	TH2F* cd_id_td;					///< CD time difference between dE and all other layers
 	TH2F* cd_EdE;					///< Histogram for the CD E-dE that are real (calibrated)
 	TH2F* cd_dEsum;					///< Histogram for the CD E+dE vs E (calibrated)
 

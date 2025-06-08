@@ -567,6 +567,9 @@ void ISSReaction::ReadReaction() {
 	hist_nbins_elab = config->GetValue( "Hists.Elab.Bins", 800 );				// number of bins in Elab histograms
 	hist_range_elab[0] = config->GetValue( "Hists.Elab.Min", 0.0 );				// lower limit for Elab histograms
 	hist_range_elab[1] = config->GetValue( "Hists.Elab.Max", 16000.0 );			// upper limit for Elab histograms
+	hist_nbins_recoil = config->GetValue( "Hists.Recoil.Bins", 4000 );			// number of bins in Recoil histograms
+	hist_range_recoil[0] = config->GetValue( "Hists.Recoil.Min", 0.0 );			// lower limit for Recoil histograms
+	hist_range_recoil[1] = config->GetValue( "Hists.Recoil.Max", 80e3 );		// upper limit for Recoil histograms
 	hist_nbins_gamma = config->GetValue( "Hists.GammaRays.Bins", 2000 );		// number of bins in gamma-ray histograms
 	hist_range_gamma[0] = config->GetValue( "Hists.GammaRays.Min", 0.0 );		// lower limit for gamma-ray histograms
 	hist_range_gamma[1] = config->GetValue( "Hists.GammaRays.Max", 4000.0 );	// upper limit for gamma-ray histograms

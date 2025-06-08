@@ -2785,7 +2785,7 @@ void ISSEventBuilder::CdFinder() {
 		// and ring/sector ID against energy
 		for( unsigned int j = 0; j < cdsen_list[i].size(); j++ ) {
 
-		    cd_s_en[i]->Fill( cdsid_list[i][j], cdsen_list[i][j]);
+		    cd_s_en[i]->Fill( cdsid_list[i][j], cdsen_list[i][j] );
 
 			  for( unsigned int k = 0; k < cdren_list[i].size(); k++ ) {
 
@@ -2826,6 +2826,9 @@ void ISSEventBuilder::CdFinder() {
 				if( used_idx[xx] == j ) skip_flag = true;
 			if( skip_flag ) continue;
 
+			// Mark this hit as used
+			used_idx.push_back(j);
+
 			// Check all other sector hits to find a neighbour
 			for( unsigned int k = 0; k < cdsen_list[dE_idx].size(); k++ ) {
 
@@ -2855,8 +2858,7 @@ void ISSEventBuilder::CdFinder() {
 						sectd_tmp = cdstd_list[dE_idx][k];
 					}
 
-					// Mark both hits as used
-					used_idx.push_back(j);
+					// Mark hit as used
 					used_idx.push_back(k);
 
 					// Make a particle event in the CD
@@ -2884,9 +2886,6 @@ void ISSEventBuilder::CdFinder() {
 			cd_evt.back()->AddFragment( cdsen_list[dE_idx][j], dE_idx );
 			cd_evt.back()->SetSector( cdsid_list[dE_idx][j] );
 			cd_evt.back()->SetdETime( cdstd_list[dE_idx][j] );
-
-			// Mark hit as used before moving to next
-			used_idx.push_back(j);
 
 		} // j
 
@@ -2943,12 +2942,29 @@ void ISSEventBuilder::CdFinder() {
 		// Check every particle for a match in the other layers
 		for( unsigned int partid = 0; partid < cd_evt.size(); ++partid ) {
 
+			//std::cout << "particle " << partid << " has " << (int)cdsen_list[i].size();
+			//std::cout << " coincident hits and finds a match with id = ";
+
 			// Find the matching sector in the available list
 			for( unsigned int j = 0; j < cdsen_list[i].size(); ++j ) {
 
-				// Particles must be in the same sector
-				if( cdsid_list[i][j] != cd_evt[partid]->GetSector() )
+				// General time difference, without sector matching
+				double layer_td_diff = cd_evt[partid]->GetTime() - cdstd_list[i][j];
+				cd_id_td->Fill( i, layer_td_diff );
+
+				// Check for time coincidence
+				if( TMath::Abs( layer_td_diff ) > set->GetCDDDHitWindow() )
 					continue;
+
+				// Particles must be in the same sector ± 2
+				int layer_id_diff = cdsid_list[i][j] - cd_evt[partid]->GetSector();
+				if( TMath::Abs( layer_id_diff ) != 0 &&
+				   TMath::Abs( layer_id_diff ) != 1 &&
+				   TMath::Abs( layer_id_diff ) != 2 &&
+				   TMath::Abs( layer_id_diff ) != set->GetNumberOfCDSectors()-1 &&
+				   TMath::Abs( layer_id_diff ) != set->GetNumberOfCDSectors()-2 )
+					continue;
+
 
 				// Check if it's been used already
 				bool skip_flag = false;
@@ -2957,10 +2973,7 @@ void ISSEventBuilder::CdFinder() {
 				if( skip_flag ) continue;
 
 				// Check all other sector hits to find a neighbour
-				for( unsigned int k = 0; k < cdsen_list[i].size(); k++ ) {
-
-					// Not neighbours with each other
-					if( j == k ) continue;
+				for( unsigned int k = j+1; k < cdsen_list[i].size(); k++ ) {
 
 					// Check if it's been used already
 					skip_flag = false;
@@ -2978,14 +2991,14 @@ void ISSEventBuilder::CdFinder() {
 						// Charge-sharing add-back
 						float sumen = cdsen_list[i][j] + cdsen_list[i][k];
 
-						// Mark both hits as used
-						used_idx.push_back(j);
+						// Mark hit as used
 						used_idx.push_back(k);
 
 						// Add fragment for this particle and set the E time if needed
 						cd_evt[partid]->AddFragment( sumen, i );
 						if( i == set->GetCDEnergyRestStart() )
 							cd_evt[partid]->SetETime( cdstd_list[i][j] );
+						//std::cout << j << " + " << k;
 
 						// Finished with this, go back to the j loop
 						skip_flag = true;
@@ -3002,12 +3015,15 @@ void ISSEventBuilder::CdFinder() {
 				cd_evt[partid]->AddFragment( cdsen_list[i][j], i );
 				if( i == set->GetCDEnergyRestStart() )
 					cd_evt[partid]->SetETime( cdstd_list[i][j] );
+				//std::cout << j;
 
-				// Mark hit as used and move to the next particle
+				// Move the next particle and mark as used
 				used_idx.push_back(j);
 				break;
 
 			} // all other sector hits - j
+
+			//std::cout << std::endl;
 
 		} // all other particles - partid
 
@@ -3489,7 +3505,7 @@ void ISSEventBuilder::MakeHists(){
 		hname = "cd_rs_en_" + std::to_string(i);
 		htitle = "ring vs. sector energy (layer ";
 		htitle += std::to_string(i) + ");Energy rings (keV);Energy sectors (keV)";
-		cd_rs_en[i] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e6, 2e3, 0, 2e6 );
+		cd_rs_en[i] = new TH2F( hname.data(), htitle.data(), 6e3, 0, 120e3, 6e3, 0, 120e3 );
 
 		hname = "cd_rs_td_" + std::to_string(i);
 		htitle = "ring vs. sector time difference (layer ";
@@ -3499,22 +3515,33 @@ void ISSEventBuilder::MakeHists(){
 		hname = "cd_r_en_" + std::to_string(i);
 		htitle = "ring ID vs. energy (layer ";
 		htitle += std::to_string(i) + ");Ring ID; Energy (10 keV)";
-		cd_r_en[i] = new TH2F( hname.data(), htitle.data(), set->GetNumberOfCDRings(), 0, set->GetNumberOfCDRings()-1, 2e3, 0, 2e6 );
+		cd_r_en[i] = new TH2F( hname.data(), htitle.data(),
+							  set->GetNumberOfCDRings()+1, -0.5, set->GetNumberOfCDRings()+0.5,
+							  6e3, 0, 120e3 );
 
 		hname = "cd_s_en_" + std::to_string(i);
 		htitle = "Sector ID vs. energy (layer ";
 		htitle += std::to_string(i) + ");Sector ID; Energy (10 keV)";
-		cd_s_en[i] = new TH2F( hname.data(), htitle.data(), set->GetNumberOfCDSectors(), 0, set->GetNumberOfCDSectors()-1, 2e3, 0, 2e6 );
+		cd_s_en[i] = new TH2F( hname.data(), htitle.data(),
+							  set->GetNumberOfCDSectors()+1, -0.5, set->GetNumberOfCDSectors()+0.5,
+							  6e3, 0, 120e3 );
 
 	}
 
 	hname = "cd_EdE";
 	htitle = "CD fission fragments dE vs E;Rest Energy [keV];Energy Loss [keV];Counts";
-	cd_EdE = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e6, 4000, 0, 4e6 );
+	cd_EdE = new TH2F( hname.data(), htitle.data(), 6e3, 0, 120e3, 6e3, 0, 120e3 );
 
 	hname = "cd_dEsum";
 	htitle = "CD fission fragments dE vs total energy;Total Energy [keV];Energy Loss [keV];Counts";
-	cd_dEsum = new TH2F( hname.data(), htitle.data(), 10000, 0, 2e6, 4000, 0, 4e6 );
+	cd_dEsum = new TH2F( hname.data(), htitle.data(), 9e3, 0, 180e3, 6e3, 0, 120e3 );
+
+	hname = "cd_id_td";
+	htitle = "CD time difference between dE layer (id=0) and all other layers;";
+	htitle +=  + "CD layer ID;Time difference, #Deltat = t_{0} - t_{id} (ns)";
+	cd_id_td = new TH2F( hname.data(), htitle.data(),
+						set->GetNumberOfCDLayers()+1, -0.5, set->GetNumberOfCDLayers()+0.5,
+						600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
 
 
 	return;

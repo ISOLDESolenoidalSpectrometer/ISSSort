@@ -1464,41 +1464,46 @@ void ISSHistogrammer::MakeHists() {
 			htitle = "Recoil dE-E plot for sector " + std::to_string(i);
 			htitle += " - singles;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 			recoil_EdE[i] = new TH2F( hname.data(), htitle.data(),
-									 react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(), react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
+									 react->HistRecoilBins(), react->HistRecoilMin(), react->HistRecoilMax(),
+									 react->HistRecoilBins(), react->HistRecoilMin(), react->HistRecoilMax() );
 
 			hname = "recoil_EdE_cut_sec" + std::to_string(i);
 			htitle = "Recoil dE-E plot for sector " + std::to_string(i);
 			htitle += " - with energy cut;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 			recoil_EdE_cut[i] = new TH2F( hname.data(), htitle.data(),
-										 react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(), react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
+										 react->HistRecoilBins(), react->HistRecoilMin(), react->HistRecoilMax(),
+										 react->HistRecoilBins(), react->HistRecoilMin(), react->HistRecoilMax() );
 
 			hname = "recoil_EdE_array_sec" + std::to_string(i);
 			htitle = "Recoil dE-E plot for sector " + std::to_string(i);
 			htitle += " - in coincidence with array;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 			recoil_EdE_array[i] = new TH2F( hname.data(), htitle.data(),
-										   react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(), react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
+										   react->HistRecoilBins(), react->HistRecoilMin(), react->HistRecoilMax(),
+										   react->HistRecoilBins(), react->HistRecoilMin(), react->HistRecoilMax() );
 
 			hname = "recoil_bragg_sec" + std::to_string(i);
 			htitle = "Recoil Bragg plot for sector " + std::to_string(i);
 			htitle += ";Bragg ID;Energy loss, dE [keV];Counts";
 			recoil_bragg[i] = new TH2F( hname.data(), htitle.data(),
-									   set->GetNumberOfRecoilLayers(), -0.5, set->GetNumberOfRecoilLayers()-0.5, react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
+									   set->GetNumberOfRecoilLayers(), -0.5, set->GetNumberOfRecoilLayers()-0.5,
+									   react->HistRecoilBins(),react->HistRecoilMin(), react->HistRecoilMax() );
 
 			hname = "recoil_dE_vs_T1_sec" + std::to_string(i);
 			htitle = "Recoil dE plot versus T1 time for sector " + std::to_string(i);
 			htitle += ";Time since T1 proton pulse [ns];Energy loss, dE [keV];Counts";
 			recoil_dE_vs_T1[i] = new TH2F( hname.data(), htitle.data(),
-										  5000, 0, 50e9, react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
+										  5000, 0, 50e9,
+										  react->HistRecoilBins(), react->HistRecoilMin(), react->HistRecoilMax() );
 
 			hname = "recoil_dE_eloss_sec" + std::to_string(i);
 			htitle = "Recoil dE energy loss for sector " + std::to_string(i);
 			htitle += ";Energy loss, dE [keV];Counts";
-			recoil_dE_eloss[i] = new TH1F( hname.data(), htitle.data(), react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
+			recoil_dE_eloss[i] = new TH1F( hname.data(), htitle.data(), react->HistRecoilBins(), react->HistRecoilMin(), react->HistRecoilMax() );
 
 			hname = "recoil_E_eloss_sec" + std::to_string(i);
 			htitle = "Recoil E energy loss for sector " + std::to_string(i);
 			htitle += ";Energy loss, E [keV];Counts";
-			recoil_E_eloss[i] = new TH1F( hname.data(), htitle.data(), react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
+			recoil_E_eloss[i] = new TH1F( hname.data(), htitle.data(), react->HistRecoilBins(), react->HistRecoilMin(), react->HistRecoilMax() );
 
 			// Timing plots
 			output_file->cd( "Timing" );
@@ -3908,8 +3913,8 @@ unsigned long ISSHistogrammer::FillHists() {
 										 cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 
 				// Energy EdE plot, unconditioned
-				fission_EdE->Fill( cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ),
-								  cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
+				fission_EdE->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
+								  cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 
 				// Energy dE versus T1 time
 				fission_dE_vs_T1->Fill( cd_evt1->GetTime() - read_evts->GetT1(),
@@ -3923,8 +3928,8 @@ unsigned long ISSHistogrammer::FillHists() {
 				if( FissionCutHeavy( cd_evt1 ) ) {
 
 					fission_xy_map_cutH->Fill( cd_evt1->GetY(true), cd_evt1->GetX(true) );
-					fission_EdE_cutH->Fill( cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ),
-										   cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
+					fission_EdE_cutH->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
+										   cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 
 				}
 
@@ -3932,8 +3937,8 @@ unsigned long ISSHistogrammer::FillHists() {
 				if( FissionCutLight( cd_evt1 ) ) {
 
 					fission_xy_map_cutL->Fill( cd_evt1->GetY(true), cd_evt1->GetX(true) );
-					fission_EdE_cutL->Fill( cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ),
-										   cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ) );
+					fission_EdE_cutL->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
+											cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
 
 				}
 
