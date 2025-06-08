@@ -153,6 +153,12 @@ FissionCut.Light.Name: CUTG
 #Hists.Elab.Min: 0				# Minimum of the Elab spectra in keV
 #Hists.Elab.Max: 16000			# Maximum of the Elab spectra in keV
 #Hists.Elab.Bins: 800			# Number of bins in the Elab spectra
-#Hists.GammaRays.Min: 0			# Minimum of the Elab spectra in keV
-#Hists.GammaRays.Max: 4000		# Maximum of the Elab spectra in keV
-#Hists.GammaRays.Bins: 2000		# Number of bins in the Elab spectra
+#Hists.GammaRays.Min: 0			# Minimum of the gamma-ray spectra in keV
+#Hists.GammaRays.Max: 4000		# Maximum of the gamma-ray spectra in keV
+#Hists.GammaRays.Bins: 2000		# Number of bins in the gamma-ray spectra
+#Hists.Fission.Min: 0			# Minimum of the CD/Fission spectra in keV
+#Hists.Fission.Max: 4000		# Maximum of the CD/Fission spectra in keV
+#Hists.Fission.Bins: 2000		# Number of bins in the CD/Fission spectra
+#Hists.LUME.Min: 0				# Minimum of the LUME spectra in keV
+#Hists.LUME.Max: 12000			# Maximum of the LUME spectra in keV
+#Hists.LUME.Bins: 6000			# Number of bins in the LUME spectra

@@ -1464,41 +1464,41 @@ void ISSHistogrammer::MakeHists() {
 			htitle = "Recoil dE-E plot for sector " + std::to_string(i);
 			htitle += " - singles;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 			recoil_EdE[i] = new TH2F( hname.data(), htitle.data(),
-									 4000, 0, 800000, 4000, 0, 800000 );
+									 react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(), react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 			hname = "recoil_EdE_cut_sec" + std::to_string(i);
 			htitle = "Recoil dE-E plot for sector " + std::to_string(i);
 			htitle += " - with energy cut;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 			recoil_EdE_cut[i] = new TH2F( hname.data(), htitle.data(),
-										 4000, 0, 800000, 4000, 0, 800000 );
+										 react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(), react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 			hname = "recoil_EdE_array_sec" + std::to_string(i);
 			htitle = "Recoil dE-E plot for sector " + std::to_string(i);
 			htitle += " - in coincidence with array;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 			recoil_EdE_array[i] = new TH2F( hname.data(), htitle.data(),
-										   4000, 0, 800000, 4000, 0, 800000 );
+										   react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(), react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 			hname = "recoil_bragg_sec" + std::to_string(i);
 			htitle = "Recoil Bragg plot for sector " + std::to_string(i);
 			htitle += ";Bragg ID;Energy loss, dE [keV];Counts";
 			recoil_bragg[i] = new TH2F( hname.data(), htitle.data(),
-									   set->GetNumberOfRecoilLayers(), -0.5, set->GetNumberOfRecoilLayers()-0.5, 4000, 0, 800000 );
+									   set->GetNumberOfRecoilLayers(), -0.5, set->GetNumberOfRecoilLayers()-0.5, react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 			hname = "recoil_dE_vs_T1_sec" + std::to_string(i);
 			htitle = "Recoil dE plot versus T1 time for sector " + std::to_string(i);
 			htitle += ";Time since T1 proton pulse [ns];Energy loss, dE [keV];Counts";
 			recoil_dE_vs_T1[i] = new TH2F( hname.data(), htitle.data(),
-										  5000, 0, 50e9, 4000, 0, 800000 );
+										  5000, 0, 50e9, react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 			hname = "recoil_dE_eloss_sec" + std::to_string(i);
 			htitle = "Recoil dE energy loss for sector " + std::to_string(i);
 			htitle += ";Energy loss, dE [keV];Counts";
-			recoil_dE_eloss[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
+			recoil_dE_eloss[i] = new TH1F( hname.data(), htitle.data(), react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 			hname = "recoil_E_eloss_sec" + std::to_string(i);
 			htitle = "Recoil E energy loss for sector " + std::to_string(i);
 			htitle += ";Energy loss, E [keV];Counts";
-			recoil_E_eloss[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
+			recoil_E_eloss[i] = new TH1F( hname.data(), htitle.data(), react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 			// Timing plots
 			output_file->cd( "Timing" );
@@ -1603,67 +1603,76 @@ void ISSHistogrammer::MakeHists() {
 		htitle = "fission dE-E plot";
 		htitle += " - singles;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 		fission_EdE = new TH2F( hname.data(), htitle.data(),
-							   4000, 0, 800000, 4000, 0, 800000 );
+							   react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(),
+							   react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 		hname = "fission_EdE_cutH";
 		htitle = "fission dE-E plot";
 		htitle += " - with energy cut on the heavy fragment;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 		fission_EdE_cutH = new TH2F( hname.data(), htitle.data(),
-									4000, 0, 800000, 4000, 0, 800000 );
+									react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(),
+									react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 		hname = "fission_EdE_cutL";
 		htitle = "fission dE-E plot";
 		htitle += " - with energy cut on the light fragment;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 		fission_EdE_cutL = new TH2F( hname.data(), htitle.data(),
-									4000, 0, 800000, 4000, 0, 800000 );
+									react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(),
+									react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 		hname = "fission_EdE_array";
 		htitle = "fission dE-E plot";
 		htitle += " - in coincidence with array;Rest energy, E [keV];Energy loss, dE [keV];Counts";
 		fission_EdE_array = new TH2F( hname.data(), htitle.data(),
-									 4000, 0, 800000, 4000, 0, 800000 );
+									 react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(),
+									 react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 		hname = "fission_bragg";
 		htitle = "fission Bragg plot";
 		htitle += ";Bragg ID;Energy loss, dE [keV];Counts";
 		fission_bragg = new TH2F( hname.data(), htitle.data(),
 								 set->GetNumberOfCDLayers(), -0.5, set->GetNumberOfCDLayers()-0.5,
-								 4000, 0, 800000 );
+								 react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 		hname = "fission_dE_vs_T1";
 		htitle = "fission dE plot versus T1 time";
 		htitle += ";Time since T1 proton pulse [ns];Energy loss, dE [keV];Counts";
 		fission_dE_vs_T1 = new TH2F( hname.data(), htitle.data(),
-									5000, 0, 50e9, 4000, 0, 800000 );
+									5000, 0, 50e9,
+									react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 		hname = "fission_dE_eloss";
 		htitle = "fission dE energy loss";
 		htitle += ";Energy loss, dE [keV];Counts";
-		fission_dE_eloss = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
+		fission_dE_eloss = new TH1F( hname.data(), htitle.data(),
+									react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 		hname = "fission_E_eloss";
 		htitle = "fission E energy loss";
 		htitle += ";Energy loss, E [keV];Counts";
-		fission_E_eloss = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
+		fission_E_eloss = new TH1F( hname.data(), htitle.data(),
+								   react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 		hname = "fission_fission_dEdE";
 		htitle = "fission-fission dE-dE plot";
 		htitle += " - coincidence with each other;Fragment 1 dE [keV];Fragment 2 dE [keV];Counts";
 		fission_fission_dEdE = new TH2F( hname.data(), htitle.data(),
-										4000, 0, 800000, 4000, 0, 800000 );
+										react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(),
+										react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 		hname = "fission_fission_dEdE_array";
 		htitle = "fission-fission dE-dE plot";
 		htitle += " - coincidence with each other and an array event;Fragment 1 dE [keV];Fragment 2 dE [keV];Counts";
 		fission_fission_dEdE_array = new TH2F( hname.data(), htitle.data(),
-											  4000, 0, 800000, 4000, 0, 800000 );
+											  react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(),
+											  react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 		hname = "fission_dE_vs_ring";
 		htitle = "fission dE versus ring number";
 		htitle += ";Ring number;Fragment dE [keV];Counts";
 		fission_dE_vs_ring = new TH2F( hname.data(), htitle.data(),
 									  set->GetNumberOfCDRings(), -0.5, set->GetNumberOfCDRings() - 0.5,
-									  8000, 0, 800000 );
+									  react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
 		hname = "fission_xy_map";
 		htitle = "Fission fragment X-Y hit map;y (horizontal) [mm];x (vertical) [mm];Counts";
@@ -1862,20 +1871,20 @@ void ISSHistogrammer::MakeHists() {
 	output_file->mkdir( dirname.data() );
 	output_file->cd( dirname.data() );
 
-	lume = new TH1F( "lume", "LUME singles;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
-	lume_ebis = new TH1F( "lume_ebis", "LUME gated by EBIS and off beam subtracted;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
-	lume_ebis_on = new TH1F( "lume_ebis_on", "LUME gated on EBIS;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
-	lume_ebis_off = new TH1F( "lume_ebis_off", "LUME gated off EBIS;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
-	lume_recoil = new TH1F( "lume_recoil", "LUME in prompt time coincidence with an energy-gated recoil event;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
-	lume_recoilT = new TH1F( "lume_recoilT", "LUME in prompt time coincidence with a recoil event;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
-	lume_recoil_random = new TH1F( "lume_recoil_random", "LUME in random time coincidence with an energy-gated recoil event;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
-	lume_recoilT_random = new TH1F( "lume_recoilT_random", "LUME in random time coincidence with a recoil event;Energy (keV);Counts per 5 keV", 10100, -200, 50000 );
-	lume_vs_T1 = new TH2F( "lume_vs_T1", "LUME energy versus T1 time (gated on EBIS);Energy (keV);Counts per 5 keV", 5000, 0, 50e9, 10100, -200, 50000 );
-	lume_E_vs_x = new TH2F( "lume_E_vs_x", "LUME energy versus position;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
-	lume_E_vs_x_ebis = new TH2F( "lume_E_vs_x_ebis", "LUME energy versus position gated by EBIS and off beam subtracted;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
-	lume_E_vs_x_ebis_on = new TH2F( "lume_E_vs_x_ebis_on", "LUME energy versus position gated on EBIS;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
-	lume_E_vs_x_ebis_off = new TH2F( "lume_E_vs_x_ebis_off", "LUME energy versus positiongated off EBIS ;Position;Energy (keV)", 400, -2, 2, 1640, -200, 8000 );
-	lume_E_vs_x_wide = new TH2F( "lume_E_vs_x_wide", "LUME energy versus position;Position;Energy (keV)", 400, -2, 2, 8000, -200, 160000 );
+	lume = new TH1F( "lume", "LUME singles;Energy (keV);Counts per 5 keV", react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
+	lume_ebis = new TH1F( "lume_ebis", "LUME gated by EBIS and off beam subtracted;Energy (keV);Counts per 5 keV", react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
+	lume_ebis_on = new TH1F( "lume_ebis_on", "LUME gated on EBIS;Energy (keV);Counts per 5 keV", react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
+	lume_ebis_off = new TH1F( "lume_ebis_off", "LUME gated off EBIS;Energy (keV);Counts per 5 keV", react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
+	lume_recoil = new TH1F( "lume_recoil", "LUME in prompt time coincidence with an energy-gated recoil event;Energy (keV);Counts per 5 keV", react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
+	lume_recoilT = new TH1F( "lume_recoilT", "LUME in prompt time coincidence with a recoil event;Energy (keV);Counts per 5 keV", react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
+	lume_recoil_random = new TH1F( "lume_recoil_random", "LUME in random time coincidence with an energy-gated recoil event;Energy (keV);Counts per 5 keV", react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
+	lume_recoilT_random = new TH1F( "lume_recoilT_random", "LUME in random time coincidence with a recoil event;Energy (keV);Counts per 5 keV", react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
+	lume_vs_T1 = new TH2F( "lume_vs_T1", "LUME energy versus T1 time (gated on EBIS);Energy (keV);Counts per 5 keV", 5000, 0, 50e9, react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
+	lume_E_vs_x = new TH2F( "lume_E_vs_x", "LUME energy versus position;Position;Energy (keV)", 400, -2, 2, react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
+	lume_E_vs_x_ebis = new TH2F( "lume_E_vs_x_ebis", "LUME energy versus position gated by EBIS and off beam subtracted;Position;Energy (keV)", 400, -2, 2, react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
+	lume_E_vs_x_ebis_on = new TH2F( "lume_E_vs_x_ebis_on", "LUME energy versus position gated on EBIS;Position;Energy (keV)", 400, -2, 2, react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
+	lume_E_vs_x_ebis_off = new TH2F( "lume_E_vs_x_ebis_off", "LUME energy versus positiongated off EBIS ;Position;Energy (keV)", 400, -2, 2, react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
+	lume_E_vs_x_wide = new TH2F( "lume_E_vs_x_wide", "LUME energy versus position;Position;Energy (keV)", 400, -2, 2, 8000, -200, 159800 );
 
 	lume_det.resize( set->GetNumberOfLUMEDetectors() );
 	lume_ebis_det.resize( set->GetNumberOfLUMEDetectors() );
@@ -1900,66 +1909,74 @@ void ISSHistogrammer::MakeHists() {
 		hname = "lume_det_" + std::to_string(i);
 		htitle = "LUME energy spectrum for detector " + std::to_string(i);
 		htitle += ";Energy [keV];Counts per 5 keV";
-		lume_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000);
+		lume_det[i] = new TH1F( hname.data(), htitle.data(),
+							   react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
 
 		hname = "lume_ebis_det_" + std::to_string(i);
 		htitle = "LUME events for  detector " + std::to_string(i);
 		htitle += " gated by EBIS and off beam subtracted;Energy (keV);Counts per 5 keV";
-		lume_ebis_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
+		lume_ebis_det[i] = new TH1F( hname.data(), htitle.data(),
+									react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
 
 		hname = "lume_ebis_on_det_" + std::to_string(i);
 		htitle = "LUME events for detector " + std::to_string(i);
 		htitle += " gated on EBIS ;Energy (keV);Counts per 5 keV";
-		lume_ebis_on_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
+		lume_ebis_on_det[i] = new TH1F( hname.data(), htitle.data(),
+									   react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
 
 		hname = "lume_ebis_off_det_" + std::to_string(i);
 		htitle = "LUME events for detector " + std::to_string(i);
 		htitle += " gated off EBIS ;Energy (keV);Counts per 5 keV";
-		lume_ebis_off_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000 );
+		lume_ebis_off_det[i] = new TH1F( hname.data(), htitle.data(),
+										react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
 
 		hname = "lume_recoil_det_" + std::to_string(i);
 		htitle = "LUME energy spectrum for detector " + std::to_string(i);
 		htitle += " in prompt time coincidence with an energy-gated recoil event;";
 		htitle += "Energy [keV];Counts per 5 keV";
-		lume_recoil_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000);
+		lume_recoil_det[i] = new TH1F( hname.data(), htitle.data(),
+									  react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
 
 		hname = "lume_recoilT_det_" + std::to_string(i);
 		htitle = "LUME energy spectrum for detector " + std::to_string(i);
 		htitle += " in prompt time coincidence with a recoil event;";
 		htitle += "Energy [keV];Counts per 5 keV";
-		lume_recoilT_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000);
+		lume_recoilT_det[i] = new TH1F( hname.data(), htitle.data(),
+									   react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
 
 		hname = "lume_recoil_random_det_" + std::to_string(i);
 		htitle = "LUME energy spectrum for detector " + std::to_string(i);
 		htitle += " in random time coincidence with an energy-gated recoil event;";
 		htitle += "Energy [keV];Counts per 5 keV";
-		lume_recoil_random_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000);
+		lume_recoil_random_det[i] = new TH1F( hname.data(), htitle.data(),
+											 react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
 
 		hname = "lume_recoilT_random_det_" + std::to_string(i);
 		htitle = "LUME energy spectrum for detector " + std::to_string(i);
 		htitle += " in random time coincidence with a recoil event;";
 		htitle += "Energy [keV];Counts per 5 keV";
-		lume_recoilT_random_det[i] = new TH1F( hname.data(), htitle.data(), 10100, -200, 50000);
+		lume_recoilT_random_det[i] = new TH1F( hname.data(), htitle.data(),
+											  react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
 
 		hname = "lume_E_vs_x_det_" + std::to_string(i);
 		htitle = "LUME energy vs position spectrum for detector " + std::to_string(i);
 		htitle += ";Position;Energy [keV]";
-		lume_E_vs_x_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+		lume_E_vs_x_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
 
 		hname = "lume_E_vs_x_ebis_det_" + std::to_string(i);
 		htitle = "LUME energy vs position spectrum for detector " + std::to_string(i);
 		htitle += " gated by EBIS and off beam subtracted;Position;Energy [keV]";
-		lume_E_vs_x_ebis_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+		lume_E_vs_x_ebis_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
 
 		hname = "lume_E_vs_x_ebis_on_det_" + std::to_string(i);
 		htitle = "LUME energy vs position spectrum for detector " + std::to_string(i);
 		htitle += " gated on EBIS;Position;Energy [keV]";
-		lume_E_vs_x_ebis_on_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+		lume_E_vs_x_ebis_on_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
 
 		hname = "lume_E_vs_x_ebis_off_det_" + std::to_string(i);
 		htitle = "LUME energy vs position spectrum for detector " + std::to_string(i);
 		htitle += " gated off EBIS;Position;Energy [keV]";
-		lume_E_vs_x_ebis_off_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 1640, -200, 8000 );
+		lume_E_vs_x_ebis_off_det[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., react->HistLumeBins(), react->HistLumeMin(), react->HistLumeMax() );
 
 	} // LUME
 

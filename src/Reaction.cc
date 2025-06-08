@@ -561,15 +561,21 @@ void ISSReaction::ReadReaction() {
 	hist_gamma = config->GetValue( "Hists.GammaRays", false ); // default = false; 1 or true to enable the filling of gamma-ray histograms
 
 	// Histogramming ranges
-	hist_nbins_ex = config->GetValue( "Hists.Ex.Bins", 1000 );		// number of bins in Ex histograms
-	hist_range_ex[0] = config->GetValue( "Hists.Ex.Min", -5000.0 );		// lower limit for Ex histograms
-	hist_range_ex[1] = config->GetValue( "Hists.Ex.Max", 15000.0 );		// upper limit for Ex histograms
-	hist_nbins_elab = config->GetValue( "Hists.Elab.Bins", 800 );	// number of bins in Elab histograms
-	hist_range_elab[0] = config->GetValue( "Hists.Elab.Min", 0.0 );		// lower limit for Elab histograms
-	hist_range_elab[1] = config->GetValue( "Hists.Elab.Max", 16000.0 );	// upper limit for Elab histograms
-	hist_nbins_gamma = config->GetValue( "Hists.GammaRays.Bins", 2000 );	// number of bins in gamma-ray histograms
+	hist_nbins_ex = config->GetValue( "Hists.Ex.Bins", 1000 );					// number of bins in Ex histograms
+	hist_range_ex[0] = config->GetValue( "Hists.Ex.Min", -5000.0 );				// lower limit for Ex histograms
+	hist_range_ex[1] = config->GetValue( "Hists.Ex.Max", 15000.0 );				// upper limit for Ex histograms
+	hist_nbins_elab = config->GetValue( "Hists.Elab.Bins", 800 );				// number of bins in Elab histograms
+	hist_range_elab[0] = config->GetValue( "Hists.Elab.Min", 0.0 );				// lower limit for Elab histograms
+	hist_range_elab[1] = config->GetValue( "Hists.Elab.Max", 16000.0 );			// upper limit for Elab histograms
+	hist_nbins_gamma = config->GetValue( "Hists.GammaRays.Bins", 2000 );		// number of bins in gamma-ray histograms
 	hist_range_gamma[0] = config->GetValue( "Hists.GammaRays.Min", 0.0 );		// lower limit for gamma-ray histograms
 	hist_range_gamma[1] = config->GetValue( "Hists.GammaRays.Max", 4000.0 );	// upper limit for gamma-ray histograms
+	hist_nbins_cd = config->GetValue( "Hists.Fission.Bins", 4000 );				// number of bins in CD/Fission histograms
+	hist_range_cd[0] = config->GetValue( "Hists.Fission.Min", 0.0 );			// lower limit for CD/Fission histograms
+	hist_range_cd[1] = config->GetValue( "Hists.Fission.Max", 80e3 );			// upper limit for CD/Fission histograms
+	hist_nbins_lume = config->GetValue( "Hists.LUME.Bins", 6000 );				// number of bins in CD/Fission histograms
+	hist_range_lume[0] = config->GetValue( "Hists.LUME.Min", 0.0 );				// lower limit for CD/Fission histograms
+	hist_range_lume[1] = config->GetValue( "Hists.LUME.Max", 12e3 );			// upper limit for CD/Fission histograms
 
 	// Array-Recoil time windows
 	array_recoil_prompt[0] = config->GetValue( "ArrayRecoil_PromptTime.Min", -300.0 );	// lower limit for array-recoil prompt time difference
