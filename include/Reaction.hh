@@ -244,6 +244,10 @@ public:
 	inline double HistElabMin(){ return hist_range_elab[0]; }
 	inline double HistElabMax(){ return hist_range_elab[1]; }
 
+	inline unsigned int HistRecoilBins(){ return hist_nbins_cd; }
+	inline double HistRecoilMin(){ return hist_range_cd[0]; }
+	inline double HistRecoilMax(){ return hist_range_cd[1]; }
+
 	inline unsigned int HistGammaBins(){ return hist_nbins_gamma; }
 	inline double HistGammaMin(){ return hist_range_gamma[0]; }
 	inline double HistGammaMax(){ return hist_range_gamma[1]; }
@@ -609,10 +613,12 @@ private:
 	unsigned int hist_nbins_ex;			///< number of bins in the Ex histograms
 	double hist_range_elab[2];			///< lower and upper limits of the Elab historgrams
 	unsigned int hist_nbins_elab;		///< number of bins in the Elab histograms
+	double hist_range_recoil[2];		///< lower and upper limits of the recoil historgrams
+	unsigned int hist_nbins_recoil;		///< number of bins in the recoil histograms
 	double hist_range_gamma[2];			///< lower and upper limits of the gamma-ray historgrams
 	unsigned int hist_nbins_gamma;		///< number of bins in the gamma-ray histograms
-	double hist_range_cd[2];			///< lower and upper limits of the CD/FIssion historgrams
-	unsigned int hist_nbins_cd;			///< number of bins in the CD/FIssion histograms
+	double hist_range_cd[2];			///< lower and upper limits of the CD/Fission historgrams
+	unsigned int hist_nbins_cd;			///< number of bins in the CD/Fission histograms
 	double hist_range_lume[2];			///< lower and upper limits of the LUME historgrams
 	unsigned int hist_nbins_lume;		///< number of bins in the LUME histograms
 
