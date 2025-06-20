@@ -43,6 +43,9 @@ void ISSConverter::StartFile(){
 	ctr_mesy_hit.resize( set->GetNumberOfMesytecModules(), 0 );
 	ctr_mesy_ext.resize( set->GetNumberOfMesytecModules(), 0 );
 
+	// clear the data vectors
+	std::vector<ISSDataPackets>().swap(data_vector);
+
 	return;
 
 }
@@ -63,18 +66,10 @@ void ISSConverter::MakeTree() {
 	// Create Root tree
 	const int splitLevel = 2; // don't split branches = 0, full splitting = 99
 	const int bufsize = sizeof(ISSCaenData) + sizeof(ISSAsicData) + sizeof(ISSInfoData);
-	output_tree = new TTree( "iss", "iss" );
+	sorted_tree = new TTree( "iss_sort", "Time sorted, calibrated ISS data" );
 	data_packet = std::make_unique<ISSDataPackets>();
-	output_tree->Branch( "data", "ISSDataPackets", data_packet.get(), bufsize, splitLevel );
-
-	sorted_tree = (TTree*)output_tree->CloneTree(0);
-	sorted_tree->SetName("iss_sort");
-	sorted_tree->SetTitle( "Time sorted, calibrated ISS data" );
+	sorted_tree->Branch( "data", "ISSDataPackets", data_packet.get(), bufsize, splitLevel );
 	sorted_tree->SetDirectory( output_file->GetDirectory("/") );
-	output_tree->SetDirectory( output_file->GetDirectory("/") );
-
-	output_tree->SetAutoFlush(-10e6);
-	sorted_tree->SetAutoFlush(-10e6);
 
 	asic_data = std::make_shared<ISSAsicData>();
 	caen_data = std::make_shared<ISSCaenData>();
@@ -1099,7 +1094,7 @@ void ISSConverter::ProcessASICData(){
 	if( my_adc_data > set->GetArrayPulserThreshold() && pulser_trigger ) {
 
 		data_packet->SetData( info_data );
-		if( !flag_source ) output_tree->Fill();
+		if( !flag_source ) data_vector.emplace_back( data_packet );
 		info_data->Clear();
 		data_packet->ClearData();
 
@@ -1136,7 +1131,7 @@ void ISSConverter::ProcessASICData(){
 		if( !flag_ebis || EBISWindow( asic_data->GetTime() ) ) {
 
 			data_packet->SetData( asic_data );
-			if( !flag_source ) output_tree->Fill();
+			if( !flag_source ) data_vector.emplace_back( data_packet );
 			asic_data->Clear();
 			data_packet->ClearData();
 
@@ -1425,7 +1420,7 @@ void ISSConverter::FinishCAENData(){
 				info_data->SetModule( caen_data->GetModule() );
 				info_data->SetCode( my_info_code );
 				data_packet->SetData( info_data );
-				if( !flag_source ) output_tree->Fill();
+				if( !flag_source ) data_vector.emplace_back( data_packet );
 				data_packet->ClearData();
 
 			}
@@ -1450,7 +1445,7 @@ void ISSConverter::FinishCAENData(){
 			// Also add the time offset when we do this
 			caen_data->SetTimeStamp( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
 			data_packet->SetData( caen_data );
-			if( !flag_source ) output_tree->Fill();
+			if( !flag_source ) data_vector.emplace_back( data_packet );
 			data_packet->ClearData();
 
 			//std::cout << "Complete CAEN event" << std::endl;
@@ -1623,7 +1618,7 @@ void ISSConverter::ProcessMesytecLogicItem(){
 		info_data->SetModule( mesy_data->GetModule() );
 		info_data->SetCode( my_info_code );
 		data_packet->SetData( info_data );
-		if( !flag_source ) output_tree->Fill();
+		if( !flag_source ) data_vector.emplace_back( data_packet );
 		data_packet->ClearData();
 
 	}
@@ -1679,7 +1674,7 @@ void ISSConverter::FinishMesytecData(){
 
 				mesy_data->SetTimeStamp( mesy_data->GetTime() + cal->MesytecTime( mesy_data->GetModule(), mesy_data->GetChannel() ) );
 				data_packet->SetData( mesy_data );
-				if( !flag_source ) output_tree->Fill();
+				if( !flag_source ) data_vector.emplace_back( data_packet );
 				data_packet->ClearData();
 
 			}
@@ -1806,7 +1801,7 @@ void ISSConverter::ProcessInfoData(){
 		info_data->SetTimeStamp( my_tm_stp );
 		info_data->SetCode( my_info_code );
 		data_packet->SetData( info_data );
-		if( !flag_source ) output_tree->Fill();
+		if( !flag_source ) data_vector.emplace_back( data_packet );
 		info_data->Clear();
 		data_packet->ClearData();
 
@@ -1947,11 +1942,6 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 			continue;
 
 
-		// Each time we have completed a block, optimise filling
-		if( nblock == start_block + 1 )
-			output_tree->OptimizeBaskets(30e6);	 // output tree basket size max 30 MB
-
-
 		// Process current block. If it's the end, stop.
 		if( !ProcessCurrentBlock( nblock ) ) break;
 
@@ -1968,64 +1958,47 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 
 }
 
-unsigned long long ISSConverter::SortTree(){
+unsigned long long ISSConverter::SortTree( bool do_sort ){
 
 	// Reset the sorted tree so it's empty before we start
 	sorted_tree->Reset();
 
-	// Load the full tree if possible
-	output_tree->SetMaxVirtualSize(2e9); // 2GB
-	sorted_tree->SetMaxVirtualSize(2e9); // 2GB
-	output_tree->LoadBaskets(1e9); 		 // Load 1 GB of data to memory
+	// Get number of data packets
+	long long int n_ents = data_vector.size();	// std::vector method
 
 	// Check we have entries and build time-ordered index
-	if( output_tree->GetEntries() ){
+	if( n_ents && do_sort ){
 
-		std::cout << "\n Building time-ordered index of events..." << std::endl;
-		output_tree->BuildIndex( "data.GetTimeStamp()" );
+		std::cout << "Building time-ordered index of events..." << std::endl;
+		std::sort( data_vector.begin(), data_vector.end() ); // std::vector method
 
 	}
 	else return 0;
 
-	// Get index and prepare for sorting
-	TTreeIndex *att_index = (TTreeIndex*)output_tree->GetTreeIndex();
-	unsigned long long nb_idx = att_index->GetN();
-	std::cout << " Sorting: size of the sorted index = " << nb_idx << std::endl;
-
 	// Loop on t_raw entries and fill t
-	for( unsigned long i = 0; i < nb_idx; ++i ) {
+	for( long long int i = 0; i < n_ents; ++i ) {
 
 		// Clean up old data
 		data_packet->ClearData();
 
-		// Get time-ordered event index
-		unsigned long long idx = att_index->GetIndex()[i];
+		// Get the data item back from the vector
+		data_packet->SetData( data_vector[i] );
 
-		// Check if the input or output trees are filling
-		if( output_tree->MemoryFull(30e6) )
-			output_tree->DropBaskets();
-		if( sorted_tree->MemoryFull(30e6) )
-			sorted_tree->FlushBaskets();
-
-		// Get entry from unsorted tree and fill to sorted tree
-		output_tree->GetEntry( idx );
+		// Fill the sorted tree
 		sorted_tree->Fill();
-
-		// Optimise filling tree
-		if( i == 100 ) sorted_tree->OptimizeBaskets(30e6);	 // sorted tree basket size max 30 MB
 
 		// Progress bar
 		bool update_progress = false;
-		if( nb_idx < 200 )
+		if( n_ents < 200 )
 			update_progress = true;
-		else if( i % (nb_idx/100) == 0 || i+1 == nb_idx )
+		else if( i % (n_ents/100) == 0 || i+1 == n_ents )
 			update_progress = true;
 
 		// Print progress
 		if( update_progress ) {
 
 			// Percent complete
-			float percent = (float)(i+1)*100.0/(float)nb_idx;
+			float percent = (float)(i+1)*100.0/(float)n_ents;
 
 			// Progress bar in GUI
 			if( _prog_ ) {
@@ -2040,14 +2013,10 @@ unsigned long long ISSConverter::SortTree(){
 			std::cout << percent << "%    \r";
 			std::cout.flush();
 
-		}
+		} // progress bar
 
-	}
+	} // i
 
-	// Reset the output tree so it's empty after we've finished
-	output_tree->FlushBaskets();
-	output_tree->Reset();
-
-	return nb_idx;
+	return n_ents;
 
 }

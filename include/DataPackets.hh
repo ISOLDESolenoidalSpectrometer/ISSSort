@@ -192,29 +192,58 @@ class ISSDataPackets : public TObject {
 
 public:
 
-	inline bool	IsAsic() { return asic_packets.size(); };
-	inline bool	IsVme() { return caen_packets.size() + mesy_packets.size(); };
-	inline bool	IsCaen() { return caen_packets.size(); };
-	inline bool	IsMesy() { return mesy_packets.size(); };
-	inline bool	IsInfo() { return info_packets.size(); };
+	ISSDataPackets() {};
+	~ISSDataPackets() {};
 
+	ISSDataPackets( std::unique_ptr<ISSDataPackets> &in ) {
+		if( in->IsAsic() ) SetData( in->GetAsicData() );
+		if( in->IsCaen() ) SetData( in->GetCaenData() );
+		if( in->IsMesy() ) SetData( in->GetMesyData() );
+		if( in->IsInfo() ) SetData( in->GetInfoData() );
+	};
+
+	inline bool	IsAsic() const { return asic_packets.size(); };
+	inline bool	IsVme()  const { return caen_packets.size() + mesy_packets.size(); };
+	inline bool	IsCaen() const { return caen_packets.size(); };
+	inline bool	IsMesy() const { return mesy_packets.size(); };
+	inline bool	IsInfo() const { return info_packets.size(); };
+
+	void SetData( ISSDataPackets in ){
+		if( in.IsAsic() ) SetData( in.GetAsicData() );
+		if( in.IsCaen() ) SetData( in.GetCaenData() );
+		if( in.IsMesy() ) SetData( in.GetMesyData() );
+		if( in.IsInfo() ) SetData( in.GetInfoData() );
+	};
 	void SetData( std::shared_ptr<ISSAsicData> data );
 	void SetData( std::shared_ptr<ISSCaenData> data );
 	void SetData( std::shared_ptr<ISSMesyData> data );
 	void SetData( std::shared_ptr<ISSInfoData> data );
 
 	// These methods are not very safe for access
-	inline std::shared_ptr<ISSAsicData> GetAsicData() { return std::make_shared<ISSAsicData>( asic_packets.at(0) ); };
-	inline std::shared_ptr<ISSCaenData> GetCaenData() { return std::make_shared<ISSCaenData>( caen_packets.at(0) ); };
-	inline std::shared_ptr<ISSMesyData> GetMesyData() { return std::make_shared<ISSMesyData>( mesy_packets.at(0) ); };
-	inline std::shared_ptr<ISSInfoData> GetInfoData() { return std::make_shared<ISSInfoData>( info_packets.at(0) ); };
+	inline std::shared_ptr<ISSAsicData> GetAsicData() const {
+		return std::make_shared<ISSAsicData>( asic_packets.at(0) );
+	};
+	inline std::shared_ptr<ISSCaenData> GetCaenData() const {
+		return std::make_shared<ISSCaenData>( caen_packets.at(0) );
+	};
+	inline std::shared_ptr<ISSMesyData> GetMesyData() const {
+		return std::make_shared<ISSMesyData>( mesy_packets.at(0) );
+	};
+	inline std::shared_ptr<ISSInfoData> GetInfoData() const {
+		return std::make_shared<ISSInfoData>( info_packets.at(0) );
+	};
 
 	// Complicated way to get the time...
-	double GetTime();
-	double GetTimeWithWalk();
-	unsigned long long GetTimeStamp();
-	UInt_t GetTimeMSB();
-	UInt_t GetTimeLSB();
+	double GetTime() const;
+	double GetTimeWithWalk() const;
+	unsigned long long GetTimeStamp() const;
+	UInt_t GetTimeMSB() const;
+	UInt_t GetTimeLSB() const;
+
+	// Sorting function to do time ordering
+	bool operator < ( const ISSDataPackets &data ) const {
+		return( this->GetTime() < data.GetTime() );
+	};
 
 	void ClearData();
 
@@ -225,7 +254,7 @@ protected:
 	std::vector<ISSMesyData> mesy_packets;
 	std::vector<ISSInfoData> info_packets;
 
-	ClassDef( ISSDataPackets, 3 )
+	ClassDef( ISSDataPackets, 4 )
 
 };
 

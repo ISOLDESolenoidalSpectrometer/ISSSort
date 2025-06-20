@@ -239,6 +239,9 @@ void* monitor_run( void* ptr ){
 			// Convert - from shared memory
 			else {
 
+				// Clear the old data from memroy and reset counters
+				conv_mon->StartFile();
+
 				// First check if we have data
 				std::cout << "Looking for data from DataSpy" << std::endl;
 				spy_length = myspy.Read( file_id, (char*)buffer, calfiles->myset->GetBlockSize() );
