@@ -27,6 +27,7 @@ var searchData=
   ['copyevent_24',['CopyEvent',['../classISSArrayEvt.html#a9c6ea46ca6c2e10e54af330866a498d4',1,'ISSArrayEvt']]],
   ['copyrecoil_25',['CopyRecoil',['../classISSReaction.html#ae3859998e082f9d917ff61aa48d20b49',1,'ISSReaction']]],
   ['copytarget_26',['CopyTarget',['../classISSReaction.html#a78023f974ce2738a71ec297e04090e01',1,'ISSReaction']]],
-  ['crystalballfunction_27',['CrystalBallFunction',['../FitFunctions_8hh.html#a2f7cb12a3b48eb43664d129d3ca06c46',1,'CrystalBallFunction(double x, double sigma, double alpha, double n, double amp, double mean):&#160;FitFunctions.hh'],['../FitFunctions_8hh.html#a347ce096c06c0dfa4834ae17237af514',1,'CrystalBallFunction(double *x, double *p):&#160;FitFunctions.hh']]],
-  ['crystalballfunctionbg_28',['CrystalBallFunctionBG',['../FitFunctions_8hh.html#a30a1eff206e425e5223ad55ed74f6eac',1,'FitFunctions.hh']]]
+  ['createtcutg_27',['CreateTCutG',['../classISSReaction.html#a9e1e3b9d9d5fbc5bafbb7098ebb8f9bf',1,'ISSReaction']]],
+  ['crystalballfunction_28',['CrystalBallFunction',['../FitFunctions_8hh.html#a2f7cb12a3b48eb43664d129d3ca06c46',1,'CrystalBallFunction(double x, double sigma, double alpha, double n, double amp, double mean):&#160;FitFunctions.hh'],['../FitFunctions_8hh.html#a347ce096c06c0dfa4834ae17237af514',1,'CrystalBallFunction(double *x, double *p):&#160;FitFunctions.hh']]],
+  ['crystalballfunctionbg_29',['CrystalBallFunctionBG',['../FitFunctions_8hh.html#a30a1eff206e425e5223ad55ed74f6eac',1,'FitFunctions.hh']]]
 ];
