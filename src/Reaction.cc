@@ -336,25 +336,115 @@ std::shared_ptr<TCutG> ISSReaction::ReadCutFile( std::string cut_filename,
   // Check if filename is given in the settings file.
   if( cut_filename != "NULL" ) {
 
-	TFile *cut_file = new TFile( cut_filename.data(), "READ" );
-	if( cut_file->IsZombie() )
-	  std::cout << "Couldn't open " << cut_filename << " correctly" << std::endl;
+	// Is it a .root file?
+	if ( cut_filename.compare(cut_filename.size()-5,5,".root") == 0 ) {
+	  TFile *cut_file = new TFile( cut_filename.data(), "READ" );
+	  if( cut_file->IsZombie() )
+		std::cout << "Couldn't open " << cut_filename << " correctly" << std::endl;
 
-	else {
+	  else {
 
-	  if( !cut_file->GetListOfKeys()->Contains( cut_name.data() ) )
-		std::cout << "Couldn't find " << cut_name << " in "
-				  << cut_filename << std::endl;
+		if( !cut_file->GetListOfKeys()->Contains( cut_name.data() ) )
+		  std::cout << "Couldn't find " << cut_name << " in "
+					<< cut_filename << std::endl;
+		else
+		  cut = std::make_shared<TCutG>( *static_cast<TCutG*>( cut_file->Get( cut_name.data() )->Clone() ) );
+	  }
+
+	  cut_file->Close();
+
+	} else { // Try to create a TCutG from a text file.
+	  std::ifstream cut_file;
+
+	  cut_file.open(cut_filename);
+	  if ( !cut_file.is_open() )
+		std::cerr << "Couldn't open " << cut_filename << " correctly." << std::endl;
 	  else
-		cut = std::make_shared<TCutG>( *static_cast<TCutG*>( cut_file->Get( cut_name.data() )->Clone() ) );
+		cut = CreateTCutG( &cut_file, cut_name );
 	}
-
-	cut_file->Close();
   }
 
   // Assign an empty cut file if none is given, so the code doesn't crash
   if( !cut )
 	cut = std::make_shared<TCutG>();
+
+  return cut;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Read coordinate pairs from a string. First removes any comments after a #.
+/// Returns 0 if the string is empty (including whitespace).
+/// Returns 1 on success.
+/// Returns 2 if the conversion fails.
+int ISSReaction::ReadCoordinates( std::string line, double *x, double *y )
+{
+  int n_conversions;
+  int index = -1;
+  double x_temp, y_temp;
+
+  // Remove any comments beginning with #.
+  line.erase( std::find( line.begin(), line.end(), '#' ), line.end() );
+
+  // Check if line is empty (including whitespace).
+  int n = sscanf(line.c_str(), " %n", &index);
+  if( n == 0 &&               /* No successful conversions. */
+      index != -1 &&          /* %n was reached, so index no longer -1. */
+      line[index] == '\0')    /* String actually ends at the format string end. */
+    return 0; // Nothing to convert.
+
+  index = -1;
+  n_conversions = sscanf(line.c_str(), "%lf %lf %n", &x_temp, &y_temp, &index);
+  if( n_conversions == 2 &&   /* Two successful conversions. */
+      index !=-1 &&           /* %n was reached, so index no longer -1. */
+      line[index] == '\0')    /* String actually ends at the format string end. */
+    {
+
+      *x = x_temp; // Only store the x y pair if conversion was successful.
+      *y = y_temp;
+      return 1;    // Successfully converted two doubles.
+
+    }
+
+  return 2; // Failed to convert string.
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// Creates a TCutG object by reading coordinate pairs from a text file.
+/// Each line should consist of x y coordinates with space as a delimiter.
+std::shared_ptr<TCutG> ISSReaction::CreateTCutG( std::ifstream *cut_file,
+												 std::string cut_name ) {
+
+  std::shared_ptr<TCutG> cut;
+  std::vector<double> x_vector, y_vector;
+  int counter = 0;
+  std::string line;
+
+  // Read file line by line.
+  while( getline(*cut_file,line) )
+    {
+
+      int converted;
+      double x,y;
+      converted = ReadCoordinates(line, &x, &y);
+      if( !converted )
+		continue; // Line is empty (or is a comment).
+
+      if( converted == 2 ) {
+		std::cerr << "Could not process data on line " <<
+		  counter << " for " << cut_name << std::endl;
+		return std::make_shared<TCutG>();
+      }
+
+      x_vector.push_back(x);
+      y_vector.push_back(y);
+	  counter++;
+    }
+
+  cut = std::make_shared<TCutG>( TCutG( cut_name.data(), counter ) );
+  cut->SetVarX( "x" );
+  cut->SetVarY( "y" );
+  for( int i = 0; i < counter; i++ )
+	cut->SetPoint( i, x_vector[i], y_vector[i] );
 
   return cut;
 }
