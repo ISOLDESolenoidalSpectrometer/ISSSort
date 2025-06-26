@@ -195,12 +195,11 @@ public:
 	ISSDataPackets() {};
 	~ISSDataPackets() {};
 
-	ISSDataPackets( std::unique_ptr<ISSDataPackets> &in ) {
-		if( in->IsAsic() ) SetData( in->GetAsicData() );
-		if( in->IsCaen() ) SetData( in->GetCaenData() );
-		if( in->IsMesy() ) SetData( in->GetMesyData() );
-		if( in->IsInfo() ) SetData( in->GetInfoData() );
-	};
+	ISSDataPackets( std::shared_ptr<ISSDataPackets> in ) { SetData(in); };
+	ISSDataPackets( std::shared_ptr<ISSAsicData> in ) { SetData(in); };
+	ISSDataPackets( std::shared_ptr<ISSCaenData> in ) { SetData(in); };
+	ISSDataPackets( std::shared_ptr<ISSMesyData> in ) { SetData(in); };
+	ISSDataPackets( std::shared_ptr<ISSInfoData> in ) { SetData(in); };
 
 	inline bool	IsAsic() const { return asic_packets.size(); };
 	inline bool	IsVme()  const { return caen_packets.size() + mesy_packets.size(); };
@@ -208,11 +207,11 @@ public:
 	inline bool	IsMesy() const { return mesy_packets.size(); };
 	inline bool	IsInfo() const { return info_packets.size(); };
 
-	void SetData( ISSDataPackets in ){
-		if( in.IsAsic() ) SetData( in.GetAsicData() );
-		if( in.IsCaen() ) SetData( in.GetCaenData() );
-		if( in.IsMesy() ) SetData( in.GetMesyData() );
-		if( in.IsInfo() ) SetData( in.GetInfoData() );
+	void SetData( std::shared_ptr<ISSDataPackets> in ){
+		if( in->IsAsic() ) SetData( in->GetAsicData() );
+		if( in->IsCaen() ) SetData( in->GetCaenData() );
+		if( in->IsMesy() ) SetData( in->GetMesyData() );
+		if( in->IsInfo() ) SetData( in->GetInfoData() );
 	};
 	void SetData( std::shared_ptr<ISSAsicData> data );
 	void SetData( std::shared_ptr<ISSCaenData> data );
@@ -241,8 +240,8 @@ public:
 	UInt_t GetTimeLSB() const;
 
 	// Sorting function to do time ordering
-	bool operator < ( const ISSDataPackets &data ) const {
-		return( this->GetTime() < data.GetTime() );
+	bool operator <( const ISSDataPackets &data ) const {
+		return( GetTime() < data.GetTime() );
 	};
 
 	void ClearData();

@@ -243,8 +243,8 @@ private:
 	unsigned int nsamples;
 
 	// Data types and vectors
-	std::vector<ISSDataPackets> data_vector;
-	std::unique_ptr<ISSDataPackets> data_packet;
+	std::vector<std::shared_ptr<ISSDataPackets>> data_vector;
+	std::shared_ptr<ISSDataPackets> write_packet = nullptr;
 	std::shared_ptr<ISSAsicData> asic_data;
 	std::shared_ptr<ISSCaenData> caen_data;
 	std::shared_ptr<ISSMesyData> mesy_data;
