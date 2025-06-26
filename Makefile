@@ -45,7 +45,7 @@ CXX          = $(shell root-config --cxx)
 CC           = $(shell root-config --cc)
 
 # Flags for compiler.
-CPPFLAGS	 = -c -Wall -Wextra $(ROOTCPPFLAGS) -g -fPIC
+CPPFLAGS	 = -c -Wall -Wextra $(ROOTCPPFLAGS) -g -fPIC -O3
 CPPFLAGS	+= -DUNIX -DPOSIX $(OSDEF)
 INCLUDES	+= -I$(INC_DIR) -I.
 
