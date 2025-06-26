@@ -1967,7 +1967,11 @@ unsigned long long ISSConverter::SortTree( bool do_sort ){
 	if( n_ents && do_sort ){
 
 		std::cout << "Building time-ordered index of events..." << std::endl;
-		std::sort( data_vector.begin(), data_vector.end() ); // std::vector method
+		//std::sort( data_vector.begin(), data_vector.end() ); // std::vector method
+		std::sort( data_vector.begin(), data_vector.end(),
+				  []( std::shared_ptr<ISSDataPackets> &lhs, std::shared_ptr<ISSDataPackets> &rhs) {
+			return lhs->GetTime() < rhs->GetTime();
+		} );
 
 	}
 	else return 0;
