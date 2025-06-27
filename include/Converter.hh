@@ -88,6 +88,7 @@ public:
 
 	inline void CloseOutput(){
 		std::cout << "\n Writing data and closing the file" << std::endl;
+		output_file->Write( 0, TObject::kWriteDelete );
 		PurgeOutput();
 		output_file->cd("/");
 		set->Write( "Settings", TObject::kWriteDelete );
