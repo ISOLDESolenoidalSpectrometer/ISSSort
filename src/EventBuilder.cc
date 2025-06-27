@@ -2824,7 +2824,7 @@ void ISSEventBuilder::CdFinder() {
 			used_idx.push_back(j);
 
 			// Check all other sector hits to find a neighbour
-			for( unsigned int k = 0; k < cdsen_list[dE_idx].size(); k++ ) {
+			for( unsigned int k = j+1; k < cdsen_list[dE_idx].size(); k++ ) {
 
 				// Not neighbours with each other
 				if( j == k ) continue;
@@ -2856,7 +2856,7 @@ void ISSEventBuilder::CdFinder() {
 					used_idx.push_back(k);
 
 					// Make a particle event in the CD
-					cd_evt.push_back( std::make_shared<ISSCDEvt>() );
+					cd_evt.emplace_back();
 
 					// Add the first fragment and set the ring and sector
 					cd_evt.back()->AddFragment( sumen, dE_idx );
@@ -2876,7 +2876,7 @@ void ISSEventBuilder::CdFinder() {
 
 			// We only get here if we didn't find a neighbour
 			// So let's make a single event out of this
-			cd_evt.push_back( std::make_shared<ISSCDEvt>() );
+			cd_evt.emplace_back();
 			cd_evt.back()->AddFragment( cdsen_list[dE_idx][j], dE_idx );
 			cd_evt.back()->SetSector( cdsid_list[dE_idx][j] );
 			cd_evt.back()->SetdETime( cdstd_list[dE_idx][j] );
