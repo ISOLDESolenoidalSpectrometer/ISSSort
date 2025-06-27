@@ -331,7 +331,7 @@ void ISSReaction::AddBindingEnergy( short Ai, short Zi, TString ame_be_str ) {
 /// coordinates from a text file.
 std::shared_ptr<TCutG> ISSReaction::ReadCutFile( std::string cut_filename, std::string cut_name ) {
 
-	std::shared_ptr<TCutG> cut;
+	std::shared_ptr<TCutG> cut = nullptr;
 
 	// Check if filename is given in the settings file.
 	if( cut_filename != "NULL" ) {
