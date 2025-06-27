@@ -2824,7 +2824,7 @@ void ISSEventBuilder::CdFinder() {
 			used_idx.push_back(j);
 
 			// Check all other sector hits to find a neighbour
-			for( unsigned int k = 0; k < cdsen_list[dE_idx].size(); k++ ) {
+			for( unsigned int k = j+1; k < cdsen_list[dE_idx].size(); k++ ) {
 
 				// Not neighbours with each other
 				if( j == k ) continue;
