@@ -1881,7 +1881,7 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 	unsigned long long FILE_SIZE = size_end - size_beg;
 
 	// Calculate the number of blocks in the file.
-	unsigned long BLOCKS_NUM = FILE_SIZE / DATA_BLOCK_SIZE;
+	BLOCKS_NUM = FILE_SIZE / DATA_BLOCK_SIZE;
 
 	//a sanity check for file size...
 	//QQQ: add more strict test?
@@ -1956,6 +1956,20 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 
 }
 
+bool ISSConverter::TimeComparator( const std::shared_ptr<ISSDataPackets> &lhs,
+								   const std::shared_ptr<ISSDataPackets> &rhs ) {
+
+	return lhs->GetTime() < rhs->GetTime();
+
+}
+
+void ISSConverter::SortDataVector() {
+
+	// Sort the data vector as we go along
+	std::sort( data_vector.begin(), data_vector.end(), TimeComparator );
+
+}
+
 unsigned long long ISSConverter::SortTree( bool do_sort ){
 
 	// Reset the sorted tree so it's empty before we start
@@ -1965,15 +1979,9 @@ unsigned long long ISSConverter::SortTree( bool do_sort ){
 	long long int n_ents = data_vector.size();	// std::vector method
 
 	// Check we have entries and build time-ordered index
-	if( n_ents && do_sort ){
-
-		std::cout << "Building time-ordered index of events..." << std::endl;
-		//std::sort( data_vector.begin(), data_vector.end() ); // std::vector method
-		std::sort( data_vector.begin(), data_vector.end(),
-				  []( std::shared_ptr<ISSDataPackets> &lhs, std::shared_ptr<ISSDataPackets> &rhs) {
-			return lhs->GetTimeStamp() < rhs->GetTimeStamp();
-		} );
-
+	if( n_ents && do_sort ) {
+		std::cout << "Time ordering the data items..." << std::endl;
+		SortDataVector();
 	}
 	else return 0;
 

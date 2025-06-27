@@ -54,7 +54,10 @@ public:
 	void ResetHists();
 	void MakeTree();
 	void StartFile();
+	void SortDataVector();
 	unsigned long long SortTree( bool do_sort = true );
+	static bool TimeComparator( const std::shared_ptr<ISSDataPackets> &lhs,
+							    const std::shared_ptr<ISSDataPackets> &rhs );
 
 	bool ProcessCurrentBlock( int nblock );
 
@@ -176,6 +179,7 @@ private:
 	static const int DATA_BLOCK_SIZE = 0x10000; // Block size for ISS/ASIC data = 64 kB, also CAEN data from June 2021 onwards
 	static const int MAIN_SIZE = DATA_BLOCK_SIZE - HEADER_SIZE;
 	static const int WORD_SIZE = MAIN_SIZE / sizeof(ULong64_t);
+	unsigned int BLOCKS_NUM = 0;
 
 	// Set the arrays for the block components.
 	char block_header[HEADER_SIZE];
