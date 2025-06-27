@@ -2935,7 +2935,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l02856" name="l02856"></a><span class="lineno"> 2856</span>                    used_idx.push_back(k);</div>
 <div class="line"><a id="l02857" name="l02857"></a><span class="lineno"> 2857</span> </div>
 <div class="line"><a id="l02858" name="l02858"></a><span class="lineno"> 2858</span>                    <span class="comment">// Make a particle event in the CD</span></div>
-<div class="line"><a id="l02859" name="l02859"></a><span class="lineno"> 2859</span>                    <a class="code hl_variable" href="classISSEventBuilder.html#a888561c301701a8274c8fb4e9f3e89db">cd_evt</a>.emplace_back();</div>
+<div class="line"><a id="l02859" name="l02859"></a><span class="lineno"> 2859</span>                    <a class="code hl_variable" href="classISSEventBuilder.html#a888561c301701a8274c8fb4e9f3e89db">cd_evt</a>.push_back( std::make_shared&lt;ISSCDEvt&gt;() );</div>
 <div class="line"><a id="l02860" name="l02860"></a><span class="lineno"> 2860</span> </div>
 <div class="line"><a id="l02861" name="l02861"></a><span class="lineno"> 2861</span>                    <span class="comment">// Add the first fragment and set the ring and sector</span></div>
 <div class="line"><a id="l02862" name="l02862"></a><span class="lineno"> 2862</span>                    <a class="code hl_variable" href="classISSEventBuilder.html#a888561c301701a8274c8fb4e9f3e89db">cd_evt</a>.back()-&gt;AddFragment( sumen, dE_idx );</div>
@@ -2955,7 +2955,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l02876" name="l02876"></a><span class="lineno"> 2876</span> </div>
 <div class="line"><a id="l02877" name="l02877"></a><span class="lineno"> 2877</span>            <span class="comment">// We only get here if we didn&#39;t find a neighbour</span></div>
 <div class="line"><a id="l02878" name="l02878"></a><span class="lineno"> 2878</span>            <span class="comment">// So let&#39;s make a single event out of this</span></div>
-<div class="line"><a id="l02879" name="l02879"></a><span class="lineno"> 2879</span>            <a class="code hl_variable" href="classISSEventBuilder.html#a888561c301701a8274c8fb4e9f3e89db">cd_evt</a>.emplace_back();</div>
+<div class="line"><a id="l02879" name="l02879"></a><span class="lineno"> 2879</span>            <a class="code hl_variable" href="classISSEventBuilder.html#a888561c301701a8274c8fb4e9f3e89db">cd_evt</a>.push_back( std::make_shared&lt;ISSCDEvt&gt;() );</div>
 <div class="line"><a id="l02880" name="l02880"></a><span class="lineno"> 2880</span>            <a class="code hl_variable" href="classISSEventBuilder.html#a888561c301701a8274c8fb4e9f3e89db">cd_evt</a>.back()-&gt;AddFragment( <a class="code hl_variable" href="classISSEventBuilder.html#a07f74bbeafb226b12616369cc05c916e">cdsen_list</a>[dE_idx][j], dE_idx );</div>
 <div class="line"><a id="l02881" name="l02881"></a><span class="lineno"> 2881</span>            <a class="code hl_variable" href="classISSEventBuilder.html#a888561c301701a8274c8fb4e9f3e89db">cd_evt</a>.back()-&gt;SetSector( <a class="code hl_variable" href="classISSEventBuilder.html#a20d8b839b574255e650c24781277e3df">cdsid_list</a>[dE_idx][j] );</div>
 <div class="line"><a id="l02882" name="l02882"></a><span class="lineno"> 2882</span>            <a class="code hl_variable" href="classISSEventBuilder.html#a888561c301701a8274c8fb4e9f3e89db">cd_evt</a>.back()-&gt;SetdETime( <a class="code hl_variable" href="classISSEventBuilder.html#a09d19b6c5c6c95c6174bb151ca1c0bd6">cdstd_list</a>[dE_idx][j] );</div>
