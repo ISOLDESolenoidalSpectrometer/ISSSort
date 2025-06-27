@@ -180,6 +180,8 @@ public:
 	// Main functions
 	void AddBindingEnergy( short Ai, short Zi, TString ame_be_str );///< Add a binding energy to the ame_be mass-table map
 	std::shared_ptr<TCutG> ReadCutFile( std::string cut_filename, std::string cut_name );
+	int ReadCoordinates( std::string line, double *x, double *y ); ///< Used by CreateTCutG
+	std::shared_ptr<TCutG> CreateTCutG( std::ifstream *cut_file, std::string cut_name );
 	void ReadMassTables();///< Reads the AME2020 mass tables
 	void ReadReaction();///< Reads the reaction input file
 
