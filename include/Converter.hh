@@ -10,6 +10,7 @@
 #include <string>
 #include <cstring>
 #include <memory>
+#include <algorithm>
 
 #include <TFile.h>
 #include <TTree.h>

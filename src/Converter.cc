@@ -64,12 +64,13 @@ void ISSConverter::SetOutput( std::string output_file_name ){
 void ISSConverter::MakeTree() {
 
 	// Create Root tree
-	const int splitLevel = 2; // don't split branches = 0, full splitting = 99
+	const int splitLevel = 0; // don't split branches = 0, full splitting = 99
 	const int bufsize = sizeof(ISSCaenData) + sizeof(ISSAsicData) + sizeof(ISSInfoData);
 	sorted_tree = new TTree( "iss_sort", "Time sorted, calibrated ISS data" );
 	write_packet = std::make_shared<ISSDataPackets>();
 	sorted_tree->Branch( "data", "ISSDataPackets", write_packet.get(), bufsize, splitLevel );
 	sorted_tree->SetDirectory( output_file->GetDirectory("/") );
+	sorted_tree->SetMaxVirtualSize(1e9); // 1 GB in memory, so it doesn't need to write too often
 
 	asic_data = std::make_shared<ISSAsicData>();
 	caen_data = std::make_shared<ISSCaenData>();
