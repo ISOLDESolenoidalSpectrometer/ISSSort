@@ -87,7 +87,6 @@ bool flag_ebis = false;
 
 // select what steps of the analysis to be forced
 std::vector<bool> force_convert;
-bool force_sort = false;
 bool force_events = false;
 
 // Flag if we want to launch the GUI for sorting
@@ -238,6 +237,9 @@ void* monitor_run( void* ptr ){
 
 			// Convert - from shared memory
 			else {
+
+				// Clear the old data from memroy and reset counters
+				conv_mon->StartFile();
 
 				// First check if we have data
 				std::cout << "Looking for data from DataSpy" << std::endl;
@@ -432,6 +434,10 @@ void do_convert(){
 			ftest.close();
 			rtest = new TFile( name_output_file.data() );
 			if( rtest->IsZombie() ) force_convert.at(i) = true;
+			if( rtest->TestBit(TFile::kRecovered) ){
+				std::cout << name_output_file << " possibly corrupted, reconverting" << std::endl;
+				force_convert.at(i) = true;
+			}
 			if( !flag_convert && !force_convert.at(i) )
 				std::cout << name_output_file << " already converted" << std::endl;
 			rtest->Close();
@@ -525,6 +531,10 @@ bool do_build(){
 				ftest.close();
 				rtest = new TFile( name_output_file.data() );
 				if( rtest->IsZombie() ) force_events = true;
+				if( rtest->TestBit(TFile::kRecovered) ){
+					std::cout << name_output_file << " possibly corrupted, rebuilding" << std::endl;
+					force_events = true;
+				}
 				if( !force_events )
 					std::cout << name_output_file << " already built" << std::endl;
 				rtest->Close();

@@ -134,7 +134,7 @@ void ISSDataPackets::ClearData(){
 
 }
 
-double ISSDataPackets::GetTime(){
+double ISSDataPackets::GetTime() const {
 
 	if( IsAsic() ) return GetAsicData()->GetTime();
 	if( IsCaen() ) return GetCaenData()->GetTime();
@@ -145,7 +145,7 @@ double ISSDataPackets::GetTime(){
 
 }
 
-double ISSDataPackets::GetTimeWithWalk(){
+double ISSDataPackets::GetTimeWithWalk() const {
 
 	if( IsAsic() ) return GetAsicData()->GetTime() + GetAsicData()->GetWalk();
 	if( IsCaen() ) return GetCaenData()->GetTime();
@@ -156,7 +156,7 @@ double ISSDataPackets::GetTimeWithWalk(){
 
 }
 
-unsigned long long ISSDataPackets::GetTimeStamp(){
+unsigned long long ISSDataPackets::GetTimeStamp() const {
 
 	if( IsAsic() ) return GetAsicData()->GetTimeStamp();
 	if( IsCaen() ) return GetCaenData()->GetTimeStamp();
@@ -167,13 +167,13 @@ unsigned long long ISSDataPackets::GetTimeStamp(){
 
 }
 
-UInt_t ISSDataPackets::GetTimeMSB(){
+UInt_t ISSDataPackets::GetTimeMSB() const {
 
 	return ( ((unsigned long long)this->GetTimeStamp() >> 32) & 0xFFFFFFFF );
 
 }
 
-UInt_t ISSDataPackets::GetTimeLSB(){
+UInt_t ISSDataPackets::GetTimeLSB() const {
 
 	return (UInt_t)this->GetTimeStamp();
 

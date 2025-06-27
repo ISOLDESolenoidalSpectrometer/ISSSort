@@ -10,6 +10,7 @@
 #include <string>
 #include <cstring>
 #include <memory>
+#include <algorithm>
 
 #include <TFile.h>
 #include <TTree.h>
@@ -53,7 +54,7 @@ public:
 	void ResetHists();
 	void MakeTree();
 	void StartFile();
-	unsigned long long SortTree();
+	unsigned long long SortTree( bool do_sort = true );
 
 	bool ProcessCurrentBlock( int nblock );
 
@@ -87,19 +88,16 @@ public:
 
 	inline void CloseOutput(){
 		std::cout << "\n Writing data and closing the file" << std::endl;
-		//output_tree->SetDirectory(0);
-		output_file->Write( 0, TObject::kWriteDelete );
 		PurgeOutput();
 		output_file->cd("/");
 		set->Write( "Settings", TObject::kWriteDelete );
 		cal->Write( "Calibration", TObject::kWriteDelete );
 		output_file->Close();
-		//output_tree->ResetBranchAddresses();
 		//sorted_tree->ResetBranchAddresses();
 	};
 	inline void PurgeOutput(){ output_file->Purge(2); }
 	inline TFile* GetFile(){ return output_file; };
-	inline TTree* GetTree(){ return output_tree; };
+	inline TTree* GetTree(){ return GetSortedTree(); };
 	inline TTree* GetSortedTree(){ return sorted_tree; };
 
 	inline void AddSettings( std::shared_ptr<ISSSettings> myset ){ set = myset; };
@@ -247,8 +245,9 @@ private:
 	// For traces
 	unsigned int nsamples;
 
-	// Data types
-	std::unique_ptr<ISSDataPackets> data_packet;
+	// Data types and vectors
+	std::vector<std::shared_ptr<ISSDataPackets>> data_vector;
+	std::shared_ptr<ISSDataPackets> write_packet = nullptr;
 	std::shared_ptr<ISSAsicData> asic_data;
 	std::shared_ptr<ISSCaenData> caen_data;
 	std::shared_ptr<ISSMesyData> mesy_data;
@@ -256,7 +255,6 @@ private:
 
 	// Output stuff
 	TFile *output_file;
-	TTree *output_tree;
 	TTree *sorted_tree;
 
 	// Counters

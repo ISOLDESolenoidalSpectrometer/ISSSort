@@ -329,12 +329,11 @@ void ISSReaction::AddBindingEnergy( short Ai, short Zi, TString ame_be_str ) {
 ////////////////////////////////////////////////////////////////////////////////
 /// Loads a TCutG from file, either a saved TCutG from a ROOT file or the (x,y)
 /// coordinates from a text file.
-std::shared_ptr<TCutG> ISSReaction::ReadCutFile( std::string cut_filename,
-												 std::string cut_name ) {
+std::shared_ptr<TCutG> ISSReaction::ReadCutFile( std::string cut_filename, std::string cut_name ) {
 
-  std::shared_ptr<TCutG> cut;
-  // Check if filename is given in the settings file.
-  if( cut_filename != "NULL" ) {
+	std::shared_ptr<TCutG> cut;
+	// Check if filename is given in the settings file.
+	if( cut_filename != "NULL" ) {
 
 	// Is it a .root file?
 	if ( cut_filename.compare(cut_filename.size()-5,5,".root") == 0 ) {
@@ -364,11 +363,8 @@ std::shared_ptr<TCutG> ISSReaction::ReadCutFile( std::string cut_filename,
 	}
   }
 
-  // Assign an empty cut file if none is given, so the code doesn't crash
-  if( !cut )
-	cut = std::make_shared<TCutG>();
+	return cut;
 
-  return cut;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -376,36 +372,36 @@ std::shared_ptr<TCutG> ISSReaction::ReadCutFile( std::string cut_filename,
 /// Returns 0 if the string is empty (including whitespace).
 /// Returns 1 on success.
 /// Returns 2 if the conversion fails.
-int ISSReaction::ReadCoordinates( std::string line, double *x, double *y )
-{
-  int n_conversions;
-  int index = -1;
-  double x_temp, y_temp;
+int ISSReaction::ReadCoordinates( std::string line, double *x, double *y ) {
+	
+	int n_conversions;
+	int index = -1;
+	double x_temp, y_temp;
 
-  // Remove any comments beginning with #.
-  line.erase( std::find( line.begin(), line.end(), '#' ), line.end() );
+	// Remove any comments beginning with #.
+	line.erase( std::find( line.begin(), line.end(), '#' ), line.end() );
 
-  // Check if line is empty (including whitespace).
-  int n = sscanf(line.c_str(), " %n", &index);
-  if( n == 0 &&               /* No successful conversions. */
-      index != -1 &&          /* %n was reached, so index no longer -1. */
-      line[index] == '\0')    /* String actually ends at the format string end. */
-    return 0; // Nothing to convert.
+	// Check if line is empty (including whitespace).
+	int n = sscanf(line.c_str(), " %n", &index);
+	if( n == 0 &&               /* No successful conversions. */
+		index != -1 &&          /* %n was reached, so index no longer -1. */
+		line[index] == '\0')    /* String actually ends at the format string end. */
+		return 0; // Nothing to convert.
 
-  index = -1;
-  n_conversions = sscanf(line.c_str(), "%lf %lf %n", &x_temp, &y_temp, &index);
-  if( n_conversions == 2 &&   /* Two successful conversions. */
-      index !=-1 &&           /* %n was reached, so index no longer -1. */
-      line[index] == '\0')    /* String actually ends at the format string end. */
-    {
+	index = -1;
+	n_conversions = sscanf(line.c_str(), "%lf %lf %n", &x_temp, &y_temp, &index);
+	if( n_conversions == 2 &&   /* Two successful conversions. */
+		index !=-1 &&           /* %n was reached, so index no longer -1. */
+		line[index] == '\0'){    /* String actually ends at the format string end. */
+    
+		*x = x_temp; // Only store the x y pair if conversion was successful.
+		*y = y_temp;
+		return 1;    // Successfully converted two doubles.
 
-      *x = x_temp; // Only store the x y pair if conversion was successful.
-      *y = y_temp;
-      return 1;    // Successfully converted two doubles.
+	}
 
-    }
-
-  return 2; // Failed to convert string.
+	return 2; // Failed to convert string.
+	
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -414,39 +410,39 @@ int ISSReaction::ReadCoordinates( std::string line, double *x, double *y )
 std::shared_ptr<TCutG> ISSReaction::CreateTCutG( std::ifstream *cut_file,
 												 std::string cut_name ) {
 
-  std::shared_ptr<TCutG> cut;
-  std::vector<double> x_vector, y_vector;
-  int counter = 0;
-  std::string line;
+	std::shared_ptr<TCutG> cut;
+	std::vector<double> x_vector, y_vector;
+	int counter = 0;
+	std::string line;
 
-  // Read file line by line.
-  while( getline(*cut_file,line) )
-    {
+	// Read file line by line.
+	while( getline(*cut_file,line) ) {
 
-      int converted;
-      double x,y;
-      converted = ReadCoordinates(line, &x, &y);
-      if( !converted )
-		continue; // Line is empty (or is a comment).
+		int converted;
+		double x,y;
+		converted = ReadCoordinates(line, &x, &y);
+		if( !converted ) continue; // Line is empty (or is a comment).
 
-      if( converted == 2 ) {
-		std::cerr << "Could not process data on line " <<
-		  counter << " for " << cut_name << std::endl;
-		return std::make_shared<TCutG>();
-      }
+		if( converted == 2 ) {
+			std::cerr << "Could not process data on line " <<
+			counter << " for " << cut_name << std::endl;
+			return std::make_shared<TCutG>();
+		}
 
-      x_vector.push_back(x);
-      y_vector.push_back(y);
-	  counter++;
-    }
+		x_vector.push_back(x);
+		y_vector.push_back(y);
+		counter++;
 
-  cut = std::make_shared<TCutG>( TCutG( cut_name.data(), counter ) );
-  cut->SetVarX( "x" );
-  cut->SetVarY( "y" );
-  for( int i = 0; i < counter; i++ )
-	cut->SetPoint( i, x_vector[i], y_vector[i] );
+	}
 
-  return cut;
+	cut = std::make_shared<TCutG>( TCutG( cut_name.data(), counter ) );
+	cut->SetVarX( "x" );
+	cut->SetVarY( "y" );
+	for( int i = 0; i < counter; i++ )
+		cut->SetPoint( i, x_vector[i], y_vector[i] );
+
+	return cut;
+	
 }
 
 ///////////////////////////////////////////////////////////////////////////////
