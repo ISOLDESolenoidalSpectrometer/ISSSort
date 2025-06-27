@@ -384,7 +384,7 @@ std::shared_ptr<TCutG> ISSReaction::ReadCutFile( std::string cut_filename, std::
 /// Returns 1 on success.
 /// Returns 2 if the conversion fails.
 int ISSReaction::ReadCoordinates( std::string line, double *x, double *y ) {
-	
+
 	int n_conversions;
 	int index = -1;
 	double x_temp, y_temp;
@@ -404,7 +404,7 @@ int ISSReaction::ReadCoordinates( std::string line, double *x, double *y ) {
 	if( n_conversions == 2 &&   /* Two successful conversions. */
 		index !=-1 &&           /* %n was reached, so index no longer -1. */
 		line[index] == '\0'){    /* String actually ends at the format string end. */
-    
+
 		*x = x_temp; // Only store the x y pair if conversion was successful.
 		*y = y_temp;
 		return 1;    // Successfully converted two doubles.
@@ -412,7 +412,7 @@ int ISSReaction::ReadCoordinates( std::string line, double *x, double *y ) {
 	}
 
 	return 2; // Failed to convert string.
-	
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -757,6 +757,10 @@ void ISSReaction::ReadReaction() {
 
 	// Gamma-Gamma fill ratios
 	gamma_gamma_ratio = config->GetValue( "GammaGamma_FillRatio", GetFissionFissionTimeRatio() );
+
+	// Gamma-ray energy cut
+	gamma_energy_cut[0] = config->GetValue( "GammaCut_Energy.Min", 0.0 );	// lower limit of the gamma-ray energy for gating spectra (0 keV)
+	gamma_energy_cut[1] = config->GetValue( "GammaCut_Energy.Max", 1e5 );	// upper limit of the gamma-ray energy for gating spectra (100 MeV)
 
 	// Target thickness and offsets
 	target_thickness = config->GetValue( "TargetThickness", 0.200 ); // units of mg/cm^2

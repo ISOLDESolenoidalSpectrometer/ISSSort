@@ -483,6 +483,12 @@ public:
 		return gamma_gamma_ratio;
 	};///< Getter for gamma-gamma fill ratio (unused?)
 
+	// Gamma-energy cut
+	inline double GetGammaEnergyCut( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return gamma_energy_cut[i];
+		else return 0;
+	};///< Getter for gamma energy cut, given by user in reaction file
 
 	// Setters
 	inline void	SetField( double m ){ Mfield = m; };					///< Setter for the magnetic field strength
@@ -693,6 +699,7 @@ private:
 	std::vector<std::shared_ptr<TCutG>> e_vs_z_cut;	///< Vector containing the E vs z cuts
 	std::shared_ptr<TCutG> fission_cutH;			///< Heavy fission fragment cut
 	std::shared_ptr<TCutG> fission_cutL;			///< Light fission fragment cut
+	double gamma_energy_cut[2];						///< Gamma-ray energy cut, lower and upper limits
 
 	// Stopping powers
 	std::vector<std::unique_ptr<TGraph>> gStopping;	///< Vector of pointer to relevant stopping-power TGraphs relevant to the reaction of study

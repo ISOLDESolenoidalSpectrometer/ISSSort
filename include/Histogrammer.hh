@@ -308,6 +308,13 @@ public:
 	inline bool	LaserOn(){ return read_evts->GetLaserStatus(); };
 	inline bool	LaserOff(){ return !read_evts->GetLaserStatus(); };
 
+	// Gamma-ray energy gate
+	inline bool GammaEnergyCut( std::shared_ptr<ISSGammaRayEvt> g ){
+		if( g->GetEnergy() > react->GetGammaEnergyCut(0) &&
+		    g->GetEnergy() < react->GetGammaEnergyCut(1) ) return true;
+		else return false;
+	};
+
 	// Recoil energy gate
 	inline bool RecoilCut( std::shared_ptr<ISSRecoilEvt> r ){
 		std::shared_ptr<TCutG> mycut = react->GetRecoilCut( r->GetSector() );
@@ -452,8 +459,8 @@ private:
 	TH2F *E_vs_z, *E_vs_z_ebis, *E_vs_z_ebis_on, *E_vs_z_ebis_off;
 	TH2F *E_vs_z_recoil, *E_vs_z_recoilT, *E_vs_z_T1;
 	TH2F *E_vs_z_recoil_random, *E_vs_z_recoilT_random;
-	TH2F *E_vs_z_fission, *E_vs_z_fissionT;
-	TH2F *E_vs_z_fission_random, *E_vs_z_fissionT_random;
+	TH2F *E_vs_z_fission, *E_vs_z_fissionT, *E_vs_z_fission_gamma;
+	TH2F *E_vs_z_fission_random, *E_vs_z_fissionT_random, *E_vs_z_fission_gamma_random;
 
 	// Array - E vs. thetaCM
 	std::vector<TH2F*> E_vs_theta_mod;
@@ -581,8 +588,8 @@ private:
 	TH1F *Ex, *Ex_ebis, *Ex_ebis_on, *Ex_ebis_off;
 	TH1F *Ex_recoil, *Ex_recoilT, *Ex_T1;
 	TH1F *Ex_recoil_random, *Ex_recoilT_random;
-	TH1F *Ex_fission, *Ex_fissionT;
-	TH1F *Ex_fission_random, *Ex_fissionT_random;
+	TH1F *Ex_fission, *Ex_fissionT, *Ex_fission_gamma;
+	TH1F *Ex_fission_random, *Ex_fissionT_random, *Ex_fission_gamma_random;
 	TH2F *Ex_vs_T1;
 
 	// Array - thetaCM
