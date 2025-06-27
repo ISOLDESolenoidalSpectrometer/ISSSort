@@ -332,36 +332,47 @@ void ISSReaction::AddBindingEnergy( short Ai, short Zi, TString ame_be_str ) {
 std::shared_ptr<TCutG> ISSReaction::ReadCutFile( std::string cut_filename, std::string cut_name ) {
 
 	std::shared_ptr<TCutG> cut;
+
 	// Check if filename is given in the settings file.
 	if( cut_filename != "NULL" ) {
 
-	// Is it a .root file?
-	if ( cut_filename.compare(cut_filename.size()-5,5,".root") == 0 ) {
-	  TFile *cut_file = new TFile( cut_filename.data(), "READ" );
-	  if( cut_file->IsZombie() )
-		std::cout << "Couldn't open " << cut_filename << " correctly" << std::endl;
+		// Is it a .root file?
+		if ( cut_filename.compare(cut_filename.size()-5,5,".root") == 0 ) {
 
-	  else {
+			TFile *cut_file = new TFile( cut_filename.data(), "READ" );
+			if( cut_file->IsZombie() )
+				std::cout << "Couldn't open " << cut_filename << " correctly" << std::endl;
 
-		if( !cut_file->GetListOfKeys()->Contains( cut_name.data() ) )
-		  std::cout << "Couldn't find " << cut_name << " in "
-					<< cut_filename << std::endl;
-		else
-		  cut = std::make_shared<TCutG>( *static_cast<TCutG*>( cut_file->Get( cut_name.data() )->Clone() ) );
-	  }
+			else {
 
-	  cut_file->Close();
+				if( !cut_file->GetListOfKeys()->Contains( cut_name.data() ) )
+					std::cout << "Couldn't find " << cut_name << " in " << cut_filename << std::endl;
+				else
+					cut = std::make_shared<TCutG>( *static_cast<TCutG*>( cut_file->Get( cut_name.data() )->Clone() ) );
 
-	} else { // Try to create a TCutG from a text file.
-	  std::ifstream cut_file;
+			}
 
-	  cut_file.open(cut_filename);
-	  if ( !cut_file.is_open() )
-		std::cerr << "Couldn't open " << cut_filename << " correctly." << std::endl;
-	  else
-		cut = CreateTCutG( &cut_file, cut_name );
+			cut_file->Close();
+
+		}
+
+		else { // Try to create a TCutG from a text file.
+
+			std::ifstream cut_file;
+			cut_file.open(cut_filename);
+			if ( !cut_file.is_open() )
+				std::cerr << "Couldn't open " << cut_filename << " correctly." << std::endl;
+			else
+				cut = CreateTCutG( &cut_file, cut_name );
+
+		}
+
 	}
-  }
+
+	// Check if we still didn't manage to mage a cut file
+	// then make an empty one
+	if( cut.get() == nullptr )
+		cut = std::make_shared<TCutG>();
 
 	return cut;
 
