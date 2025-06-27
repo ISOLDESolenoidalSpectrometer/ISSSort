@@ -2,7 +2,7 @@ var searchData=
 [
   ['data_0',['data',['../classISSConverter.html#a4994dd0ae3123d37f6f89b9e58124c50',1,'ISSConverter']]],
   ['data_5fblock_5fsize_1',['DATA_BLOCK_SIZE',['../classISSConverter.html#aa359b31cae0ba6a6004f3e1dfa4c764b',1,'ISSConverter']]],
-  ['data_5fpacket_2',['data_packet',['../classISSConverter.html#a120c5c179558a59edf6ed838f84f540c',1,'ISSConverter']]],
+  ['data_5fvector_2',['data_vector',['../classISSConverter.html#adbc8213a1646dcf52236043a6902185b',1,'ISSConverter']]],
   ['datadir_5fname_3',['datadir_name',['../iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6',1,'iss_sort.cc']]],
   ['deadlayer_4',['deadlayer',['../classISSReaction.html#a344c739edf79c6c6e25094cacfca8b28',1,'ISSReaction']]],
   ['default_5ffit_5famplitude_5ffraction_5flb_5',['default_fit_amplitude_fraction_lb',['../classISSAutoCalibrator.html#a9be114bf20f64305f79d2b21ddcc8f42',1,'ISSAutoCalibrator']]],

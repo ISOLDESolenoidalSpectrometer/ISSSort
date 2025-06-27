@@ -148,7 +148,7 @@ var searchData=
   ['fmesytype_145',['fMesyType',['../classISSCalibration.html#aec45a5f1b23b720f07504f341735aaa9',1,'ISSCalibration']]],
   ['force_5fconvert_146',['force_convert',['../classISSGUI.html#ac1fc02856af087e23ae05fd82bdefda7',1,'ISSGUI::force_convert'],['../iss__sort_8cc.html#a71ec30e3061cf2bef50f5573ccd9d3e1',1,'force_convert:&#160;iss_sort.cc']]],
   ['force_5fevents_147',['force_events',['../classISSGUI.html#ab04608933dfb790818d7fdc4f544db05',1,'ISSGUI::force_events'],['../iss__sort_8cc.html#af6715617560e88e649da70bfb6de343b',1,'force_events:&#160;iss_sort.cc']]],
-  ['force_5fsort_148',['force_sort',['../classISSGUI.html#a2b2bf794764badaede87f0cfe143e24f',1,'ISSGUI::force_sort'],['../iss__sort_8cc.html#adeaa4054475f689fe9aade099c8cb7c1',1,'force_sort:&#160;iss_sort.cc']]],
+  ['force_5fsort_148',['force_sort',['../classISSGUI.html#a2b2bf794764badaede87f0cfe143e24f',1,'ISSGUI']]],
   ['fpga_5fperiod_149',['fpga_period',['../classISSEventBuilder.html#a043a14cd3b9b007314716b19116081f8',1,'ISSEventBuilder']]],
   ['fpga_5fprev_150',['fpga_prev',['../classISSEventBuilder.html#a0c13cf8940d882a2ab023d9a8d958ead',1,'ISSEventBuilder']]],
   ['fpga_5fpulser_5floss_151',['fpga_pulser_loss',['../classISSEventBuilder.html#a447f8177e691e497f6eeab1978849974',1,'ISSEventBuilder']]],
