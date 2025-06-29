@@ -1978,7 +1978,7 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 bool ISSConverter::TimeComparator( const std::shared_ptr<ISSDataPackets> &lhs,
 								   const std::shared_ptr<ISSDataPackets> &rhs ) {
 
-	return lhs->GetTime() < rhs->GetTimeStamp();
+	return lhs->GetTimeStamp() < rhs->GetTimeStamp();
 
 }
 
