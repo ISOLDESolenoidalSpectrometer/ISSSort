@@ -2824,9 +2824,8 @@ void ISSEventBuilder::CdFinder() {
 
 			// Check if it's been used already
 			bool skip_flag = false;
-			if( std::find( used_idx.begin(), used_idx.end(), j ) == used_idx.end() )
-				skip_flag = true;
-			if( skip_flag ) continue;
+			if( std::find( used_idx.begin(), used_idx.end(), j ) != used_idx.end() )
+				continue;
 
 			// Mark this hit as used
 			used_idx.push_back(j);
@@ -2835,18 +2834,16 @@ void ISSEventBuilder::CdFinder() {
 			for( unsigned int k = j+1; k < cdsen_list[dE_idx].size(); k++ ) {
 
 				// Check if it's been used already
-				skip_flag = false;
-				if( std::find( used_idx.begin(), used_idx.end(), k ) == used_idx.end() )
-					skip_flag = true;
-				if( skip_flag ) continue;
+				if( std::find( used_idx.begin(), used_idx.end(), k ) != used_idx.end() )
+					continue;
 
 				// Check if they are really neighbours
 				float	sec_en_diff = cdsen_list[dE_idx][j] - cdsen_list[dE_idx][k];
 				int		sec_id_diff = cdsid_list[dE_idx][j] - cdsid_list[dE_idx][k];
 				double	sec_td_diff = cdstd_list[dE_idx][j] - cdstd_list[dE_idx][k];
 				if( ( TMath::Abs( sec_id_diff ) == 1 ||
-					 TMath::Abs( sec_id_diff ) == set->GetNumberOfCDSectors()-1 ) &&
-				   TMath::Abs( sec_td_diff ) < set->GetCDRSHitWindow() ) {
+					  TMath::Abs( sec_id_diff ) == set->GetNumberOfCDSectors()-1 ) &&
+				     TMath::Abs( sec_td_diff ) < set->GetCDRSHitWindow() ) {
 
 					// Charge-sharing add-back, use highest energy for sector ID and time
 					float sumen = cdsen_list[dE_idx][j] + cdsen_list[dE_idx][k];
