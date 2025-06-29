@@ -1128,7 +1128,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		unsigned long long idx_next;
 		if( i+1 == n_entries ) idx_next = n_entries;
 		else {
-			idx_next = n_entries;
+			idx_next = i+1;
 			if( !set->BuildByTimeStamp() )
 				idx_next = att_index->GetIndex()[i+1];
 		}
