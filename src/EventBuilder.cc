@@ -3499,7 +3499,7 @@ void ISSEventBuilder::MakeHists(){
 		hname = "cd_rs_en_" + std::to_string(i);
 		htitle = "ring vs. sector energy (layer ";
 		htitle += std::to_string(i) + ");Energy rings (keV);Energy sectors (keV)";
-		cd_rs_en[i] = new TH2F( hname.data(), htitle.data(), 6e3, 0, 120e3, 6e3, 0, 120e3 );
+		cd_rs_en[i] = new TH2F( hname.data(), htitle.data(), 5e3, 0, 2e6, 5e3, 0, 2e6 );
 
 		hname = "cd_rs_td_" + std::to_string(i);
 		htitle = "ring vs. sector time difference (layer ";
@@ -3511,24 +3511,24 @@ void ISSEventBuilder::MakeHists(){
 		htitle += std::to_string(i) + ");Ring ID; Energy (10 keV)";
 		cd_r_en[i] = new TH2F( hname.data(), htitle.data(),
 							  set->GetNumberOfCDRings()+1, -0.5, set->GetNumberOfCDRings()+0.5,
-							  6e3, 0, 120e3 );
+							  5e3, 0, 2e6 );
 
 		hname = "cd_s_en_" + std::to_string(i);
 		htitle = "Sector ID vs. energy (layer ";
 		htitle += std::to_string(i) + ");Sector ID; Energy (10 keV)";
 		cd_s_en[i] = new TH2F( hname.data(), htitle.data(),
 							  set->GetNumberOfCDSectors()+1, -0.5, set->GetNumberOfCDSectors()+0.5,
-							  6e3, 0, 120e3 );
+							  5e3, 0, 2e6 );
 
 	}
 
 	hname = "cd_EdE";
 	htitle = "CD fission fragments dE vs E;Rest Energy [keV];Energy Loss [keV];Counts";
-	cd_EdE = new TH2F( hname.data(), htitle.data(), 6e3, 0, 120e3, 6e3, 0, 120e3 );
+	cd_EdE = new TH2F( hname.data(), htitle.data(), 5e3, 0, 2e6, 5e3, 0, 2e6 );
 
 	hname = "cd_dEsum";
 	htitle = "CD fission fragments dE vs total energy;Total Energy [keV];Energy Loss [keV];Counts";
-	cd_dEsum = new TH2F( hname.data(), htitle.data(), 9e3, 0, 180e3, 6e3, 0, 120e3 );
+	cd_dEsum = new TH2F( hname.data(), htitle.data(), 5e3, 0, 2e6, 5e3, 0, 2e6 );
 
 	hname = "cd_id_td";
 	htitle = "CD time difference between dE layer (id=0) and all other layers;";
