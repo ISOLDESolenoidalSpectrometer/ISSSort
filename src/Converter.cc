@@ -70,7 +70,7 @@ void ISSConverter::MakeTree() {
 	write_packet = std::make_shared<ISSDataPackets>();
 	sorted_tree->Branch( "data", "ISSDataPackets", write_packet.get(), bufsize, splitLevel );
 	sorted_tree->SetDirectory( output_file->GetDirectory("/") );
-	sorted_tree->SetMaxVirtualSize(1e9); // 1 GB in memory, so it doesn't need to write too often
+	// sorted_tree->SetMaxVirtualSize(1e9); // 1 GB in memory, so it doesn't need to write too often
 
 	asic_data = std::make_shared<ISSAsicData>();
 	caen_data = std::make_shared<ISSCaenData>();
