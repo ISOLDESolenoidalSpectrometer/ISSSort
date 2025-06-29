@@ -54,7 +54,13 @@ public:
 	void ResetHists();
 	void MakeTree();
 	void StartFile();
+	void SortDataVector();
+	void SortDataMap();
 	unsigned long long SortTree( bool do_sort = true );
+	static bool TimeComparator( const std::shared_ptr<ISSDataPackets> &lhs,
+							    const std::shared_ptr<ISSDataPackets> &rhs );
+	static bool MapComparator( const std::pair<unsigned long,double> &lhs,
+							   const std::pair<unsigned long,double> &rhs );
 
 	bool ProcessCurrentBlock( int nblock );
 
@@ -177,6 +183,7 @@ private:
 	static const int DATA_BLOCK_SIZE = 0x10000; // Block size for ISS/ASIC data = 64 kB, also CAEN data from June 2021 onwards
 	static const int MAIN_SIZE = DATA_BLOCK_SIZE - HEADER_SIZE;
 	static const int WORD_SIZE = MAIN_SIZE / sizeof(ULong64_t);
+	unsigned int BLOCKS_NUM = 0;
 
 	// Set the arrays for the block components.
 	char block_header[HEADER_SIZE];
@@ -248,6 +255,7 @@ private:
 
 	// Data types and vectors
 	std::vector<std::shared_ptr<ISSDataPackets>> data_vector;
+	std::vector<std::pair<unsigned long,double>> data_map;
 	std::shared_ptr<ISSDataPackets> write_packet = nullptr;
 	std::shared_ptr<ISSAsicData> asic_data;
 	std::shared_ptr<ISSCaenData> caen_data;

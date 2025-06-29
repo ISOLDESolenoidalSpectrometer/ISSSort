@@ -450,20 +450,22 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	std::cout << " Event Building: number of entries in input tree = ";
 	std::cout << n_entries << std::endl;
 
+	// Get the index needed for time-ordering
+	TTreeIndex *att_index = nullptr;
+
 	// Event building by timestamp only
 	if( set->BuildByTimeStamp() ) {
 		std::cout << " Event Building: using raw timestamp for event ordering" << std::endl;
-		input_tree->BuildIndex( "GetTimeStamp()" );
+		//input_tree->BuildIndex( "GetTimeStamp()" );
 	}
 
 	// Or apply time-walk correction, i.e. get new time ordering
 	else {
 		std::cout << " Event Building: applying time walk-correction to event ordering" << std::endl;
 		input_tree->BuildIndex( "GetTimeWithWalk()" );
+		att_index = (TTreeIndex*)input_tree->GetTreeIndex();
 	}
 
-	// Get the index
-	TTreeIndex *att_index = (TTreeIndex*)input_tree->GetTreeIndex();
 
 	// ------------------------------------------------------------------------ //
 	// Main loop over TTree to find events
@@ -471,7 +473,9 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	for( unsigned long i = 0; i < n_entries; ++i ) {
 
 		// Get time-ordered event index (with or without walk correction)
-		unsigned long long idx = att_index->GetIndex()[i];
+		unsigned long long idx = i;
+		if( !set->BuildByTimeStamp() )
+			idx = att_index->GetIndex()[i];
 
 		// Current event data
 		//if( input_tree->MemoryFull(30e6) )
@@ -1126,7 +1130,11 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		//------------------------------
 		unsigned long long idx_next;
 		if( i+1 == n_entries ) idx_next = n_entries;
-		else idx_next = att_index->GetIndex()[i+1];
+		else {
+			idx_next = i+1;
+			if( !set->BuildByTimeStamp() )
+				idx_next = att_index->GetIndex()[i+1];
+		}
 
 		if( input_tree->GetEntry(idx_next) ) {
 
@@ -2822,9 +2830,8 @@ void ISSEventBuilder::CdFinder() {
 
 			// Check if it's been used already
 			bool skip_flag = false;
-			for( unsigned int xx = 0; xx < used_idx.size(); ++xx )
-				if( used_idx[xx] == j ) skip_flag = true;
-			if( skip_flag ) continue;
+			if( std::find( used_idx.begin(), used_idx.end(), j ) != used_idx.end() )
+				continue;
 
 			// Mark this hit as used
 			used_idx.push_back(j);
@@ -2832,22 +2839,17 @@ void ISSEventBuilder::CdFinder() {
 			// Check all other sector hits to find a neighbour
 			for( unsigned int k = j+1; k < cdsen_list[dE_idx].size(); k++ ) {
 
-				// Not neighbours with each other
-				if( j == k ) continue;
-
 				// Check if it's been used already
-				skip_flag = false;
-				for( unsigned int xx = 0; xx < used_idx.size(); ++xx )
-					if( used_idx[xx] == k ) skip_flag = true;
-				if( skip_flag ) continue;
+				if( std::find( used_idx.begin(), used_idx.end(), k ) != used_idx.end() )
+					continue;
 
 				// Check if they are really neighbours
 				float	sec_en_diff = cdsen_list[dE_idx][j] - cdsen_list[dE_idx][k];
 				int		sec_id_diff = cdsid_list[dE_idx][j] - cdsid_list[dE_idx][k];
 				double	sec_td_diff = cdstd_list[dE_idx][j] - cdstd_list[dE_idx][k];
 				if( ( TMath::Abs( sec_id_diff ) == 1 ||
-					 TMath::Abs( sec_id_diff ) == set->GetNumberOfCDSectors()-1 ) &&
-				   TMath::Abs( sec_td_diff ) < set->GetCDRSHitWindow() ) {
+					  TMath::Abs( sec_id_diff ) == set->GetNumberOfCDSectors()-1 ) &&
+				     TMath::Abs( sec_td_diff ) < set->GetCDRSHitWindow() ) {
 
 					// Charge-sharing add-back, use highest energy for sector ID and time
 					float sumen = cdsen_list[dE_idx][j] + cdsen_list[dE_idx][k];
@@ -3505,7 +3507,7 @@ void ISSEventBuilder::MakeHists(){
 		hname = "cd_rs_en_" + std::to_string(i);
 		htitle = "ring vs. sector energy (layer ";
 		htitle += std::to_string(i) + ");Energy rings (keV);Energy sectors (keV)";
-		cd_rs_en[i] = new TH2F( hname.data(), htitle.data(), 6e3, 0, 120e3, 6e3, 0, 120e3 );
+		cd_rs_en[i] = new TH2F( hname.data(), htitle.data(), 5e3, 0, 2e6, 5e3, 0, 2e6 );
 
 		hname = "cd_rs_td_" + std::to_string(i);
 		htitle = "ring vs. sector time difference (layer ";
@@ -3517,24 +3519,24 @@ void ISSEventBuilder::MakeHists(){
 		htitle += std::to_string(i) + ");Ring ID; Energy (10 keV)";
 		cd_r_en[i] = new TH2F( hname.data(), htitle.data(),
 							  set->GetNumberOfCDRings()+1, -0.5, set->GetNumberOfCDRings()+0.5,
-							  6e3, 0, 120e3 );
+							  5e3, 0, 2e6 );
 
 		hname = "cd_s_en_" + std::to_string(i);
 		htitle = "Sector ID vs. energy (layer ";
 		htitle += std::to_string(i) + ");Sector ID; Energy (10 keV)";
 		cd_s_en[i] = new TH2F( hname.data(), htitle.data(),
 							  set->GetNumberOfCDSectors()+1, -0.5, set->GetNumberOfCDSectors()+0.5,
-							  6e3, 0, 120e3 );
+							  5e3, 0, 2e6 );
 
 	}
 
 	hname = "cd_EdE";
 	htitle = "CD fission fragments dE vs E;Rest Energy [keV];Energy Loss [keV];Counts";
-	cd_EdE = new TH2F( hname.data(), htitle.data(), 6e3, 0, 120e3, 6e3, 0, 120e3 );
+	cd_EdE = new TH2F( hname.data(), htitle.data(), 5e3, 0, 2e6, 5e3, 0, 2e6 );
 
 	hname = "cd_dEsum";
 	htitle = "CD fission fragments dE vs total energy;Total Energy [keV];Energy Loss [keV];Counts";
-	cd_dEsum = new TH2F( hname.data(), htitle.data(), 9e3, 0, 180e3, 6e3, 0, 120e3 );
+	cd_dEsum = new TH2F( hname.data(), htitle.data(), 5e3, 0, 2e6, 5e3, 0, 2e6 );
 
 	hname = "cd_id_td";
 	htitle = "CD time difference between dE layer (id=0) and all other layers;";

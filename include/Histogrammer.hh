@@ -308,6 +308,13 @@ public:
 	inline bool	LaserOn(){ return read_evts->GetLaserStatus(); };
 	inline bool	LaserOff(){ return !read_evts->GetLaserStatus(); };
 
+	// Gamma-ray energy gate
+	inline bool GammaEnergyCut( std::shared_ptr<ISSGammaRayEvt> g ){
+		if( g->GetEnergy() > react->GetGammaEnergyCut(0) &&
+		    g->GetEnergy() < react->GetGammaEnergyCut(1) ) return true;
+		else return false;
+	};
+
 	// Recoil energy gate
 	inline bool RecoilCut( std::shared_ptr<ISSRecoilEvt> r ){
 		std::shared_ptr<TCutG> mycut = react->GetRecoilCut( r->GetSector() );
@@ -452,8 +459,10 @@ private:
 	TH2F *E_vs_z, *E_vs_z_ebis, *E_vs_z_ebis_on, *E_vs_z_ebis_off;
 	TH2F *E_vs_z_recoil, *E_vs_z_recoilT, *E_vs_z_T1;
 	TH2F *E_vs_z_recoil_random, *E_vs_z_recoilT_random;
-	TH2F *E_vs_z_fission, *E_vs_z_fissionT;
-	TH2F *E_vs_z_fission_random, *E_vs_z_fissionT_random;
+	TH2F *E_vs_z_fission, *E_vs_z_fissionT, *E_vs_z_fission_gamma;
+	TH2F *E_vs_z_fission_random, *E_vs_z_fissionT_random, *E_vs_z_fission_gamma_random;
+	TH2F *E_vs_z_gamma, *E_vs_z_gammaT;
+	TH2F *E_vs_z_gamma_random, *E_vs_z_gammaT_random;
 
 	// Array - E vs. thetaCM
 	std::vector<TH2F*> E_vs_theta_mod;
@@ -486,6 +495,8 @@ private:
 	TH2F *E_vs_theta_recoil_random, *E_vs_theta_recoilT_random;
 	TH2F *E_vs_theta_fission, *E_vs_theta_fissionT;
 	TH2F *E_vs_theta_fission_random, *E_vs_theta_fissionT_random;
+	TH2F *E_vs_theta_gamma, *E_vs_theta_gammaT;
+	TH2F *E_vs_theta_gamma_random, *E_vs_theta_gammaT_random;
 
 	// Array - Ex vs. thetaCM
 	std::vector<TH2F*> Ex_vs_theta_mod;
@@ -518,6 +529,8 @@ private:
 	TH2F *Ex_vs_theta_recoil_random, *Ex_vs_theta_recoilT_random;
 	TH2F *Ex_vs_theta_fission, *Ex_vs_theta_fissionT;
 	TH2F *Ex_vs_theta_fission_random, *Ex_vs_theta_fissionT_random;
+	TH2F *Ex_vs_theta_gamma, *Ex_vs_theta_gammaT;
+	TH2F *Ex_vs_theta_gamma_random, *Ex_vs_theta_gammaT_random;
 
 	// Array - Ex vs. z
 	std::vector<TH2F*> Ex_vs_z_mod;
@@ -550,6 +563,8 @@ private:
 	TH2F *Ex_vs_z_recoil_random, *Ex_vs_z_recoilT_random;
 	TH2F *Ex_vs_z_fission, *Ex_vs_z_fissionT;
 	TH2F *Ex_vs_z_fission_random, *Ex_vs_z_fissionT_random;
+	TH2F *Ex_vs_z_gamma, *Ex_vs_z_gammaT;
+	TH2F *Ex_vs_z_gamma_random, *Ex_vs_z_gammaT_random;
 
 	// Array - Ex
 	std::vector<TH1F*> Ex_mod;
@@ -581,8 +596,10 @@ private:
 	TH1F *Ex, *Ex_ebis, *Ex_ebis_on, *Ex_ebis_off;
 	TH1F *Ex_recoil, *Ex_recoilT, *Ex_T1;
 	TH1F *Ex_recoil_random, *Ex_recoilT_random;
-	TH1F *Ex_fission, *Ex_fissionT;
-	TH1F *Ex_fission_random, *Ex_fissionT_random;
+	TH1F *Ex_fission, *Ex_fissionT, *Ex_fission_gamma;
+	TH1F *Ex_fission_random, *Ex_fissionT_random, *Ex_fission_gamma_random;
+	TH1F *Ex_gamma, *Ex_gammaT;
+	TH1F *Ex_gamma_random, *Ex_gammaT_random;
 	TH2F *Ex_vs_T1;
 
 	// Array - thetaCM
@@ -616,6 +633,8 @@ private:
 	TH1F *Theta_recoil_random, *Theta_recoilT_random;
 	TH1F *Theta_fission, *Theta_fissionT;
 	TH1F *Theta_fission_random, *Theta_fissionT_random;
+	TH1F *Theta_gamma, *Theta_gammaT;
+	TH1F *Theta_gamma_random, *Theta_gammaT_random;
 
 	// ELUM
 	std::vector<TH1F*> elum_sec;

@@ -45,6 +45,7 @@ void ISSConverter::StartFile(){
 
 	// clear the data vectors
 	std::vector<std::shared_ptr<ISSDataPackets>>().swap(data_vector);
+	std::vector<std::pair<unsigned long,double>>().swap(data_map);
 
 	return;
 
@@ -1094,9 +1095,13 @@ void ISSConverter::ProcessASICData(){
 	// If it's a pulser trigger above an energy threshold, then count it
 	if( my_adc_data > set->GetArrayPulserThreshold() && pulser_trigger ) {
 
-		std::shared_ptr<ISSDataPackets> data_packet = std::make_shared<ISSDataPackets>( info_data );
-		if( !flag_source ) data_vector.emplace_back( data_packet );
-		info_data->Clear();
+		if( !flag_source ) {
+			std::shared_ptr<ISSDataPackets> data_packet =
+				std::make_shared<ISSDataPackets>( info_data );
+			data_vector.emplace_back( data_packet );
+			data_map.push_back( std::make_pair<unsigned long,double>(
+				data_vector.size()-1, data_packet->GetTimeStamp() ) );
+		}
 
 	}
 
@@ -1130,9 +1135,13 @@ void ISSConverter::ProcessASICData(){
 		// only if we are in the EBIS window, if the flag is set by the user
 		if( !flag_ebis || EBISWindow( asic_data->GetTime() ) ) {
 
-			std::shared_ptr<ISSDataPackets> data_packet = std::make_shared<ISSDataPackets>( asic_data );
-			if( !flag_source ) data_vector.emplace_back( data_packet );
-			asic_data->Clear();
+			if( !flag_source ) {
+				std::shared_ptr<ISSDataPackets> data_packet =
+					std::make_shared<ISSDataPackets>( asic_data );
+				data_vector.emplace_back( data_packet );
+				data_map.push_back( std::make_pair<unsigned long,double>(
+						data_vector.size()-1, data_packet->GetTimeStamp() ) );
+			}
 
 		}
 
@@ -1418,9 +1427,14 @@ void ISSConverter::FinishCAENData(){
 				info_data->SetTimeStamp( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
 				info_data->SetModule( caen_data->GetModule() );
 				info_data->SetCode( my_info_code );
-				std::shared_ptr<ISSDataPackets> data_packet = std::make_shared<ISSDataPackets>( info_data );
-				if( !flag_source ) data_vector.emplace_back( data_packet );
-				write_packet->ClearData();
+
+				if( !flag_source ) {
+					std::shared_ptr<ISSDataPackets> data_packet =
+						std::make_shared<ISSDataPackets>( info_data );
+					data_vector.emplace_back( data_packet );
+					data_map.push_back( std::make_pair<unsigned long,double>(
+						data_vector.size()-1, data_packet->GetTimeStamp() ) );
+				}
 
 			}
 
@@ -1443,9 +1457,14 @@ void ISSConverter::FinishCAENData(){
 			// Set this data and fill event to tree
 			// Also add the time offset when we do this
 			caen_data->SetTimeStamp( caen_data->GetTime() + cal->CaenTime( caen_data->GetModule(), caen_data->GetChannel() ) );
-			std::shared_ptr<ISSDataPackets> data_packet = std::make_shared<ISSDataPackets>( caen_data );
-			if( !flag_source ) data_vector.emplace_back( data_packet );
-			write_packet->ClearData();
+
+			if( !flag_source ) {
+				std::shared_ptr<ISSDataPackets> data_packet =
+					std::make_shared<ISSDataPackets>( caen_data );
+				data_vector.emplace_back( data_packet );
+				data_map.push_back( std::make_pair<unsigned long,double>(
+					data_vector.size()-1, data_packet->GetTimeStamp() ) );
+			}
 
 			//std::cout << "Complete CAEN event" << std::endl;
 			//std::cout << "Trace length = " << caen_data->GetTraceLength() << std::endl;
@@ -1616,9 +1635,14 @@ void ISSConverter::ProcessMesytecLogicItem(){
 		info_data->SetTimeStamp( mesy_data->GetTime() );
 		info_data->SetModule( mesy_data->GetModule() );
 		info_data->SetCode( my_info_code );
-		std::shared_ptr<ISSDataPackets> data_packet = std::make_shared<ISSDataPackets>( info_data );
-		if( !flag_source ) data_vector.emplace_back( data_packet );
-		write_packet->ClearData();
+
+		if( !flag_source ) {
+			std::shared_ptr<ISSDataPackets> data_packet =
+				std::make_shared<ISSDataPackets>( info_data );
+			data_vector.emplace_back( data_packet );
+			data_map.push_back( std::make_pair<unsigned long,double>(
+				data_vector.size()-1, data_packet->GetTimeStamp() ) );
+		}
 
 	}
 
@@ -1672,9 +1696,14 @@ void ISSConverter::FinishMesytecData(){
 			if( !flag_ebis || EBISWindow( mesy_data->GetTime() ) ) {
 
 				mesy_data->SetTimeStamp( mesy_data->GetTime() + cal->MesytecTime( mesy_data->GetModule(), mesy_data->GetChannel() ) );
-				std::shared_ptr<ISSDataPackets> data_packet = std::make_shared<ISSDataPackets>( mesy_data );
-				if( !flag_source ) data_vector.push_back( data_packet );
-				write_packet->ClearData();
+
+				if( !flag_source ) {
+					std::shared_ptr<ISSDataPackets> data_packet =
+						std::make_shared<ISSDataPackets>( mesy_data );
+					data_vector.push_back( data_packet );
+					data_map.push_back( std::make_pair<unsigned long,double>(
+						data_vector.size()-1, data_packet->GetTimeStamp() ) );
+				}
 
 			}
 
@@ -1799,9 +1828,14 @@ void ISSConverter::ProcessInfoData(){
 		info_data->SetModule( my_mod_id );
 		info_data->SetTimeStamp( my_tm_stp );
 		info_data->SetCode( my_info_code );
-		std::shared_ptr<ISSDataPackets> data_packet = std::make_shared<ISSDataPackets>( info_data );
-		if( !flag_source ) data_vector.emplace_back( data_packet );
-		info_data->Clear();
+
+		if( !flag_source ) {
+			std::shared_ptr<ISSDataPackets> data_packet =
+				std::make_shared<ISSDataPackets>( info_data );
+			data_vector.emplace_back( data_packet );
+			data_map.push_back( std::make_pair<unsigned long,double>(
+				data_vector.size()-1, data_packet->GetTimeStamp() ) );
+		}
 
 	}
 
@@ -1881,7 +1915,7 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 	unsigned long long FILE_SIZE = size_end - size_beg;
 
 	// Calculate the number of blocks in the file.
-	unsigned long BLOCKS_NUM = FILE_SIZE / DATA_BLOCK_SIZE;
+	BLOCKS_NUM = FILE_SIZE / DATA_BLOCK_SIZE;
 
 	//a sanity check for file size...
 	//QQQ: add more strict test?
@@ -1956,32 +1990,57 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 
 }
 
+bool ISSConverter::TimeComparator( const std::shared_ptr<ISSDataPackets> &lhs,
+								  const std::shared_ptr<ISSDataPackets> &rhs ) {
+
+	return lhs->GetTimeStamp() < rhs->GetTimeStamp();
+
+}
+
+bool ISSConverter::MapComparator( const std::pair<unsigned long,double> &lhs,
+								  const std::pair<unsigned long,double> &rhs ) {
+
+	return lhs.second < rhs.second;
+
+}
+
+void ISSConverter::SortDataVector() {
+
+	// Sort the data vector as we go along
+	std::sort( data_vector.begin(), data_vector.end(), TimeComparator );
+
+}
+
+void ISSConverter::SortDataMap() {
+
+	// Sort the data vector as we go along
+	std::sort( data_map.begin(), data_map.end(), MapComparator );
+
+}
+
 unsigned long long ISSConverter::SortTree( bool do_sort ){
 
 	// Reset the sorted tree so it's empty before we start
 	sorted_tree->Reset();
 
 	// Get number of data packets
-	long long int n_ents = data_vector.size();	// std::vector method
+	unsigned long n_ents = data_vector.size();	// std::vector method
 
 	// Check we have entries and build time-ordered index
-	if( n_ents && do_sort ){
-
-		std::cout << "Building time-ordered index of events..." << std::endl;
-		//std::sort( data_vector.begin(), data_vector.end() ); // std::vector method
-		std::sort( data_vector.begin(), data_vector.end(),
-				  []( std::shared_ptr<ISSDataPackets> &lhs, std::shared_ptr<ISSDataPackets> &rhs) {
-			return lhs->GetTimeStamp() < rhs->GetTimeStamp();
-		} );
-
+	if( n_ents && do_sort ) {
+		std::cout << "Time ordering " << n_ents << " data items..." << std::endl;
+		//SortDataVector();
+		SortDataMap();
 	}
 	else return 0;
 
 	// Loop on t_raw entries and fill t
-	for( long long int i = 0; i < n_ents; ++i ) {
+	for( unsigned long i = 0; i < n_ents; ++i ) {
 
 		// Get the data item back from the vector
-		write_packet->SetData( data_vector[i] );
+		unsigned long idx = data_map[i].first;
+		write_packet->SetData( data_vector[idx] );
+		//write_packet->SetData( data_vector[i] );
 
 		// Fill the sorted tree
 		sorted_tree->Fill();
@@ -2015,6 +2074,8 @@ unsigned long long ISSConverter::SortTree( bool do_sort ){
 		} // progress bar
 
 	} // i
+
+	//std::cout << "Sorted " << sorted_tree->GetEntries() << " tree entries" << std::endl;
 
 	return n_ents;
 
