@@ -450,20 +450,22 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	std::cout << " Event Building: number of entries in input tree = ";
 	std::cout << n_entries << std::endl;
 
+	// Get the index needed for time-ordering
+	TTreeIndex *att_index = nullptr;
+
 	// Event building by timestamp only
 	if( set->BuildByTimeStamp() ) {
 		std::cout << " Event Building: using raw timestamp for event ordering" << std::endl;
-		input_tree->BuildIndex( "GetTimeStamp()" );
+		//input_tree->BuildIndex( "GetTimeStamp()" );
 	}
 
 	// Or apply time-walk correction, i.e. get new time ordering
 	else {
 		std::cout << " Event Building: applying time walk-correction to event ordering" << std::endl;
 		input_tree->BuildIndex( "GetTimeWithWalk()" );
+		att_index = (TTreeIndex*)input_tree->GetTreeIndex();
 	}
 
-	// Get the index
-	TTreeIndex *att_index = (TTreeIndex*)input_tree->GetTreeIndex();
 
 	// ------------------------------------------------------------------------ //
 	// Main loop over TTree to find events
@@ -471,7 +473,9 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	for( unsigned long i = 0; i < n_entries; ++i ) {
 
 		// Get time-ordered event index (with or without walk correction)
-		unsigned long long idx = att_index->GetIndex()[i];
+		unsigned long long idx = i;
+		if( !set->BuildByTimeStamp() )
+			idx = att_index->GetIndex()[i];
 
 		// Current event data
 		if( i == 0 ) input_tree->GetEntry(idx);
@@ -1123,7 +1127,11 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		//------------------------------
 		unsigned long long idx_next;
 		if( i+1 == n_entries ) idx_next = n_entries;
-		else idx_next = att_index->GetIndex()[i+1];
+		else {
+			idx_next = n_entries;
+			if( !set->BuildByTimeStamp() )
+				idx_next = att_index->GetIndex()[i+1];
+		}
 
 		if( input_tree->GetEntry(idx_next) ) {
 
@@ -2816,8 +2824,8 @@ void ISSEventBuilder::CdFinder() {
 
 			// Check if it's been used already
 			bool skip_flag = false;
-			for( unsigned int xx = 0; xx < used_idx.size(); ++xx )
-				if( used_idx[xx] == j ) skip_flag = true;
+			if( std::find( used_idx.begin(), used_idx.end(), j ) == used_idx.end() )
+				skip_flag = true;
 			if( skip_flag ) continue;
 
 			// Mark this hit as used
@@ -2826,13 +2834,10 @@ void ISSEventBuilder::CdFinder() {
 			// Check all other sector hits to find a neighbour
 			for( unsigned int k = j+1; k < cdsen_list[dE_idx].size(); k++ ) {
 
-				// Not neighbours with each other
-				if( j == k ) continue;
-
 				// Check if it's been used already
 				skip_flag = false;
-				for( unsigned int xx = 0; xx < used_idx.size(); ++xx )
-					if( used_idx[xx] == k ) skip_flag = true;
+				if( std::find( used_idx.begin(), used_idx.end(), k ) == used_idx.end() )
+					skip_flag = true;
 				if( skip_flag ) continue;
 
 				// Check if they are really neighbours
