@@ -45,6 +45,7 @@ void ISSConverter::StartFile(){
 
 	// clear the data vectors
 	std::vector<std::shared_ptr<ISSDataPackets>>().swap(data_vector);
+	std::vector<std::pair<unsigned long,double>>().swap(data_map);
 
 	return;
 
@@ -1098,6 +1099,8 @@ void ISSConverter::ProcessASICData(){
 			std::shared_ptr<ISSDataPackets> data_packet =
 				std::make_shared<ISSDataPackets>( info_data );
 			data_vector.emplace_back( data_packet );
+			data_map.push_back( std::make_pair<unsigned long,double>(
+				data_vector.size()-1, data_packet->GetTimeStamp() ) );
 		}
 
 	}
@@ -1136,6 +1139,8 @@ void ISSConverter::ProcessASICData(){
 				std::shared_ptr<ISSDataPackets> data_packet =
 					std::make_shared<ISSDataPackets>( asic_data );
 				data_vector.emplace_back( data_packet );
+				data_map.push_back( std::make_pair<unsigned long,double>(
+						data_vector.size()-1, data_packet->GetTimeStamp() ) );
 			}
 
 		}
@@ -1427,6 +1432,8 @@ void ISSConverter::FinishCAENData(){
 					std::shared_ptr<ISSDataPackets> data_packet =
 						std::make_shared<ISSDataPackets>( info_data );
 					data_vector.emplace_back( data_packet );
+					data_map.push_back( std::make_pair<unsigned long,double>(
+						data_vector.size()-1, data_packet->GetTimeStamp() ) );
 				}
 
 			}
@@ -1455,6 +1462,8 @@ void ISSConverter::FinishCAENData(){
 				std::shared_ptr<ISSDataPackets> data_packet =
 					std::make_shared<ISSDataPackets>( caen_data );
 				data_vector.emplace_back( data_packet );
+				data_map.push_back( std::make_pair<unsigned long,double>(
+					data_vector.size()-1, data_packet->GetTimeStamp() ) );
 			}
 
 			//std::cout << "Complete CAEN event" << std::endl;
@@ -1631,6 +1640,8 @@ void ISSConverter::ProcessMesytecLogicItem(){
 			std::shared_ptr<ISSDataPackets> data_packet =
 				std::make_shared<ISSDataPackets>( info_data );
 			data_vector.emplace_back( data_packet );
+			data_map.push_back( std::make_pair<unsigned long,double>(
+				data_vector.size()-1, data_packet->GetTimeStamp() ) );
 		}
 
 	}
@@ -1690,6 +1701,8 @@ void ISSConverter::FinishMesytecData(){
 					std::shared_ptr<ISSDataPackets> data_packet =
 						std::make_shared<ISSDataPackets>( mesy_data );
 					data_vector.push_back( data_packet );
+					data_map.push_back( std::make_pair<unsigned long,double>(
+						data_vector.size()-1, data_packet->GetTimeStamp() ) );
 				}
 
 			}
@@ -1820,6 +1833,8 @@ void ISSConverter::ProcessInfoData(){
 			std::shared_ptr<ISSDataPackets> data_packet =
 				std::make_shared<ISSDataPackets>( info_data );
 			data_vector.emplace_back( data_packet );
+			data_map.push_back( std::make_pair<unsigned long,double>(
+				data_vector.size()-1, data_packet->GetTimeStamp() ) );
 		}
 
 	}
@@ -1976,9 +1991,16 @@ int ISSConverter::ConvertFile( std::string input_file_name,
 }
 
 bool ISSConverter::TimeComparator( const std::shared_ptr<ISSDataPackets> &lhs,
-								   const std::shared_ptr<ISSDataPackets> &rhs ) {
+								  const std::shared_ptr<ISSDataPackets> &rhs ) {
 
 	return lhs->GetTimeStamp() < rhs->GetTimeStamp();
+
+}
+
+bool ISSConverter::MapComparator( const std::pair<unsigned long,double> &lhs,
+								  const std::pair<unsigned long,double> &rhs ) {
+
+	return lhs.second < rhs.second;
 
 }
 
@@ -1989,26 +2011,36 @@ void ISSConverter::SortDataVector() {
 
 }
 
+void ISSConverter::SortDataMap() {
+
+	// Sort the data vector as we go along
+	std::sort( data_map.begin(), data_map.end(), MapComparator );
+
+}
+
 unsigned long long ISSConverter::SortTree( bool do_sort ){
 
 	// Reset the sorted tree so it's empty before we start
 	sorted_tree->Reset();
 
 	// Get number of data packets
-	long long int n_ents = data_vector.size();	// std::vector method
+	unsigned long n_ents = data_vector.size();	// std::vector method
 
 	// Check we have entries and build time-ordered index
 	if( n_ents && do_sort ) {
 		std::cout << "Time ordering " << n_ents << " data items..." << std::endl;
-		SortDataVector();
+		//SortDataVector();
+		SortDataMap();
 	}
 	else return 0;
 
 	// Loop on t_raw entries and fill t
-	for( long long int i = 0; i < n_ents; ++i ) {
+	for( unsigned long i = 0; i < n_ents; ++i ) {
 
 		// Get the data item back from the vector
-		write_packet->SetData( data_vector[i] );
+		unsigned long idx = data_map[i].first;
+		write_packet->SetData( data_vector[idx] );
+		//write_packet->SetData( data_vector[i] );
 
 		// Fill the sorted tree
 		sorted_tree->Fill();
