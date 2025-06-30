@@ -56,6 +56,7 @@ void ISSConverter::SetOutput( std::string output_file_name ){
 	// Open output file
 	output_file = new TFile( output_file_name.data(), "recreate" );
 	//if( !flag_source ) output_file->SetCompressionLevel(0);
+	output_file->SetCompressionSettings(ROOT::RCompressionSetting::EDefaults::kUseAnalysis);
 
 	return;
 

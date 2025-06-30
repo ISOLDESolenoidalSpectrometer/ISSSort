@@ -327,6 +327,7 @@ void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 	// Create output file and create events tree
 	// --------------------------------------------------------- //
 	output_file = new TFile( output_file_name.data(), "recreate" );
+	output_file->SetCompressionSettings(ROOT::RCompressionSetting::EDefaults::kUseAnalysis);
 	output_tree = new TTree( "evt_tree", "evt_tree" );
 	output_tree->Branch( "ISSEvts", write_evts.get() );
 	output_tree->SetAutoFlush();
