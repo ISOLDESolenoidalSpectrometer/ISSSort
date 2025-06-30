@@ -36,6 +36,7 @@ void ISSHistogrammer::SetOutput( std::string output_file_name ){
 	// Create output file and create reaction tree
 	// --------------------------------------------------------- //
 	output_file = new TFile( output_file_name.data(), "recreate" );
+	output_file->SetCompressionSettings(ROOT::RCompressionSetting::EDefaults::kUseAnalysis);
 	output_tree = new TTree( "rxtree", "Reaction data tree" );
 	output_tree->Branch( "RxEvent", rx_evts.get() );
 	output_tree->Branch( "RxInfo", rx_info.get() );
