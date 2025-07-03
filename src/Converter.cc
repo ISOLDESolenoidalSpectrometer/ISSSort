@@ -997,7 +997,7 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 				if( set->IsAllData() || set->IsMesyOnly() ) {
 
 					mesy_data->SetTimeStamp( my_tm_stp );
-					mesy_data->SetCrate( 0 );
+					mesy_data->SetCrate( 1 );
 					mesy_data->SetModule( my_mod_id );
 					mesy_data->SetChannel( my_ch_id );
 					for( unsigned int k = 0; k < samples.size(); k++ )
