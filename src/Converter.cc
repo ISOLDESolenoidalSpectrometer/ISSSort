@@ -834,7 +834,7 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 
 
 	// Process all words
-	for( UInt_t i = 0; i < WORD_SIZE; i++ ) {
+	for( unsigned int i = 0; i < WORD_SIZE; i++ ) {
 
 		word = GetWord(i);
 		word_0 = (word & 0xFFFFFFFF00000000) >> 32;
@@ -923,92 +923,7 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 		// Trace header
 		else if( my_type == 0x1 ){
 
-			// Get channel ID
-			GetVMEChanID();
-
-			// make a vector to store the samples
-			std::vector<unsigned short> samples;
-
-			// contains the sample length
-			nsamples = word_0 & 0xFFFF; // 16 bits from 0
-
-			// reconstruct time stamp= MSB+LSB
-			my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  // 28 bits from 0
-			my_tm_stp = ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
-			caen_data->SetTimeStamp( my_tm_stp );
-
-			// Get the samples from the trace
-			for( unsigned int j = 0; j < nsamples/4; j++ ){
-
-				// get next word
-				ULong64_t sample_packet = GetWord(i++);
-
-				UInt_t block_test = ( sample_packet >> 32 ) & 0x00000000FFFFFFFF;
-				unsigned char trace_test = ( sample_packet >> 62 ) & 0x0000000000000003;
-
-				//if( trace_test == 0 && block_test != 0x5E5E5E5E ){
-				if( block_test != 0x5E5E5E5E ){
-
-					// Pairs need to be swapped
-					samples.push_back( ( sample_packet >> 32 ) & 0x0000000000003FFF );
-					samples.push_back( ( sample_packet >> 48 ) & 0x0000000000003FFF );
-					samples.push_back( sample_packet & 0x0000000000003FFF );
-					samples.push_back( ( sample_packet >> 16 ) & 0x0000000000003FFF );
-
-				}
-
-				else {
-
-					std::cout << "This isn't a trace anymore..." << std::endl;
-					std::cout << "Sample #" << j << " of " << nsamples << std::endl;
-					std::cout << " trace_test = " << (int)trace_test << std::endl;
-
-					//i--;
-					//break;
-
-				}
-
-			}
-
-			// Add to the CAEN packet
-			if( my_vme_id == 0 ){
-
-				// Check if we want to use it or not
-				if( set->IsAllData() || set->IsCAENOnly() ) {
-					
-					caen_data->SetTimeStamp( my_tm_stp );
-					caen_data->SetCrate( 0 );
-					caen_data->SetModule( my_mod_id );
-					caen_data->SetChannel( my_ch_id );
-					for( unsigned int k = 0; k < samples.size(); k++ )
-						caen_data->AddSample( samples.at(k) );
-					
-					flag_caen_trace = true;
-					FinishCAENData();
-					
-				}
-
-			}
-
-			// Add to the Mesytec packet
-			else if( my_vme_id == 1 ){
-
-				// Check if we want to use it or not
-				if( set->IsAllData() || set->IsMesyOnly() ) {
-
-					mesy_data->SetTimeStamp( my_tm_stp );
-					mesy_data->SetCrate( 1 );
-					mesy_data->SetModule( my_mod_id );
-					mesy_data->SetChannel( my_ch_id );
-					for( unsigned int k = 0; k < samples.size(); k++ )
-						mesy_data->AddSample( samples.at(k) );
-
-					flag_mesy_trace = true;
-					FinishMesytecData();
-
-				}
-
-			}
+			i = ProcessTraceData(i);
 
 		}
 
@@ -1023,6 +938,106 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 	} // loop - i < header_DataLen
 
 	return;
+
+}
+
+unsigned int ISSConverter::ProcessTraceData( unsigned int pos ){
+
+	// Get channel ID
+	GetVMEChanID();
+
+	// make a vector to store the samples
+	std::vector<unsigned short> samples;
+
+	// contains the sample length
+	nsamples = word_0 & 0xFFFF; // 16 bits from 0
+
+	// reconstruct time stamp= MSB+LSB
+	my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  // 28 bits from 0
+	my_tm_stp = ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
+
+	// Get the samples from the trace
+	for( unsigned int j = 0; j < nsamples/4; j++ ){
+
+		// get next word
+		ULong64_t sample_packet = GetWord(++pos);
+
+		UInt_t block_test = ( sample_packet >> 32 ) & 0x00000000FFFFFFFF;
+		unsigned char trace_test = ( sample_packet >> 62 ) & 0x0000000000000003;
+
+		//if( trace_test == 0 && block_test != 0x5E5E5E5E ){
+		if( block_test != 0x5E5E5E5E ){
+
+			// Pairs need to be swapped
+			samples.push_back( ( sample_packet >> 32 ) & 0x0000000000003FFF );
+			samples.push_back( ( sample_packet >> 48 ) & 0x0000000000003FFF );
+			samples.push_back( sample_packet & 0x0000000000003FFF );
+			samples.push_back( ( sample_packet >> 16 ) & 0x0000000000003FFF );
+
+		}
+
+		else {
+
+			//std::cout << "This isn't a trace anymore..." << std::endl;
+			//std::cout << "Sample #" << j << " of " << nsamples << std::endl;
+			//std::cout << " trace_test = " << (int)trace_test << std::endl;
+
+			pos--;
+			break;
+
+		}
+
+	}
+
+	// Add to the CAEN packet
+	if( my_vme_id == 0 ){
+
+		// Check if we want to use it or not
+		if( set->IsAllData() || set->IsCAENOnly() ) {
+
+			// Get timestamp in the correct units
+			my_tm_stp *= set->GetCAENTimeStampUnits( my_mod_id );
+
+			// Set info in data packet
+			caen_data->SetTimeStamp( my_tm_stp );
+			caen_data->SetCrate( my_vme_id );
+			caen_data->SetModule( my_mod_id );
+			caen_data->SetChannel( my_ch_id );
+			for( unsigned int k = 0; k < samples.size(); k++ )
+				caen_data->AddSample( samples.at(k) );
+
+			flag_caen_trace = true;
+			FinishCAENData();
+
+		}
+
+	}
+
+	// Add to the Mesytec packet
+	else if( my_vme_id == 1 ){
+
+		// Check if we want to use it or not
+		if( set->IsAllData() || set->IsMesyOnly() ) {
+
+			// Get timestamp in the correct units
+			my_tm_stp *= set->GetMesytecTimeStampUnits();
+
+			// Set info in data packet
+			mesy_data->SetTimeStamp( my_tm_stp );
+			mesy_data->SetCrate( my_vme_id );
+			mesy_data->SetModule( my_mod_id );
+			mesy_data->SetChannel( my_ch_id );
+			for( unsigned int k = 0; k < samples.size(); k++ )
+				mesy_data->AddSample( samples.at(k) );
+
+			flag_mesy_trace = true;
+			FinishMesytecData();
+
+		}
+
+	}
+
+	return pos;
 
 }
 
@@ -1194,17 +1209,15 @@ bool ISSConverter::ProcessCAENData(){
 	my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  // 28 bits from 0
 	my_tm_stp = ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
 
-	// CAEN timestamps are 4 ns precision for V1725 and 2 ns for V1730
-	if( set->GetCAENModel( my_mod_id ) == 1730 ) my_tm_stp = my_tm_stp*2;
-	else if( set->GetCAENModel( my_mod_id ) == 1725 ) my_tm_stp = my_tm_stp*4;
-	else my_tm_stp = my_tm_stp*4;
+	// Use correct timestamp units depending on the module
+	my_tm_stp *= set->GetCAENTimeStampUnits( my_mod_id );
 
 	// First of the data items
 	if( !flag_caen_data0 && !flag_caen_data1 && !flag_caen_data2 && !flag_caen_data3 ){
 
 		// Make a CaenData item, need to add Qlong, Qshort and traces
 		caen_data->SetTimeStamp( my_tm_stp );
-		caen_data->SetCrate(0); // CAEN crate is always 0
+		caen_data->SetCrate( my_vme_id ); // CAEN crate is always 0
 		caen_data->SetModule( my_mod_id );
 		caen_data->SetChannel( my_ch_id );
 
@@ -1224,7 +1237,7 @@ bool ISSConverter::ProcessCAENData(){
 
 		// Then set the info correctly for this event
 		caen_data->SetTimeStamp( my_tm_stp );
-		caen_data->SetCrate(0); // CAEN crate is always 0
+		caen_data->SetCrate( my_vme_id ); // CAEN crate is always 0
 		caen_data->SetModule( my_mod_id );
 		caen_data->SetChannel( my_ch_id );
 
@@ -1530,15 +1543,15 @@ bool ISSConverter::ProcessMesytecData(){
 	my_tm_stp_lsb = word_1 & 0x0FFFFFFF;  // 28 bits from 0
 	my_tm_stp = ( my_tm_stp_msb << 28 ) | my_tm_stp_lsb;
 
-	// Mesytec timestamps are 4 ns precision? TBD
-	my_tm_stp = my_tm_stp*4;
+	// Get timestamp in the correct units
+	my_tm_stp *= set->GetMesytecTimeStampUnits();
 
 	// First of the data items
 	if( !flag_mesy_data0 && !flag_mesy_data1 && !flag_mesy_data2 && !flag_mesy_data3 ){
 
 		// Make a MesyData item, need to add Qlong and traces
 		mesy_data->SetTimeStamp( my_tm_stp );
-		mesy_data->SetCrate(1); // Mesytec crate is always 1
+		mesy_data->SetCrate( my_vme_id ); // Mesytec crate is always 1
 		mesy_data->SetModule( my_mod_id );
 		mesy_data->SetChannel( my_ch_id );
 
@@ -1559,7 +1572,7 @@ bool ISSConverter::ProcessMesytecData(){
 
 		// Then set the info correctly for this event
 		mesy_data->SetTimeStamp( my_tm_stp );
-		mesy_data->SetCrate(1); // Mesytec crate is always 1
+		mesy_data->SetCrate( my_vme_id ); // Mesytec crate is always 1
 		mesy_data->SetModule( my_mod_id );
 		mesy_data->SetChannel( my_ch_id );
 

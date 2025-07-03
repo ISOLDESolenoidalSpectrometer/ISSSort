@@ -78,6 +78,7 @@ public:
 	void FinishCAENData();
 	void FinishMesytecData();
 	void GetVMEChanID();
+	unsigned int ProcessTraceData( unsigned int pos );
 
 	inline void EBISOnly(){ flag_ebis = true; };
 	inline bool EBISWindow( long long int t ){
