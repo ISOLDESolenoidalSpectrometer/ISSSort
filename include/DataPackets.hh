@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "TObject.h"
+#include "TGraph.h"
 
 class ISSAsicData : public TObject {
 
@@ -70,6 +71,22 @@ public:
 		if( i >= trace.size() ) return 0;
 		return trace.at(i);
 	};
+	inline TGraph* GetTraceGraph() {
+		std::vector<int> x, y;
+		std::string title = "Trace for crate " + std::to_string( GetCrate() );
+		title += ", module " + std::to_string( GetModule() );
+		title += ", channel " + std::to_string( GetChannel() );
+		title += ";time [samples];signal";
+		for( unsigned short i = 0; i < GetTraceLength(); ++i ){
+			x.push_back( i );
+			y.push_back( GetSample(i) );
+		}
+		std::shared_ptr<TGraph> g = std::make_shared<TGraph>(
+					GetTraceLength(), x.data(), y.data() );
+		g.get()->SetTitle( title.data() );
+		return (TGraph*)g.get()->Clone();
+	};
+
 	inline unsigned char	GetCrate() { return vme; };
 	inline unsigned char	GetModule() { return mod; };
 	inline unsigned char	GetChannel() { return ch; };
@@ -219,6 +236,13 @@ public:
 	void SetData( std::shared_ptr<ISSInfoData> data );
 
 	// These methods are not very safe for access
+	inline std::shared_ptr<ISSVmeData> GetVmeData() const {
+		if( caen_packets.size() )
+			return std::make_shared<ISSVmeData>( caen_packets.at(0) );
+		else if( mesy_packets.size() )
+			return std::make_shared<ISSVmeData>( mesy_packets.at(0) );
+		else return nullptr;
+	};
 	inline std::shared_ptr<ISSAsicData> GetAsicData() const {
 		return std::make_shared<ISSAsicData>( asic_packets.at(0) );
 	};
@@ -253,7 +277,7 @@ protected:
 	std::vector<ISSMesyData> mesy_packets;
 	std::vector<ISSInfoData> info_packets;
 
-	ClassDef( ISSDataPackets, 4 )
+	ClassDef( ISSDataPackets, 5 )
 
 };
 
