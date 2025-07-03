@@ -3892,7 +3892,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l03787" name="l03787"></a><span class="lineno"> 3787</span>                generic_mult = <a class="code hl_variable" href="classISSHistogrammer.html#a86889bde10140c272364f8aa349e86f2">read_evts</a>-&gt;<a class="code hl_function" href="classISSEvts.html#a58c6432b4f2b0f8d45cc8ee326ab7f1b">GetCDMultiplicity</a>();</div>
 <div class="line"><a id="l03788" name="l03788"></a><span class="lineno"> 3788</span> </div>
 <div class="line"><a id="l03789" name="l03789"></a><span class="lineno"> 3789</span>            <span class="comment">// Find recoil</span></div>
-<div class="line"><a id="l03790" name="l03790"></a><span class="lineno"> 3790</span>            <span class="keywordtype">double</span> bg_frac;</div>
+<div class="line"><a id="l03790" name="l03790"></a><span class="lineno"> 3790</span>            <span class="keywordtype">double</span> bg_frac = -1.0;</div>
 <div class="line"><a id="l03791" name="l03791"></a><span class="lineno"> 3791</span>            <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> k = 0; k &lt; generic_mult; ++k ){</div>
 <div class="line"><a id="l03792" name="l03792"></a><span class="lineno"> 3792</span> </div>
 <div class="line"><a id="l03793" name="l03793"></a><span class="lineno"> 3793</span>                <span class="comment">// Get event depending on type, first is normal recoil detector</span></div>
@@ -4714,7 +4714,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l04609" name="l04609"></a><span class="lineno"> 4609</span>                <span class="keywordtype">bool</span> promptcheckT = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l04610" name="l04610"></a><span class="lineno"> 4610</span>                <span class="keywordtype">bool</span> randomcheckT = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l04611" name="l04611"></a><span class="lineno"> 4611</span>                <span class="keywordtype">bool</span> energycut = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l04612" name="l04612"></a><span class="lineno"> 4612</span>                <span class="keywordtype">double</span> bg_frac;</div>
+<div class="line"><a id="l04612" name="l04612"></a><span class="lineno"> 4612</span>                <span class="keywordtype">double</span> bg_frac = -1.0;</div>
 <div class="line"><a id="l04613" name="l04613"></a><span class="lineno"> 4613</span> </div>
 <div class="line"><a id="l04614" name="l04614"></a><span class="lineno"> 4614</span>                <span class="comment">// Check if we use the CD or the recoil detector</span></div>
 <div class="line"><a id="l04615" name="l04615"></a><span class="lineno"> 4615</span>                <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> generic_mult = 0;</div>
