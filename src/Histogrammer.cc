@@ -3787,7 +3787,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				generic_mult = read_evts->GetCDMultiplicity();
 
 			// Find recoil
-			double bg_frac;
+			double bg_frac = -1.0;
 			for( unsigned int k = 0; k < generic_mult; ++k ){
 
 				// Get event depending on type, first is normal recoil detector
@@ -4609,7 +4609,7 @@ unsigned long ISSHistogrammer::FillHists() {
 				bool promptcheckT = false;
 				bool randomcheckT = false;
 				bool energycut = false;
-				double bg_frac;
+				double bg_frac = -1.0;
 
 				// Check if we use the CD or the recoil detector
 				unsigned int generic_mult = 0;
