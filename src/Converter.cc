@@ -976,6 +976,8 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 				// Check if we want to use it or not
 				if( set->IsAllData() || set->IsCAENOnly() ) {
 					
+					caen_data->SetTimeStamp( my_tm_stp );
+					caen_data->SetCrate( 0 );
 					caen_data->SetModule( my_mod_id );
 					caen_data->SetChannel( my_ch_id );
 					for( unsigned int k = 0; k < samples.size(); k++ )
@@ -994,6 +996,8 @@ void ISSConverter::ProcessBlockData( unsigned long nblock ){
 				// Check if we want to use it or not
 				if( set->IsAllData() || set->IsMesyOnly() ) {
 
+					mesy_data->SetTimeStamp( my_tm_stp );
+					mesy_data->SetCrate( 0 );
 					mesy_data->SetModule( my_mod_id );
 					mesy_data->SetChannel( my_ch_id );
 					for( unsigned int k = 0; k < samples.size(); k++ )
