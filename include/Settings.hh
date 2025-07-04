@@ -51,11 +51,23 @@ public:
 			return caen_model[i];
 		else return 1725;
 	};
+	inline unsigned int GetCAENTimeStampUnits( unsigned char mod ) {
+		if( this->GetCAENModel( mod ) == 1730 ) return 2;
+		else if( this->GetCAENModel( mod ) == 1725 ) return 4;
+		else if( this->GetCAENModel( mod ) == 1724 ) return 4;
+		else if( this->GetCAENModel( mod ) == 1740 ) return 16;
+		else return 8; // assume everything else is 125 MS/s
+	};
+
 
 	// Mesytec settings
 	inline unsigned char GetNumberOfMesytecModules(){ return n_mesy_mod; };
 	inline unsigned char GetNumberOfMesytecChannels(){ return n_mesy_ch; };
 	inline unsigned char GetNumberOfMesytecLogicInputs(){ return n_mesy_logic; };
+	inline unsigned int GetMesytecTimeStampUnits() {
+		return 4; ///< this is the same as where the Heimtime goes in the CAEN
+				  ///< so it could get complicated if we use a different module!
+	};
 
 	// VME totals
 	inline unsigned int GetNumberOfVmeCrates(){ return 2; }; // fixed: CAEN + Mesytec
