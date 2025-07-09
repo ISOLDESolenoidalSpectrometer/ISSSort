@@ -1351,7 +1351,7 @@ bool ISSConverter::ProcessCAENData(){
 void ISSConverter::FinishCAENData(){
 
 	// Got all items
-	if( ( flag_caen_data0 && flag_caen_data1 && ( flag_caen_data2 || flag_caen_data3 ) ) || flag_caen_trace ){
+	if( ( flag_caen_data0 && flag_caen_data1 && ( flag_caen_data2 || flag_caen_data3 ) ) && flag_caen_trace ){
 
 		// Fill histograms
 		hcaen_hit[caen_data->GetModule()]->Fill( ctr_caen_hit[caen_data->GetModule()], caen_data->GetTime(), 1 );
