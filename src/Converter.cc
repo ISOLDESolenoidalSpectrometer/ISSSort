@@ -43,6 +43,23 @@ void ISSConverter::StartFile(){
 	ctr_mesy_hit.resize( set->GetNumberOfMesytecModules(), 0 );
 	ctr_mesy_ext.resize( set->GetNumberOfMesytecModules(), 0 );
 
+	// Flag if we have ASIC data
+	flag_asic_data = false;
+
+	// Flags for CAEN data items
+	flag_caen_data0 = false;
+	flag_caen_data1 = false;
+	flag_caen_data2 = false;
+	flag_caen_data3 = false;
+	flag_caen_trace = false;
+
+	// Flags for Mesytec data items
+	flag_mesy_data0 = false;
+	flag_mesy_data1 = false;
+	flag_mesy_data2 = false;
+	flag_mesy_data3 = false;
+	flag_mesy_trace = false;
+	
 	// clear the data vectors
 	std::vector<std::shared_ptr<ISSDataPackets>>().swap(data_vector);
 	std::vector<std::pair<unsigned long,double>>().swap(data_map);
@@ -731,23 +748,6 @@ void ISSConverter::ProcessBlockHeader( unsigned long nblock ){
 
 	// For each new header, reset the swap mode
 	swap = 0;
-
-	// Flag if we have ASIC data
-	flag_asic_data = false;
-
-	// Flags for CAEN data items
-	flag_caen_data0 = false;
-	flag_caen_data1 = false;
-	flag_caen_data2 = false;
-	flag_caen_data3 = false;
-	flag_caen_trace = false;
-
-	// Flags for Mesytec data items
-	flag_mesy_data0 = false;
-	flag_mesy_data1 = false;
-	flag_mesy_data2 = false;
-	flag_mesy_data3 = false;
-	flag_mesy_trace = false;
 
 	// Flag when we find the end of the data
 	flag_terminator = false;
