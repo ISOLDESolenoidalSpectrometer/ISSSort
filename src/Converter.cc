@@ -1671,7 +1671,7 @@ void ISSConverter::ProcessMesytecLogicItem(){
 void ISSConverter::FinishMesytecData(){
 
 	// Got all items
-	if( ( flag_mesy_data0 && flag_mesy_data3 ) || flag_mesy_trace ){
+	if( ( flag_mesy_data0 && flag_mesy_data3 && flag_mesy_trace ) ){
 
 		// If it's a logic input, process that properly
 		if( mesy_data->GetChannel() >= set->GetNumberOfMesytecChannels() &&
