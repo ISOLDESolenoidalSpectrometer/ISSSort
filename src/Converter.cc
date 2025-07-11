@@ -43,6 +43,23 @@ void ISSConverter::StartFile(){
 	ctr_mesy_hit.resize( set->GetNumberOfMesytecModules(), 0 );
 	ctr_mesy_ext.resize( set->GetNumberOfMesytecModules(), 0 );
 
+	// Flag if we have ASIC data
+	flag_asic_data = false;
+
+	// Flags for CAEN data items
+	flag_caen_data0 = false;
+	flag_caen_data1 = false;
+	flag_caen_data2 = false;
+	flag_caen_data3 = false;
+	flag_caen_trace = false;
+
+	// Flags for Mesytec data items
+	flag_mesy_data0 = false;
+	flag_mesy_data1 = false;
+	flag_mesy_data2 = false;
+	flag_mesy_data3 = false;
+	flag_mesy_trace = false;
+	
 	// clear the data vectors
 	std::vector<std::shared_ptr<ISSDataPackets>>().swap(data_vector);
 	std::vector<std::pair<unsigned long,double>>().swap(data_map);
@@ -732,23 +749,6 @@ void ISSConverter::ProcessBlockHeader( unsigned long nblock ){
 	// For each new header, reset the swap mode
 	swap = 0;
 
-	// Flag if we have ASIC data
-	flag_asic_data = false;
-
-	// Flags for CAEN data items
-	flag_caen_data0 = false;
-	flag_caen_data1 = false;
-	flag_caen_data2 = false;
-	flag_caen_data3 = false;
-	flag_caen_trace = false;
-
-	// Flags for Mesytec data items
-	flag_mesy_data0 = false;
-	flag_mesy_data1 = false;
-	flag_mesy_data2 = false;
-	flag_mesy_data3 = false;
-	flag_mesy_trace = false;
-
 	// Flag when we find the end of the data
 	flag_terminator = false;
 
@@ -1351,7 +1351,7 @@ bool ISSConverter::ProcessCAENData(){
 void ISSConverter::FinishCAENData(){
 
 	// Got all items
-	if( ( flag_caen_data0 && flag_caen_data1 && ( flag_caen_data2 || flag_caen_data3 ) ) || flag_caen_trace ){
+	if( ( flag_caen_data0 && flag_caen_data1 && ( flag_caen_data2 || flag_caen_data3 ) ) && flag_caen_trace ){
 
 		// Fill histograms
 		hcaen_hit[caen_data->GetModule()]->Fill( ctr_caen_hit[caen_data->GetModule()], caen_data->GetTime(), 1 );
@@ -1671,7 +1671,7 @@ void ISSConverter::ProcessMesytecLogicItem(){
 void ISSConverter::FinishMesytecData(){
 
 	// Got all items
-	if( ( flag_mesy_data0 && flag_mesy_data3 ) || flag_mesy_trace ){
+	if( ( flag_mesy_data0 && flag_mesy_data3 && flag_mesy_trace ) ){
 
 		// If it's a logic input, process that properly
 		if( mesy_data->GetChannel() >= set->GetNumberOfMesytecChannels() &&
