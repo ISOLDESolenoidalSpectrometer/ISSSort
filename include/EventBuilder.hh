@@ -87,6 +87,7 @@ public:
 	void	Initialise();	///< Called for every event
 	void	MakeHists(); ///< Creates histograms for events that occur
 	void	ResetHists(); ///< Empties the histograms during the DataSpy
+	void	PlotDiagnostics();	///< Plot diagnostic histograms in DataSpy
 	void	ArrayMapping();	///< Do the mapping of the array just once
 
 	/// Adds the settings from the external settings file to the class
@@ -138,7 +139,6 @@ public:
 		log_file.close(); //?? to close or not to close?
 	}; ///< Closes the output files from this class
 	inline void PurgeOutput(){ output_file->Purge(2); }
-	void CleanHists(); ///< Deletes histograms from memory and clears vectors that store histograms
 
 	inline void AddProgressBar( std::shared_ptr<TGProgressBar> myprog ){
 		prog = myprog;
@@ -198,6 +198,9 @@ private:
 
 	// Flag to know that we have simulation data from NPTool
 	bool flag_nptool = false;
+
+	// Flag to check if histograms are ready, used in spy
+	bool hists_ready = false;
 
 	// These things are in the settings file
 	long build_window;  ///< Length of build window in ns

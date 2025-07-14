@@ -134,6 +134,11 @@ std::shared_ptr<ISSEventBuilder> eb_mon;
 std::shared_ptr<ISSHistogrammer> hist_mon;
 
 
+void plot_diagnostic_hists(){
+	if( eb_mon.get() != nullptr )
+		eb_mon->PlotDiagnostics();
+}
+
 void reset_conv_hists(){
 	conv_mon->ResetHists();
 }

@@ -29,6 +29,7 @@ Bool_t bRunMon = kTRUE;
 Bool_t bFirstRun = kTRUE;
 std::string curFileMon;
 
+void plot_diagnostic_hists();
 void reset_conv_hists();
 void reset_evnt_hists();
 void reset_phys_hists();
