@@ -2807,7 +2807,7 @@ void ISSEventBuilder::CdFinder() {
 		// Do not double count ring ID vs energy events
 		for( unsigned int k = 0; k < cdren_list[i].size(); k++ ) {
 
-		  cd_r_en[i]->Fill( cdrid_list[i][k], cdren_list[i][k]);
+			cd_r_en[i]->Fill( cdrid_list[i][k], cdren_list[i][k]);
 
 		} // k - rings
 
@@ -2901,29 +2901,31 @@ void ISSEventBuilder::CdFinder() {
 
 		// Set the dE and log for finding the ring
 		double sectime_cur = cd_evt[partid]->GetdETime();
+		double secen_cur = cd_evt[partid]->GetEnergy(0);
 
 		// Find matching ring, easy if there is only 1
 		int rindex_match = 0;
-		double rs_tdiff_best = 2.0 * set->GetEventWindow();
+		double rs_ediff_best = 8e12;
 
-		// Search for the best
-		// TODO: Maybe this should instead be energy difference?
-		// TODO: Or if it's charge sharing, we need maximum energy?
+		// Search for the best match based on energy
 		for( unsigned int j = 0; j < cdrtd_list[dE_idx].size(); ++j ) {
 
 			double rs_tdiff_cur = cdrtd_list[dE_idx][j] - sectime_cur;
+			double rs_ediff_cur = cdren_list[dE_idx][j] - secen_cur;
 			rs_tdiff_cur = TMath::Abs( rs_tdiff_cur );
-			if( rs_tdiff_cur < rs_tdiff_best ) {
+			rs_ediff_cur = TMath::Abs( rs_ediff_cur );
+			if( rs_ediff_cur < rs_ediff_best &&
+			   rs_tdiff_cur < set->GetCDRSHitWindow() ) {
 
 				rindex_match = j;
-				rs_tdiff_best = rs_tdiff_cur;
+				rs_ediff_best = rs_ediff_cur;
 
 			} // better match found
 
 		} // loop over all ring hits - j
 
 		// Set the ring for the dE layer
-		if( rs_tdiff_best < set->GetCDRSHitWindow() )
+		if( rs_ediff_best < 9e12 )
 			cd_evt[partid]->SetRing( cdrid_list[dE_idx][rindex_match] );
 		else
 			cd_evt[partid]->SetRing( 0xff ); // no ring found
