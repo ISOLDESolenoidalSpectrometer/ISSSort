@@ -635,81 +635,16 @@ void ISSConverter::MakeHists() {
 
 void ISSConverter::ResetHists() {
 
-	std::cout << "in ISSConverter::ResetHist()" << std::endl;
-
-	for( unsigned int i = 0; i < hasic_hit.size(); ++i )
-		hasic_hit[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hasic_ext.size(); ++i )
-		hasic_ext[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hasic_pause.size(); ++i )
-		hasic_pause[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hasic_resume.size(); ++i )
-		hasic_resume[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hcaen_hit.size(); ++i )
-		hcaen_hit[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hcaen_ext.size(); ++i )
-		hcaen_ext[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hmesy_hit.size(); ++i )
-		hmesy_hit[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hmesy_ext.size(); ++i )
-		hmesy_ext[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < asic_pulser_energy.size(); ++i )
-		for( unsigned int j = 0; j < asic_pulser_energy[i].size(); ++j )
-			asic_pulser_energy[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hasic.size(); ++i )
-		for( unsigned int j = 0; j < hasic[i].size(); ++j )
-			hasic[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hasic_cal.size(); ++i )
-		for( unsigned int j = 0; j < hasic_cal[i].size(); ++j )
-			hasic_cal[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hcaen_qlong.size(); ++i )
-		for( unsigned int j = 0; j < hcaen_qlong[i].size(); ++j )
-			hcaen_qlong[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hcaen_qshort.size(); ++i )
-		for( unsigned int j = 0; j < hcaen_qshort[i].size(); ++j )
-			hcaen_qshort[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hcaen_qdiff.size(); ++i )
-		for( unsigned int j = 0; j < hcaen_qdiff[i].size(); ++j )
-			hcaen_qdiff[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hcaen_cal.size(); ++i )
-		for( unsigned int j = 0; j < hcaen_cal[i].size(); ++j )
-			hcaen_cal[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hmesy_qlong.size(); ++i )
-		for( unsigned int j = 0; j < hmesy_qlong[i].size(); ++j )
-			hmesy_qlong[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hmesy_qshort.size(); ++i )
-		for( unsigned int j = 0; j < hmesy_qshort[i].size(); ++j )
-			hmesy_qshort[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hmesy_qdiff.size(); ++i )
-		for( unsigned int j = 0; j < hmesy_qdiff[i].size(); ++j )
-			hmesy_qdiff[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hmesy_cal.size(); ++i )
-		for( unsigned int j = 0; j < hmesy_cal[i].size(); ++j )
-			hmesy_cal[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hpside.size(); ++i )
-		hpside[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < hnside.size(); ++i )
-		hnside[i]->Reset("ICESM");
+	TIter keyList( output_file->GetListOfKeys() );
+	TKey *key;
+	while( ( key = (TKey*)keyList() ) ){
+		if( std::strcmp( key->GetClassName(), "TH1" ) == 0 )
+			( (TH1*)key->ReadObj() )->Reset("ICESM");
+		if( std::strcmp( key->GetClassName(), "TH2" ) == 0 )
+			( (TH2*)key->ReadObj() )->Reset("ICESM");
+		if( std::strcmp( key->GetClassName(), "TProfile" ) == 0 )
+			( (TProfile*)key->ReadObj() )->Reset("ICESM");
+	}
 
 	return;
 
@@ -963,9 +898,7 @@ unsigned int ISSConverter::ProcessTraceData( unsigned int pos ){
 		ULong64_t sample_packet = GetWord(++pos);
 
 		UInt_t block_test = ( sample_packet >> 32 ) & 0x00000000FFFFFFFF;
-		unsigned char trace_test = ( sample_packet >> 62 ) & 0x0000000000000003;
 
-		//if( trace_test == 0 && block_test != 0x5E5E5E5E ){
 		if( block_test != 0x5E5E5E5E ){
 
 			// Pairs need to be swapped
