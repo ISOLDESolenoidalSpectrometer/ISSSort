@@ -3548,234 +3548,32 @@ void ISSEventBuilder::MakeHists(){
 						600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20 );
 
 
+	// flag to denote that hists are ready (used for spy)
+	hists_ready = true;
+
 	return;
 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// This function cleans up all of the histograms used in the EventBuilder class, by deleting them and clearing all histogram vectors.
-void ISSEventBuilder::CleanHists() {
+/// This function plots common histograms for diagnostic purposes; used during the DataSpy
+void ISSEventBuilder::PlotDiagnostics() {
 
-	// Clean up the histograms to save memory for later
-	for( unsigned int i = 0; i < pn_11.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_11.at(i).size(); j++ )
-			delete (pn_11[i][j]);
-		pn_11.clear();
+	// Escape if we haven't built the hists to avoid a seg fault
+	if( !hists_ready ){
+
+		std::cout << "Cannot plot diagnostics yet, wait until event builder is ready" << std::endl;
+		return;
+
 	}
 
-	for( unsigned int i = 0; i < pn_12.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_12.at(i).size(); j++ )
-			delete (pn_12[i][j]);
-		pn_12.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_21.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_21.at(i).size(); j++ )
-			delete (pn_21[i][j]);
-		pn_21.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_22.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_22.at(i).size(); j++ )
-			delete (pn_22[i][j]);
-		pn_22.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_ab.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_ab.at(i).size(); j++ )
-			delete (pn_ab[i][j]);
-		pn_ab.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_nab.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_nab.at(i).size(); j++ )
-			delete (pn_nab[i][j]);
-		pn_nab.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_pab.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_pab.at(i).size(); j++ )
-			delete (pn_pab[i][j]);
-		pn_pab.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_max.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_max.at(i).size(); j++ )
-			delete (pn_max[i][j]);
-		pn_max.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_td.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_td.at(i).size(); j++ )
-			delete (pn_td[i][j]);
-		pn_td.clear();
-	}
-
-	for( unsigned int i = 0; i < pp_td.size(); i++ ) {
-		for( unsigned int j = 0; j < pp_td.at(i).size(); j++ )
-			delete (pp_td[i][j]);
-		pp_td.clear();
-	}
-
-	for( unsigned int i = 0; i < nn_td.size(); i++ ) {
-		for( unsigned int j = 0; j < nn_td.at(i).size(); j++ )
-			delete (nn_td[i][j]);
-		nn_td.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_td_uncorrected.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_td_uncorrected.at(i).size(); j++ )
-			delete (pn_td_uncorrected[i][j]);
-		pn_td_uncorrected.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_td_Ep.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_td_Ep.at(i).size(); j++ )
-			delete (pn_td_Ep[i][j]);
-		pn_td_Ep.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_td_En.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_td_En.at(i).size(); j++ )
-			delete (pn_td_En[i][j]);
-		pn_td_En.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_td_Ep_uncorrected.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_td_Ep_uncorrected.at(i).size(); j++ )
-			delete (pn_td_Ep_uncorrected[i][j]);
-		pn_td_Ep_uncorrected.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_td_En_uncorrected.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_td_En_uncorrected.at(i).size(); j++ )
-			delete (pn_td_En_uncorrected[i][j]);
-		pn_td_En_uncorrected.clear();
-	}
-
-	for( unsigned int i = 0; i < pn_mult.size(); i++ ) {
-		for( unsigned int j = 0; j < pn_mult.at(i).size(); j++ )
-			delete (pn_mult[i][j]);
-		pn_mult.clear();
-	}
-
-
-	for( unsigned int i = 0; i < recoil_EdE.size(); i++ )
-		delete (recoil_EdE[i]);
-	recoil_EdE.clear();
-
-	for( unsigned int i = 0; i < recoil_dEsum.size(); i++ )
-		delete (recoil_dEsum[i]);
-	recoil_dEsum.clear();
-
-	for( unsigned int i = 0; i < recoil_EdE_raw.size(); i++ )
-		delete (recoil_EdE_raw[i]);
-	recoil_EdE_raw.clear();
-
-	for( unsigned int i = 0; i < recoil_E_singles.size(); i++ )
-		delete (recoil_E_singles[i]);
-	recoil_E_singles.clear();
-
-	for( unsigned int i = 0; i < recoil_dE_singles.size(); i++ )
-		delete (recoil_dE_singles[i]);
-	recoil_dE_singles.clear();
-
-	for( unsigned int i = 0; i < recoil_E_dE_tdiff.size(); i++ )
-		delete (recoil_E_dE_tdiff[i]);
-	recoil_E_dE_tdiff.clear();
-
-	for( unsigned int i = 0; i < recoil_tdiff.size(); i++ )
-		delete (recoil_tdiff[i]);
-	recoil_tdiff.clear();
-
-
-	for( unsigned int i = 0; i < mwpc_tac_axis.size(); i++ ) {
-		for( unsigned int j = 0; j < mwpc_tac_axis.at(i).size(); j++ )
-			delete (mwpc_tac_axis[i][j]);
-		mwpc_tac_axis.clear();
-	}
-
-	for( unsigned int i = 0; i < mwpc_hit_axis.size(); i++ )
-		delete (mwpc_hit_axis[i]);
-	mwpc_hit_axis.clear();
-
-	delete mwpc_pos;
-	delete elum_E;
-	delete elum_E_vs_sec;
-	delete zd_EdE;
-	delete gamma_E;
-	delete gamma_E_vs_det;
-	delete gamma_gamma_E;
-	delete gamma_gamma_td;
-
-	for( unsigned int i = 0; i < lume_E.size(); i++ )
-		delete (lume_E[i]);
-	lume_E.clear();
-
-	for( unsigned int i = 0; i < lume_E_vs_x.size(); i++ )
-		delete (lume_E_vs_x[i]);
-	lume_E_vs_x.clear();
-
-	for( unsigned int i = 0; i < lume_ne_vs_fe.size(); i++ )
-		delete (lume_ne_vs_fe[i]);
-	lume_ne_vs_fe.clear();
-
-
-	for( unsigned int i = 0; i < cd_rs_mult.size(); i++ )
-		delete (cd_rs_mult[i]);
-	cd_rs_mult.clear();
-
-	for( unsigned int i = 0; i < cd_rs_en.size(); i++ )
-		delete (cd_rs_en[i]);
-	cd_rs_en.clear();
-
-	for( unsigned int i = 0; i < cd_rs_td.size(); i++ )
-		delete (cd_rs_td[i]);
-	cd_rs_td.clear();
-
-
-	for( unsigned int i = 0; i < set->GetNumberOfMesytecModules(); i++ ){
-		delete (mesy_td[i]);
-		delete (mesy_pulser_loss[i]);
-		delete (mesy_period[i]);
-		delete (mesy_sync[i]);
-	}
-
-	mesy_td.clear();
-	mesy_sync.clear();
-	mesy_period.clear();
-	mesy_pulser_loss.clear();
-
+	// ASIC time difference histograms
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
-		delete (fpga_td[i]);
-		delete (asic_td[i]);
-		delete (fpga_pulser_loss[i]);
-		delete (fpga_period[i]);
-		delete (fpga_sync[i]);
-		delete (asic_pulser_loss[i]);
-		delete (asic_period[i]);
-		delete (asic_sync[i]);
+
+		asic_td[i]->Draw("hist");
+
 	}
 
-	fpga_td.clear();
-	fpga_sync.clear();
-	fpga_period.clear();
-	fpga_pulser_loss.clear();
-	asic_td.clear();
-	asic_sync.clear();
-	asic_period.clear();
-	asic_pulser_loss.clear();
-
-	delete tdiff;
-	delete tdiff_clean;
-	delete caen_period;
-	delete ebis_period;
-	delete t1_period;
-	delete sc_period;
-	delete laser_period;
-	delete supercycle;
-
-	return;
 
 }
 
@@ -3783,158 +3581,16 @@ void ISSEventBuilder::CleanHists() {
 /// This function empties the histograms used in the EventBuilder class; used during the DataSpy
 void ISSEventBuilder::ResetHists() {
 
-	for( unsigned int i = 0; i < pn_11.size(); i++ )
-		for( unsigned int j = 0; j < pn_11.at(i).size(); j++ )
-			pn_11[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < pn_12.size(); i++ )
-		for( unsigned int j = 0; j < pn_12.at(i).size(); j++ )
-			pn_12[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < pn_21.size(); i++ )
-		for( unsigned int j = 0; j < pn_21.at(i).size(); j++ )
-			pn_21[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < pn_22.size(); i++ )
-		for( unsigned int j = 0; j < pn_22.at(i).size(); j++ )
-			pn_22[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < pn_ab.size(); i++ )
-		for( unsigned int j = 0; j < pn_ab.at(i).size(); j++ )
-			pn_ab[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < pn_nab.size(); i++ )
-		for( unsigned int j = 0; j < pn_nab.at(i).size(); j++ )
-			pn_nab[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < pn_pab.size(); i++ )
-		for( unsigned int j = 0; j < pn_pab.at(i).size(); j++ )
-			pn_pab[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < pn_max.size(); i++ )
-		for( unsigned int j = 0; j < pn_max.at(i).size(); j++ )
-			pn_max[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < pn_td.size(); i++ )
-		for( unsigned int j = 0; j < pn_td.at(i).size(); j++ )
-			pn_td[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < pn_td_uncorrected.size(); i++ )
-		for( unsigned int j = 0; j < pn_td_uncorrected.at(i).size(); j++ )
-			pn_td_uncorrected[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < pp_td.size(); i++ )
-		for( unsigned int j = 0; j < pp_td.at(i).size(); j++ )
-			pp_td[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < nn_td.size(); i++ )
-		for( unsigned int j = 0; j < nn_td.at(i).size(); j++ )
-			nn_td[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < pn_td_Ep.size(); i++ )
-		for( unsigned int j = 0; j < pn_td_Ep.at(i).size(); j++ )
-			pn_td_Ep[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < pn_td_En.size(); i++ )
-		for( unsigned int j = 0; j < pn_td_En.at(i).size(); j++ )
-			pn_td_En[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < pn_td_Ep_uncorrected.size(); i++ )
-		for( unsigned int j = 0; j < pn_td_Ep_uncorrected.at(i).size(); j++ )
-			pn_td_Ep_uncorrected[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < pn_td_En_uncorrected.size(); i++ )
-		for( unsigned int j = 0; j < pn_td_En_uncorrected.at(i).size(); j++ )
-			pn_td_En_uncorrected[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < pn_mult.size(); i++ )
-		for( unsigned int j = 0; j < pn_mult.at(i).size(); j++ )
-			pn_mult[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < recoil_EdE.size(); i++ )
-		recoil_EdE[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < recoil_dEsum.size(); i++ )
-		recoil_dEsum[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < recoil_EdE_raw.size(); i++ )
-		recoil_EdE_raw[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < recoil_E_singles.size(); i++ )
-		recoil_E_singles[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < recoil_dE_singles.size(); i++ )
-		recoil_dE_singles[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < recoil_E_dE_tdiff.size(); i++ )
-		recoil_E_dE_tdiff[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < recoil_tdiff.size(); i++ )
-		recoil_tdiff[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < mwpc_tac_axis.size(); i++ )
-		for( unsigned int j = 0; j < mwpc_tac_axis.at(i).size(); j++ )
-			mwpc_tac_axis[i][j]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < mwpc_hit_axis.size(); i++ )
-		mwpc_hit_axis[i]->Reset("ICESM");
-
-	mwpc_pos->Reset("ICESM");
-	elum_E->Reset("ICESM");
-	elum_E_vs_sec->Reset("ICESM");
-	zd_EdE->Reset("ICESM");
-	gamma_E->Reset("ICESM");
-	gamma_E_vs_det->Reset("ICESM");
-	gamma_gamma_E->Reset("ICESM");
-	gamma_gamma_td->Reset("ICESM");
-
-	for( unsigned int i = 0; i < lume_E.size(); i++ )
-		lume_E[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < lume_E_vs_x.size(); i++ )
-		lume_E_vs_x[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < lume_ne_vs_fe.size(); i++ )
-		lume_ne_vs_fe[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < cd_rs_mult.size(); i++ )
-		cd_rs_mult[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < cd_rs_en.size(); i++ )
-		cd_rs_en[i]->Reset("ICESM");
-
-	for( unsigned int i = 0; i < cd_rs_td.size(); i++ )
-		cd_rs_td[i]->Reset("ICESM");
-
-	cd_EdE->Reset("ICESM");
-	cd_dEsum->Reset("ICESM");
-
-	for( unsigned int i = 0; i < set->GetNumberOfMesytecModules(); i++ ){
-		mesy_td[i]->Reset("ICESM");
-		mesy_pulser_loss[i]->Reset("ICESM");
-		mesy_period[i]->Reset("ICESM");
-		mesy_sync[i]->Reset("ICESM");
+	TIter keyList( output_file->GetListOfKeys() );
+	TKey *key;
+	while( ( key = (TKey*)keyList() ) ){
+		if( std::strcmp( key->GetClassName(), "TH1" ) == 0 )
+			( (TH1*)key->ReadObj() )->Reset("ICESM");
+		if( std::strcmp( key->GetClassName(), "TH2" ) == 0 )
+			( (TH2*)key->ReadObj() )->Reset("ICESM");
+		if( std::strcmp( key->GetClassName(), "TProfile" ) == 0 )
+			( (TProfile*)key->ReadObj() )->Reset("ICESM");
 	}
-
-	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
-		fpga_td[i]->Reset("ICESM");
-		asic_td[i]->Reset("ICESM");
-		fpga_pulser_loss[i]->Reset("ICESM");
-		fpga_period[i]->Reset("ICESM");
-		fpga_sync[i]->Reset("ICESM");
-		asic_pulser_loss[i]->Reset("ICESM");
-		asic_period[i]->Reset("ICESM");
-		asic_sync[i]->Reset("ICESM");
-	}
-
-	tdiff->Reset("ICESM");
-	tdiff_clean->Reset("ICESM");
-	caen_period->Reset("ICESM");
-	ebis_period->Reset("ICESM");
-	t1_period->Reset("ICESM");
-	sc_period->Reset("ICESM");
-	laser_period->Reset("ICESM");
-	supercycle->Reset("ICESM");
 
 	return;
 
