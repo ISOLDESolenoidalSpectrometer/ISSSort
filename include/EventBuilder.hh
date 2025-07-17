@@ -22,7 +22,7 @@
 #include <TGProgressBar.h>
 #include <TSystem.h>
 #include <TKey.h>
-
+#include <TCanvas.h>
 
 // Settings header
 #ifndef __SETTINGS_HH
@@ -146,6 +146,9 @@ public:
 	}; ///< Adds a progress bar to the GUI
 	///< \param[in] myprog pointer to the EventBuilder progress bar for the GUI
 
+	inline void AddSpyCanvas( std::shared_ptr<TCanvas> cin ){
+		cspy = cin;
+	}; ///< Adds the canvas for the DataSpy
 
 private:
 
@@ -189,6 +192,9 @@ private:
 	// Progress bar
 	bool _prog_; ///< Boolean determining if there is a progress bar (in the GUI)
 	std::shared_ptr<TGProgressBar> prog; ///< Progress bar for the GUI
+
+	// Canvas for the spy
+	std::shared_ptr<TCanvas> cspy;
 
 	// Log file
 	std::ofstream log_file; ///< Log file for recording the results of the ISSEventBuilder

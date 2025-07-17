@@ -3567,9 +3567,14 @@ void ISSEventBuilder::PlotDiagnostics() {
 
 	}
 
+	// Clear canvas
+	cspy->Clear("D");
+	cspy->Divide( 1, set->GetNumberOfArrayModules() );
+
 	// ASIC time difference histograms
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
 
+		cspy->cd(i+1);
 		asic_td[i]->Draw("hist");
 
 	}
