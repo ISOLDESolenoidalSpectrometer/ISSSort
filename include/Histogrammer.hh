@@ -323,27 +323,56 @@ public:
 		if( mycut.get() == nullptr ) return false;
 		return mycut->IsInside( r->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
 							    r->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
-	}
+	};
 	inline bool RecoilCut( std::shared_ptr<ISSCDEvt> r ){
 		std::shared_ptr<TCutG> mycut = react->GetRecoilCut(0);
 		if( mycut.get() == nullptr ) return false;
 		else return mycut->IsInside( r->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
 									 r->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
-	}
+	};
 
 	// Fission fragment energy gates
+	inline bool FissionCut( std::shared_ptr<ISSCDEvt> f, std::shared_ptr<TCutG> mycut ){
+
+		// x variable
+		double xvar;
+		if( std::strcmp( mycut->GetVarX(), "dE" ) == 0 )
+			xvar = f->GetEnergyLoss( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() );
+		else if( std::strcmp( mycut->GetVarX(), "E" ) == 0 )
+			xvar = f->GetEnergyRest( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() );
+		else if( std::strcmp( mycut->GetVarX(), "Etot" ) == 0 )
+			xvar = f->GetEnergyTotal( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() );
+		else if( std::strcmp( mycut->GetVarX(), "ring" ) == 0 )
+			xvar = f->GetRing();
+		else // assume E by default
+			xvar = f->GetEnergyRest( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() );
+
+		// y variable
+		double yvar;
+		if( std::strcmp( mycut->GetVarY(), "dE" ) == 0 )
+			yvar = f->GetEnergyLoss( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() );
+		else if( std::strcmp( mycut->GetVarY(), "E" ) == 0 )
+			yvar = f->GetEnergyRest( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() );
+		else if( std::strcmp( mycut->GetVarY(), "Etot" ) == 0 )
+			yvar = f->GetEnergyTotal( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() );
+		else if(std::strcmp( mycut->GetVarY(), "ring" ) == 0 )
+			yvar = f->GetRing();
+		else // assume dE by default
+			yvar = f->GetEnergyLoss( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() );
+
+		return mycut->IsInside( xvar, yvar );
+
+	};
 	inline bool FissionCutHeavy( std::shared_ptr<ISSCDEvt> f ){
 		std::shared_ptr<TCutG> mycut = react->GetFissionCutHeavy();
 		if( mycut.get() == nullptr ) return false;
-		return mycut->IsInside( f->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
-							    f->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
-	}
+		else return FissionCut( f, mycut );
+	};
 	inline bool FissionCutLight( std::shared_ptr<ISSCDEvt> f ){
 		std::shared_ptr<TCutG> mycut = react->GetFissionCutLight();
 		if( mycut.get() == nullptr ) return false;
-		return mycut->IsInside( f->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
-							    f->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
-	}
+		else return FissionCut( f, mycut );
+	};
 
 
 private:

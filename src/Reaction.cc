@@ -604,6 +604,12 @@ void ISSReaction::ReadReaction() {
 	fission_cutH = ReadCutFile( fissioncutHfile, fissioncutHname );
 	fission_cutL = ReadCutFile( fissioncutLfile, fissioncutLname );
 
+	// parameter to cut on
+	fission_cutH->SetVarX( config->GetValue( "FissionCut.Heavy.X", "E" ) ); // dE is energy in CD dE
+	fission_cutH->SetVarY( config->GetValue( "FissionCut.Heavy.Y", "dE" ) ); // E is energy in CD E
+	fission_cutL->SetVarX( config->GetValue( "FissionCut.Light.X", "E" ) ); // Etot is energy sum of dE+E
+	fission_cutL->SetVarY( config->GetValue( "FissionCut.Light.Y", "dE" ) ); // ring is energy in CD ring ID
+
 	// Recoil event type
 	recoil_evt_type	= config->GetValue( "Recoil.Type", 0 ); // 0 for normal recoil, 1 for CD with recoil gate
 
