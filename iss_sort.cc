@@ -127,6 +127,7 @@ typedef struct thptr {
 // Server and controls for the GUI
 THttpServer *serv;
 int port_num = 8030;
+std::shared_ptr<TCanvas> cspy;
 
 // Pointers to the thread events TODO: sort out inhereted class stuff
 std::shared_ptr<ISSConverter> conv_mon;
@@ -196,7 +197,7 @@ void* monitor_run( void* ptr ){
 
 	}
 	DataSpy myspy;
-	long long buffer[8*1024];
+	long long buffer[2048*1024];
 	int file_id = 0; ///> TapeServer volume = /dev/file/<id> ... <id> = 0 on issdaqpc2
 	if( flag_spy ) myspy.Open( file_id ); /// open the data spy
 	int spy_length = 0;
@@ -260,7 +261,7 @@ void* monitor_run( void* ptr ){
 				int block_ctr = 0;
 				long byte_ctr = 0;
 				int poll_ctr = 0;
-				while( block_ctr < 200 && poll_ctr < 1000 ){
+				while( block_ctr < 256 && poll_ctr < 1000 ){
 
 					//std::cout << "Got some data from DataSpy, block " << block_ctr << std::endl;
 					if( spy_length > 0 ) {
@@ -277,7 +278,7 @@ void* monitor_run( void* ptr ){
 
 				}
 
-				std::cout << "Got " << byte_ctr << " bytes of data from DataSpy" << std::endl;
+				std::cout << "Got " << byte_ctr << " bytes of data in " << block_ctr << " blocks from DataSpy" << std::endl;
 
 				// Sort the packets we just got, then do the rest of the analysis
 				conv_mon->SortTree();
@@ -373,9 +374,11 @@ void start_http(){
 	//serv->RegisterCommand("/Stop",  "bRunMon=kFALSE;", "button;/usr/share/root/icons/ed_interrupt.png");
 	serv->RegisterCommand("/Start", "StartMonitor()");
 	serv->RegisterCommand("/Stop", "StopMonitor()");
+	serv->RegisterCommand("/ResetAll", "ResetAll()");
 	serv->RegisterCommand("/ResetSingles", "ResetConv()");
 	serv->RegisterCommand("/ResetEvents", "ResetEvnt()");
 	serv->RegisterCommand("/ResetHists", "ResetHist()");
+	serv->RegisterCommand("/PlotDiagnostics", "PlotDiagnostics()");
 
 	// hide commands so the only show as buttons
 	//serv->Hide("/Start");
