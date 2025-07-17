@@ -182,6 +182,7 @@ void* monitor_run( void* ptr ){
 	eb_mon = std::make_shared<ISSEventBuilder>();
 	eb_mon->AddSettings( calfiles->myset );
 	eb_mon->AddCalibration( calfiles->mycal );
+	eb_mon->AddSpyCanvas( cspy );
 
 	// Setup the histogram step
 	hist_mon = std::make_shared<ISSHistogrammer>();
@@ -384,6 +385,9 @@ void start_http(){
 	//serv->Hide("/Start");
 	//serv->Hide("/Stop");
 	//serv->Hide("/Reset");
+
+	// Make the canvas for later
+	cspy = std::make_shared<TCanvas>();
 
 	return;
 
