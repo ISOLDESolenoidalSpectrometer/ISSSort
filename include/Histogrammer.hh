@@ -21,7 +21,6 @@
 #include <TGProgressBar.h>
 #include <TSystem.h>
 #include <TKey.h>
-#include <TIter.h>
 #include <TROOT.h>
 
 // Reaction header
@@ -430,9 +429,12 @@ private:
 	TH2F* fission_dE_vs_T1;
 	TH1F* fission_dE_eloss;
 	TH1F* fission_E_eloss;
+	TH2F* fission_fission_secsec;
+	TH2F* fission_fission_ringring;
 	TH2F* fission_fission_dEdE;
 	TH2F* fission_fission_dEdE_array;
 	TH2F* fission_dE_vs_ring;
+	TH2F* fission_Etot_vs_ring;
 	TH2F* fission_xy_map;
 	TH2F* fission_xy_map_cutH;
 	TH2F* fission_xy_map_cutL;

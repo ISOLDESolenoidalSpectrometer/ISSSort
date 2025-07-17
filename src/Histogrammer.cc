@@ -1787,9 +1787,23 @@ void ISSHistogrammer::MakeHists() {
 										react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(),
 										react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
+		hname = "fission_fission_secsec";
+		htitle = "fission-fission sector-sector plot";
+		htitle += " - coincidence with each other, random subtracted;Fragment 1 sector [keV];Fragment 2 sector [keV];Counts";
+		fission_fission_secsec = new TH2F( hname.data(), htitle.data(),
+										set->GetNumberOfCDSectors(), -0.5, set->GetNumberOfCDSectors()-0.5,
+										set->GetNumberOfCDSectors(), -0.5, set->GetNumberOfCDSectors()-0.5 );
+
+		hname = "fission_fission_ringring";
+		htitle = "fission-fission ring-ring plot";
+		htitle += " - coincidence with each other, random subtracted;Fragment 1 ring [keV];Fragment 2 ring [keV];Counts";
+		fission_fission_ringring = new TH2F( hname.data(), htitle.data(),
+										set->GetNumberOfCDRings(), -0.5, set->GetNumberOfCDRings()-0.5,
+										set->GetNumberOfCDRings(), -0.5, set->GetNumberOfCDRings()-0.5 );
+
 		hname = "fission_fission_dEdE_array";
 		htitle = "fission-fission dE-dE plot";
-		htitle += " - coincidence with each other and an array event;Fragment 1 dE [keV];Fragment 2 dE [keV];Counts";
+		htitle += " - coincidence with each other and an array event, random subtracted;Fragment 1 dE [keV];Fragment 2 dE [keV];Counts";
 		fission_fission_dEdE_array = new TH2F( hname.data(), htitle.data(),
 											  react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(),
 											  react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
@@ -1798,6 +1812,13 @@ void ISSHistogrammer::MakeHists() {
 		htitle = "fission dE versus ring number";
 		htitle += ";Ring number;Fragment dE [keV];Counts";
 		fission_dE_vs_ring = new TH2F( hname.data(), htitle.data(),
+									  set->GetNumberOfCDRings(), -0.5, set->GetNumberOfCDRings() - 0.5,
+									  react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
+
+		hname = "fission_Etot_vs_ring";
+		htitle = "fission E total versus ring number";
+		htitle += ";Ring number;Fragment dE [keV];Counts";
+		fission_Etot_vs_ring = new TH2F( hname.data(), htitle.data(),
 									  set->GetNumberOfCDRings(), -0.5, set->GetNumberOfCDRings() - 0.5,
 									  react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
@@ -3508,9 +3529,10 @@ unsigned long ISSHistogrammer::FillHists() {
 				// Hit map
 				fission_xy_map->Fill( cd_evt1->GetY(true), cd_evt1->GetX(true) );
 
-				// Energy loss versus ring number
+				// Energy versus ring number
 				fission_dE_vs_ring->Fill( cd_evt1->GetRing(),
 										 cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+				fission_Etot_vs_ring->Fill( cd_evt1->GetRing(), cd_evt1->GetEnergyTotal() );
 
 				// Energy EdE plot, unconditioned
 				fission_EdE->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
@@ -3560,14 +3582,24 @@ unsigned long ISSHistogrammer::FillHists() {
 					fission_fission_td_sec->Fill( cd_evt1->GetSector(), ff_td );
 
 					// Energy matrix
-					if( PromptCoincidence( cd_evt1, cd_evt2 ) )
+					if( PromptCoincidence( cd_evt1, cd_evt2 ) ) {
+
 						fission_fission_dEdE->Fill( cd_evt1->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ),
 												   cd_evt2->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
+						fission_fission_secsec->Fill( cd_evt1->GetSector(), cd_evt2->GetSector() );
+						fission_fission_ringring->Fill( cd_evt1->GetRing(), cd_evt2->GetRing() );
 
-					else if( RandomCoincidence( cd_evt1, cd_evt2 ) )
+					} // prompt CD coincidences
+
+					else if( RandomCoincidence( cd_evt1, cd_evt2 ) ) {
+
 						fission_fission_dEdE->Fill( cd_evt1->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ),
 												   cd_evt2->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ),
 												   -1.0*react->GetFissionFissionFillRatio() );
+						fission_fission_secsec->Fill( cd_evt1->GetSector(), cd_evt2->GetSector(), -1.0*react->GetFissionFissionFillRatio() );
+						fission_fission_ringring->Fill( cd_evt1->GetRing(), cd_evt2->GetRing(), -1.0*react->GetFissionFissionFillRatio() );
+
+					} // random CD coincidences
 
 				} // cd events 2
 
