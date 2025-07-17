@@ -21,7 +21,7 @@
 #include <TGProgressBar.h>
 #include <TSystem.h>
 #include <TKey.h>
-
+#include <TROOT.h>
 
 // Reaction header
 #ifndef __REACTION_HH
@@ -49,6 +49,7 @@ public:
 
 	void Initialise();
 	void MakeHists();
+	void ResetHist( TObject *obj, std::string cls );
 	void ResetHists();
 	unsigned long FillHists();
 
@@ -322,27 +323,56 @@ public:
 		if( mycut.get() == nullptr ) return false;
 		return mycut->IsInside( r->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
 							    r->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
-	}
+	};
 	inline bool RecoilCut( std::shared_ptr<ISSCDEvt> r ){
 		std::shared_ptr<TCutG> mycut = react->GetRecoilCut(0);
 		if( mycut.get() == nullptr ) return false;
 		else return mycut->IsInside( r->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
 									 r->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
-	}
+	};
 
 	// Fission fragment energy gates
+	inline bool FissionCut( std::shared_ptr<ISSCDEvt> f, std::shared_ptr<TCutG> mycut ){
+
+		// x variable
+		double xvar;
+		if( std::strcmp( mycut->GetVarX(), "dE" ) == 0 )
+			xvar = f->GetEnergyLoss( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() );
+		else if( std::strcmp( mycut->GetVarX(), "E" ) == 0 )
+			xvar = f->GetEnergyRest( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() );
+		else if( std::strcmp( mycut->GetVarX(), "Etot" ) == 0 )
+			xvar = f->GetEnergyTotal( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() );
+		else if( std::strcmp( mycut->GetVarX(), "ring" ) == 0 )
+			xvar = f->GetRing();
+		else // assume E by default
+			xvar = f->GetEnergyRest( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() );
+
+		// y variable
+		double yvar;
+		if( std::strcmp( mycut->GetVarY(), "dE" ) == 0 )
+			yvar = f->GetEnergyLoss( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() );
+		else if( std::strcmp( mycut->GetVarY(), "E" ) == 0 )
+			yvar = f->GetEnergyRest( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() );
+		else if( std::strcmp( mycut->GetVarY(), "Etot" ) == 0 )
+			yvar = f->GetEnergyTotal( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() );
+		else if(std::strcmp( mycut->GetVarY(), "ring" ) == 0 )
+			yvar = f->GetRing();
+		else // assume dE by default
+			yvar = f->GetEnergyLoss( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() );
+
+		return mycut->IsInside( xvar, yvar );
+
+	};
 	inline bool FissionCutHeavy( std::shared_ptr<ISSCDEvt> f ){
 		std::shared_ptr<TCutG> mycut = react->GetFissionCutHeavy();
 		if( mycut.get() == nullptr ) return false;
-		return mycut->IsInside( f->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
-							    f->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
-	}
+		else return FissionCut( f, mycut );
+	};
 	inline bool FissionCutLight( std::shared_ptr<ISSCDEvt> f ){
 		std::shared_ptr<TCutG> mycut = react->GetFissionCutLight();
 		if( mycut.get() == nullptr ) return false;
-		return mycut->IsInside( f->GetEnergyRest( set->GetCDEnergyRestStart(), set->GetCDEnergyRestStop() ),
-							    f->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
-	}
+		else return FissionCut( f, mycut );
+	};
 
 
 private:
@@ -406,6 +436,10 @@ private:
 	TH1F *t1_td_recoil, *sc_td_recoil;
 	TH1F *t1_td_fission, *sc_td_fission;
 
+	// Multiplicities
+	TH2F *mult_array_fission, *mult_array_recoil, *mult_array_gamma;
+	TH2F *mult_gamma_fission, *mult_gamma_recoil;
+
 	// Recoils
 	std::vector<TH2F*> recoil_EdE;
 	std::vector<TH2F*> recoil_EdE_cut;
@@ -424,9 +458,12 @@ private:
 	TH2F* fission_dE_vs_T1;
 	TH1F* fission_dE_eloss;
 	TH1F* fission_E_eloss;
+	TH2F* fission_fission_secsec;
+	TH2F* fission_fission_ringring;
 	TH2F* fission_fission_dEdE;
 	TH2F* fission_fission_dEdE_array;
 	TH2F* fission_dE_vs_ring;
+	TH2F* fission_Etot_vs_ring;
 	TH2F* fission_xy_map;
 	TH2F* fission_xy_map_cutH;
 	TH2F* fission_xy_map_cutL;

@@ -2897,6 +2897,7 @@ void ISSEventBuilder::CdFinder() {
 	// Find the matching rings for each particle based on time difference
 	// We can re-use the same ring for each particle, because they are 360˚ and
 	// we might be unlucky enough for both fragments to pileup in the same ring.
+	std::vector<unsigned int> used_idx;
 	for( unsigned int partid = 0; partid < cd_evt.size(); ++partid ) {
 
 		// Set the dE and log for finding the ring
@@ -2904,11 +2905,16 @@ void ISSEventBuilder::CdFinder() {
 		double secen_cur = cd_evt[partid]->GetEnergy(0);
 
 		// Find matching ring, easy if there is only 1
-		int rindex_match = 0;
+		int rindex_match = -1;
+		int rindex_reuse = -1;
 		double rs_ediff_best = 8e12;
 
 		// Search for the best match based on energy
 		for( unsigned int j = 0; j < cdrtd_list[dE_idx].size(); ++j ) {
+
+			bool ring_used = false;
+			if( std::find( used_idx.begin(), used_idx.end(), j ) != used_idx.end() )
+				ring_used = true;
 
 			double rs_tdiff_cur = cdrtd_list[dE_idx][j] - sectime_cur;
 			double rs_ediff_cur = cdren_list[dE_idx][j] - secen_cur;
@@ -2917,16 +2923,28 @@ void ISSEventBuilder::CdFinder() {
 			if( rs_ediff_cur < rs_ediff_best &&
 			   rs_tdiff_cur < set->GetCDRSHitWindow() ) {
 
-				rindex_match = j;
-				rs_ediff_best = rs_ediff_cur;
+				// only update if the ring hasn't already been used
+				if( !ring_used ) {
+
+					rindex_match = j;
+					rs_ediff_best = rs_ediff_cur;
+
+				}
+
+				// otherwise add it to a list we might need to reuse later
+				else rindex_reuse = j;
 
 			} // better match found
 
 		} // loop over all ring hits - j
 
 		// Set the ring for the dE layer
-		if( rs_ediff_best < 9e12 )
+		if( rs_ediff_best < 9e12 && rindex_match >= 0 ) {
 			cd_evt[partid]->SetRing( cdrid_list[dE_idx][rindex_match] );
+			used_idx.push_back( rindex_match );
+		}
+		else if( partid > 0 && rindex_reuse >= 0 )
+			cd_evt[partid]->SetRing( cdrid_list[dE_idx][rindex_reuse] );
 		else
 			cd_evt[partid]->SetRing( 0xff ); // no ring found
 
@@ -2972,18 +2990,18 @@ void ISSEventBuilder::CdFinder() {
 
 				// Check if it's been used already
 				bool skip_flag = false;
-				for( unsigned int xx = 0; xx < used_idx.size(); ++xx )
-					if( used_idx[xx] == j ) skip_flag = true;
-				if( skip_flag ) continue;
+				if( std::find( used_idx.begin(), used_idx.end(), j ) != used_idx.end() )
+					continue;
 
 				// Check all other sector hits to find a neighbour
 				for( unsigned int k = j+1; k < cdsen_list[i].size(); k++ ) {
 
 					// Check if it's been used already
 					skip_flag = false;
-					for( unsigned int xx = 0; xx < used_idx.size(); ++xx )
-						if( used_idx[xx] == k ) skip_flag = true;
-					if( skip_flag ) continue;
+					if( std::find( used_idx.begin(), used_idx.end(), k ) != used_idx.end() ) {
+						skip_flag = true;
+						continue;
+					}
 
 					// Check if they are really neighbours
 					int		sec_id_diff = cdsid_list[i][j] - cdsid_list[i][k];
@@ -3584,18 +3602,51 @@ void ISSEventBuilder::PlotDiagnostics() {
 
 ////////////////////////////////////////////////////////////////////////////////
 /// This function empties the histograms used in the EventBuilder class; used during the DataSpy
+void ISSEventBuilder::ResetHist( TObject *obj, std::string cls ) {
+
+	if( cls == "TH1" )
+		( (TH1*)obj )->Reset("ICESM");
+	else if( cls ==  "TH2" )
+		( (TH2*)obj )->Reset("ICESM");
+	else if( cls ==  "TProfile" )
+		( (TProfile*)obj )->Reset("ICESM");
+
+	return;
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/// This function empties the histograms used in the EventBuilder class; used during the DataSpy
 void ISSEventBuilder::ResetHists() {
 
-	TIter keyList( output_file->GetListOfKeys() );
-	TKey *key;
-	while( ( key = (TKey*)keyList() ) ){
-		if( std::strcmp( key->GetClassName(), "TH1" ) == 0 )
-			( (TH1*)key->ReadObj() )->Reset("ICESM");
-		if( std::strcmp( key->GetClassName(), "TH2" ) == 0 )
-			( (TH2*)key->ReadObj() )->Reset("ICESM");
-		if( std::strcmp( key->GetClassName(), "TProfile" ) == 0 )
-			( (TProfile*)key->ReadObj() )->Reset("ICESM");
-	}
+	TKey *key1, *key2, *key3;
+	TIter keyList1( output_file->GetListOfKeys() );
+	while( ( key1 = (TKey*)keyList1() ) ){ // level 1
+
+		if( std::strcmp( key1->GetClassName(), "TDirectory" ) == 0 ){
+
+			TIter keyList2( ( (TDirectory*)key1->ReadObj() )->GetListOfKeys() );
+			while( ( key2 = (TKey*)keyList2() ) ){ // level 2
+
+				if( std::strcmp( key2->GetClassName(), "TDirectory" ) == 0 ){
+
+					TIter keyList3( ( (TDirectory*)key2->ReadObj() )->GetListOfKeys() );
+					while( ( key3 = (TKey*)keyList3() ) ) // level 3
+						ResetHist( key3->ReadObj(), key3->GetClassName() );
+
+				}
+
+				else
+					ResetHist( key2->ReadObj(), key2->GetClassName() );
+
+			} // level 2
+
+		}
+
+		else
+			ResetHist( key1->ReadObj(), key1->GetClassName() );
+
+	} // level 1
 
 	return;
 

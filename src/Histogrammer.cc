@@ -1787,9 +1787,23 @@ void ISSHistogrammer::MakeHists() {
 										react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(),
 										react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
+		hname = "fission_fission_secsec";
+		htitle = "fission-fission sector-sector plot";
+		htitle += " - coincidence with each other, random subtracted;Fragment 1 sector [keV];Fragment 2 sector [keV];Counts";
+		fission_fission_secsec = new TH2F( hname.data(), htitle.data(),
+										set->GetNumberOfCDSectors(), -0.5, set->GetNumberOfCDSectors()-0.5,
+										set->GetNumberOfCDSectors(), -0.5, set->GetNumberOfCDSectors()-0.5 );
+
+		hname = "fission_fission_ringring";
+		htitle = "fission-fission ring-ring plot";
+		htitle += " - coincidence with each other, random subtracted;Fragment 1 ring [keV];Fragment 2 ring [keV];Counts";
+		fission_fission_ringring = new TH2F( hname.data(), htitle.data(),
+										set->GetNumberOfCDRings(), -0.5, set->GetNumberOfCDRings()-0.5,
+										set->GetNumberOfCDRings(), -0.5, set->GetNumberOfCDRings()-0.5 );
+
 		hname = "fission_fission_dEdE_array";
 		htitle = "fission-fission dE-dE plot";
-		htitle += " - coincidence with each other and an array event;Fragment 1 dE [keV];Fragment 2 dE [keV];Counts";
+		htitle += " - coincidence with each other and an array event, random subtracted;Fragment 1 dE [keV];Fragment 2 dE [keV];Counts";
 		fission_fission_dEdE_array = new TH2F( hname.data(), htitle.data(),
 											  react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax(),
 											  react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
@@ -1798,6 +1812,13 @@ void ISSHistogrammer::MakeHists() {
 		htitle = "fission dE versus ring number";
 		htitle += ";Ring number;Fragment dE [keV];Counts";
 		fission_dE_vs_ring = new TH2F( hname.data(), htitle.data(),
+									  set->GetNumberOfCDRings(), -0.5, set->GetNumberOfCDRings() - 0.5,
+									  react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
+
+		hname = "fission_Etot_vs_ring";
+		htitle = "fission E total versus ring number";
+		htitle += ";Ring number;Fragment dE [keV];Counts";
+		fission_Etot_vs_ring = new TH2F( hname.data(), htitle.data(),
 									  set->GetNumberOfCDRings(), -0.5, set->GetNumberOfCDRings() - 0.5,
 									  react->HistFissionBins(), react->HistFissionMin(), react->HistFissionMax() );
 
@@ -2209,23 +2230,69 @@ void ISSHistogrammer::MakeHists() {
 	} // gamma-ray hists
 
 
+	// Multiplicities
+	dirname = "Multiplicities";
+	output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+
+	mult_array_fission = new TH2F( "mult_array_fission", "Multiplicity map;CD multiplicity;Array multiplicity;Counts",
+								  20, -0.5, 19.5, 20, -0.5, 19.5 );
+	mult_array_recoil = new TH2F( "mult_array_recoil", "Multiplicity map;Recoil multiplicity;Array multiplicity;Counts",
+								  20, -0.5, 19.5, 20, -0.5, 19.5 );
+	mult_array_gamma = new TH2F( "mult_array_gamma", "Multiplicity map;Gamma-ray multiplicity;Array multiplicity;Counts",
+								  20, -0.5, 19.5, 20, -0.5, 19.5 );
+	mult_gamma_fission = new TH2F( "mult_gamma_fission", "Multiplicity map;CD multiplicity;Gamma-ray multiplicity;Counts",
+								  20, -0.5, 19.5, 20, -0.5, 19.5 );
+	mult_gamma_recoil = new TH2F( "mult_gamma_recoil", "Multiplicity map;Recoil multiplicity;Gamma-ray multiplicity;Counts",
+								  20, -0.5, 19.5, 20, -0.5, 19.5 );
+
 	output_file->cd();
 
 }
 
+void ISSHistogrammer::ResetHist( TObject *obj, std::string cls ) {
+
+	if( cls == "TH1" )
+		( (TH1*)obj )->Reset("ICESM");
+	else if( cls ==  "TH2" )
+		( (TH2*)obj )->Reset("ICESM");
+	else if( cls ==  "TProfile" )
+		( (TProfile*)obj )->Reset("ICESM");
+
+	return;
+
+}
 
 void ISSHistogrammer::ResetHists() {
 
-	TIter keyList( output_file->GetListOfKeys() );
-	TKey *key;
-	while( ( key = (TKey*)keyList() ) ){
-		if( std::strcmp( key->GetClassName(), "TH1" ) == 0 )
-			( (TH1*)key->ReadObj() )->Reset("ICESM");
-		if( std::strcmp( key->GetClassName(), "TH2" ) == 0 )
-			( (TH2*)key->ReadObj() )->Reset("ICESM");
-		if( std::strcmp( key->GetClassName(), "TProfile" ) == 0 )
-			( (TProfile*)key->ReadObj() )->Reset("ICESM");
-	}
+	TKey *key1, *key2, *key3;
+	TIter keyList1( output_file->GetListOfKeys() );
+	while( ( key1 = (TKey*)keyList1() ) ){ // level 1
+
+		if( std::strcmp( key1->GetClassName(), "TDirectory" ) == 0 ){
+
+			TIter keyList2( ( (TDirectory*)key1->ReadObj() )->GetListOfKeys() );
+			while( ( key2 = (TKey*)keyList2() ) ){ // level 2
+
+				if( std::strcmp( key2->GetClassName(), "TDirectory" ) == 0 ){
+
+					TIter keyList3( ( (TDirectory*)key2->ReadObj() )->GetListOfKeys() );
+					while( ( key3 = (TKey*)keyList3() ) ) // level 3
+						ResetHist( key3->ReadObj(), key3->GetClassName() );
+
+				}
+
+				else
+					ResetHist( key2->ReadObj(), key2->GetClassName() );
+
+			} // level 2
+
+		}
+
+		else
+			ResetHist( key1->ReadObj(), key1->GetClassName() );
+
+	} // level 1
 
 	return;
 
@@ -2270,6 +2337,19 @@ unsigned long ISSHistogrammer::FillHists() {
 		bool psideonly = react->GetArrayHistMode();
 		unsigned int array_mult = read_evts->GetArrayMultiplicity();
 		if( psideonly ) array_mult = read_evts->GetArrayPMultiplicity();
+
+		// Fill the multiplicity plots
+		if( read_evts->GetCDMultiplicity() || array_mult )
+			mult_array_fission->Fill( read_evts->GetCDMultiplicity(), array_mult );
+		if( read_evts->GetRecoilMultiplicity() || array_mult )
+			mult_array_recoil->Fill( read_evts->GetRecoilMultiplicity(), array_mult );
+		if( read_evts->GetGammaRayMultiplicity() || array_mult )
+			mult_array_gamma->Fill( read_evts->GetGammaRayMultiplicity(), array_mult );
+		if( read_evts->GetCDMultiplicity() || read_evts->GetGammaRayMultiplicity() )
+			mult_gamma_fission->Fill( read_evts->GetCDMultiplicity(), read_evts->GetGammaRayMultiplicity() );
+		if( read_evts->GetRecoilMultiplicity() || read_evts->GetGammaRayMultiplicity() )
+			mult_gamma_recoil->Fill( read_evts->GetRecoilMultiplicity(), read_evts->GetGammaRayMultiplicity() );
+
 
 		// Loop over array events
 		for( unsigned int j = 0; j < array_mult; ++j ){
@@ -3449,9 +3529,10 @@ unsigned long ISSHistogrammer::FillHists() {
 				// Hit map
 				fission_xy_map->Fill( cd_evt1->GetY(true), cd_evt1->GetX(true) );
 
-				// Energy loss versus ring number
+				// Energy versus ring number
 				fission_dE_vs_ring->Fill( cd_evt1->GetRing(),
 										 cd_evt1->GetEnergyLoss( set->GetRecoilEnergyLossStart(), set->GetRecoilEnergyLossStop() ) );
+				fission_Etot_vs_ring->Fill( cd_evt1->GetRing(), cd_evt1->GetEnergyTotal() );
 
 				// Energy EdE plot, unconditioned
 				fission_EdE->Fill( cd_evt1->GetEnergyRest( set->GetRecoilEnergyRestStart(), set->GetRecoilEnergyRestStop() ),
@@ -3501,14 +3582,24 @@ unsigned long ISSHistogrammer::FillHists() {
 					fission_fission_td_sec->Fill( cd_evt1->GetSector(), ff_td );
 
 					// Energy matrix
-					if( PromptCoincidence( cd_evt1, cd_evt2 ) )
+					if( PromptCoincidence( cd_evt1, cd_evt2 ) ) {
+
 						fission_fission_dEdE->Fill( cd_evt1->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ),
 												   cd_evt2->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ) );
+						fission_fission_secsec->Fill( cd_evt1->GetSector(), cd_evt2->GetSector() );
+						fission_fission_ringring->Fill( cd_evt1->GetRing(), cd_evt2->GetRing() );
 
-					else if( RandomCoincidence( cd_evt1, cd_evt2 ) )
+					} // prompt CD coincidences
+
+					else if( RandomCoincidence( cd_evt1, cd_evt2 ) ) {
+
 						fission_fission_dEdE->Fill( cd_evt1->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ),
 												   cd_evt2->GetEnergyLoss( set->GetCDEnergyLossStart(), set->GetCDEnergyLossStop() ),
 												   -1.0*react->GetFissionFissionFillRatio() );
+						fission_fission_secsec->Fill( cd_evt1->GetSector(), cd_evt2->GetSector(), -1.0*react->GetFissionFissionFillRatio() );
+						fission_fission_ringring->Fill( cd_evt1->GetRing(), cd_evt2->GetRing(), -1.0*react->GetFissionFissionFillRatio() );
+
+					} // random CD coincidences
 
 				} // cd events 2
 

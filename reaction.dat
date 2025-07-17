@@ -131,14 +131,18 @@
 #RecoilCut_3.Name: CUTG	# sector 3
 
 ## Fission cut files
-FissionCut.Heavy.File: NULL
-FissionCut.Heavy.Name: CUTG
-FissionCut.Light.File: NULL
-FissionCut.Light.Name: CUTG
+#FissionCut.Heavy.File: NULL
+#FissionCut.Heavy.Name: CUTG
+#FissionCut.Heavy.X: dE
+#FissionCut.Heavy.Y: dE
+#FissionCut.Light.File: NULL
+#FissionCut.Light.Name: CUTG
+#FissionCut.Light.X: dE
+#FissionCut.Light.Y: dE
 
 ## Gamma-ray energy cut/gate
-GammaCut_Energy.Min: 0.0	# lower energy of the gamma-ray cut (default = 0 keV)
-GammaCut_Energy.Max: 1e5	# upper energy of the gamma-ray cut (default = 100 MeV)
+#GammaCut_Energy.Min: 0.0	# lower energy of the gamma-ray cut (default = 0 keV)
+#GammaCut_Energy.Max: 1e5	# upper energy of the gamma-ray cut (default = 100 MeV)
 
 ## E vs Z cut files
 #NumberOfEvsZCuts: 1		# default is 1, but you can have as many as your RAM will handle
