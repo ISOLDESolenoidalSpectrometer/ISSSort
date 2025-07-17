@@ -2220,9 +2220,9 @@ void ISSHistogrammer::MakeHists() {
 								  20, -0.5, 19.5, 20, -0.5, 19.5 );
 	mult_array_gamma = new TH2F( "mult_array_gamma", "Multiplicity map;Gamma-ray multiplicity;Array multiplicity;Counts",
 								  20, -0.5, 19.5, 20, -0.5, 19.5 );
-	mult_gamma_fission = new TH2F( "mult_gamma_fission", "Multiplicity map;Gamma-ray multiplicity;CD multiplicity;Counts",
+	mult_gamma_fission = new TH2F( "mult_gamma_fission", "Multiplicity map;CD multiplicity;Gamma-ray multiplicity;Counts",
 								  20, -0.5, 19.5, 20, -0.5, 19.5 );
-	mult_gamma_recoil = new TH2F( "mult_gamma_recoil", "Multiplicity map;Gamma-ray multiplicity;Recoil multiplicity;Counts",
+	mult_gamma_recoil = new TH2F( "mult_gamma_recoil", "Multiplicity map;Recoil multiplicity;Gamma-ray multiplicity;Counts",
 								  20, -0.5, 19.5, 20, -0.5, 19.5 );
 
 	output_file->cd();
