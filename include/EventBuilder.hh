@@ -23,7 +23,6 @@
 #include <TSystem.h>
 #include <TKey.h>
 #include <TCanvas.h>
-#include <TIter.h>
 #include <TROOT.h>
 
 // Settings header
