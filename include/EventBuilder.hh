@@ -23,6 +23,8 @@
 #include <TSystem.h>
 #include <TKey.h>
 #include <TCanvas.h>
+#include <TIter.h>
+#include <TROOT.h>
 
 // Settings header
 #ifndef __SETTINGS_HH
@@ -85,6 +87,7 @@ public:
 	void	StartFile();		///< Called for every file
 	void	ConfigureInput();	///< Called when we set the input tree and need settings and calibration files
 	void	Initialise();	///< Called for every event
+	void	ResetHist( TObject *obj, std::string cls );
 	void	MakeHists(); ///< Creates histograms for events that occur
 	void	ResetHists(); ///< Empties the histograms during the DataSpy
 	void	PlotDiagnostics();	///< Plot diagnostic histograms in DataSpy

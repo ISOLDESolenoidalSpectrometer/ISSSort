@@ -21,7 +21,8 @@
 #include <TGProgressBar.h>
 #include <TSystem.h>
 #include <TKey.h>
-
+#include <TIter.h>
+#include <TROOT.h>
 
 // Reaction header
 #ifndef __REACTION_HH
@@ -49,6 +50,7 @@ public:
 
 	void Initialise();
 	void MakeHists();
+	void ResetHist( TObject *obj, std::string cls );
 	void ResetHists();
 	unsigned long FillHists();
 
