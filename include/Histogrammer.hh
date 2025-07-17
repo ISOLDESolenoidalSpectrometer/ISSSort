@@ -406,6 +406,10 @@ private:
 	TH1F *t1_td_recoil, *sc_td_recoil;
 	TH1F *t1_td_fission, *sc_td_fission;
 
+	// Multiplicities
+	TH2F *mult_array_fission, *mult_array_recoil, *mult_array_gamma;
+	TH2F *mult_gamma_fission, *mult_gamma_recoil;
+
 	// Recoils
 	std::vector<TH2F*> recoil_EdE;
 	std::vector<TH2F*> recoil_EdE_cut;

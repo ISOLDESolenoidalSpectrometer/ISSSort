@@ -2209,6 +2209,22 @@ void ISSHistogrammer::MakeHists() {
 	} // gamma-ray hists
 
 
+	// Multiplicities
+	dirname = "Multiplicities";
+	output_file->mkdir( dirname.data() );
+	output_file->cd( dirname.data() );
+
+	mult_array_fission = new TH2F( "mult_array_fission", "Multiplicity map;CD multiplicity;Array multiplicity;Counts",
+								  20, -0.5, 19.5, 20, -0.5, 19.5 );
+	mult_array_recoil = new TH2F( "mult_array_recoil", "Multiplicity map;Recoil multiplicity;Array multiplicity;Counts",
+								  20, -0.5, 19.5, 20, -0.5, 19.5 );
+	mult_array_gamma = new TH2F( "mult_array_gamma", "Multiplicity map;Gamma-ray multiplicity;Array multiplicity;Counts",
+								  20, -0.5, 19.5, 20, -0.5, 19.5 );
+	mult_gamma_fission = new TH2F( "mult_gamma_fission", "Multiplicity map;Gamma-ray multiplicity;CD multiplicity;Counts",
+								  20, -0.5, 19.5, 20, -0.5, 19.5 );
+	mult_gamma_recoil = new TH2F( "mult_gamma_recoil", "Multiplicity map;Gamma-ray multiplicity;Recoil multiplicity;Counts",
+								  20, -0.5, 19.5, 20, -0.5, 19.5 );
+
 	output_file->cd();
 
 }
@@ -2270,6 +2286,19 @@ unsigned long ISSHistogrammer::FillHists() {
 		bool psideonly = react->GetArrayHistMode();
 		unsigned int array_mult = read_evts->GetArrayMultiplicity();
 		if( psideonly ) array_mult = read_evts->GetArrayPMultiplicity();
+
+		// Fill the multiplicity plots
+		if( read_evts->GetCDMultiplicity() || array_mult )
+			mult_array_fission->Fill( read_evts->GetCDMultiplicity(), array_mult );
+		if( read_evts->GetRecoilMultiplicity() || array_mult )
+			mult_array_recoil->Fill( read_evts->GetRecoilMultiplicity(), array_mult );
+		if( read_evts->GetGammaRayMultiplicity() || array_mult )
+			mult_array_gamma->Fill( read_evts->GetGammaRayMultiplicity(), array_mult );
+		if( read_evts->GetCDMultiplicity() || read_evts->GetGammaRayMultiplicity() )
+			mult_gamma_fission->Fill( read_evts->GetCDMultiplicity(), read_evts->GetGammaRayMultiplicity() );
+		if( read_evts->GetRecoilMultiplicity() || read_evts->GetGammaRayMultiplicity() )
+			mult_gamma_recoil->Fill( read_evts->GetRecoilMultiplicity(), read_evts->GetGammaRayMultiplicity() );
+
 
 		// Loop over array events
 		for( unsigned int j = 0; j < array_mult; ++j ){
