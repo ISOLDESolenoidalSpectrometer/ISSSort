@@ -2751,8 +2751,10 @@ unsigned long ISSHistogrammer::FillHists() {
 						// Get CD event
 						cd_evt2 = read_evts->GetCDEvt(l);
 
-						// Check for prompt events with coincident fissions
-						if( PromptCoincidence( cd_evt1, array_evt ) && PromptCoincidence( cd_evt1, cd_evt2 ) ){
+						// Check for prompt events with coincident fissions that are "back-to-back"
+						if( PromptCoincidence( cd_evt1, array_evt ) && PromptCoincidence( cd_evt1, cd_evt2 ) &&
+						   TMath::Abs( cd_evt1->GetSector() - cd_evt2->GetSector() ) >= 0.5*set->GetNumberOfCDSectors()-2 &&
+						   TMath::Abs( cd_evt1->GetSector() - cd_evt2->GetSector() ) <= 0.5*set->GetNumberOfCDSectors()+2 ){
 
 							promptcheckT = true;
 
