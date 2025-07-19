@@ -16,7 +16,10 @@ void ISSHistogrammer::Initialise(){
 
 	// Make the histograms track the sum of the weights for correctly
 	// performing the error propagation when subtracting
-	TH1::SetDefaultSumw2();
+	TH1::SetDefaultSumw2(kTRUE);
+
+	// Histogrammer options
+	TH1::AddDirectory(kFALSE);
 
 }
 
@@ -40,6 +43,7 @@ void ISSHistogrammer::SetOutput( std::string output_file_name ){
 	output_tree->Branch( "RxEvent", rx_evts.get() );
 	output_tree->Branch( "RxInfo", rx_info.get() );
 	output_tree->SetAutoFlush();
+	gROOT->GetListOfFiles()->Remove(output_file);
 
 	// Setup the reaction info
 	rx_info->SetRxInfo( react );
