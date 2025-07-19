@@ -49,7 +49,7 @@ public:
 
 	void Initialise();
 	void MakeHists();
-	void ResetHist( TObject *obj, std::string cls );
+	void ResetHist( TObject *obj );
 	void ResetHists();
 	unsigned long FillHists();
 
@@ -409,6 +409,9 @@ private:
 	// Progress bar
 	bool _prog_;
 	std::shared_ptr<TGProgressBar> prog;
+
+	// Check if histograms are made
+	bool hists_ready = false;
 
 	// Counters
 	unsigned long n_entries;

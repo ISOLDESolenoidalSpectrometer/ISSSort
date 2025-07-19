@@ -139,6 +139,8 @@ std::shared_ptr<ISSHistogrammer> hist_mon;
 void plot_diagnostic_hists(){
 	if( eb_mon.get() != nullptr )
 		eb_mon->PlotDiagnostics();
+	else
+		std::cout << "Not ready yet, try again" << std::endl;
 }
 
 void reset_conv_hists(){
@@ -391,9 +393,6 @@ void start_http(){
 	//serv->Hide("/Start");
 	//serv->Hide("/Stop");
 	//serv->Hide("/Reset");
-
-	// Make the canvas for later
-	cspy = std::make_shared<TCanvas>();
 
 	return;
 
@@ -1129,6 +1128,9 @@ int main( int argc, char *argv[] ){
 	// Online monitoring //
 	//-------------------//
 	if( flag_monitor || flag_spy ) {
+
+		// Make the canvas for later
+		cspy = std::make_shared<TCanvas>();
 
 		// Make some data for the thread
 		thread_data data;

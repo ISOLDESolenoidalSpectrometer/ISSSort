@@ -43,7 +43,6 @@ void ISSHistogrammer::SetOutput( std::string output_file_name ){
 	output_tree->Branch( "RxEvent", rx_evts.get() );
 	output_tree->Branch( "RxInfo", rx_info.get() );
 	output_tree->SetAutoFlush();
-	gROOT->GetListOfFiles()->Remove(output_file);
 
 	// Setup the reaction info
 	rx_info->SetRxInfo( react );
@@ -2252,17 +2251,21 @@ void ISSHistogrammer::MakeHists() {
 
 	output_file->cd();
 
+	// flag to denote that hists are ready (used for spy)
+	hists_ready = true;
+
+
 }
 
-void ISSHistogrammer::ResetHist( TObject *obj, std::string cls ) {
+void ISSHistogrammer::ResetHist( TObject *obj ) {
 
 	if( obj == nullptr ) return;
 
-	if( cls == "TH1" )
+	if( obj->InheritsFrom( "TH1" ) )
 		( (TH1*)obj )->Reset("ICESM");
-	else if( cls ==  "TH2" )
+	else if( obj->InheritsFrom( "TH2" ) )
 		( (TH2*)obj )->Reset("ICESM");
-	else if( cls ==  "TProfile" )
+	else if( obj->InheritsFrom( "TProfile" ) )
 		( (TProfile*)obj )->Reset("ICESM");
 
 	return;
@@ -2275,28 +2278,28 @@ void ISSHistogrammer::ResetHists() {
 	TIter keyList1( output_file->GetListOfKeys() );
 	while( ( key1 = (TKey*)keyList1() ) ){ // level 1
 
-		if( std::strcmp( key1->GetClassName(), "TDirectory" ) == 0 ){
+		if( key1->InheritsFrom( "TDirectory" ) ){
 
 			TIter keyList2( ( (TDirectory*)key1->ReadObj() )->GetListOfKeys() );
 			while( ( key2 = (TKey*)keyList2() ) ){ // level 2
 
-				if( std::strcmp( key2->GetClassName(), "TDirectory" ) == 0 ){
+				if( key1->InheritsFrom( "TDirectory" ) ){
 
 					TIter keyList3( ( (TDirectory*)key2->ReadObj() )->GetListOfKeys() );
 					while( ( key3 = (TKey*)keyList3() ) ) // level 3
-						ResetHist( key3->ReadObj(), key3->GetClassName() );
+						ResetHist( key3->ReadObj() );
 
 				}
 
 				else
-					ResetHist( key2->ReadObj(), key2->GetClassName() );
+					ResetHist( key2->ReadObj() );
 
 			} // level 2
 
 		}
 
 		else
-			ResetHist( key1->ReadObj(), key1->GetClassName() );
+			ResetHist( key1->ReadObj() );
 
 	} // level 1
 
