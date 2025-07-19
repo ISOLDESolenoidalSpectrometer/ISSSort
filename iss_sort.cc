@@ -97,6 +97,7 @@ bool help_flag = false;
 
 // DataSpy
 bool flag_spy = false;
+bool flag_alive = true;
 int open_spy_data = -1;
 
 // Monitoring input file
@@ -158,6 +159,11 @@ void stop_monitor(){
 
 void start_monitor(){
 	bRunMon = kTRUE;
+}
+
+void signal_callback_handler( int signum ) {
+	std::cout << "Caught signal " << signum << endl;
+	flag_alive = false;
 }
 
 // Function to call the monitoring loop
@@ -226,7 +232,7 @@ void* monitor_run( void* ptr ){
 	serv->SetItemField("/", "_toptitle", toptitle.data() );
 
 	// While the sort is running
-	while( true ) {
+	while( flag_alive ) {
 
 		// While the sort is running, bRunMon is true
 		while( bRunMon ) {
@@ -932,8 +938,11 @@ int main( int argc, char *argv[] ){
 	// Check if we should be monitoring the input
 	if( flag_spy ) {
 
+		// Register signal and signal handler for DataSpy only
+		signal( SIGINT, signal_callback_handler );
+
 		flag_monitor = true;
-		if( mon_time < 0 ) mon_time = 30;
+		if( mon_time < 0 ) mon_time = 2;
 		std::cout << "Getting data from shared memory every " << mon_time;
 		std::cout << " seconds using DataSpy" << std::endl;
 
@@ -1136,7 +1145,7 @@ int main( int argc, char *argv[] ){
 		th->Run();
 
 		// wait until we finish
-		while( true ){
+		while( flag_alive ){
 
 			gSystem->Sleep(10);
 			gSystem->ProcessEvents();
