@@ -2252,6 +2252,8 @@ void ISSHistogrammer::MakeHists() {
 
 void ISSHistogrammer::ResetHist( TObject *obj, std::string cls ) {
 
+	if( obj == nullptr ) return;
+
 	if( cls == "TH1" )
 		( (TH1*)obj )->Reset("ICESM");
 	else if( cls ==  "TH2" )

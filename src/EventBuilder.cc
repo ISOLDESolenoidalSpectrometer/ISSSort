@@ -3604,6 +3604,8 @@ void ISSEventBuilder::PlotDiagnostics() {
 /// This function empties the histograms used in the EventBuilder class; used during the DataSpy
 void ISSEventBuilder::ResetHist( TObject *obj, std::string cls ) {
 
+	if( obj == nullptr ) return;
+
 	if( cls == "TH1" )
 		( (TH1*)obj )->Reset("ICESM");
 	else if( cls ==  "TH2" )
