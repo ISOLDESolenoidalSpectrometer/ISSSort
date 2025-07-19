@@ -130,8 +130,12 @@ public:
 	inline void CloseOutput(){
 		output_tree->ResetBranchAddresses();
 		PurgeOutput();
-		output_file->cd("/");
+		std::cout << " Writing output file...\r";
+		std::cout.flush();
+		output_file->Write( 0, TObject::kWriteDelete );
+			output_file->cd("/");
 		set->Write( "Settings", TObject::kWriteDelete );
+		std::cout << " Writing output file... Done!" << std::endl << std::endl;
 		output_file->Close();
 		//input_tree->ResetBranchAddresses();
 		//nptool_tree->ResetBranchAddresses();

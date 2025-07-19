@@ -4035,10 +4035,6 @@ unsigned long ISSHistogrammer::FillHists() {
 
 	} // all events
 
-	// Force the rest of the events in the buffer to disk
-	output_tree->FlushBaskets();
-	output_file->Write( 0, TObject::kWriteDelete );
-
 	return n_entries;
 
 }

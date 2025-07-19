@@ -64,7 +64,11 @@ public:
 	void SetOutput( std::string output_file_name );
 	inline void CloseOutput(){
 		PurgeOutput();
+		std::cout << " Writing output file...\r";
+		std::cout.flush();
+		output_file->Write( 0, TObject::kWriteDelete );
 		output_file->Close();
+		std::cout << " Writing output file... Done!" << std::endl << std::endl;
 		//input_tree->ResetBranchAddresses();
 	};
 	inline void PurgeOutput(){ output_file->Purge(2); }

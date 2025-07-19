@@ -1317,20 +1317,6 @@ unsigned long ISSEventBuilder::BuildEvents() {
 	std::cout << ss_log.str();
 	if( log_file.is_open() && flag_input_file ) log_file << ss_log.str();
 
-	std::cout << " Writing output file...\r";
-	std::cout.flush();
-
-	// Force the rest of the events in the buffer to disk
-	output_tree->FlushBaskets();
-	output_file->Write( 0, TObject::kWriteDelete );
-	//output_file->Print();
-	//output_file->Close();
-
-	// Dump the input buffers
-	input_tree->DropBaskets();
-
-	std::cout << " Writing output file... Done!" << std::endl << std::endl;
-
 	return n_entries;
 
 }
@@ -3605,7 +3591,7 @@ void ISSEventBuilder::PlotDiagnostics() {
 
 ////////////////////////////////////////////////////////////////////////////////
 /// This function empties the histograms used in the EventBuilder class; used during the DataSpy
-void ISSEventBuilder::ResetHist( TObject *obj, std::string cls ) {
+void ISSEventBuilder::ResetHist( TObject *obj ) {
 
 	if( obj == nullptr ) return;
 
