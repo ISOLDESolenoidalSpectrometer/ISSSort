@@ -19,7 +19,7 @@ void ISSHistogrammer::Initialise(){
 	TH1::SetDefaultSumw2(kTRUE);
 
 	// Histogrammer options
-	TH1::AddDirectory(kFALSE);
+	//TH1::AddDirectory(kFALSE);
 
 }
 
