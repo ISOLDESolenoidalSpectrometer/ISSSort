@@ -3586,6 +3586,8 @@ void ISSEventBuilder::PlotDiagnostics() {
 
 	}
 
+	// Write once
+	output_file->Write();
 
 }
 
@@ -3599,8 +3601,6 @@ void ISSEventBuilder::ResetHist( TObject *obj ) {
 		( (TH1*)obj )->Reset("ICESM");
 	else if( obj->InheritsFrom( "TH2" ) )
 		( (TH2*)obj )->Reset("ICESM");
-	else if( obj->InheritsFrom( "TProfile" ) )
-		( (TProfile*)obj )->Reset("ICESM");
 
 	return;
 
@@ -3614,12 +3614,12 @@ void ISSEventBuilder::ResetHists() {
 	TIter keyList1( output_file->GetListOfKeys() );
 	while( ( key1 = (TKey*)keyList1() ) ){ // level 1
 
-		if( key1->InheritsFrom( "TDirectory" ) ){
+		if( key1->ReadObj()->InheritsFrom( "TDirectory" ) ){
 
 			TIter keyList2( ( (TDirectory*)key1->ReadObj() )->GetListOfKeys() );
 			while( ( key2 = (TKey*)keyList2() ) ){ // level 2
 
-				if( key1->InheritsFrom( "TDirectory" ) ){
+				if( key1->ReadObj()->InheritsFrom( "TDirectory" ) ){
 
 					TIter keyList3( ( (TDirectory*)key2->ReadObj() )->GetListOfKeys() );
 					while( ( key3 = (TKey*)keyList3() ) ) // level 3
