@@ -2255,7 +2255,7 @@ void ISSHistogrammer::MakeHists() {
 	hists_ready = true;
 
 	// Write once
-	output_file->Write();
+	//output_file->Write();
 
 }
 
@@ -2263,10 +2263,10 @@ void ISSHistogrammer::ResetHist( TObject *obj ) {
 
 	if( obj == nullptr ) return;
 
-	if( obj->InheritsFrom( "TH1" ) )
-		( (TH1*)obj )->Reset("ICESM");
-	else if( obj->InheritsFrom( "TH2" ) )
+	if( obj->InheritsFrom( "TH2" ) )
 		( (TH2*)obj )->Reset("ICESM");
+	else if( obj->InheritsFrom( "TH1" ) )
+		( (TH1*)obj )->Reset("ICESM");
 
 	return;
 
@@ -2275,7 +2275,7 @@ void ISSHistogrammer::ResetHist( TObject *obj ) {
 void ISSHistogrammer::ResetHists() {
 
 	TKey *key1, *key2, *key3;
-	TIter keyList1( output_file->GetListOfKeys() );
+	TIter keyList1( gDirectory->GetListOfKeys() );
 	while( ( key1 = (TKey*)keyList1() ) ){ // level 1
 
 		if( key1->ReadObj()->InheritsFrom( "TDirectory" ) ){
@@ -2283,7 +2283,7 @@ void ISSHistogrammer::ResetHists() {
 			TIter keyList2( ( (TDirectory*)key1->ReadObj() )->GetListOfKeys() );
 			while( ( key2 = (TKey*)keyList2() ) ){ // level 2
 
-				if( key1->ReadObj()->InheritsFrom( "TDirectory" ) ){
+				if( key2->ReadObj()->InheritsFrom( "TDirectory" ) ){
 
 					TIter keyList3( ( (TDirectory*)key2->ReadObj() )->GetListOfKeys() );
 					while( ( key3 = (TKey*)keyList3() ) ) // level 3
