@@ -646,22 +646,54 @@ void ISSConverter::MakeHists() {
 
 	}
 
+	// Write once
+	output_file->Write();
+
+	return;
+
+}
+
+void ISSConverter::ResetHist( TObject *obj ) {
+
+	if( obj == nullptr ) return;
+
+	if( obj->InheritsFrom( "TH2" ) )
+		( (TH2*)obj )->Reset("ICESM");
+	else if( obj->InheritsFrom( "TH1" ) )
+		( (TH1*)obj )->Reset("ICESM");
+
 	return;
 
 }
 
 void ISSConverter::ResetHists() {
 
-	TIter keyList( output_file->GetListOfKeys() );
-	TKey *key;
-	while( ( key = (TKey*)keyList() ) ){
-		if( std::strcmp( key->GetClassName(), "TH1" ) == 0 )
-			( (TH1*)key->ReadObj() )->Reset("ICESM");
-		if( std::strcmp( key->GetClassName(), "TH2" ) == 0 )
-			( (TH2*)key->ReadObj() )->Reset("ICESM");
-		if( std::strcmp( key->GetClassName(), "TProfile" ) == 0 )
-			( (TProfile*)key->ReadObj() )->Reset("ICESM");
-	}
+	TKey *key1, *key2, *key3;
+	TIter keyList1( output_file->GetListOfKeys() );
+	while( ( key1 = (TKey*)keyList1() ) ){ // level 1
+
+		if( key1->ReadObj()->InheritsFrom( "TDirectory" ) ){
+
+			TIter keyList2( ( (TDirectory*)key1->ReadObj() )->GetListOfKeys() );
+			while( ( key2 = (TKey*)keyList2() ) ){ // level 2
+
+				if( key2->ReadObj()->InheritsFrom( "TDirectory" ) ){
+
+					TIter keyList3( ( (TDirectory*)key2->ReadObj() )->GetListOfKeys() );
+					while( ( key3 = (TKey*)keyList3() ) ) // level 3
+						ResetHist( key3->ReadObj() );
+
+				}
+
+				else ResetHist( key2->ReadObj() );
+
+			} // level 2
+
+		}
+
+		else ResetHist( key1->ReadObj() );
+
+	} // level 1
 
 	return;
 

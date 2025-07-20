@@ -86,8 +86,8 @@ public:
 	void	StartFile();		///< Called for every file
 	void	ConfigureInput();	///< Called when we set the input tree and need settings and calibration files
 	void	Initialise();	///< Called for every event
-	void	ResetHist( TObject *obj );
 	void	MakeHists(); ///< Creates histograms for events that occur
+	void	ResetHist( TObject *obj );
 	void	ResetHists(); ///< Empties the histograms during the DataSpy
 	void	PlotDiagnostics();	///< Plot diagnostic histograms in DataSpy
 	void	ArrayMapping();	///< Do the mapping of the array just once
@@ -152,10 +152,6 @@ public:
 	}; ///< Adds a progress bar to the GUI
 	///< \param[in] myprog pointer to the EventBuilder progress bar for the GUI
 
-	inline void AddSpyCanvas( std::shared_ptr<TCanvas> cin ){
-		cspy = cin;
-	}; ///< Adds the canvas for the DataSpy
-
 private:
 
 	/// Input treze
@@ -200,7 +196,7 @@ private:
 	std::shared_ptr<TGProgressBar> prog; ///< Progress bar for the GUI
 
 	// Canvas for the spy
-	std::shared_ptr<TCanvas> cspy;
+	std::shared_ptr<TCanvas> c1;
 
 	// Log file
 	std::ofstream log_file; ///< Log file for recording the results of the ISSEventBuilder

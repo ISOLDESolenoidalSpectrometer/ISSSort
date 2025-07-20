@@ -50,6 +50,12 @@ void ISSHistogrammer::SetOutput( std::string output_file_name ){
 	// Histograms in separate function
 	MakeHists();
 
+	// flag to denote that hists are ready (used for spy)
+	hists_ready = true;
+
+	// Write once
+	output_file->Write();
+
 }
 
 void ISSHistogrammer::MakeHists() {
@@ -2249,14 +2255,6 @@ void ISSHistogrammer::MakeHists() {
 	mult_gamma_recoil = new TH2F( "mult_gamma_recoil", "Multiplicity map;Recoil multiplicity;Gamma-ray multiplicity;Counts",
 								  20, -0.5, 19.5, 20, -0.5, 19.5 );
 
-	output_file->cd();
-
-	// flag to denote that hists are ready (used for spy)
-	hists_ready = true;
-
-	// Write once
-	output_file->Write();
-
 }
 
 void ISSHistogrammer::ResetHist( TObject *obj ) {
@@ -2275,7 +2273,7 @@ void ISSHistogrammer::ResetHist( TObject *obj ) {
 void ISSHistogrammer::ResetHists() {
 
 	TKey *key1, *key2, *key3;
-	TIter keyList1( gDirectory->GetListOfKeys() );
+	TIter keyList1( output_file->GetListOfKeys() );
 	while( ( key1 = (TKey*)keyList1() ) ){ // level 1
 
 		if( key1->ReadObj()->InheritsFrom( "TDirectory" ) ){
@@ -2291,15 +2289,13 @@ void ISSHistogrammer::ResetHists() {
 
 				}
 
-				else
-					ResetHist( key2->ReadObj() );
+				else ResetHist( key2->ReadObj() );
 
 			} // level 2
 
 		}
 
-		else
-			ResetHist( key1->ReadObj() );
+		else ResetHist( key1->ReadObj() );
 
 	} // level 1
 

@@ -342,6 +342,9 @@ void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 	// Histograms in separate function
 	MakeHists();
 
+	// Write once
+	output_file->Write();
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3574,20 +3577,25 @@ void ISSEventBuilder::PlotDiagnostics() {
 
 	}
 
-	// Clear canvas
-	cspy->Clear("D");
-	cspy->Divide( 1, set->GetNumberOfArrayModules() );
+	// Make canvas
+	c1 = std::make_unique<TCanvas>("SyncCheck","SyncCheck");
+	c1->Divide( 3, 4 );
 
 	// ASIC time difference histograms
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
 
-		cspy->cd(i+1);
+		c1->cd(i+1);
 		asic_td[i]->Draw("hist");
 
 	}
 
-	// Write once
-	output_file->Write();
+	// Mesytec time difference histograms
+	for( unsigned int i = 0; i < set->GetNumberOfMesytecModules(); i++ ){
+
+		c1->cd(i+1 + set->GetNumberOfArrayModules());
+		mesy_td[i]->Draw("hist");
+
+	}
 
 }
 
@@ -3611,7 +3619,7 @@ void ISSEventBuilder::ResetHist( TObject *obj ) {
 void ISSEventBuilder::ResetHists() {
 
 	TKey *key1, *key2, *key3;
-	TIter keyList1( gDirectory->GetListOfKeys() );
+	TIter keyList1( output_file->GetListOfKeys() );
 	while( ( key1 = (TKey*)keyList1() ) ){ // level 1
 
 		if( key1->ReadObj()->InheritsFrom( "TDirectory" ) ){
@@ -3627,15 +3635,13 @@ void ISSEventBuilder::ResetHists() {
 
 				}
 
-				else
-					ResetHist( key2->ReadObj() );
+				else ResetHist( key2->ReadObj() );
 
 			} // level 2
 
 		}
 
-		else
-			ResetHist( key1->ReadObj() );
+		else ResetHist( key1->ReadObj() );
 
 	} // level 1
 

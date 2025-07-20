@@ -128,7 +128,6 @@ typedef struct thptr {
 // Server and controls for the GUI
 THttpServer *serv;
 int port_num = 8030;
-std::shared_ptr<TCanvas> cspy;
 
 // Pointers to the thread events TODO: sort out inhereted class stuff
 std::shared_ptr<ISSConverter> conv_mon;
@@ -190,7 +189,6 @@ void* monitor_run( void* ptr ){
 	eb_mon = std::make_shared<ISSEventBuilder>();
 	eb_mon->AddSettings( calfiles->myset );
 	eb_mon->AddCalibration( calfiles->mycal );
-	eb_mon->AddSpyCanvas( cspy );
 
 	// Setup the histogram step
 	hist_mon = std::make_shared<ISSHistogrammer>();
@@ -1128,9 +1126,6 @@ int main( int argc, char *argv[] ){
 	// Online monitoring //
 	//-------------------//
 	if( flag_monitor || flag_spy ) {
-
-		// Make the canvas for later
-		cspy = std::make_shared<TCanvas>();
 
 		// Make some data for the thread
 		thread_data data;
