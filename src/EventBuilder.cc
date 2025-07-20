@@ -3587,7 +3587,7 @@ void ISSEventBuilder::PlotDiagnostics() {
 	}
 
 	// Write once
-	//output_file->Write();
+	output_file->Write();
 
 }
 
