@@ -135,13 +135,6 @@ std::shared_ptr<ISSEventBuilder> eb_mon;
 std::shared_ptr<ISSHistogrammer> hist_mon;
 
 
-void plot_diagnostic_hists(){
-	if( eb_mon.get() != nullptr )
-		eb_mon->PlotDiagnostics();
-	else
-		std::cout << "Not ready yet, try again" << std::endl;
-}
-
 void reset_conv_hists(){
 	conv_mon->ResetHists();
 }
@@ -300,6 +293,7 @@ void* monitor_run( void* ptr ){
 				if( bFirstRun ) {
 					eb_mon->SetOutput( "monitor_events.root" );
 					eb_mon->StartFile();
+					eb_mon->PlotDiagnostics();
 				}
 
 				// Event builder
@@ -385,7 +379,6 @@ void start_http(){
 	serv->RegisterCommand("/ResetSingles", "ResetConv()");
 	serv->RegisterCommand("/ResetEvents", "ResetEvnt()");
 	serv->RegisterCommand("/ResetHists", "ResetHist()");
-	serv->RegisterCommand("/PlotDiagnostics", "PlotDiagnostics()");
 
 	// hide commands so the only show as buttons
 	//serv->Hide("/Start");
