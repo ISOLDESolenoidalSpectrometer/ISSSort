@@ -668,32 +668,81 @@ void ISSConverter::ResetHist( TObject *obj ) {
 
 void ISSConverter::ResetHists() {
 
-	TKey *key1, *key2, *key3;
-	TIter keyList1( output_file->GetListOfKeys() );
-	while( ( key1 = (TKey*)keyList1() ) ){ // level 1
+	std::cout << "in ISSConverter::ResetHist()" << std::endl;
 
-		if( key1->ReadObj()->InheritsFrom( "TDirectory" ) ){
+	for( unsigned int i = 0; i < hasic_hit.size(); ++i )
+		hasic_hit[i]->Reset("ICESM");
 
-			TIter keyList2( ( (TDirectory*)key1->ReadObj() )->GetListOfKeys() );
-			while( ( key2 = (TKey*)keyList2() ) ){ // level 2
+	for( unsigned int i = 0; i < hasic_ext.size(); ++i )
+		hasic_ext[i]->Reset("ICESM");
 
-				if( key2->ReadObj()->InheritsFrom( "TDirectory" ) ){
+	for( unsigned int i = 0; i < hasic_pause.size(); ++i )
+		hasic_pause[i]->Reset("ICESM");
 
-					TIter keyList3( ( (TDirectory*)key2->ReadObj() )->GetListOfKeys() );
-					while( ( key3 = (TKey*)keyList3() ) ) // level 3
-						ResetHist( key3->ReadObj() );
+	for( unsigned int i = 0; i < hasic_resume.size(); ++i )
+		hasic_resume[i]->Reset("ICESM");
 
-				}
+	for( unsigned int i = 0; i < hcaen_hit.size(); ++i )
+		hcaen_hit[i]->Reset("ICESM");
 
-				else ResetHist( key2->ReadObj() );
+	for( unsigned int i = 0; i < hcaen_ext.size(); ++i )
+		hcaen_ext[i]->Reset("ICESM");
 
-			} // level 2
+	for( unsigned int i = 0; i < hmesy_hit.size(); ++i )
+		hmesy_hit[i]->Reset("ICESM");
 
-		}
+	for( unsigned int i = 0; i < hmesy_ext.size(); ++i )
+		hmesy_ext[i]->Reset("ICESM");
 
-		else ResetHist( key1->ReadObj() );
+	for( unsigned int i = 0; i < asic_pulser_energy.size(); ++i )
+		for( unsigned int j = 0; j < asic_pulser_energy[i].size(); ++j )
+			asic_pulser_energy[i][j]->Reset("ICESM");
 
-	} // level 1
+	for( unsigned int i = 0; i < hasic.size(); ++i )
+		for( unsigned int j = 0; j < hasic[i].size(); ++j )
+			hasic[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < hasic_cal.size(); ++i )
+		for( unsigned int j = 0; j < hasic_cal[i].size(); ++j )
+			hasic_cal[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < hcaen_qlong.size(); ++i )
+		for( unsigned int j = 0; j < hcaen_qlong[i].size(); ++j )
+			hcaen_qlong[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < hcaen_qshort.size(); ++i )
+		for( unsigned int j = 0; j < hcaen_qshort[i].size(); ++j )
+			hcaen_qshort[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < hcaen_qdiff.size(); ++i )
+		for( unsigned int j = 0; j < hcaen_qdiff[i].size(); ++j )
+			hcaen_qdiff[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < hcaen_cal.size(); ++i )
+		for( unsigned int j = 0; j < hcaen_cal[i].size(); ++j )
+			hcaen_cal[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < hmesy_qlong.size(); ++i )
+		for( unsigned int j = 0; j < hmesy_qlong[i].size(); ++j )
+			hmesy_qlong[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < hmesy_qshort.size(); ++i )
+		for( unsigned int j = 0; j < hmesy_qshort[i].size(); ++j )
+			hmesy_qshort[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < hmesy_qdiff.size(); ++i )
+		for( unsigned int j = 0; j < hmesy_qdiff[i].size(); ++j )
+			hmesy_qdiff[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < hmesy_cal.size(); ++i )
+		for( unsigned int j = 0; j < hmesy_cal[i].size(); ++j )
+			hmesy_cal[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < hpside.size(); ++i )
+		hpside[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < hnside.size(); ++i )
+		hnside[i]->Reset("ICESM");
 
 	return;
 
