@@ -288,7 +288,7 @@ void* monitor_run( void* ptr ){
 
 				// Finish the last block
 				if( spy_length > 0 ) {
-					nblocks = conv_midas_mon->ConvertBlock( (char*)buffer, 0 );
+					nblocks = conv_mon->ConvertBlock( (char*)buffer, 0 );
 					block_ctr += nblocks;
 				}
 
