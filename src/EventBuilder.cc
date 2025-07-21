@@ -3608,8 +3608,10 @@ void ISSEventBuilder::ResetHist( TObject *obj ) {
 
 	if( obj == nullptr ) return;
 
-	if( obj->InheritsFrom( "TH2" ) )
+	if( obj->InheritsFrom( "TH2" ) ) {
 		( (TH2*)obj )->Reset("ICESM");
+		( (TH2*)obj )->GetZaxis()->UnZoom();
+	}
 	else if( obj->InheritsFrom( "TH1" ) )
 		( (TH1*)obj )->Reset("ICESM");
 
