@@ -172,6 +172,11 @@ void* monitor_run( void* ptr ){
 	// Get the settings, file etc.
 	thptr *calfiles = (thptr*)ptr;
 
+	// Filenames for spy
+	std::string spyname_singles = datadir_name + "/singles.root";
+	std::string spyname_events = datadir_name + "/events.root";
+	std::string spyname_hists = datadir_name + "/hists.root";
+
 	// Setup the converter step
 	conv_mon = std::make_shared<ISSConverter>();
 	conv_mon->AddSettings( calfiles->myset );
@@ -210,7 +215,7 @@ void* monitor_run( void* ptr ){
 	// Converter setup
 	if( !flag_spy ) curFileMon = input_names.at(0); // maybe change in GUI later?
 	if( flag_source ) conv_mon->SourceOnly();
-	conv_mon->SetOutput( "monitor_singles.root" );
+	conv_mon->SetOutput( spyname_singles.data() );
 	conv_mon->MakeTree();
 	conv_mon->MakeHists();
 	conv_mon->StartFile();
@@ -291,7 +296,7 @@ void* monitor_run( void* ptr ){
 
 				// Set output
 				if( bFirstRun ) {
-					eb_mon->SetOutput( "monitor_events.root" );
+					eb_mon->SetOutput( spyname_events.data() );
 					eb_mon->StartFile();
 					eb_mon->PlotDiagnostics();
 				}
@@ -311,7 +316,7 @@ void* monitor_run( void* ptr ){
 
 					// Set output
 					if( bFirstRun ) {
-						hist_mon->SetOutput( "monitor_hists.root" );
+						hist_mon->SetOutput( spyname_hists.data() );
 					}
 
 					// Set input
@@ -1013,7 +1018,7 @@ int main( int argc, char *argv[] ){
 
 		}
 
-		else output_name = datadir_name + "/monitor_hists.root";
+		else output_name = datadir_name + "/hists.root";
 
 	}
 
