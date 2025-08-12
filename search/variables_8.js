@@ -35,7 +35,7 @@ var searchData=
   ['hist_5frange_5fgamma_32',['hist_range_gamma',['../classISSReaction.html#a51edbc7bc497d12a83fac50edbe1f6e4',1,'ISSReaction']]],
   ['hist_5frange_5flume_33',['hist_range_lume',['../classISSReaction.html#a891327a8159ffa2c2771a3010fbb8668',1,'ISSReaction']]],
   ['hist_5frange_5frecoil_34',['hist_range_recoil',['../classISSReaction.html#aa1f96544dc5ffdb2ef7493dbfb436849',1,'ISSReaction']]],
-  ['hists_5fready_35',['hists_ready',['../classISSEventBuilder.html#af13002edc56c482665992af00acde84b',1,'ISSEventBuilder']]],
+  ['hists_5fready_35',['hists_ready',['../classISSEventBuilder.html#af13002edc56c482665992af00acde84b',1,'ISSEventBuilder::hists_ready'],['../classISSHistogrammer.html#ad806688e084a4bdee22b31a7a0812359',1,'ISSHistogrammer::hists_ready']]],
   ['hit_5fbit_36',['hit_bit',['../classISSAsicData.html#aa7c44f5b6c8cf9e9419ff1b5181568b3',1,'ISSAsicData']]],
   ['hit_5fctr_37',['hit_ctr',['../classISSEventBuilder.html#a10f99a4918ea506323dfc43efbe8e921',1,'ISSEventBuilder']]],
   ['hitn_38',['HitN',['../Calibration_8hh.html#a41817429a8e0c63b8368fb246eccbce0',1,'Calibration.hh']]],

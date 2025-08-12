@@ -130,12 +130,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6e5cd4126fb1832fe68ceadea4f074ad" id="r_a6e5cd4126fb1832fe68ceadea4f074ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e5cd4126fb1832fe68ceadea4f074ad">Initialise</a> ()</td></tr>
 <tr class="memdesc:a6e5cd4126fb1832fe68ceadea4f074ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Called for every event.  <br /></td></tr>
 <tr class="separator:a6e5cd4126fb1832fe68ceadea4f074ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb55f23b469e6e7764c6a7e878b9e3c6" id="r_aeb55f23b469e6e7764c6a7e878b9e3c6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb55f23b469e6e7764c6a7e878b9e3c6">ResetHist</a> (TObject *obj, std::string cls)</td></tr>
-<tr class="memdesc:aeb55f23b469e6e7764c6a7e878b9e3c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function empties the histograms used in the EventBuilder class; used during the <a class="el" href="classDataSpy.html">DataSpy</a>.  <br /></td></tr>
-<tr class="separator:aeb55f23b469e6e7764c6a7e878b9e3c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59ef5cacd2f7f6b93a8157b021966acc" id="r_a59ef5cacd2f7f6b93a8157b021966acc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a59ef5cacd2f7f6b93a8157b021966acc">MakeHists</a> ()</td></tr>
 <tr class="memdesc:a59ef5cacd2f7f6b93a8157b021966acc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates histograms for events that occur.  <br /></td></tr>
 <tr class="separator:a59ef5cacd2f7f6b93a8157b021966acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e542d2384ac1033a5062c15578aece5" id="r_a2e542d2384ac1033a5062c15578aece5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2e542d2384ac1033a5062c15578aece5">ResetHist</a> (TObject *obj)</td></tr>
+<tr class="memdesc:a2e542d2384ac1033a5062c15578aece5"><td class="mdescLeft">&#160;</td><td class="mdescRight">This function empties the histograms used in the EventBuilder class; used during the <a class="el" href="classDataSpy.html">DataSpy</a>.  <br /></td></tr>
+<tr class="separator:a2e542d2384ac1033a5062c15578aece5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2368a3d7bdbcc01bc846a0a17604af5" id="r_aa2368a3d7bdbcc01bc846a0a17604af5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa2368a3d7bdbcc01bc846a0a17604af5">ResetHists</a> ()</td></tr>
 <tr class="memdesc:aa2368a3d7bdbcc01bc846a0a17604af5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Empties the histograms during the <a class="el" href="classDataSpy.html">DataSpy</a>.  <br /></td></tr>
 <tr class="separator:aa2368a3d7bdbcc01bc846a0a17604af5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -192,13 +192,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ad00e1aeb54e42f954fb9abb33a457150"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f84c126f1797fa4cb7eac266a46f26c" id="r_a1f84c126f1797fa4cb7eac266a46f26c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f84c126f1797fa4cb7eac266a46f26c">AddProgressBar</a> (std::shared_ptr&lt; TGProgressBar &gt; myprog)</td></tr>
 <tr class="separator:a1f84c126f1797fa4cb7eac266a46f26c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5f451caae9aa3d7dfb2d66071eb4494" id="r_aa5f451caae9aa3d7dfb2d66071eb4494"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa5f451caae9aa3d7dfb2d66071eb4494">AddSpyCanvas</a> (std::shared_ptr&lt; TCanvas &gt; cin)</td></tr>
-<tr class="separator:aa5f451caae9aa3d7dfb2d66071eb4494"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:affdcfbd58766054ee114ecc31c21c4ca" id="r_affdcfbd58766054ee114ecc31c21c4ca"><td class="memItemLeft" align="right" valign="top">TFile *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#affdcfbd58766054ee114ecc31c21c4ca">input_file</a></td></tr>
-<tr class="memdesc:affdcfbd58766054ee114ecc31c21c4ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds the canvas for the <a class="el" href="classDataSpy.html">DataSpy</a>.  <br /></td></tr>
+<tr class="memdesc:affdcfbd58766054ee114ecc31c21c4ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Input treze.  <br /></td></tr>
 <tr class="separator:affdcfbd58766054ee114ecc31c21c4ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb320e39833bdf05295dbbbbb4f998dd" id="r_afb320e39833bdf05295dbbbbb4f998dd"><td class="memItemLeft" align="right" valign="top">TTree *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb320e39833bdf05295dbbbbb4f998dd">input_tree</a></td></tr>
 <tr class="memdesc:afb320e39833bdf05295dbbbbb4f998dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the TTree in the data input file.  <br /></td></tr>
@@ -267,8 +265,8 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a5788799d5d3a5a07b0c87f9c38694bcf" id="r_a5788799d5d3a5a07b0c87f9c38694bcf"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; TGProgressBar &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5788799d5d3a5a07b0c87f9c38694bcf">prog</a></td></tr>
 <tr class="memdesc:a5788799d5d3a5a07b0c87f9c38694bcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Progress bar for the GUI.  <br /></td></tr>
 <tr class="separator:a5788799d5d3a5a07b0c87f9c38694bcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afdaf9a04757e62648a4127ea28821724" id="r_afdaf9a04757e62648a4127ea28821724"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; TCanvas &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afdaf9a04757e62648a4127ea28821724">cspy</a></td></tr>
-<tr class="separator:afdaf9a04757e62648a4127ea28821724"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51c4645e72f4949707b6c8fdc1118939" id="r_a51c4645e72f4949707b6c8fdc1118939"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; TCanvas &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a51c4645e72f4949707b6c8fdc1118939">c1</a></td></tr>
+<tr class="separator:a51c4645e72f4949707b6c8fdc1118939"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb9b05a77531e9cacb8aa10ccecb134b" id="r_adb9b05a77531e9cacb8aa10ccecb134b"><td class="memItemLeft" align="right" valign="top">std::ofstream&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adb9b05a77531e9cacb8aa10ccecb134b">log_file</a></td></tr>
 <tr class="memdesc:adb9b05a77531e9cacb8aa10ccecb134b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Log file for recording the results of the <a class="el" href="classISSEventBuilder.html" title="Builds physics events after all hits have been time sorted.">ISSEventBuilder</a>.  <br /></td></tr>
 <tr class="separator:adb9b05a77531e9cacb8aa10ccecb134b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -968,7 +966,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00145">145</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00149">149</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
 
 </div>
 </div>
@@ -1005,39 +1003,6 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aa5f451caae9aa3d7dfb2d66071eb4494" name="aa5f451caae9aa3d7dfb2d66071eb4494"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa5f451caae9aa3d7dfb2d66071eb4494">&#9670;&#160;</a></span>AddSpyCanvas()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void ISSEventBuilder::AddSpyCanvas </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; TCanvas &gt;</td>          <td class="paramname"><span class="paramname"><em>cin</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Adds a progress bar to the GUI</p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">myprog</td><td>pointer to the EventBuilder progress bar for the GUI </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00151">151</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
-
-</div>
-</div>
 <a id="a9cc0686c14064d399832993eede57f30" name="a9cc0686c14064d399832993eede57f30"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9cc0686c14064d399832993eede57f30">&#9670;&#160;</a></span>ArrayFinder()</h2>
 
@@ -1056,7 +1021,7 @@ Private Attributes</h2></td></tr>
 <p>Processes all hits on the array that fall within the build window. </p>
 <p>This function processes a series of vectors that are populated in a given build window, and deals with the signals accordingly. This is currently done on a case-by-case basis i.e. each different number of p-side and n-side hits is dealt with in it's own section. Charge addback is implemented for neighbouring strips that fall within a prompt coincidence window defined by the user in the <a class="el" href="classISSSettings.html" title="Class to implement user &quot;settings&quot; to the ISS sort code.">ISSSettings</a> file. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l01522">1522</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l01514">1514</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1078,7 +1043,7 @@ Private Attributes</h2></td></tr>
 <p>Do the mapping of the array just once. </p>
 <p>This maps the vectors for the array just once, assuming you dont change array geomerty between run files! </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00022">22</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00025">25</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1101,7 +1066,7 @@ Private Attributes</h2></td></tr>
 <p>This loops over all events found in the input file and wraps them up and stores them in the output file </p><dl class="section return"><dt>Returns</dt><dd>The number of entries in the tree that have been sorted (=0 if there is an error) </dd></dl>
 <p>Function to loop over the sort tree and build array and recoil events</p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00430">430</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00436">436</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1124,7 +1089,7 @@ Private Attributes</h2></td></tr>
 <p>This loops over all events found in the input NPTool simualtion file and wraps them up and stores them in the output file </p><dl class="section return"><dt>Returns</dt><dd>The number of entries in the tree that have been sorted (=0 if there is an error) </dd></dl>
 <p>Function to loop over the sort tree and build array and recoil events</p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l01338">1338</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l01330">1330</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1146,7 +1111,7 @@ Private Attributes</h2></td></tr>
 <p>Processes all hits on the CD that fall within the build window. </p>
 <p>This function takes a series of E and dE signals on the silicon CD (fission fragments) detector and determines what hits to keep from these using sensible conditions including a prompt coincidence window. Signals are triggered by the dE detector, but if a corresponding E signal is not found, then a hit at E = 0 is still recorded. We can try to build a number of particles per event by comparing energies, times and sector IDs. This is difficult, but maybe by going through this excercise we can improve how things are done for recoils? </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02778">2778</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02770">2770</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1197,7 +1162,7 @@ Private Attributes</h2></td></tr>
 <p>Called when we set the input tree and need settings and calibration files. </p>
 <p>Initialisation of the process with first file or things. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00194">194</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00197">197</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1219,7 +1184,7 @@ Private Attributes</h2></td></tr>
 <p>Processes all hits on the ELUM that fall within the build window. </p>
 <p>Assesses the validity of events in the ELUM detector. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02572">2572</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02564">2564</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1241,7 +1206,7 @@ Private Attributes</h2></td></tr>
 <p>Processes hits in the ScintArray and maybe HPGe in the future. </p>
 <p>Builds gamma-ray events from the ScintArray and maybe also HPGe detectors in the future. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02665">2665</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02657">2657</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1320,7 +1285,7 @@ Private Attributes</h2></td></tr>
 <p>Clears the vectors that store energies, time differences, ids, module numbers, row numbers, recoil sectors etc. Also resets flags that are relevant for building events. </p>
 <p>This is called at the end of every execution/loop</p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00346">346</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00352">352</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1341,7 +1306,7 @@ Private Attributes</h2></td></tr>
 
 <p>Processes all hits on the LUME that fall within the build window. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02708">2708</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02700">2700</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1363,7 +1328,7 @@ Private Attributes</h2></td></tr>
 <p>Creates histograms for events that occur. </p>
 <p><em>This function doesn't fill any histograms</em>, but just creates them. Called by the <a class="el" href="#ace857f3c92c6cc8678725312c1cafb4b" title="Configures the output for the class.">ISSEventBuilder::SetOutput</a> function </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03072">3072</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03064">3064</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1385,7 +1350,7 @@ Private Attributes</h2></td></tr>
 <p>Processes all hits on the MWPC that fall within the build window. </p>
 <p>Assesses the validity of hits in the MWPC detector. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02503">2503</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02495">2495</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1407,7 +1372,7 @@ Private Attributes</h2></td></tr>
 <p>Plot diagnostic histograms in <a class="el" href="classDataSpy.html">DataSpy</a>. </p>
 <p>This function plots common histograms for diagnostic purposes; used during the <a class="el" href="classDataSpy.html">DataSpy</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03578">3578</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03570">3570</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1436,7 +1401,7 @@ Private Attributes</h2></td></tr>
 
 <p>Closes the output files from this class. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00143">143</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00147">147</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
 
 </div>
 </div>
@@ -1458,12 +1423,12 @@ Private Attributes</h2></td></tr>
 <p>Processes all hits on the recoil detector that fall within the build window. </p>
 <p>This function takes a series of E and dE signals on the silicon recoil detector and determines what hits to keep from these using sensible conditions including a prompt coincidence window. Signals are triggered by the dE detector, but if a corresponding E signal is not found, then a hit at E = 0 is still recorded. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02416">2416</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02408">2408</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
-<a id="aeb55f23b469e6e7764c6a7e878b9e3c6" name="aeb55f23b469e6e7764c6a7e878b9e3c6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeb55f23b469e6e7764c6a7e878b9e3c6">&#9670;&#160;</a></span>ResetHist()</h2>
+<a id="a2e542d2384ac1033a5062c15578aece5" name="a2e542d2384ac1033a5062c15578aece5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e542d2384ac1033a5062c15578aece5">&#9670;&#160;</a></span>ResetHist()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1471,19 +1436,15 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname">void ISSEventBuilder::ResetHist </td>
           <td>(</td>
-          <td class="paramtype">TObject *</td>          <td class="paramname"><span class="paramname"><em>obj</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">TObject *</td>          <td class="paramname"><span class="paramname"><em>obj</em></span></td><td>)</td>
           <td></td>
-          <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>cls</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>This function empties the histograms used in the EventBuilder class; used during the <a class="el" href="classDataSpy.html">DataSpy</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03605">3605</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03607">3607</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1505,7 +1466,7 @@ Private Attributes</h2></td></tr>
 <p>Empties the histograms during the <a class="el" href="classDataSpy.html">DataSpy</a>. </p>
 <p>This function empties the histograms used in the EventBuilder class; used during the <a class="el" href="classDataSpy.html">DataSpy</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03620">3620</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l03624">3624</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1534,7 +1495,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <p>Overloaded function for a single file or multiple files</p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00228">228</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00231">231</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1561,7 +1522,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00255">255</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00258">258</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1588,7 +1549,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00271">271</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00274">274</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1615,7 +1576,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00295">295</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00298">298</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1642,7 +1603,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00313">313</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00316">316</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1664,7 +1625,7 @@ Private Attributes</h2></td></tr>
 <p>Called for every file. </p>
 <p>Reset private-member counters, arrays and flags for processing the next input file. Called in the <a class="el" href="#a73825e352435786607847e147e186e04" title="Destructor (currently empty)">ISSEventBuilder::SetInputFile</a> and <a class="el" href="#a53c2f6155db2c55533c73f8d871f0c8a" title="Grabs the input tree from the input file defined in ISSEventBuilder::SetInputFile.">ISSEventBuilder::SetInputTree</a> functions. </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00117">117</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l00120">120</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -1686,7 +1647,7 @@ Private Attributes</h2></td></tr>
 <p>Processes all hits on the zero-degree detector that fall within the build window. </p>
 <p>Assesses the validity of events in the zero degree detector. All dE events are recorded because they act as the trigger, even though there may not be a corresponding E signal on this detector. Also imposes a prompt coincidence on these hits, which can be altered in the <a class="el" href="classISSSettings.html" title="Class to implement user &quot;settings&quot; to the ISS sort code.">ISSSettings</a> file </p>
 
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02604">2604</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8cc_source.html#l02596">2596</a> of file <a class="el" href="EventBuilder_8cc_source.html">EventBuilder.cc</a>.</p>
 
 </div>
 </div>
@@ -2235,6 +2196,30 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a51c4645e72f4949707b6c8fdc1118939" name="a51c4645e72f4949707b6c8fdc1118939"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51c4645e72f4949707b6c8fdc1118939">&#9670;&#160;</a></span>c1</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;TCanvas&gt; ISSEventBuilder::c1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00199">199</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
+
+</div>
+</div>
 <a id="a802a6610a012bcc3fb6f8b21658ba0e4" name="a802a6610a012bcc3fb6f8b21658ba0e4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a802a6610a012bcc3fb6f8b21658ba0e4">&#9670;&#160;</a></span>caen_period</h2>
 
@@ -2751,30 +2736,6 @@ Private Attributes</h2></td></tr>
 <p>list of CD sector time differences for CdFinder </p>
 
 <p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00342">342</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
-
-</div>
-</div>
-<a id="afdaf9a04757e62648a4127ea28821724" name="afdaf9a04757e62648a4127ea28821724"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afdaf9a04757e62648a4127ea28821724">&#9670;&#160;</a></span>cspy</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::shared_ptr&lt;TCanvas&gt; ISSEventBuilder::cspy</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00199">199</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
 
 </div>
 </div>
@@ -3618,8 +3579,13 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Adds the canvas for the <a class="el" href="classDataSpy.html">DataSpy</a>. </p>
-<p>Input treze Pointer to the time-sorted input ROOT file </p>
+<p>Input treze. </p>
+<p>Adds a progress bar to the GUI</p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">myprog</td><td>pointer to the EventBuilder progress bar for the GUI Pointer to the time-sorted input ROOT file </td></tr>
+  </table>
+  </dd>
+</dl>
 
 <p class="definition">Definition at line <a class="el" href="EventBuilder_8hh_source.html#l00158">158</a> of file <a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>.</p>
 

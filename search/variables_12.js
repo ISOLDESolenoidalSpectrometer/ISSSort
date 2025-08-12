@@ -21,9 +21,13 @@ var searchData=
   ['shmkey_18',['shmkey',['../classDataSpy.html#ad1224309df228edb951918e18f2891c8',1,'DataSpy']]],
   ['sim_5fdata_19',['sim_data',['../classISSEventBuilder.html#a3ce99c8de49c1e744b52d45bf234ce24',1,'ISSEventBuilder']]],
   ['sorted_5ftree_20',['sorted_tree',['../classISSConverter.html#a60ba77930edaaa4049fde480cb9aae79',1,'ISSConverter']]],
-  ['sslogs_21',['sslogs',['../classISSConverter.html#adfc20cb6cf76f8cc4cdcebb9e20e5991',1,'ISSConverter']]],
-  ['stopping_22',['stopping',['../classISSReaction.html#a9cfe688464099d479b5a299e89378783',1,'ISSReaction']]],
-  ['supercycle_23',['supercycle',['../classISSEventBuilder.html#a078fc53cba1c77b3ec8d6b80f65854f6',1,'ISSEventBuilder']]],
-  ['swap_24',['swap',['../classISSConverter.html#acf165ff27f1796ef672e6354150dd463',1,'ISSConverter']]],
-  ['sync_5fcode_25',['sync_code',['../classISSSettings.html#ad1db03f9e8769b0a381fbe73eea1b418',1,'ISSSettings']]]
+  ['spy_5fhists_5ffile_21',['spy_hists_file',['../iss__sort_8cc.html#a9c47c2546e083731399d4357c4962c71',1,'iss_sort.cc']]],
+  ['spyhists_22',['spyhists',['../classISSHistogrammer.html#a8db784bcd5626f1091c420f761663fb5',1,'ISSHistogrammer']]],
+  ['spylayout_23',['spylayout',['../classISSHistogrammer.html#a63ece0e183f23999484ae56e78d71804',1,'ISSHistogrammer::spylayout'],['../structthptr.html#ac54bb80056a55aae473e804735955b06',1,'thptr::spylayout'],['../iss__sort_8cc.html#a69ec3c9a2c39344b29253749a8d9619a',1,'spylayout:&#160;iss_sort.cc']]],
+  ['spymode_24',['spymode',['../classISSHistogrammer.html#ac07899828cdbd5c29d4be301309a2ac5',1,'ISSHistogrammer']]],
+  ['sslogs_25',['sslogs',['../classISSConverter.html#adfc20cb6cf76f8cc4cdcebb9e20e5991',1,'ISSConverter']]],
+  ['stopping_26',['stopping',['../classISSReaction.html#a9cfe688464099d479b5a299e89378783',1,'ISSReaction']]],
+  ['supercycle_27',['supercycle',['../classISSEventBuilder.html#a078fc53cba1c77b3ec8d6b80f65854f6',1,'ISSEventBuilder']]],
+  ['swap_28',['swap',['../classISSConverter.html#acf165ff27f1796ef672e6354150dd463',1,'ISSConverter']]],
+  ['sync_5fcode_29',['sync_code',['../classISSSettings.html#ad1db03f9e8769b0a381fbe73eea1b418',1,'ISSSettings']]]
 ];

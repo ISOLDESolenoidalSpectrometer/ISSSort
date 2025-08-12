@@ -1,9 +1,6 @@
 var searchData=
 [
-  ['phd_5fdir_0',['PHD_DIR',['../AutoCalibrator_8hh.html#a13709828fcb8936612ed699a5e4406b5',1,'AutoCalibrator.hh']]],
-  ['print_5fsetting_1',['PRINT_SETTING',['../Settings_8cc.html#a6706da51119249e01f08a96166865f7c',1,'Settings.cc']]],
-  ['print_5fsetting_5fint_2',['PRINT_SETTING_INT',['../Settings_8cc.html#aa9d31d845b7834eaa0bf6247eabc6d6b',1,'Settings.cc']]],
-  ['print_5fsetting_5fvect_5fint_3',['PRINT_SETTING_VECT_INT',['../Settings_8cc.html#a45d3ee4d8241d74a78e3895b8c1d5ded',1,'Settings.cc']]],
-  ['print_5fsetting_5fvect_5fvect_5fint_4',['PRINT_SETTING_VECT_VECT_INT',['../Settings_8cc.html#aa41ea46dbbed0e0dcfb5e1131034e020',1,'Settings.cc']]],
-  ['print_5fsetting_5fvect_5fvect_5fvect_5fint_5',['PRINT_SETTING_VECT_VECT_VECT_INT',['../Settings_8cc.html#ab377e7348d5c2b02dc7acdf6db0562b1',1,'Settings.cc']]]
+  ['shm_5fkey_0',['SHM_KEY',['../DataSpy_8hh.html#a31d581c814a72a1c69bd228b078d6b69',1,'DataSpy.hh']]],
+  ['shmsize_1',['SHMSIZE',['../DataSpy_8hh.html#a09b8724519795908199fac58fde743a3',1,'DataSpy.hh']]],
+  ['srim_5fdir_2',['SRIM_DIR',['../Reaction_8hh.html#a1ecc51e007dc445274ddb9227fe8cea8',1,'Reaction.hh']]]
 ];

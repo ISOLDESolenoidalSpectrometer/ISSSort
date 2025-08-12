@@ -56,7 +56,7 @@ var searchData=
   ['histrecoilbins_53',['HistRecoilBins',['../classISSReaction.html#adb05a9b33247e3eeac28be2620813497',1,'ISSReaction']]],
   ['histrecoilmax_54',['HistRecoilMax',['../classISSReaction.html#aeae8bdd4b9f1dacc1db0a8460593202b',1,'ISSReaction']]],
   ['histrecoilmin_55',['HistRecoilMin',['../classISSReaction.html#a7d9e61246f641179ef2139fed0b724f0',1,'ISSReaction']]],
-  ['hists_5fready_56',['hists_ready',['../classISSEventBuilder.html#af13002edc56c482665992af00acde84b',1,'ISSEventBuilder']]],
+  ['hists_5fready_56',['hists_ready',['../classISSEventBuilder.html#af13002edc56c482665992af00acde84b',1,'ISSEventBuilder::hists_ready'],['../classISSHistogrammer.html#ad806688e084a4bdee22b31a7a0812359',1,'ISSHistogrammer::hists_ready']]],
   ['hit_5fbit_57',['hit_bit',['../classISSAsicData.html#aa7c44f5b6c8cf9e9419ff1b5181568b3',1,'ISSAsicData']]],
   ['hit_5fctr_58',['hit_ctr',['../classISSEventBuilder.html#a10f99a4918ea506323dfc43efbe8e921',1,'ISSEventBuilder']]],
   ['hitn_59',['HitN',['../Calibration_8hh.html#a41817429a8e0c63b8368fb246eccbce0',1,'Calibration.hh']]],
