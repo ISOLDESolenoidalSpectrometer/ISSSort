@@ -49,7 +49,7 @@ public:
 
 	void Initialise();
 	void MakeHists();
-	void ResetHist( TObject *obj, std::string cls );
+	void ResetHist( TObject *obj );
 	void ResetHists();
 	unsigned long FillHists();
 
@@ -64,12 +64,21 @@ public:
 	void SetOutput( std::string output_file_name );
 	inline void CloseOutput(){
 		PurgeOutput();
+		std::cout << " Writing output file...\r";
+		std::cout.flush();
+		output_file->Write( 0, TObject::kWriteDelete );
 		output_file->Close();
+		std::cout << " Writing output file... Done!" << std::endl << std::endl;
 		//input_tree->ResetBranchAddresses();
 	};
 	inline void PurgeOutput(){ output_file->Purge(2); }
 
 	inline TFile* GetFile(){ return output_file; };
+
+	// Spy histograms
+	void PlotDefaultHists();
+	void PlotPhysicsHists();
+	void SetSpyHists( std::vector<std::vector<std::string>> hists, short layout[2] );
 
 	// Adds the settings from the external settings file to the class
 	inline void AddSettings( std::shared_ptr<ISSSettings> myset ){
@@ -409,6 +418,15 @@ private:
 	// Progress bar
 	bool _prog_;
 	std::shared_ptr<TGProgressBar> prog;
+
+	// Check if histograms are made
+	bool hists_ready = false;
+
+	// Canvas and hist lists for the spy
+	std::vector<std::vector<std::string>> spyhists;
+	short spylayout[2];
+	std::unique_ptr<TCanvas> c1, c2;
+	bool spymode = false;
 
 	// Counters
 	unsigned long n_entries;

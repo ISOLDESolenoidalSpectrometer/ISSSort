@@ -52,6 +52,7 @@ public:
 					 long end_block = -1 );
 	int ConvertBlock( char *input_block, int nblock );
 	void MakeHists();
+	void ResetHist( TObject *obj );
 	void ResetHists();
 	void MakeTree();
 	void StartFile();

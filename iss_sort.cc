@@ -97,6 +97,7 @@ bool help_flag = false;
 
 // DataSpy
 bool flag_spy = false;
+bool flag_alive = true;
 int open_spy_data = -1;
 
 // Monitoring input file
@@ -115,30 +116,30 @@ bool overwrite_cal = false;
 // Reaction file
 std::shared_ptr<ISSReaction> myreact;
 
+// Server and controls for the GUI
+THttpServer *serv;
+int port_num = 8030;
+std::string spy_hists_file;
+std::vector<std::vector<std::string>> physhists;
+short spylayout[2] = {2,2};
+
 // Struct for passing to the thread
 typedef struct thptr {
 
 	std::shared_ptr<ISSCalibration> mycal;
 	std::shared_ptr<ISSSettings> myset;
 	std::shared_ptr<ISSReaction> myreact;
+	std::vector<std::vector<std::string>> physhists;
+	short spylayout[2];
+	bool flag_alive;
 
 } thread_data;
-
-// Server and controls for the GUI
-THttpServer *serv;
-int port_num = 8030;
-std::shared_ptr<TCanvas> cspy;
 
 // Pointers to the thread events TODO: sort out inhereted class stuff
 std::shared_ptr<ISSConverter> conv_mon;
 std::shared_ptr<ISSEventBuilder> eb_mon;
 std::shared_ptr<ISSHistogrammer> hist_mon;
 
-
-void plot_diagnostic_hists(){
-	if( eb_mon.get() != nullptr )
-		eb_mon->PlotDiagnostics();
-}
 
 void reset_conv_hists(){
 	conv_mon->ResetHists();
@@ -160,6 +161,11 @@ void start_monitor(){
 	bRunMon = kTRUE;
 }
 
+void signal_callback_handler( int signum ) {
+	std::cout << "Caught signal " << signum << endl;
+	flag_alive = false;
+}
+
 // Function to call the monitoring loop
 void* monitor_run( void* ptr ){
 
@@ -170,24 +176,31 @@ void* monitor_run( void* ptr ){
 	gROOT->ProcessLine( rootline.data() );
 
 	// Get the settings, file etc.
-	thptr *calfiles = (thptr*)ptr;
+	thptr *inputptr = (thptr*)ptr;
+
+	// Filenames for spy
+	std::string spyname_singles = datadir_name + "/singles.root";
+	std::string spyname_events = datadir_name + "/events.root";
+	std::string spyname_hists = datadir_name + "/hists.root";
 
 	// Setup the converter step
 	conv_mon = std::make_shared<ISSConverter>();
-	conv_mon->AddSettings( calfiles->myset );
-	conv_mon->AddCalibration( calfiles->mycal );
+	conv_mon->AddSettings( inputptr->myset );
+	conv_mon->AddCalibration( inputptr->mycal );
 	if( flag_ebis ) conv_mon->EBISOnly();
 
 	// Setup the event builder step
 	eb_mon = std::make_shared<ISSEventBuilder>();
-	eb_mon->AddSettings( calfiles->myset );
-	eb_mon->AddCalibration( calfiles->mycal );
-	eb_mon->AddSpyCanvas( cspy );
+	eb_mon->AddSettings( inputptr->myset );
+	eb_mon->AddCalibration( inputptr->mycal );
 
 	// Setup the histogram step
 	hist_mon = std::make_shared<ISSHistogrammer>();
-	hist_mon->AddSettings( calfiles->myset );
-	hist_mon->AddReaction( calfiles->myreact );
+	hist_mon->AddSettings( inputptr->myset );
+	hist_mon->AddReaction( inputptr->myreact );
+
+	// Add canvas and hists for spy
+	hist_mon->SetSpyHists( inputptr->physhists, inputptr->spylayout );
 
 	// Data blocks for Data spy
 	if( flag_spy && myset->GetBlockSize() != 0x10000 ) {
@@ -198,7 +211,7 @@ void* monitor_run( void* ptr ){
 
 	}
 	DataSpy myspy;
-	long long buffer[2048*1024];
+	long long buffer[8*1024];
 	int file_id = 0; ///> TapeServer volume = /dev/file/<id> ... <id> = 0 on issdaqpc2
 	if( flag_spy ) myspy.Open( file_id ); /// open the data spy
 	int spy_length = 0;
@@ -211,7 +224,7 @@ void* monitor_run( void* ptr ){
 	// Converter setup
 	if( !flag_spy ) curFileMon = input_names.at(0); // maybe change in GUI later?
 	if( flag_source ) conv_mon->SourceOnly();
-	conv_mon->SetOutput( "monitor_singles.root" );
+	conv_mon->SetOutput( spyname_singles.data() );
 	conv_mon->MakeTree();
 	conv_mon->MakeHists();
 	conv_mon->StartFile();
@@ -226,7 +239,7 @@ void* monitor_run( void* ptr ){
 	serv->SetItemField("/", "_toptitle", toptitle.data() );
 
 	// While the sort is running
-	while( true ) {
+	while( flag_alive ) {
 
 		// While the sort is running, bRunMon is true
 		while( bRunMon ) {
@@ -250,7 +263,7 @@ void* monitor_run( void* ptr ){
 
 				// First check if we have data
 				std::cout << "Looking for data from DataSpy" << std::endl;
-				spy_length = myspy.Read( file_id, (char*)buffer, calfiles->myset->GetBlockSize() );
+				spy_length = myspy.Read( file_id, (char*)buffer, inputptr->myset->GetBlockSize() );
 				if( spy_length == 0 && bFirstRun ) {
 					std::cout << "No data yet on first pass" << std::endl;
 					gSystem->Sleep( 2e3 );
@@ -259,24 +272,33 @@ void* monitor_run( void* ptr ){
 
 				// Keep reading until we have all the data
 				// This could be multi-threaded to process data and go back to read more
+				int wait_time = 50; // ms - between each read
 				int block_ctr = 0;
 				long byte_ctr = 0;
 				int poll_ctr = 0;
-				while( block_ctr < 256 && poll_ctr < 1000 ){
+				while( block_ctr < 1024 && poll_ctr < 1000 * mon_time / wait_time ){
 
 					//std::cout << "Got some data from DataSpy, block " << block_ctr << std::endl;
 					if( spy_length > 0 ) {
 						nblocks = conv_mon->ConvertBlock( (char*)buffer, 0 );
 						block_ctr += nblocks;
+						//gSystem->Sleep( 1 ); // wait 1 ms between each read
+					}
+					else {
+						gSystem->Sleep( wait_time ); // wait for new data in buffer
+						poll_ctr++;
 					}
 
 					// Read a new block
-					gSystem->Sleep( 1 ); // wait 1 ms between each read
-					spy_length = myspy.Read( file_id, (char*)buffer, calfiles->myset->GetBlockSize() );
-
+					spy_length = myspy.Read( file_id, (char*)buffer, inputptr->myset->GetBlockSize() );
 					byte_ctr += spy_length;
-					poll_ctr++;
 
+				}
+
+				// Finish the last block
+				if( spy_length > 0 ) {
+					nblocks = conv_mon->ConvertBlock( (char*)buffer, 0 );
+					block_ctr += nblocks;
 				}
 
 				std::cout << "Got " << byte_ctr << " bytes of data in " << block_ctr << " blocks from DataSpy" << std::endl;
@@ -292,8 +314,9 @@ void* monitor_run( void* ptr ){
 
 				// Set output
 				if( bFirstRun ) {
-					eb_mon->SetOutput( "monitor_events.root" );
+					eb_mon->SetOutput( spyname_events.data() );
 					eb_mon->StartFile();
+					eb_mon->PlotDiagnostics();
 				}
 
 				// Event builder
@@ -311,7 +334,7 @@ void* monitor_run( void* ptr ){
 
 					// Set output
 					if( bFirstRun ) {
-						hist_mon->SetOutput( "monitor_hists.root" );
+						hist_mon->SetOutput( spyname_hists.data() );
 					}
 
 					// Set input
@@ -379,16 +402,77 @@ void start_http(){
 	serv->RegisterCommand("/ResetSingles", "ResetConv()");
 	serv->RegisterCommand("/ResetEvents", "ResetEvnt()");
 	serv->RegisterCommand("/ResetHists", "ResetHist()");
-	serv->RegisterCommand("/PlotDiagnostics", "PlotDiagnostics()");
 
 	// hide commands so the only show as buttons
 	//serv->Hide("/Start");
 	//serv->Hide("/Stop");
 	//serv->Hide("/Reset");
 
-	// Make the canvas for later
-	cspy = std::make_shared<TCanvas>();
+	return;
 
+}
+
+// Function to read histogram info from a file into a 2D vector
+void ReadSpyHistogramList() {
+
+	// Check if the user gave a file
+	if( spy_hists_file.length() == 0 ) {
+
+		std::cout << "Default spy hists" << std::endl;
+
+		// If not, just use some defaults
+		spylayout[0] = 1; // x
+		spylayout[1] = 2; // y
+		physhists.push_back( {"EBISMode/E_vs_z_ebis_on", "TH2", "colz"} );
+		physhists.push_back( {"EBISMode/Ex_ebis", "TH1", "hist"} );
+
+		return;
+
+	}
+
+	std::ifstream infile( spy_hists_file );
+	std::string line;
+
+	// Check it's open
+	if( !infile.is_open() ) {
+
+		std::cerr << "Error: Could not open file " << spy_hists_file << std::endl;
+		return;
+
+	}
+
+	// Check for comments first
+	std::getline( infile, line );
+	while( line.at(0) == '#' )
+		std::getline( infile, line );
+
+	// Read first line: number of histograms in x direction on canvas
+	std::istringstream iss(line);
+	iss >> spylayout[0];
+
+	// Read second line: number of histograms in y direction on canvas
+	std::getline( infile, line );
+	iss = std::istringstream(line);
+	iss >> spylayout[1];
+
+	// Read the file line by line
+	while( std::getline( infile, line ) ) {
+
+		// skip empty lines
+		if( line.length() == 0 ) continue;
+
+		// Stream the line and check for a new item
+		std::string name, classType = "TH1", drawOption = "hist";
+		iss = std::istringstream(line);
+		iss >> name >> classType >> drawOption;
+
+		// If we got something, add it to the list
+		if( name.length() > 0 )
+			physhists.push_back({name, classType, drawOption});
+
+	}
+
+	infile.close();
 	return;
 
 }
@@ -872,6 +956,7 @@ int main( int argc, char *argv[] ){
 	interface->Add("-autocalfile", "Alpha source fit control file", &name_autocal_file );
 	interface->Add("-print-settings", "Print settings", &flag_print_settings );
 	interface->Add("-spy", "Flag to run the DataSpy", &flag_spy );
+	interface->Add("-spyhists", "File containing histograms for monitoring in the spy", &spy_hists_file );
 	interface->Add("-m", "Monitor input file every X seconds", &mon_time );
 	interface->Add("-p", "Port number for web server (default 8030)", &port_num );
 	interface->Add("-d", "Output directory for sorted files", &datadir_name );
@@ -932,8 +1017,11 @@ int main( int argc, char *argv[] ){
 	// Check if we should be monitoring the input
 	if( flag_spy ) {
 
+		// Register signal and signal handler for DataSpy only
+		//signal( SIGINT, signal_callback_handler );
+
 		flag_monitor = true;
-		if( mon_time < 0 ) mon_time = 30;
+		if( mon_time < 0 ) mon_time = 2;
 		std::cout << "Getting data from shared memory every " << mon_time;
 		std::cout << " seconds using DataSpy" << std::endl;
 
@@ -1014,7 +1102,7 @@ int main( int argc, char *argv[] ){
 
 		}
 
-		else output_name = datadir_name + "/monitor_hists.root";
+		else output_name = datadir_name + "/hists.root";
 
 	}
 
@@ -1136,7 +1224,7 @@ int main( int argc, char *argv[] ){
 		th->Run();
 
 		// wait until we finish
-		while( true ){
+		while( flag_alive ){
 
 			gSystem->Sleep(10);
 			gSystem->ProcessEvents();

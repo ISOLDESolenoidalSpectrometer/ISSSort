@@ -15,6 +15,9 @@ ISSEventBuilder::ISSEventBuilder(){
 	// No progress bar by default
 	_prog_ = false;
 
+	// Histogrammer options
+	//TH1::AddDirectory(kFALSE);
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -338,6 +341,9 @@ void ISSEventBuilder::SetOutput( std::string output_file_name ) {
 
 	// Histograms in separate function
 	MakeHists();
+
+	// Write once
+	output_file->Write();
 
 }
 
@@ -1313,20 +1319,6 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 	std::cout << ss_log.str();
 	if( log_file.is_open() && flag_input_file ) log_file << ss_log.str();
-
-	std::cout << " Writing output file...\r";
-	std::cout.flush();
-
-	// Force the rest of the events in the buffer to disk
-	output_tree->FlushBaskets();
-	output_file->Write( 0, TObject::kWriteDelete );
-	//output_file->Print();
-	//output_file->Close();
-
-	// Dump the input buffers
-	input_tree->DropBaskets();
-
-	std::cout << " Writing output file... Done!" << std::endl << std::endl;
 
 	return n_entries;
 
@@ -3585,31 +3577,43 @@ void ISSEventBuilder::PlotDiagnostics() {
 
 	}
 
-	// Clear canvas
-	cspy->Clear("D");
-	cspy->Divide( 1, set->GetNumberOfArrayModules() );
+	// Make canvas
+	c1 = std::make_unique<TCanvas>("SyncCheck","SyncCheck");
+	c1->Divide( 3, 4 );
 
 	// ASIC time difference histograms
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
 
-		cspy->cd(i+1);
+		c1->cd(i+1);
 		asic_td[i]->Draw("hist");
 
 	}
 
+	// Mesytec time difference histograms
+	for( unsigned int i = 0; i < set->GetNumberOfMesytecModules(); i++ ){
+
+		c1->cd(i+1 + set->GetNumberOfArrayModules());
+		mesy_td[i]->Draw("hist");
+
+	}
+
+	output_file->cd();
+	c1->Write();
 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 /// This function empties the histograms used in the EventBuilder class; used during the DataSpy
-void ISSEventBuilder::ResetHist( TObject *obj, std::string cls ) {
+void ISSEventBuilder::ResetHist( TObject *obj ) {
 
-	if( cls == "TH1" )
-		( (TH1*)obj )->Reset("ICESM");
-	else if( cls ==  "TH2" )
+	if( obj == nullptr ) return;
+
+	if( obj->InheritsFrom( "TH2" ) ) {
 		( (TH2*)obj )->Reset("ICESM");
-	else if( cls ==  "TProfile" )
-		( (TProfile*)obj )->Reset("ICESM");
+		( (TH2*)obj )->GetZaxis()->UnZoom();
+	}
+	else if( obj->InheritsFrom( "TH1" ) )
+		( (TH1*)obj )->Reset("ICESM");
 
 	return;
 
@@ -3619,36 +3623,159 @@ void ISSEventBuilder::ResetHist( TObject *obj, std::string cls ) {
 /// This function empties the histograms used in the EventBuilder class; used during the DataSpy
 void ISSEventBuilder::ResetHists() {
 
-	TKey *key1, *key2, *key3;
-	TIter keyList1( output_file->GetListOfKeys() );
-	while( ( key1 = (TKey*)keyList1() ) ){ // level 1
+	for( unsigned int i = 0; i < pn_11.size(); i++ )
+		for( unsigned int j = 0; j < pn_11.at(i).size(); j++ )
+			pn_11[i][j]->Reset("ICESM");
 
-		if( std::strcmp( key1->GetClassName(), "TDirectory" ) == 0 ){
+	for( unsigned int i = 0; i < pn_12.size(); i++ )
+		for( unsigned int j = 0; j < pn_12.at(i).size(); j++ )
+			pn_12[i][j]->Reset("ICESM");
 
-			TIter keyList2( ( (TDirectory*)key1->ReadObj() )->GetListOfKeys() );
-			while( ( key2 = (TKey*)keyList2() ) ){ // level 2
+	for( unsigned int i = 0; i < pn_21.size(); i++ )
+		for( unsigned int j = 0; j < pn_21.at(i).size(); j++ )
+			pn_21[i][j]->Reset("ICESM");
 
-				if( std::strcmp( key2->GetClassName(), "TDirectory" ) == 0 ){
+	for( unsigned int i = 0; i < pn_22.size(); i++ )
+		for( unsigned int j = 0; j < pn_22.at(i).size(); j++ )
+			pn_22[i][j]->Reset("ICESM");
 
-					TIter keyList3( ( (TDirectory*)key2->ReadObj() )->GetListOfKeys() );
-					while( ( key3 = (TKey*)keyList3() ) ) // level 3
-						ResetHist( key3->ReadObj(), key3->GetClassName() );
+	for( unsigned int i = 0; i < pn_ab.size(); i++ )
+		for( unsigned int j = 0; j < pn_ab.at(i).size(); j++ )
+			pn_ab[i][j]->Reset("ICESM");
 
-				}
+	for( unsigned int i = 0; i < pn_nab.size(); i++ )
+		for( unsigned int j = 0; j < pn_nab.at(i).size(); j++ )
+			pn_nab[i][j]->Reset("ICESM");
 
-				else
-					ResetHist( key2->ReadObj(), key2->GetClassName() );
+	for( unsigned int i = 0; i < pn_pab.size(); i++ )
+		for( unsigned int j = 0; j < pn_pab.at(i).size(); j++ )
+			pn_pab[i][j]->Reset("ICESM");
 
-			} // level 2
+	for( unsigned int i = 0; i < pn_max.size(); i++ )
+		for( unsigned int j = 0; j < pn_max.at(i).size(); j++ )
+			pn_max[i][j]->Reset("ICESM");
 
-		}
+	for( unsigned int i = 0; i < pn_td.size(); i++ )
+		for( unsigned int j = 0; j < pn_td.at(i).size(); j++ )
+			pn_td[i][j]->Reset("ICESM");
 
-		else
-			ResetHist( key1->ReadObj(), key1->GetClassName() );
+	for( unsigned int i = 0; i < pn_td_uncorrected.size(); i++ )
+		for( unsigned int j = 0; j < pn_td_uncorrected.at(i).size(); j++ )
+			pn_td_uncorrected[i][j]->Reset("ICESM");
 
-	} // level 1
+	for( unsigned int i = 0; i < pp_td.size(); i++ )
+		for( unsigned int j = 0; j < pp_td.at(i).size(); j++ )
+			pp_td[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < nn_td.size(); i++ )
+		for( unsigned int j = 0; j < nn_td.at(i).size(); j++ )
+			nn_td[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < pn_td_Ep.size(); i++ )
+		for( unsigned int j = 0; j < pn_td_Ep.at(i).size(); j++ )
+			pn_td_Ep[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < pn_td_En.size(); i++ )
+		for( unsigned int j = 0; j < pn_td_En.at(i).size(); j++ )
+			pn_td_En[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < pn_td_Ep_uncorrected.size(); i++ )
+		for( unsigned int j = 0; j < pn_td_Ep_uncorrected.at(i).size(); j++ )
+			pn_td_Ep_uncorrected[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < pn_td_En_uncorrected.size(); i++ )
+		for( unsigned int j = 0; j < pn_td_En_uncorrected.at(i).size(); j++ )
+			pn_td_En_uncorrected[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < pn_mult.size(); i++ )
+		for( unsigned int j = 0; j < pn_mult.at(i).size(); j++ )
+			pn_mult[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < recoil_EdE.size(); i++ )
+		recoil_EdE[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < recoil_dEsum.size(); i++ )
+		recoil_dEsum[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < recoil_EdE_raw.size(); i++ )
+		recoil_EdE_raw[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < recoil_E_singles.size(); i++ )
+		recoil_E_singles[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < recoil_dE_singles.size(); i++ )
+		recoil_dE_singles[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < recoil_E_dE_tdiff.size(); i++ )
+		recoil_E_dE_tdiff[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < recoil_tdiff.size(); i++ )
+		recoil_tdiff[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < mwpc_tac_axis.size(); i++ )
+		for( unsigned int j = 0; j < mwpc_tac_axis.at(i).size(); j++ )
+			mwpc_tac_axis[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < mwpc_hit_axis.size(); i++ )
+		mwpc_hit_axis[i]->Reset("ICESM");
+
+	mwpc_pos->Reset("ICESM");
+	elum_E->Reset("ICESM");
+	elum_E_vs_sec->Reset("ICESM");
+	zd_EdE->Reset("ICESM");
+	gamma_E->Reset("ICESM");
+	gamma_E_vs_det->Reset("ICESM");
+	gamma_gamma_E->Reset("ICESM");
+	gamma_gamma_td->Reset("ICESM");
+
+	for( unsigned int i = 0; i < lume_E.size(); i++ )
+		lume_E[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < lume_E_vs_x.size(); i++ )
+		lume_E_vs_x[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < lume_ne_vs_fe.size(); i++ )
+		lume_ne_vs_fe[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < cd_rs_mult.size(); i++ )
+		cd_rs_mult[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < cd_rs_en.size(); i++ )
+		cd_rs_en[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < cd_rs_td.size(); i++ )
+		cd_rs_td[i]->Reset("ICESM");
+
+	cd_EdE->Reset("ICESM");
+	cd_dEsum->Reset("ICESM");
+
+	for( unsigned int i = 0; i < set->GetNumberOfMesytecModules(); i++ ){
+		mesy_td[i]->Reset("ICESM");
+		mesy_pulser_loss[i]->Reset("ICESM");
+		mesy_period[i]->Reset("ICESM");
+		mesy_sync[i]->Reset("ICESM");
+	}
+
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
+		fpga_td[i]->Reset("ICESM");
+		asic_td[i]->Reset("ICESM");
+		fpga_pulser_loss[i]->Reset("ICESM");
+		fpga_period[i]->Reset("ICESM");
+		fpga_sync[i]->Reset("ICESM");
+		asic_pulser_loss[i]->Reset("ICESM");
+		asic_period[i]->Reset("ICESM");
+		asic_sync[i]->Reset("ICESM");
+	}
+
+	tdiff->Reset("ICESM");
+	tdiff_clean->Reset("ICESM");
+	caen_period->Reset("ICESM");
+	ebis_period->Reset("ICESM");
+	t1_period->Reset("ICESM");
+	sc_period->Reset("ICESM");
+	laser_period->Reset("ICESM");
+	supercycle->Reset("ICESM");
 
 	return;
 
 }
-

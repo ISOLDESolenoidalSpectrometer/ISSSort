@@ -86,8 +86,8 @@ public:
 	void	StartFile();		///< Called for every file
 	void	ConfigureInput();	///< Called when we set the input tree and need settings and calibration files
 	void	Initialise();	///< Called for every event
-	void	ResetHist( TObject *obj, std::string cls );
 	void	MakeHists(); ///< Creates histograms for events that occur
+	void	ResetHist( TObject *obj );
 	void	ResetHists(); ///< Empties the histograms during the DataSpy
 	void	PlotDiagnostics();	///< Plot diagnostic histograms in DataSpy
 	void	ArrayMapping();	///< Do the mapping of the array just once
@@ -130,8 +130,12 @@ public:
 	inline void CloseOutput(){
 		output_tree->ResetBranchAddresses();
 		PurgeOutput();
-		output_file->cd("/");
+		std::cout << " Writing output file...\r";
+		std::cout.flush();
+		output_file->Write( 0, TObject::kWriteDelete );
+			output_file->cd("/");
 		set->Write( "Settings", TObject::kWriteDelete );
+		std::cout << " Writing output file... Done!" << std::endl << std::endl;
 		output_file->Close();
 		//input_tree->ResetBranchAddresses();
 		//nptool_tree->ResetBranchAddresses();
@@ -147,10 +151,6 @@ public:
 		_prog_ = true;
 	}; ///< Adds a progress bar to the GUI
 	///< \param[in] myprog pointer to the EventBuilder progress bar for the GUI
-
-	inline void AddSpyCanvas( std::shared_ptr<TCanvas> cin ){
-		cspy = cin;
-	}; ///< Adds the canvas for the DataSpy
 
 private:
 
@@ -196,7 +196,7 @@ private:
 	std::shared_ptr<TGProgressBar> prog; ///< Progress bar for the GUI
 
 	// Canvas for the spy
-	std::shared_ptr<TCanvas> cspy;
+	std::shared_ptr<TCanvas> c1;
 
 	// Log file
 	std::ofstream log_file; ///< Log file for recording the results of the ISSEventBuilder

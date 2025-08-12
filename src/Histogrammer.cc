@@ -16,7 +16,10 @@ void ISSHistogrammer::Initialise(){
 
 	// Make the histograms track the sum of the weights for correctly
 	// performing the error propagation when subtracting
-	TH1::SetDefaultSumw2();
+	TH1::SetDefaultSumw2(kTRUE);
+
+	// Histogrammer options
+	//TH1::AddDirectory(kFALSE);
 
 }
 
@@ -46,6 +49,12 @@ void ISSHistogrammer::SetOutput( std::string output_file_name ){
 
 	// Histograms in separate function
 	MakeHists();
+
+	// flag to denote that hists are ready (used for spy)
+	hists_ready = true;
+
+	// Write once
+	output_file->Write();
 
 }
 
@@ -2246,18 +2255,117 @@ void ISSHistogrammer::MakeHists() {
 	mult_gamma_recoil = new TH2F( "mult_gamma_recoil", "Multiplicity map;Recoil multiplicity;Gamma-ray multiplicity;Counts",
 								  20, -0.5, 19.5, 20, -0.5, 19.5 );
 
-	output_file->cd();
+}
+
+
+void ISSHistogrammer::PlotDefaultHists() {
+
+	// Check that we're ready
+	if( !hists_ready ) return;
+
+	// Make the canvas
+	c1 = std::make_unique<TCanvas>("Diagnostics","Monitor hists");
+	c1->Divide(2,2);
+
+	// Plot things
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
+
+		c1->cd(i+1);
+		if( E_vs_z_ebis_on_mod[i] != nullptr )
+			E_vs_z_ebis_on_mod[i]->Draw("colz");
+
+	}
+
+	c1->cd( set->GetNumberOfArrayModules() + 1 );
+	if( E_vs_z_ebis_on != nullptr )
+		E_vs_z_ebis_on->Draw("colz");
+
+	return;
 
 }
 
-void ISSHistogrammer::ResetHist( TObject *obj, std::string cls ) {
+void ISSHistogrammer::SetSpyHists( std::vector<std::vector<std::string>> hists, short layout[2] ) {
 
-	if( cls == "TH1" )
-		( (TH1*)obj )->Reset("ICESM");
-	else if( cls ==  "TH2" )
+	// Copy the input hists and layouts
+	spyhists = hists;
+	spylayout[0] = layout[0];
+	spylayout[1] = layout[1];
+
+	// Flag that we have spy mode
+	spymode = true;
+
+}
+
+void ISSHistogrammer::PlotPhysicsHists() {
+
+	// Escape if we haven't built the hists to avoid a seg fault
+	if( !hists_ready ){
+
+		std::cout << "Cannot plot diagnostics yet, wait until histogrammer is ready" << std::endl;
+		return;
+
+	}
+
+	// Get appropriate layout and number of hists
+	unsigned short maxhists = spylayout[0] * spylayout[1];
+	if( maxhists == 0 ) maxhists = 1;
+	if( spyhists.size() > maxhists ) {
+
+		std::cout << "Too many histograms for layout size. Plotting the first ";
+		std::cout << maxhists << " histograms in the list." << std::endl;
+
+	}
+	else maxhists = spyhists.size();
+
+	// Make the canvas
+	c2 = std::make_unique<TCanvas>("Physics","User hists");
+	if( maxhists > 1 && spylayout[0] > 0 && spylayout[1] > 0 )
+		c2->Divide( spylayout[0], spylayout[1] );
+
+	// User defined histograms
+	TH1F *ptr_th1;
+	TH2F *ptr_th2;
+	for( unsigned int i = 0; i < maxhists; i++ ){
+
+		// Go to corresponding canvas
+		c2->cd(i+1);
+
+		// Get this histogram of the right type
+		if( spyhists[i][1] == "TH1" || spyhists[i][1] == "TH1F" || spyhists[i][1] == "TH1D" ) {
+
+			ptr_th1 = (TH1F*)output_file->Get( spyhists[i][0].data() );
+			if( ptr_th1 != nullptr )
+				ptr_th1->Draw( spyhists[i][2].data() );
+
+		}
+
+		else if( spyhists[i][1] == "TH2" || spyhists[i][1] == "TH2F" || spyhists[i][1] == "TH2D" ) {
+
+			ptr_th2 = (TH2F*)output_file->Get( spyhists[i][0].data() );
+			if( ptr_th2 != nullptr )
+				ptr_th2->Draw( spyhists[i][2].data() );
+
+		}
+
+		else std::cout << "Type " << spyhists[i][1] << " not currently supported" << std::endl;
+
+	}
+
+	return;
+
+}
+
+
+void ISSHistogrammer::ResetHist( TObject *obj ) {
+
+	if( obj == nullptr ) return;
+
+	if( obj->InheritsFrom( "TH2" ) ) {
 		( (TH2*)obj )->Reset("ICESM");
-	else if( cls ==  "TProfile" )
-		( (TProfile*)obj )->Reset("ICESM");
+		( (TH2*)obj )->GetZaxis()->UnZoom();
+	}
+	else if( obj->InheritsFrom( "TH1" ) )
+		( (TH1*)obj )->Reset("ICESM");
 
 	return;
 
@@ -2265,34 +2373,846 @@ void ISSHistogrammer::ResetHist( TObject *obj, std::string cls ) {
 
 void ISSHistogrammer::ResetHists() {
 
-	TKey *key1, *key2, *key3;
-	TIter keyList1( output_file->GetListOfKeys() );
-	while( ( key1 = (TKey*)keyList1() ) ){ // level 1
+	std::cout << "in ISSHistogrammer::Reset_Hist()" << std::endl;
 
-		if( std::strcmp( key1->GetClassName(), "TDirectory" ) == 0 ){
+	// Timing
+	ebis_td_array->Reset("ICESM");
+	ebis_td_elum->Reset("ICESM");
+	ebis_td_lume->Reset("ICESM");
 
-			TIter keyList2( ( (TDirectory*)key1->ReadObj() )->GetListOfKeys() );
-			while( ( key2 = (TKey*)keyList2() ) ){ // level 2
+	// Recoils, but only if we are not doing fission
+	if( !react->IsFission() ) {
 
-				if( std::strcmp( key2->GetClassName(), "TDirectory" ) == 0 ){
+		ebis_td_recoil->Reset("ICESM");
+		t1_td_recoil->Reset("ICESM");
+		sc_td_recoil->Reset("ICESM");
+		recoil_array_tw_hit0->Reset("ICESM");
+		recoil_array_tw_hit1->Reset("ICESM");
 
-					TIter keyList3( ( (TDirectory*)key2->ReadObj() )->GetListOfKeys() );
-					while( ( key3 = (TKey*)keyList3() ) ) // level 3
-						ResetHist( key3->ReadObj(), key3->GetClassName() );
+		for( unsigned int i = 0; i < recoil_array_td.size(); ++i )
+			for( unsigned int j = 0; j < recoil_array_td[i].size(); ++j )
+				recoil_array_td[i][j]->Reset("ICESM");
 
-				}
+		for( unsigned int i = 0; i < recoil_elum_td.size(); ++i )
+			for( unsigned int j = 0; j < recoil_elum_td[i].size(); ++j )
+				recoil_elum_td[i][j]->Reset("ICESM");
 
-				else
-					ResetHist( key2->ReadObj(), key2->GetClassName() );
+		for( unsigned int i = 0; i < recoil_array_tw_hit0_row.size(); ++i )
+			for( unsigned int j = 0; j < recoil_array_tw_hit0_row[i].size(); ++j )
+				recoil_array_tw_hit0_row[i][j]->Reset("ICESM");
 
-			} // level 2
+		for( unsigned int i = 0; i < recoil_array_tw_hit1_row.size(); ++i )
+			for( unsigned int j = 0; j < recoil_array_tw_hit1_row[i].size(); ++j )
+				recoil_array_tw_hit1_row[i][j]->Reset("ICESM");
 
-		}
+		for( unsigned int i = 0; i < recoil_EdE.size(); ++i )
+			recoil_EdE[i]->Reset("ICESM");
 
-		else
-			ResetHist( key1->ReadObj(), key1->GetClassName() );
+		for( unsigned int i = 0; i < recoil_EdE_cut.size(); ++i )
+			recoil_EdE_cut[i]->Reset("ICESM");
 
-	} // level 1
+		for( unsigned int i = 0; i < recoil_bragg.size(); ++i )
+			recoil_bragg[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < recoil_dE_vs_T1.size(); ++i )
+			recoil_dE_vs_T1[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < recoil_dE_eloss.size(); ++i )
+			recoil_dE_eloss[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < recoil_E_eloss.size(); ++i )
+			recoil_E_eloss[i]->Reset("ICESM");
+
+	}
+
+	for( unsigned int i = 0; i < recoil_lume_td.size(); ++i )
+		recoil_lume_td[i]->Reset("ICESM");
+
+	// Fission
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
+
+		ebis_td_fission->Reset("ICESM");
+		t1_td_fission->Reset("ICESM");
+		sc_td_fission->Reset("ICESM");
+		fission_array_tw_hit0->Reset("ICESM");
+		fission_array_tw_hit1->Reset("ICESM");
+		fission_fission_td->Reset("ICESM");
+		fission_fission_td_sec->Reset("ICESM");
+
+		for( unsigned int i = 0; i < fission_array_td.size(); ++i )
+			fission_array_td[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < fission_array_tw_hit0_row.size(); ++i )
+			for( unsigned int j = 0; j < fission_array_tw_hit0_row[i].size(); ++j )
+				fission_array_tw_hit0_row[i][j]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < fission_array_tw_hit1_row.size(); ++i )
+			for( unsigned int j = 0; j < fission_array_tw_hit1_row[i].size(); ++j )
+				fission_array_tw_hit1_row[i][j]->Reset("ICESM");
+
+		fission_EdE->Reset("ICESM");
+		fission_EdE_cutH->Reset("ICESM");
+		fission_EdE_cutL->Reset("ICESM");
+		fission_bragg->Reset("ICESM");
+		fission_dE_vs_T1->Reset("ICESM");
+		fission_dE_eloss->Reset("ICESM");
+		fission_E_eloss->Reset("ICESM");
+		fission_fission_dEdE->Reset("ICESM");
+		fission_fission_dEdE_array->Reset("ICESM");
+		fission_dE_vs_ring->Reset("ICESM");
+		fission_xy_map->Reset("ICESM");
+		fission_xy_map_cutH->Reset("ICESM");
+		fission_xy_map_cutL->Reset("ICESM");
+
+	}
+
+	// Array - E vs. z
+	E_vs_z->Reset("ICESM");
+	E_vs_z_ebis->Reset("ICESM");
+	E_vs_z_ebis_on->Reset("ICESM");
+	E_vs_z_ebis_off->Reset("ICESM");
+	E_vs_z_T1->Reset("ICESM");
+
+	E_vs_z_recoil->Reset("ICESM");
+	E_vs_z_recoilT->Reset("ICESM");
+	E_vs_z_recoil_random->Reset("ICESM");
+	E_vs_z_recoilT_random->Reset("ICESM");
+
+	if( react->GammaRayHistsEnabled() ){
+
+		E_vs_z_gamma->Reset("ICESM");
+		E_vs_z_gammaT->Reset("ICESM");
+		E_vs_z_gamma_random->Reset("ICESM");
+		E_vs_z_gammaT_random->Reset("ICESM");
+
+	}
+
+	for( unsigned int i = 0; i < E_vs_z_recoil_cut.size(); ++i )
+		E_vs_z_recoil_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_z_recoilT_cut.size(); ++i )
+		E_vs_z_recoilT_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_z_recoil_mod.size(); ++i )
+		E_vs_z_recoil_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_z_recoilT_mod.size(); ++i )
+		E_vs_z_recoilT_mod[i]->Reset("ICESM");
+
+
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
+
+		E_vs_z_fission->Reset("ICESM");
+		E_vs_z_fissionT->Reset("ICESM");
+		E_vs_z_fission_gamma->Reset("ICESM");
+		E_vs_z_fission_random->Reset("ICESM");
+		E_vs_z_fissionT_random->Reset("ICESM");
+		E_vs_z_fission_gamma_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_fission_cut.size(); ++i )
+			E_vs_z_fission_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_fissionT_cut.size(); ++i )
+			E_vs_z_fissionT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_fission_mod.size(); ++i )
+			E_vs_z_fission_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_fissionT_mod.size(); ++i )
+			E_vs_z_fissionT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_fission_random_cut.size(); ++i )
+			E_vs_z_fission_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_fissionT_random_cut.size(); ++i )
+			E_vs_z_fissionT_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_fission_random_mod.size(); ++i )
+			E_vs_z_fission_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_z_fissionT_random_mod.size(); ++i )
+			E_vs_z_fissionT_random_mod[i]->Reset("ICESM");
+
+	}
+
+	for( unsigned int i = 0; i < E_vs_z_T1_cut.size(); ++i )
+		E_vs_z_T1_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_z_ebis_off_cut.size(); ++i )
+		E_vs_z_ebis_off_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_z_ebis_on_cut.size(); ++i )
+		E_vs_z_ebis_on_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_z_ebis_cut.size(); ++i )
+		E_vs_z_ebis_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_z_mod.size(); ++i )
+		E_vs_z_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_z_ebis_mod.size(); ++i )
+		E_vs_z_ebis_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_z_ebis_on_mod.size(); ++i )
+		E_vs_z_ebis_on_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_z_ebis_off_mod.size(); ++i )
+		E_vs_z_ebis_off_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_z_cut.size(); ++i )
+		E_vs_z_cut[i]->Reset("ICESM");
+
+	// Array - Ex vs. thetaCM
+	Ex_vs_theta->Reset("ICESM");
+	Ex_vs_theta_ebis->Reset("ICESM");
+	Ex_vs_theta_ebis_on->Reset("ICESM");
+	Ex_vs_theta_ebis_off->Reset("ICESM");
+	Ex_vs_theta_T1->Reset("ICESM");
+
+	Ex_vs_theta_recoil->Reset("ICESM");
+	Ex_vs_theta_recoilT->Reset("ICESM");
+	Ex_vs_theta_recoil_random->Reset("ICESM");
+	Ex_vs_theta_recoilT_random->Reset("ICESM");
+
+	if( react->GammaRayHistsEnabled() ){
+
+		Ex_vs_theta_gamma->Reset("ICESM");
+		Ex_vs_theta_gammaT->Reset("ICESM");
+		Ex_vs_theta_gamma_random->Reset("ICESM");
+		Ex_vs_theta_gammaT_random->Reset("ICESM");
+
+	}
+
+	for( unsigned int i = 0; i < Ex_vs_theta_recoil_mod.size(); ++i )
+		Ex_vs_theta_recoil_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_theta_recoilT_mod.size(); ++i )
+		Ex_vs_theta_recoilT_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_theta_recoil_random_mod.size(); ++i )
+		Ex_vs_theta_recoil_random_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_theta_recoilT_random_mod.size(); ++i )
+		Ex_vs_theta_recoilT_random_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_theta_recoil_cut.size(); ++i )
+		Ex_vs_theta_recoil_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_theta_recoilT_cut.size(); ++i )
+		Ex_vs_theta_recoilT_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_theta_recoil_random_cut.size(); ++i )
+		Ex_vs_theta_recoil_random_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_theta_recoilT_random_cut.size(); ++i )
+		Ex_vs_theta_recoilT_random_cut[i]->Reset("ICESM");
+
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
+
+		Ex_vs_theta_fission->Reset("ICESM");
+		Ex_vs_theta_fissionT->Reset("ICESM");
+		Ex_vs_theta_fission_random->Reset("ICESM");
+		Ex_vs_theta_fissionT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fission_mod.size(); ++i )
+			Ex_vs_theta_fission_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fissionT_mod.size(); ++i )
+			Ex_vs_theta_fissionT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fission_random_mod.size(); ++i )
+			Ex_vs_theta_fission_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fissionT_random_mod.size(); ++i )
+			Ex_vs_theta_fissionT_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fission_cut.size(); ++i )
+			Ex_vs_theta_fission_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fissionT_cut.size(); ++i )
+			Ex_vs_theta_fissionT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fission_random_cut.size(); ++i )
+			Ex_vs_theta_fission_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_theta_fissionT_random_cut.size(); ++i )
+			Ex_vs_theta_fissionT_random_cut[i]->Reset("ICESM");
+
+	}
+
+	for( unsigned int i = 0; i < Ex_vs_theta_mod.size(); ++i )
+		Ex_vs_theta_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_theta_ebis_mod.size(); ++i )
+		Ex_vs_theta_ebis_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_theta_ebis_off_mod.size(); ++i )
+		Ex_vs_theta_ebis_off_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_theta_ebis_on_mod.size(); ++i )
+		Ex_vs_theta_ebis_on_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_theta_ebis_on_cut.size(); ++i )
+		Ex_vs_theta_ebis_on_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_theta_ebis_cut.size(); ++i )
+		Ex_vs_theta_ebis_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_theta_cut.size(); ++i )
+		Ex_vs_theta_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_theta_T1_cut.size(); ++i )
+		Ex_vs_theta_T1_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_theta_ebis_off_cut.size(); ++i )
+		Ex_vs_theta_ebis_off_cut[i]->Reset("ICESM");
+
+	// Array - E vs. theta
+	E_vs_theta->Reset("ICESM");
+	E_vs_theta_ebis->Reset("ICESM");
+	E_vs_theta_ebis_on->Reset("ICESM");
+	E_vs_theta_ebis_off->Reset("ICESM");
+	E_vs_theta_T1->Reset("ICESM");
+
+	E_vs_theta_recoil->Reset("ICESM");
+	E_vs_theta_recoilT->Reset("ICESM");
+	E_vs_theta_recoil_random->Reset("ICESM");
+	E_vs_theta_recoilT_random->Reset("ICESM");
+
+	if( react->GammaRayHistsEnabled() ){
+
+		E_vs_theta_gamma->Reset("ICESM");
+		E_vs_theta_gammaT->Reset("ICESM");
+		E_vs_theta_gamma_random->Reset("ICESM");
+		E_vs_theta_gammaT_random->Reset("ICESM");
+
+	}
+
+	for( unsigned int i = 0; i < E_vs_theta_recoil_mod.size(); ++i )
+		E_vs_theta_recoil_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_theta_recoilT_mod.size(); ++i )
+		E_vs_theta_recoilT_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_theta_recoil_random_mod.size(); ++i )
+		E_vs_theta_recoil_random_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_theta_recoilT_random_mod.size(); ++i )
+		E_vs_theta_recoilT_random_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_theta_recoil_cut.size(); ++i )
+		Ex_vs_theta_recoil_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_theta_recoilT_cut.size(); ++i )
+		E_vs_theta_recoilT_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_theta_recoil_random_cut.size(); ++i )
+		E_vs_theta_recoil_random_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_theta_recoilT_random_cut.size(); ++i )
+		E_vs_theta_recoilT_random_cut[i]->Reset("ICESM");
+
+
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
+
+		E_vs_theta_fission->Reset("ICESM");
+		E_vs_theta_fissionT->Reset("ICESM");
+		E_vs_theta_fission_random->Reset("ICESM");
+		E_vs_theta_fissionT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fission_mod.size(); ++i )
+			E_vs_theta_fission_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fissionT_mod.size(); ++i )
+			E_vs_theta_fissionT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fission_random_mod.size(); ++i )
+			E_vs_theta_fission_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fissionT_random_mod.size(); ++i )
+			E_vs_theta_fissionT_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fission_cut.size(); ++i )
+			Ex_vs_theta_fission_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fissionT_cut.size(); ++i )
+			E_vs_theta_fissionT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fission_random_cut.size(); ++i )
+			E_vs_theta_fission_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < E_vs_theta_fissionT_random_cut.size(); ++i )
+			E_vs_theta_fissionT_random_cut[i]->Reset("ICESM");
+
+	}
+
+	for( unsigned int i = 0; i < E_vs_theta_mod.size(); ++i )
+		E_vs_theta_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_theta_ebis_mod.size(); ++i )
+		E_vs_theta_ebis_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_theta_ebis_off_mod.size(); ++i )
+		E_vs_theta_ebis_off_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_theta_ebis_on_mod.size(); ++i )
+		E_vs_theta_ebis_on_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_theta_ebis_on_cut.size(); ++i )
+		E_vs_theta_ebis_on_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_theta_ebis_cut.size(); ++i )
+		E_vs_theta_ebis_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_theta_cut.size(); ++i )
+		E_vs_theta_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_theta_T1_cut.size(); ++i )
+		E_vs_theta_T1_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < E_vs_theta_ebis_off_cut.size(); ++i )
+		E_vs_theta_ebis_off_cut[i]->Reset("ICESM");
+
+	// Array - Ex vs. z
+	Ex_vs_z->Reset("ICESM");
+	Ex_vs_z_ebis->Reset("ICESM");
+	Ex_vs_z_ebis_on->Reset("ICESM");
+	Ex_vs_z_ebis_off->Reset("ICESM");
+	Ex_vs_z_T1->Reset("ICESM");
+
+	Ex_vs_z_recoil->Reset("ICESM");
+	Ex_vs_z_recoilT->Reset("ICESM");
+	Ex_vs_z_recoil_random->Reset("ICESM");
+	Ex_vs_z_recoilT_random->Reset("ICESM");
+
+	if( react->GammaRayHistsEnabled() ){
+
+		Ex_vs_z_gamma->Reset("ICESM");
+		Ex_vs_z_gammaT->Reset("ICESM");
+		Ex_vs_z_gamma_random->Reset("ICESM");
+		Ex_vs_z_gammaT_random->Reset("ICESM");
+
+	}
+
+	for( unsigned int i = 0; i < Ex_vs_z_recoil_mod.size(); ++i )
+		Ex_vs_z_recoil_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_z_recoilT_mod.size(); ++i )
+		Ex_vs_z_recoilT_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_z_recoil_random_mod.size(); ++i )
+		Ex_vs_z_recoil_random_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_z_recoilT_random_mod.size(); ++i )
+		Ex_vs_z_recoilT_random_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_z_recoil_cut.size(); ++i )
+		Ex_vs_z_recoil_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_z_recoilT_cut.size(); ++i )
+		Ex_vs_z_recoilT_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_z_recoil_random_cut.size(); ++i )
+		Ex_vs_z_recoil_random_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_z_recoilT_random_cut.size(); ++i )
+		Ex_vs_z_recoilT_random_cut[i]->Reset("ICESM");
+
+
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
+
+		Ex_vs_z_fission->Reset("ICESM");
+		Ex_vs_z_fissionT->Reset("ICESM");
+		Ex_vs_z_fission_random->Reset("ICESM");
+		Ex_vs_z_fissionT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fission_mod.size(); ++i )
+			Ex_vs_z_fission_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fissionT_mod.size(); ++i )
+			Ex_vs_z_fissionT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fission_random_mod.size(); ++i )
+			Ex_vs_z_fission_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fissionT_random_mod.size(); ++i )
+			Ex_vs_z_fissionT_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fission_cut.size(); ++i )
+			Ex_vs_z_fission_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fissionT_cut.size(); ++i )
+			Ex_vs_z_fissionT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fission_random_cut.size(); ++i )
+			Ex_vs_z_fission_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_vs_z_fissionT_random_cut.size(); ++i )
+			Ex_vs_z_fissionT_random_cut[i]->Reset("ICESM");
+
+	}
+
+	for( unsigned int i = 0; i < Ex_vs_z_T1_cut.size(); ++i )
+		Ex_vs_z_T1_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_z_mod.size(); ++i )
+		Ex_vs_z_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_z_ebis_mod.size(); ++i )
+		Ex_vs_z_ebis_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_z_ebis_on_mod.size(); ++i )
+		Ex_vs_z_ebis_on_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_z_ebis_off_mod.size(); ++i )
+		Ex_vs_z_ebis_off_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_z_cut.size(); ++i )
+		Ex_vs_z_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_z_ebis_cut.size(); ++i )
+		Ex_vs_z_ebis_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_z_ebis_on_cut.size(); ++i )
+		Ex_vs_z_ebis_on_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_z_ebis_off_cut.size(); ++i )
+		Ex_vs_z_ebis_off_cut[i]->Reset("ICESM");
+
+	// Array - Ex
+	Ex->Reset("ICESM");
+	Ex_ebis->Reset("ICESM");
+	Ex_ebis_on->Reset("ICESM");
+	Ex_ebis_off->Reset("ICESM");
+	Ex_T1->Reset("ICESM");
+	Ex_vs_T1->Reset("ICESM");
+
+	Ex_recoil->Reset("ICESM");
+	Ex_recoilT->Reset("ICESM");
+	Ex_recoil_random->Reset("ICESM");
+	Ex_recoilT_random->Reset("ICESM");
+
+	if( react->GammaRayHistsEnabled() ){
+
+		Ex_gamma->Reset("ICESM");
+		Ex_gammaT->Reset("ICESM");
+		Ex_gamma_random->Reset("ICESM");
+		Ex_gammaT_random->Reset("ICESM");
+
+	}
+
+	for( unsigned int i = 0; i < Ex_recoil_cut.size(); ++i )
+		Ex_recoil_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_recoilT_cut.size(); ++i )
+		Ex_recoilT_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_recoil_random_cut.size(); ++i )
+		Ex_recoil_random_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_recoilT_random_cut.size(); ++i )
+		Ex_recoilT_random_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_recoil_mod.size(); ++i )
+		Ex_recoil_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_recoilT_mod.size(); ++i )
+		Ex_recoilT_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_recoil_random_mod.size(); ++i )
+		Ex_recoil_random_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_recoilT_random_mod.size(); ++i )
+		Ex_recoilT_random_mod[i]->Reset("ICESM");
+
+
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
+
+		Ex_fission->Reset("ICESM");
+		Ex_fissionT->Reset("ICESM");
+		Ex_fission_gamma->Reset("ICESM");
+		Ex_fission_random->Reset("ICESM");
+		Ex_fissionT_random->Reset("ICESM");
+		Ex_fission_gamma_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fission_cut.size(); ++i )
+			Ex_fission_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fissionT_cut.size(); ++i )
+			Ex_fissionT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fission_random_cut.size(); ++i )
+			Ex_fission_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fissionT_random_cut.size(); ++i )
+			Ex_fissionT_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fission_mod.size(); ++i )
+			Ex_fission_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fissionT_mod.size(); ++i )
+			Ex_fissionT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fission_random_mod.size(); ++i )
+			Ex_fission_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Ex_fissionT_random_mod.size(); ++i )
+			Ex_fissionT_random_mod[i]->Reset("ICESM");
+
+	}
+
+	for( unsigned int i = 0; i < Ex_T1_cut.size(); ++i )
+		Ex_T1_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_vs_T1_cut.size(); ++i )
+		Ex_vs_T1_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_mod.size(); ++i )
+		Ex_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_ebis_mod.size(); ++i )
+		Ex_ebis_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_ebis_on_mod.size(); ++i )
+		Ex_ebis_on_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_ebis_off_mod.size(); ++i )
+		Ex_ebis_off_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_cut.size(); ++i )
+		Ex_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_ebis_cut.size(); ++i )
+		Ex_ebis_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_ebis_on_cut.size(); ++i )
+		Ex_ebis_on_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Ex_ebis_off_cut.size(); ++i )
+		Ex_ebis_off_cut[i]->Reset("ICESM");
+
+	// Array - Theta
+	Theta->Reset("ICESM");
+	Theta_ebis->Reset("ICESM");
+	Theta_ebis_on->Reset("ICESM");
+	Theta_ebis_off->Reset("ICESM");
+	Theta_T1->Reset("ICESM");
+
+	Theta_recoil->Reset("ICESM");
+	Theta_recoilT->Reset("ICESM");
+	Theta_recoil_random->Reset("ICESM");
+	Theta_recoilT_random->Reset("ICESM");
+
+	if( react->GammaRayHistsEnabled() ){
+
+		Theta_gamma->Reset("ICESM");
+		Theta_gammaT->Reset("ICESM");
+		Theta_gamma_random->Reset("ICESM");
+		Theta_gammaT_random->Reset("ICESM");
+
+	}
+
+	for( unsigned int i = 0; i < Theta_recoil_cut.size(); ++i )
+		Theta_recoil_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Theta_recoilT_cut.size(); ++i )
+		Theta_recoilT_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Theta_recoil_random_cut.size(); ++i )
+		Theta_recoil_random_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Theta_recoilT_random_cut.size(); ++i )
+		Theta_recoilT_random_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Theta_recoil_mod.size(); ++i )
+		Theta_recoil_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Theta_recoilT_mod.size(); ++i )
+		Theta_recoilT_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Theta_recoil_random_mod.size(); ++i )
+		Theta_recoil_random_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Theta_recoilT_random_mod.size(); ++i )
+		Theta_recoilT_random_mod[i]->Reset("ICESM");
+
+	if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
+
+		Theta_fission->Reset("ICESM");
+		Theta_fissionT->Reset("ICESM");
+		Theta_fission_random->Reset("ICESM");
+		Theta_fissionT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fission_cut.size(); ++i )
+			Theta_fission_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fissionT_cut.size(); ++i )
+			Theta_fissionT_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fission_random_cut.size(); ++i )
+			Theta_fission_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fissionT_random_cut.size(); ++i )
+			Theta_fissionT_random_cut[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fission_mod.size(); ++i )
+			Theta_fission_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fissionT_mod.size(); ++i )
+			Theta_fissionT_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fission_random_mod.size(); ++i )
+			Theta_fission_random_mod[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < Theta_fissionT_random_mod.size(); ++i )
+			Theta_fissionT_random_mod[i]->Reset("ICESM");
+
+	}
+
+	for( unsigned int i = 0; i < Theta_T1_cut.size(); ++i )
+		Theta_T1_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Theta_mod.size(); ++i )
+		Theta_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Theta_ebis_mod.size(); ++i )
+		Theta_ebis_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Theta_ebis_on_mod.size(); ++i )
+		Theta_ebis_on_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Theta_ebis_off_mod.size(); ++i )
+		Theta_ebis_off_mod[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Theta_cut.size(); ++i )
+		Theta_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Theta_ebis_cut.size(); ++i )
+		Theta_ebis_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Theta_ebis_on_cut.size(); ++i )
+		Theta_ebis_on_cut[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < Theta_ebis_off_cut.size(); ++i )
+		Theta_ebis_off_cut[i]->Reset("ICESM");
+
+
+	// ELUM
+	elum->Reset("ICESM");
+	elum_ebis->Reset("ICESM");
+	elum_ebis_on->Reset("ICESM");
+	elum_ebis_off->Reset("ICESM");
+	elum_vs_T1->Reset("ICESM");
+
+	for( unsigned int i = 0; i < elum_sec.size(); ++i )
+		elum_sec[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < elum_ebis_sec.size(); ++i )
+		elum_ebis_sec[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < elum_ebis_on_sec.size(); ++i )
+		elum_ebis_on_sec[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < elum_ebis_off_sec.size(); ++i )
+		elum_ebis_off_sec[i]->Reset("ICESM");
+
+	if( !react->IsFission() ) {
+
+		elum_recoil->Reset("ICESM");
+		elum_recoilT->Reset("ICESM");
+		elum_recoil_random->Reset("ICESM");
+		elum_recoilT_random->Reset("ICESM");
+
+		for( unsigned int i = 0; i < elum_recoil_sec.size(); ++i )
+			elum_recoil_sec[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < elum_recoilT_sec.size(); ++i )
+			elum_recoilT_sec[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < elum_recoil_random_sec.size(); ++i )
+			elum_recoil_random_sec[i]->Reset("ICESM");
+
+		for( unsigned int i = 0; i < elum_recoilT_random_sec.size(); ++i )
+			elum_recoilT_random_sec[i]->Reset("ICESM");
+
+	}
+
+	lume_recoil->Reset("ICESM");
+	lume_recoilT->Reset("ICESM");
+	lume_recoil_random->Reset("ICESM");
+	lume_recoilT_random->Reset("ICESM");
+
+	for( unsigned int i = 0; i < lume_recoil_det.size(); ++i )
+		lume_recoilT_det[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < lume_recoilT_det.size(); ++i )
+		lume_recoilT_det[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < lume_recoil_random_det.size(); ++i )
+		lume_recoil_random_det[i]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < lume_recoilT_random_det.size(); ++i )
+		lume_recoilT_random_det[i]->Reset("ICESM");
+
+
+	// LUME (All vectors have the same size.)
+	for( unsigned int i = 0; i < lume_det.size(); ++i ) {
+		lume_det[i]->Reset("ICESM");
+		lume_ebis_det[i]->Reset("ICESM");
+		lume_ebis_on_det[i]->Reset("ICESM");
+		lume_ebis_off_det[i]->Reset("ICESM");
+		lume_recoil_det[i]->Reset("ICESM");
+		lume_recoilT_det[i]->Reset("ICESM");
+		lume_recoil_random_det[i]->Reset("ICESM");
+		lume_recoilT_random_det[i]->Reset("ICESM");
+		lume_E_vs_x_det[i]->Reset("ICESM");
+		lume_E_vs_x_ebis_det[i]->Reset("ICESM");
+		lume_E_vs_x_ebis_on_det[i]->Reset("ICESM");
+		lume_E_vs_x_ebis_off_det[i]->Reset("ICESM");
+	}
+
+	lume->Reset("ICESM");
+	lume_E_vs_x->Reset("ICESM");
+	lume_E_vs_x_wide->Reset("ICESM");
+	lume_ebis->Reset("ICESM");
+	lume_ebis_on->Reset("ICESM");
+	lume_ebis_off->Reset("ICESM");
+	lume_recoil->Reset("ICESM");
+	lume_recoilT->Reset("ICESM");
+	lume_recoil_random->Reset("ICESM");
+	lume_recoilT_random->Reset("ICESM");
+	lume_vs_T1->Reset("ICESM");
+	lume_E_vs_x_ebis->Reset("ICESM");
+	lume_E_vs_x_ebis_on->Reset("ICESM");
+	lume_E_vs_x_ebis_off->Reset("ICESM");
+
+	if( react->GammaRayHistsEnabled() ){
+
+		gamma_ebis->Reset("ICESM");
+		gamma_ebis_on->Reset("ICESM");
+		gamma_ebis_off->Reset("ICESM");
+		gamma_gamma_ebis->Reset("ICESM");
+		gamma_fission->Reset("ICESM");
+		gamma_recoil->Reset("ICESM");
+		gamma_recoilT->Reset("ICESM");
+		gamma_array->Reset("ICESM");
+		gamma_gamma_fission->Reset("ICESM");
+		gamma_gamma_recoil->Reset("ICESM");
+		gamma_gamma_array->Reset("ICESM");
+		gamma_Ex_ebis->Reset("ICESM");
+		gamma_Ex_fission->Reset("ICESM");
+		gamma_Ex_recoil->Reset("ICESM");
+		gamma_gamma_td->Reset("ICESM");
+		gamma_fission_td->Reset("ICESM");
+		gamma_recoil_td->Reset("ICESM");
+		gamma_array_td->Reset("ICESM");
+
+		for( unsigned int i = 0; i < gamma_array_cut.size(); ++i )
+			gamma_array_cut[i]->Reset("ICESM");
+		for( unsigned int i = 0; i < gamma_gamma_array_cut.size(); ++i )
+			gamma_gamma_array_cut[i]->Reset("ICESM");
+
+	}
 
 	return;
 
@@ -4025,10 +4945,6 @@ unsigned long ISSHistogrammer::FillHists() {
 		}
 
 	} // all events
-
-	// Force the rest of the events in the buffer to disk
-	output_tree->FlushBaskets();
-	output_file->Write( 0, TObject::kWriteDelete );
 
 	return n_entries;
 
