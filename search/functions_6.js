@@ -282,7 +282,7 @@ var searchData=
   ['getphit_279',['GetPHit',['../classISSArrayEvt.html#a2abc4d95b713a4882ae7cc9afd0569bd',1,'ISSArrayEvt']]],
   ['getphixy_280',['GetPhiXY',['../classISSArrayEvt.html#a5f58d45ee131195751a36819e8772a70',1,'ISSArrayEvt::GetPhiXY()'],['../classISSCDEvt.html#abb151a9769dca1e46b25bad381b1535c',1,'ISSCDEvt::GetPhiXY()']]],
   ['getpid_281',['GetPID',['../classISSArrayEvt.html#afc08aefcbfa0d8633644bdcddfe7f792',1,'ISSArrayEvt::GetPID()'],['../classISSRxEvent.html#ac625aac4763be27803854516de3e2ebe',1,'ISSRxEvent::GetPID()']]],
-  ['getposition_282',['GetPosition',['../classISSArrayEvt.html#a73cc05337e89f0b3287fe7b371594f2a',1,'ISSArrayEvt']]],
+  ['getposition_282',['GetPosition',['../classISSArrayEvt.html#a73cc05337e89f0b3287fe7b371594f2a',1,'ISSArrayEvt::GetPosition()'],['../classISSMwpcEvt.html#ac59b08dcf5223bf0e2d462e60bcc1180',1,'ISSMwpcEvt::GetPosition()']]],
   ['getptime_283',['GetPTime',['../classISSArrayEvt.html#a7d74d6c1f0ed79a0796acebd1500c0d2',1,'ISSArrayEvt']]],
   ['getpulseheightcorrection_284',['GetPulseHeightCorrection',['../classISSReaction.html#a0b99deb1a1d464c460c5f72bb2900955',1,'ISSReaction']]],
   ['getqdiff_285',['GetQdiff',['../classISSVmeData.html#a6797a7a6eb81f0dc6b5f4f4583636baf',1,'ISSVmeData']]],
