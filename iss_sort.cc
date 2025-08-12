@@ -116,18 +116,24 @@ bool overwrite_cal = false;
 // Reaction file
 std::shared_ptr<ISSReaction> myreact;
 
+// Server and controls for the GUI
+THttpServer *serv;
+int port_num = 8030;
+std::string spy_hists_file;
+std::vector<std::vector<std::string>> physhists;
+short spylayout[2] = {2,2};
+
 // Struct for passing to the thread
 typedef struct thptr {
 
 	std::shared_ptr<ISSCalibration> mycal;
 	std::shared_ptr<ISSSettings> myset;
 	std::shared_ptr<ISSReaction> myreact;
+	std::vector<std::vector<std::string>> physhists;
+	short spylayout[2];
+	bool flag_alive;
 
 } thread_data;
-
-// Server and controls for the GUI
-THttpServer *serv;
-int port_num = 8030;
 
 // Pointers to the thread events TODO: sort out inhereted class stuff
 std::shared_ptr<ISSConverter> conv_mon;
@@ -170,7 +176,7 @@ void* monitor_run( void* ptr ){
 	gROOT->ProcessLine( rootline.data() );
 
 	// Get the settings, file etc.
-	thptr *calfiles = (thptr*)ptr;
+	thptr *inputptr = (thptr*)ptr;
 
 	// Filenames for spy
 	std::string spyname_singles = datadir_name + "/singles.root";
@@ -179,19 +185,22 @@ void* monitor_run( void* ptr ){
 
 	// Setup the converter step
 	conv_mon = std::make_shared<ISSConverter>();
-	conv_mon->AddSettings( calfiles->myset );
-	conv_mon->AddCalibration( calfiles->mycal );
+	conv_mon->AddSettings( inputptr->myset );
+	conv_mon->AddCalibration( inputptr->mycal );
 	if( flag_ebis ) conv_mon->EBISOnly();
 
 	// Setup the event builder step
 	eb_mon = std::make_shared<ISSEventBuilder>();
-	eb_mon->AddSettings( calfiles->myset );
-	eb_mon->AddCalibration( calfiles->mycal );
+	eb_mon->AddSettings( inputptr->myset );
+	eb_mon->AddCalibration( inputptr->mycal );
 
 	// Setup the histogram step
 	hist_mon = std::make_shared<ISSHistogrammer>();
-	hist_mon->AddSettings( calfiles->myset );
-	hist_mon->AddReaction( calfiles->myreact );
+	hist_mon->AddSettings( inputptr->myset );
+	hist_mon->AddReaction( inputptr->myreact );
+
+	// Add canvas and hists for spy
+	hist_mon->SetSpyHists( inputptr->physhists, inputptr->spylayout );
 
 	// Data blocks for Data spy
 	if( flag_spy && myset->GetBlockSize() != 0x10000 ) {
@@ -254,7 +263,7 @@ void* monitor_run( void* ptr ){
 
 				// First check if we have data
 				std::cout << "Looking for data from DataSpy" << std::endl;
-				spy_length = myspy.Read( file_id, (char*)buffer, calfiles->myset->GetBlockSize() );
+				spy_length = myspy.Read( file_id, (char*)buffer, inputptr->myset->GetBlockSize() );
 				if( spy_length == 0 && bFirstRun ) {
 					std::cout << "No data yet on first pass" << std::endl;
 					gSystem->Sleep( 2e3 );
@@ -281,7 +290,7 @@ void* monitor_run( void* ptr ){
 					}
 
 					// Read a new block
-					spy_length = myspy.Read( file_id, (char*)buffer, calfiles->myset->GetBlockSize() );
+					spy_length = myspy.Read( file_id, (char*)buffer, inputptr->myset->GetBlockSize() );
 					byte_ctr += spy_length;
 
 				}
@@ -399,6 +408,71 @@ void start_http(){
 	//serv->Hide("/Stop");
 	//serv->Hide("/Reset");
 
+	return;
+
+}
+
+// Function to read histogram info from a file into a 2D vector
+void ReadSpyHistogramList() {
+
+	// Check if the user gave a file
+	if( spy_hists_file.length() == 0 ) {
+
+		std::cout << "Default spy hists" << std::endl;
+
+		// If not, just use some defaults
+		spylayout[0] = 1; // x
+		spylayout[1] = 2; // y
+		physhists.push_back( {"EBISMode/E_vs_z_ebis_on", "TH2", "colz"} );
+		physhists.push_back( {"EBISMode/Ex_ebis", "TH1", "hist"} );
+
+		return;
+
+	}
+
+	std::ifstream infile( spy_hists_file );
+	std::string line;
+
+	// Check it's open
+	if( !infile.is_open() ) {
+
+		std::cerr << "Error: Could not open file " << spy_hists_file << std::endl;
+		return;
+
+	}
+
+	// Check for comments first
+	std::getline( infile, line );
+	while( line.at(0) == '#' )
+		std::getline( infile, line );
+
+	// Read first line: number of histograms in x direction on canvas
+	std::istringstream iss(line);
+	iss >> spylayout[0];
+
+	// Read second line: number of histograms in y direction on canvas
+	std::getline( infile, line );
+	iss = std::istringstream(line);
+	iss >> spylayout[1];
+
+	// Read the file line by line
+	while( std::getline( infile, line ) ) {
+
+		// skip empty lines
+		if( line.length() == 0 ) continue;
+
+		// Stream the line and check for a new item
+		std::string name, classType = "TH1", drawOption = "hist";
+		iss = std::istringstream(line);
+		iss >> name >> classType >> drawOption;
+
+		// If we got something, add it to the list
+		if( name.length() > 0 )
+			physhists.push_back({name, classType, drawOption});
+
+	}
+
+	infile.close();
 	return;
 
 }
@@ -882,6 +956,7 @@ int main( int argc, char *argv[] ){
 	interface->Add("-autocalfile", "Alpha source fit control file", &name_autocal_file );
 	interface->Add("-print-settings", "Print settings", &flag_print_settings );
 	interface->Add("-spy", "Flag to run the DataSpy", &flag_spy );
+	interface->Add("-spyhists", "File containing histograms for monitoring in the spy", &spy_hists_file );
 	interface->Add("-m", "Monitor input file every X seconds", &mon_time );
 	interface->Add("-p", "Port number for web server (default 8030)", &port_num );
 	interface->Add("-d", "Output directory for sorted files", &datadir_name );

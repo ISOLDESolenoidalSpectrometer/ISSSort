@@ -2257,6 +2257,105 @@ void ISSHistogrammer::MakeHists() {
 
 }
 
+
+void ISSHistogrammer::PlotDefaultHists() {
+
+	// Check that we're ready
+	if( !hists_ready ) return;
+
+	// Make the canvas
+	c1 = std::make_unique<TCanvas>("Diagnostics","Monitor hists");
+	c1->Divide(2,2);
+
+	// Plot things
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); i++ ){
+
+		c1->cd(i+1);
+		if( E_vs_z_ebis_on_mod[i] != nullptr )
+			E_vs_z_ebis_on_mod[i]->Draw("colz");
+
+	}
+
+	c1->cd( set->GetNumberOfArrayModules() + 1 );
+	if( E_vs_z_ebis_on != nullptr )
+		E_vs_z_ebis_on->Draw("colz");
+
+	return;
+
+}
+
+void ISSHistogrammer::SetSpyHists( std::vector<std::vector<std::string>> hists, short layout[2] ) {
+
+	// Copy the input hists and layouts
+	spyhists = hists;
+	spylayout[0] = layout[0];
+	spylayout[1] = layout[1];
+
+	// Flag that we have spy mode
+	spymode = true;
+
+}
+
+void ISSHistogrammer::PlotPhysicsHists() {
+
+	// Escape if we haven't built the hists to avoid a seg fault
+	if( !hists_ready ){
+
+		std::cout << "Cannot plot diagnostics yet, wait until histogrammer is ready" << std::endl;
+		return;
+
+	}
+
+	// Get appropriate layout and number of hists
+	unsigned short maxhists = spylayout[0] * spylayout[1];
+	if( maxhists == 0 ) maxhists = 1;
+	if( spyhists.size() > maxhists ) {
+
+		std::cout << "Too many histograms for layout size. Plotting the first ";
+		std::cout << maxhists << " histograms in the list." << std::endl;
+
+	}
+	else maxhists = spyhists.size();
+
+	// Make the canvas
+	c2 = std::make_unique<TCanvas>("Physics","User hists");
+	if( maxhists > 1 && spylayout[0] > 0 && spylayout[1] > 0 )
+		c2->Divide( spylayout[0], spylayout[1] );
+
+	// User defined histograms
+	TH1F *ptr_th1;
+	TH2F *ptr_th2;
+	for( unsigned int i = 0; i < maxhists; i++ ){
+
+		// Go to corresponding canvas
+		c2->cd(i+1);
+
+		// Get this histogram of the right type
+		if( spyhists[i][1] == "TH1" || spyhists[i][1] == "TH1F" || spyhists[i][1] == "TH1D" ) {
+
+			ptr_th1 = (TH1F*)output_file->Get( spyhists[i][0].data() );
+			if( ptr_th1 != nullptr )
+				ptr_th1->Draw( spyhists[i][2].data() );
+
+		}
+
+		else if( spyhists[i][1] == "TH2" || spyhists[i][1] == "TH2F" || spyhists[i][1] == "TH2D" ) {
+
+			ptr_th2 = (TH2F*)output_file->Get( spyhists[i][0].data() );
+			if( ptr_th2 != nullptr )
+				ptr_th2->Draw( spyhists[i][2].data() );
+
+		}
+
+		else std::cout << "Type " << spyhists[i][1] << " not currently supported" << std::endl;
+
+	}
+
+	return;
+
+}
+
+
 void ISSHistogrammer::ResetHist( TObject *obj ) {
 
 	if( obj == nullptr ) return;

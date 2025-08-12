@@ -75,6 +75,11 @@ public:
 
 	inline TFile* GetFile(){ return output_file; };
 
+	// Spy histograms
+	void PlotDefaultHists();
+	void PlotPhysicsHists();
+	void SetSpyHists( std::vector<std::vector<std::string>> hists, short layout[2] );
+
 	// Adds the settings from the external settings file to the class
 	inline void AddSettings( std::shared_ptr<ISSSettings> myset ){
 		set = myset;
@@ -416,6 +421,12 @@ private:
 
 	// Check if histograms are made
 	bool hists_ready = false;
+
+	// Canvas and hist lists for the spy
+	std::vector<std::vector<std::string>> spyhists;
+	short spylayout[2];
+	std::unique_ptr<TCanvas> c1, c2;
+	bool spymode = false;
 
 	// Counters
 	unsigned long n_entries;
