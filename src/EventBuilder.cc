@@ -379,7 +379,8 @@ void ISSEventBuilder::Initialise(){
 	std::vector<char>().swap(rid_list);
 	std::vector<char>().swap(rsec_list);
 
-	std::vector<unsigned short>().swap(mwpctac_list);
+	std::vector<float>().swap(mwpctac_list);
+	std::vector<unsigned short>().swap(mwpctac_raw_list);
 	std::vector<double>().swap(mwpctd_list);
 	std::vector<char>().swap(mwpcaxis_list);
 	std::vector<char>().swap(mwpcid_list);
@@ -718,6 +719,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 					( !myoverflow || !set->GetOverflowRejection() ) ) {	// check overflow
 
 				mwpctac_list.push_back( myenergy );
+				mwpctac_raw_list.push_back( vme_data->GetQdiff() );
 				mwpctd_list.push_back( mytime );
 				mwpcaxis_list.push_back( set->GetMWPCAxis( myvme, mymod, mych ) );
 				mwpcid_list.push_back( set->GetMWPCID( myvme, mymod, mych ) );
@@ -2498,8 +2500,8 @@ void ISSEventBuilder::MwpcFinder() {
 
 	// Checks to prevent re-using events
 	std::vector<unsigned int> index;
-	bool flag_skip;
-	int tac_diff;
+	int tac_diff_raw;
+	float tac_diff_mm;
 
 	// Loop over MWPC events
 	for( unsigned int i = 0; i < mwpctac_list.size(); ++i ) {
@@ -2513,21 +2515,27 @@ void ISSEventBuilder::MwpcFinder() {
 			// Look for matching pair
 			for( unsigned int j = 0; j < mwpctac_list.size(); ++j ) {
 
+				// Skip itself
+				if( i != j ) continue;
+
 				// Check if we already used this hit
-				flag_skip = false;
-				for( unsigned int k = 0; k < index.size(); ++k )
-					if( index[k] == j ) flag_skip = true;
+				if( std::find( index.begin(), index.end(), j ) != index.end() )
+					continue;
 
 				// Found a match
-				if( i != j && mwpcid_list[j] == 1 && !flag_skip &&
-				   mwpcaxis_list[i] == mwpcaxis_list[j] ){
+				if( mwpcid_list[j] == 1 && mwpcaxis_list[i] == mwpcaxis_list[j] ){
 
 					index.push_back(j);
-					tac_diff = (int)mwpctac_list[i] - (int)mwpctac_list[j];
-					mwpc_evt->SetEvent( tac_diff, mwpcaxis_list[i], mwpctd_list[i] );
+					tac_diff_mm = (int)mwpctac_list[i] - (int)mwpctac_list[j];
+					tac_diff_raw = (int)mwpctac_raw_list[i] - (int)mwpctac_raw_list[j];
+					mwpc_evt->SetEvent( tac_diff_raw, tac_diff_mm, mwpcaxis_list[i], mwpctd_list[i] );
 
 					// MWPC profiles, i.e TAC difference spectra
-					mwpc_hit_axis[mwpcaxis_list[i]]->Fill( tac_diff );
+					mwpc_hit_axis[mwpcaxis_list[i]]->Fill( tac_diff_raw );
+
+					// Write event to tree
+					write_evts->AddEvt( mwpc_evt );
+					mwpc_ctr++;
 
 					// Only make one TAC event for a given pair
 					break;
@@ -2536,10 +2544,6 @@ void ISSEventBuilder::MwpcFinder() {
 
 			}
 
-			// Write event to tree
-			write_evts->AddEvt( mwpc_evt );
-			mwpc_ctr++;
-
 		}
 
 	}
@@ -2547,13 +2551,33 @@ void ISSEventBuilder::MwpcFinder() {
 	// If we have a 2 axis system, do an x-y plot
 	if( write_evts->GetMwpcMultiplicity() == 2 ) {
 
-		mwpc_pos->Fill( write_evts->GetMwpcEvt(0)->GetTacDiff(),
-					   write_evts->GetMwpcEvt(1)->GetTacDiff() );
+		// Skip if they are in the same axis, weird events
+		if( write_evts->GetMwpcEvt(0)->GetAxis() != write_evts->GetMwpcEvt(1)->GetAxis() ) {
 
-	}
+			// Check the orientation
+			if( write_evts->GetMwpcEvt(0)->GetAxis() == 1 ) {
 
-	// Clean up
-	//delete mwpc_evt;
+				mwpc_pos_raw->Fill( write_evts->GetMwpcEvt(0)->GetTacDiff(),
+							   write_evts->GetMwpcEvt(1)->GetTacDiff() );
+
+				mwpc_pos_mm->Fill( write_evts->GetMwpcEvt(0)->GetPosition(),
+							   write_evts->GetMwpcEvt(1)->GetPosition() );
+
+			}
+
+			else {
+
+				mwpc_pos_raw->Fill( write_evts->GetMwpcEvt(1)->GetTacDiff(),
+							   write_evts->GetMwpcEvt(0)->GetTacDiff() );
+
+				mwpc_pos_mm->Fill( write_evts->GetMwpcEvt(1)->GetPosition(),
+							   write_evts->GetMwpcEvt(0)->GetPosition() );
+
+			} // orientation
+
+		} // not same axis
+
+	} // multiplicity 2
 
 	return;
 
@@ -3227,42 +3251,42 @@ void ISSEventBuilder::MakeHists(){
 			hname = "pn_1v1_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side multiplicity = 1 vs. n-side multiplicity = 1 (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
-			pn_11[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			pn_11[i][j] = new TH2F( hname.data(), htitle.data(), 1e3, 0, 2e4, 1e3, 0, 2e4 );
 
 			hname = "pn_1v2_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side multiplicity = 1 vs. n-side multiplicity = 2 (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
-			pn_12[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			pn_12[i][j] = new TH2F( hname.data(), htitle.data(), 1e3, 0, 2e4, 1e3, 0, 2e4 );
 
 			hname = "pn_2v1_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side multiplicity = 2 vs. n-side multiplicity = 1 (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
-			pn_21[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			pn_21[i][j] = new TH2F( hname.data(), htitle.data(), 1e3, 0, 2e4, 1e3, 0, 2e4 );
 
 			hname = "pn_2v2_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side multiplicity = 2 vs. n-side multiplicity = 2 (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
-			pn_22[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			pn_22[i][j] = new TH2F( hname.data(), htitle.data(), 1e3, 0, 2e4, 1e3, 0, 2e4 );
 
 			hname = "pn_ab_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side addback energy vs. n-side addback energy (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
-			pn_ab[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			pn_ab[i][j] = new TH2F( hname.data(), htitle.data(), 1e3, 0, 2e4, 1e3, 0, 2e4 );
 
 			hname = "pn_nab_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side singles energy vs. n-side addback energy (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
-			pn_nab[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			pn_nab[i][j] = new TH2F( hname.data(), htitle.data(), 1e3, 0, 2e4, 1e3, 0, 2e4 );
 
 			hname = "pn_pab_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side addback energy vs. n-side singles energy (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
-			pn_pab[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			pn_pab[i][j] = new TH2F( hname.data(), htitle.data(), 1e3, 0, 2e4, 1e3, 0, 2e4 );
 
 			hname = "pn_max_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side max energy vs. n-side max energy (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");p-side energy [keV];n-side energy [keV]";
-			pn_max[i][j] = new TH2F( hname.data(), htitle.data(), 2e3, 0, 2e4, 2e3, 0, 2e4 );
+			pn_max[i][j] = new TH2F( hname.data(), htitle.data(), 1e3, 0, 2e4, 1e3, 0, 2e4 );
 
 			hname = "pn_td_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side vs. n-side time difference after correction (module ";
@@ -3272,12 +3296,12 @@ void ISSEventBuilder::MakeHists(){
 			hname = "pn_td_Ep_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side n-side time difference after correction vs p-side energy (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];p-side energy [keV]";
-			pn_td_Ep[i][j] = new TH2F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20, 2e3, 0, 2e4 );
+			pn_td_Ep[i][j] = new TH2F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20, 1e3, 0, 2e4 );
 
 			hname = "pn_td_En_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side n-side time difference after correction vs n-side energy (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];n-side energy [keV]";
-			pn_td_En[i][j] = new TH2F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20, 2e3, 0, 2e4  );
+			pn_td_En[i][j] = new TH2F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20, 1e3, 0, 2e4  );
 
 			hname = "pn_td_uncorrected_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side vs. n-side time difference before correction (module ";
@@ -3287,12 +3311,12 @@ void ISSEventBuilder::MakeHists(){
 			hname = "pn_td_Ep_uncorrected_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side n-side time difference before correction vs p-side energy (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];p-side energy [keV]";
-			pn_td_Ep_uncorrected[i][j] = new TH2F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20, 2e3, 0, 2e4 );
+			pn_td_Ep_uncorrected[i][j] = new TH2F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20, 1e3, 0, 2e4 );
 
 			hname = "pn_td_En_uncorrected_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side n-side time difference before correction vs n-side energy (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");time difference [ns];n-side energy [keV]";
-			pn_td_En_uncorrected[i][j] = new TH2F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20, 2e3, 0, 2e4  );
+			pn_td_En_uncorrected[i][j] = new TH2F( hname.data(), htitle.data(), 600, -1.0*set->GetEventWindow()-20, set->GetEventWindow()+20, 1e3, 0, 2e4  );
 
 			hname = "pp_td_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "p-side vs. p-side time difference (module ";
@@ -3339,12 +3363,12 @@ void ISSEventBuilder::MakeHists(){
 		hname = "recoil_EdE" + std::to_string(i);
 		htitle = "Recoil dE vs E for sector " + std::to_string(i);
 		htitle += ";Rest energy, E [keV];Energy loss, dE [keV];Counts";
-		recoil_EdE[i] = new TH2F( hname.data(), htitle.data(), 4000, 0, 800000, 4000, 0, 800000 );
+		recoil_EdE[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 400000, 2000, 0, 400000 );
 
 		hname = "recoil_dEsum" + std::to_string(i);
 		htitle = "Recoil dE vs Esum for sector " + std::to_string(i);
 		htitle += ";Total energy, Esum [keV];Energy loss, dE [keV];Counts";
-		recoil_dEsum[i] = new TH2F( hname.data(), htitle.data(), 4000, 0, 800000, 4000, 0, 800000 );
+		recoil_dEsum[i] = new TH2F( hname.data(), htitle.data(), 2000, 0, 400000, 2000, 0, 400000 );
 
 		hname = "recoil_EdE_raw" + std::to_string(i);
 		htitle = "Recoil dE vs E for sector " + std::to_string(i);
@@ -3354,12 +3378,12 @@ void ISSEventBuilder::MakeHists(){
 		hname = "recoil_E_singles" + std::to_string(i);
 		htitle = "Recoil E singles in sector " + std::to_string(i);
 		htitle += "; E [keV]; Counts";
-		recoil_E_singles[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
+		recoil_E_singles[i] = new TH1F( hname.data(), htitle.data(), 2000, 0, 400000 );
 
 		hname = "recoil_dE_singles" + std::to_string(i);
 		htitle = "Recoil dE singles in sector " + std::to_string(i);
 		htitle += "; dE [keV]; Counts";
-		recoil_dE_singles[i] = new TH1F( hname.data(), htitle.data(), 4000, 0, 800000 );
+		recoil_dE_singles[i] = new TH1F( hname.data(), htitle.data(), 2000, 0, 400000 );
 
 		hname = "recoil_E_dE_tdiff" + std::to_string(i);
 		htitle = "Recoil E-dE time difference in sector" + std::to_string(i);
@@ -3404,9 +3428,13 @@ void ISSEventBuilder::MakeHists(){
 
 	}
 
-	hname = "mwpc_pos";
-	htitle = "MWPC x-y TAC difference;x;y;Counts";
-	mwpc_pos = new TH2F( hname.data(), htitle.data(), 8192, -65536, 65536, 8192, -65536, 65536 );
+	hname = "mwpc_pos_raw";
+	htitle = "MWPC x-y TAC difference;x [arb. units];y [arb. units];Counts";
+	mwpc_pos_raw = new TH2F( hname.data(), htitle.data(), 2048, -65536, 65536, 2048, -65536, 65536 );
+
+	hname = "mwpc_pos_mm";
+	htitle = "MWPC x-y TAC difference;x [mm];y [mm];Counts";
+	mwpc_pos_mm = new TH2F( hname.data(), htitle.data(), 2000, -200, 200, 2000, -200, 200 );
 
 
 	// ---------------- //
@@ -3437,7 +3465,7 @@ void ISSEventBuilder::MakeHists(){
 
 	hname = "zd_EdE";
 	htitle = "ZeroDegree dE vs E;Rest Energy [keV];Energy Loss [keV];Counts";
-	zd_EdE = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 4000, 0, 800000 );
+	zd_EdE = new TH2F( hname.data(), htitle.data(), 2000, 0, 20000, 2000, 0, 400000 );
 
 
 	// -------------------- //
@@ -3487,11 +3515,11 @@ void ISSEventBuilder::MakeHists(){
 
 		hname = "lume_E_vs_x_" + std::to_string(i);
 		htitle = "LUME energy vs position spectrum;Position;Energy [keV]";
-		lume_E_vs_x[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 4100, -200, 8000 );
+		lume_E_vs_x[i] = new TH2F( hname.data(), htitle.data(), 400, -2., 2., 2050, -200, 8000 );
 
 		hname = "lume_ne_vs_fe" + std::to_string(i);
 		htitle = "LUME near-side energy vs far-side energy;Energy [keV];Energy [keV]";
-		lume_ne_vs_fe[i] = new TH2F( hname.data(), htitle.data(), 4100, -200, 8000, 4100, -200, 8000 );
+		lume_ne_vs_fe[i] = new TH2F( hname.data(), htitle.data(), 2050, -200, 8000, 2050, -200, 8000 );
 
 	}
 
@@ -3519,7 +3547,7 @@ void ISSEventBuilder::MakeHists(){
 		hname = "cd_rs_en_" + std::to_string(i);
 		htitle = "ring vs. sector energy (layer ";
 		htitle += std::to_string(i) + ");Energy rings (keV);Energy sectors (keV)";
-		cd_rs_en[i] = new TH2F( hname.data(), htitle.data(), 5e3, 0, 2e6, 5e3, 0, 2e6 );
+		cd_rs_en[i] = new TH2F( hname.data(), htitle.data(), 1e3, 0, 2e6, 1e3, 0, 2e6 );
 
 		hname = "cd_rs_td_" + std::to_string(i);
 		htitle = "ring vs. sector time difference (layer ";
@@ -3531,24 +3559,24 @@ void ISSEventBuilder::MakeHists(){
 		htitle += std::to_string(i) + ");Ring ID; Energy (10 keV)";
 		cd_r_en[i] = new TH2F( hname.data(), htitle.data(),
 							  set->GetNumberOfCDRings()+1, -0.5, set->GetNumberOfCDRings()+0.5,
-							  5e3, 0, 2e6 );
+							  1e3, 0, 2e6 );
 
 		hname = "cd_s_en_" + std::to_string(i);
 		htitle = "Sector ID vs. energy (layer ";
 		htitle += std::to_string(i) + ");Sector ID; Energy (10 keV)";
 		cd_s_en[i] = new TH2F( hname.data(), htitle.data(),
 							  set->GetNumberOfCDSectors()+1, -0.5, set->GetNumberOfCDSectors()+0.5,
-							  5e3, 0, 2e6 );
+							  1e3, 0, 2e6 );
 
 	}
 
 	hname = "cd_EdE";
 	htitle = "CD fission fragments dE vs E;Rest Energy [keV];Energy Loss [keV];Counts";
-	cd_EdE = new TH2F( hname.data(), htitle.data(), 5e3, 0, 2e6, 5e3, 0, 2e6 );
+	cd_EdE = new TH2F( hname.data(), htitle.data(), 1e3, 0, 2e6, 1e3, 0, 2e6 );
 
 	hname = "cd_dEsum";
 	htitle = "CD fission fragments dE vs total energy;Total Energy [keV];Energy Loss [keV];Counts";
-	cd_dEsum = new TH2F( hname.data(), htitle.data(), 5e3, 0, 2e6, 5e3, 0, 2e6 );
+	cd_dEsum = new TH2F( hname.data(), htitle.data(), 1e3, 0, 2e6, 1e3, 0, 2e6 );
 
 	hname = "cd_id_td";
 	htitle = "CD time difference between dE layer (id=0) and all other layers;";
@@ -3719,7 +3747,8 @@ void ISSEventBuilder::ResetHists() {
 	for( unsigned int i = 0; i < mwpc_hit_axis.size(); i++ )
 		mwpc_hit_axis[i]->Reset("ICESM");
 
-	mwpc_pos->Reset("ICESM");
+	mwpc_pos_mm->Reset("ICESM");
+	mwpc_pos_raw->Reset("ICESM");
 	elum_E->Reset("ICESM");
 	elum_E_vs_sec->Reset("ICESM");
 	zd_EdE->Reset("ICESM");

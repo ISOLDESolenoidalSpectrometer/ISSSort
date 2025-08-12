@@ -254,14 +254,16 @@ public:
 	ISSMwpcEvt();
 	~ISSMwpcEvt();
 
-	void SetEvent( int mytacdiff, unsigned char myaxis,
-				  double mytime );
+	void SetEvent( int mytacdiff, float mypos,
+				  unsigned char myaxis, double mytime );
 
 	inline void SetTacDiff( int t ){ tacdiff = t; };
+	inline void SetPosition( float p ){ pos = p; };
 	inline void SetAxis( unsigned char a ){ axis = a; };
 	inline void SetTime( double t ){ time = t; };
 
 	inline int				GetTacDiff(){ return tacdiff; };
+	inline int				GetPosition(){ return pos; };
 	inline unsigned char	GetAxis(){ return axis; };
 	inline double			GetTime(){ return time; };
 
@@ -269,10 +271,11 @@ public:
 protected:
 
 	int				tacdiff;	///< TAC differences
+	float			pos;		///< calibrated position in mm
 	unsigned char	axis;		///< axis ID, usually just x=0 and y=1
 	double			time;		///< time stamp of the MWPC event
 
-	ClassDef( ISSMwpcEvt, 2 );
+	ClassDef( ISSMwpcEvt, 3 );
 
 };
 

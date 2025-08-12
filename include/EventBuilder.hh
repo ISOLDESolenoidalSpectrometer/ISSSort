@@ -303,10 +303,11 @@ private:
 	std::vector<char>			rsec_list;	///< list of recoil sectors for RecoilFinder
 
 	// MWPC variables
-	std::vector<unsigned short>	mwpctac_list;	///< TAC time from the MWPC
-	std::vector<double>			mwpctd_list;	///< list of ELUM time differences for ELUMFinder
-	std::vector<char>			mwpcaxis_list;	///< list of axis IDs for the MWPC
-	std::vector<char>			mwpcid_list;	///< list of TAC IDs for the MWPC
+	std::vector<float>			mwpctac_list;		///< TAC time from the MWPC in calibrated mm units
+	std::vector<unsigned short>	mwpctac_raw_list;	///< TAC time from the MWPC in raw Qdiff units
+	std::vector<double>			mwpctd_list;		///< list of ELUM time differences for ELUMFinder
+	std::vector<char>			mwpcaxis_list;		///< list of axis IDs for the MWPC
+	std::vector<char>			mwpcid_list;		///< list of TAC IDs for the MWPC
 
 	// ELUM variables
 	std::vector<float>			een_list;	///< list of ELUM energies for ELUMFinder
@@ -423,7 +424,7 @@ private:
 	// MWPC histograms
 	std::vector<std::vector<TH1F*>> mwpc_tac_axis; ///< The TAC singles spectra in the MWPC
 	std::vector<TH1F*> mwpc_hit_axis; ///< The TAC difference spectra in the MWPC
-	TH2F *mwpc_pos; ///< The TAC differences for multiplicity-2 events
+	TH2F *mwpc_pos_mm, *mwpc_pos_raw; ///< The TAC differences for multiplicity-2 events
 
 	// ELUM histograms
 	TH1F *elum_E; ///< The elum spectrum histogram
