@@ -4607,7 +4607,7 @@ unsigned long ISSHistogrammer::FillHists() {
 
 			}
 
-			else {
+			else if( OffBeam( lume_evt ) ){
 
 				lume_ebis->Fill( lume_evt->GetBE(), -1.* react->GetEBISFillRatio() );
 				lume_ebis_off->Fill( lume_evt->GetBE() );
