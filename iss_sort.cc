@@ -334,6 +334,8 @@ void* monitor_run( void* ptr ){
 
 					// Set output
 					if( bFirstRun ) {
+						hist_mon->PlotDefaultHists();
+						hist_mon->PlotPhysicsHists();
 						hist_mon->SetOutput( spyname_hists.data() );
 					}
 
