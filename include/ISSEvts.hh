@@ -182,8 +182,9 @@ public:
 
 
 	inline float GetEnergy( unsigned char i ){
-		if( i < energy.size() ) return energy.at(i);
-		else return 0;
+		for( unsigned int j = 0; j < energy.size(); ++j )
+			if( GetID(j) == i ) return energy.at(j);
+		return 0;
 	};
 
 	inline float GetEnergyLoss( unsigned char start = 0, unsigned char stop = 0 ){
