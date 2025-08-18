@@ -4466,7 +4466,7 @@ unsigned long ISSHistogrammer::FillHists() {
 
 				// Bragg curve
 				for( unsigned int k = 0; k < cd_evt1->GetEnergies().size(); ++k )
-					fission_bragg->Fill( cd_evt1->GetID(k), cd_evt1->GetEnergy(k) );
+					fission_bragg->Fill( cd_evt1->GetID(k), cd_evt1->GetEnergy( cd_evt1->GetID(k) ) );
 
 				// Energy EdE plot and hit map, after cut on heavy fragment
 				if( FissionCutHeavy( cd_evt1 ) ) {

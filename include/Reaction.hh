@@ -245,9 +245,9 @@ public:
 	inline double HistElabMin(){ return hist_range_elab[0]; }
 	inline double HistElabMax(){ return hist_range_elab[1]; }
 
-	inline unsigned int HistRecoilBins(){ return hist_nbins_cd; }
-	inline double HistRecoilMin(){ return hist_range_cd[0]; }
-	inline double HistRecoilMax(){ return hist_range_cd[1]; }
+	inline unsigned int HistRecoilBins(){ return hist_nbins_recoil; }
+	inline double HistRecoilMin(){ return hist_range_recoil[0]; }
+	inline double HistRecoilMax(){ return hist_range_recoil[1]; }
 
 	inline unsigned int HistGammaBins(){ return hist_nbins_gamma; }
 	inline double HistGammaMin(){ return hist_range_gamma[0]; }
