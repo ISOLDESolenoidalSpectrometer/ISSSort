@@ -1615,6 +1615,7 @@ void ISSEventBuilder::ArrayFinder() {
 
 				// Fill 1p1n histogram
 				pn_11[i][j]->Fill( pen_list.at( pindex.at(0) ), nen_list.at( nindex.at(0) ) );
+				pn_11_ed[i][j]->Fill( pen_list.at( pindex.at(0) ) - nen_list.at( nindex.at(0) ) );
 
 				// Prompt coincidence
 				if( TMath::Abs( pwalk_list.at( pindex.at(0) ) - nwalk_list.at( nindex.at(0) ) ) < set->GetArrayPNHitWindow() ){
@@ -3217,6 +3218,7 @@ void ISSEventBuilder::MakeHists(){
 	pp_td.resize( set->GetNumberOfArrayModules() );
 	nn_td.resize( set->GetNumberOfArrayModules() );
 	pn_mult.resize( set->GetNumberOfArrayModules() );
+	pn_11_ed.resize( set->GetNumberOfArrayModules() );
 
 	// Loop over ISS modules
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
@@ -3244,6 +3246,7 @@ void ISSEventBuilder::MakeHists(){
 		pp_td[i].resize( set->GetNumberOfArrayRows() );
 		nn_td[i].resize( set->GetNumberOfArrayRows() );
 		pn_mult[i].resize( set->GetNumberOfArrayRows() );
+		pn_11_ed[i].resize( set->GetNumberOfArrayRows() );
 
 		// Loop over rows of the array
 		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
@@ -3333,6 +3336,10 @@ void ISSEventBuilder::MakeHists(){
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");mult p-side;mult n-side";
 			pn_mult[i][j] = new TH2F( hname.data(), htitle.data(), 6, -0.5, 5.5, 6, -0.5, 5.5 );
 
+			hname = "pn_1v1_ed_mod" + std::to_string(i) + "_row" + std::to_string(j);
+			htitle = "Energy diff between p and n side, p-side multiplicity = 1 vs. n-side multiplicity = 1 (module ";
+			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");energy difference [keV];counts";
+			pn_11_ed[i][j] = new TH1F( hname.data(), htitle.data(), 2e3, -2e4, 2e4);
 		}
 
 	}
@@ -3718,6 +3725,10 @@ void ISSEventBuilder::ResetHists() {
 	for( unsigned int i = 0; i < pn_mult.size(); i++ )
 		for( unsigned int j = 0; j < pn_mult.at(i).size(); j++ )
 			pn_mult[i][j]->Reset("ICESM");
+
+	for( unsigned int i = 0; i < pn_11_ed.size(); i++ )
+		for( unsigned int j = 0; j < pn_11_ed.at(i).size(); j++ )
+			pn_11_ed[i][j]->Reset("ICESM");
 
 	for( unsigned int i = 0; i < recoil_EdE.size(); i++ )
 		recoil_EdE[i]->Reset("ICESM");
