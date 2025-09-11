@@ -3339,7 +3339,7 @@ void ISSEventBuilder::MakeHists(){
 			hname = "pn_1v1_ed_mod" + std::to_string(i) + "_row" + std::to_string(j);
 			htitle = "Energy diff between p and n side, p-side multiplicity = 1 vs. n-side multiplicity = 1 (module ";
 			htitle += std::to_string(i) + ", row " + std::to_string(j) + ");energy difference [keV];counts";
-			pn_11_ed[i][j] = new TH1F( hname.data(), htitle.data(), 2e3, -2e4, 2e4);
+			pn_11_ed[i][j] = new TH1F( hname.data(), htitle.data(), 2e3, -5e3, 7e3);
 		}
 
 	}
