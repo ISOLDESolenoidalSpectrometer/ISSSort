@@ -90,11 +90,15 @@ DEPENDENCIES =  $(INC_DIR)/AutoCalibrator.hh \
 				$(INC_DIR)/Settings.hh \
 				$(INC_DIR)/TIssData.hh
 
-all: $(BIN_DIR)/iss_sort $(LIB_DIR)/libiss_sort.so
+all: $(BIN_DIR)/iss_sort $(LIB_DIR)/libiss_sort.so $(LIB_DIR)/libiss_sort_no_soname.so
  
 $(LIB_DIR)/libiss_sort.so: iss_sort.o $(OBJECTS) iss_sortDict.o
 	mkdir -p $(LIB_DIR)
 	$(LD) iss_sort.o $(OBJECTS) iss_sortDict.o $(SHAREDSWITCH)$@ $(LIBS) -o $@
+
+$(LIB_DIR)/libiss_sort_no_soname.so: iss_sort.o $(OBJECTS) iss_sortDict.o
+	mkdir -p $(LIB_DIR)
+	$(LD) iss_sort.o $(OBJECTS) iss_sortDict.o -shared $(LIBS) -o $@
 
 $(BIN_DIR)/iss_sort: iss_sort.o $(OBJECTS) iss_sortDict.o
 	mkdir -p $(BIN_DIR)
