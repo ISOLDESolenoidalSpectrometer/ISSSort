@@ -653,6 +653,7 @@ private:
 	TH1F *Ex_recoil, *Ex_recoilT, *Ex_T1;
 	TH1F *Ex_recoil_random, *Ex_recoilT_random;
 	TH1F *Ex_fission, *Ex_fissionT, *Ex_fission_gamma;
+	TH1F *Ex_fission_1FF, *Ex_fission_1FF_gamma, *Ex_fission_2FF;
 	TH1F *Ex_fission_random, *Ex_fissionT_random, *Ex_fission_gamma_random;
 	TH1F *Ex_gamma, *Ex_gammaT;
 	TH1F *Ex_gamma_random, *Ex_gammaT_random;
