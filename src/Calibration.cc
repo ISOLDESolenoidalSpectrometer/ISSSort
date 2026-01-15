@@ -624,7 +624,7 @@ std::string ISSCalibration::CaenType( unsigned int mod, unsigned int chan ){
 
 	}
 
-	return 0;
+	return "";
 
 }
 
@@ -714,7 +714,7 @@ std::string ISSCalibration::MesytecType( unsigned int mod, unsigned int chan ){
 
 	}
 
-	return 0;
+	return "";
 
 }
 

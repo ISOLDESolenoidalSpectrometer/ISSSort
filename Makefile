@@ -20,12 +20,19 @@ else
 	DICTEXT   := _rdict.pcm
 endif
 
+# Note: SONAMESWITCH would be used as $(SONAMESWITCH)$@ in the rule
+# for building $(LIB_DIR)/libiss_sort.so .  However, that causes the
+# dynamic linker to not search for the library but just use the name
+# as a path when it contains a /.  That means that iss_sort cannot be
+# called from another directory.
 PLATFORM:=$(shell uname)
 ifeq ($(PLATFORM),Darwin)
-SHAREDSWITCH = -Qunused-arguments -shared -undefined dynamic_lookup -dynamiclib -Wl,-install_name,'@executable_path/../lib/'# NO ENDING SPACE
+SHAREDSWITCH = -Qunused-arguments -shared -undefined dynamic_lookup -dynamiclib
+SONAMESWITCH = -Wl,-install_name,'@executable_path/../lib/'# NO ENDING SPACE
 OSDEF = -DMACOSX
 else
-SHAREDSWITCH = -shared -Wl,-soname,# NO ENDING SPACE
+SHAREDSWITCH = -shared
+SONAMESWITCH = -Wl,-soname,# NO ENDING SPACE
 OSDEF = -DLINUX
 LIBEXTRA = -lrt
 endif
@@ -91,10 +98,10 @@ DEPENDENCIES =  $(INC_DIR)/AutoCalibrator.hh \
 				$(INC_DIR)/TIssData.hh
 
 all: $(BIN_DIR)/iss_sort $(LIB_DIR)/libiss_sort.so
- 
+
 $(LIB_DIR)/libiss_sort.so: iss_sort.o $(OBJECTS) iss_sortDict.o
 	mkdir -p $(LIB_DIR)
-	$(LD) iss_sort.o $(OBJECTS) iss_sortDict.o $(SHAREDSWITCH)$@ $(LIBS) -o $@
+	$(LD) iss_sort.o $(OBJECTS) iss_sortDict.o $(SHAREDSWITCH) $(LIBS) -o $@
 
 $(BIN_DIR)/iss_sort: iss_sort.o $(OBJECTS) iss_sortDict.o
 	mkdir -p $(BIN_DIR)

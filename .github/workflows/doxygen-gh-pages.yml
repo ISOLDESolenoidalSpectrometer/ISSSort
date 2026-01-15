@@ -2,8 +2,6 @@ name: Doxygen GitHub Pages Deploy Action
 
 on:
   push:
-    branches: [ "*" ]
-  pull_request:
     branches: [ "main" ]
 
 jobs:
