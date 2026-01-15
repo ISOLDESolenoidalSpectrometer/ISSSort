@@ -2920,6 +2920,8 @@ void ISSEventBuilder::CdFinder() {
 		double sectime_cur = cd_evt[partid]->GetdETime();
 		double secen_cur = cd_evt[partid]->GetEnergy(0);
 
+		double best_ring_time = 1e7;
+
 		// Find matching ring, easy if there is only 1
 		int rindex_match = -1;
 		int rindex_reuse = -1;
@@ -2945,6 +2947,8 @@ void ISSEventBuilder::CdFinder() {
 					rindex_match = j;
 					rs_ediff_best = rs_ediff_cur;
 
+					best_ring_time = cdrtd_list[dE_idx][j];
+
 				}
 
 				// otherwise add it to a list we might need to reuse later
@@ -2958,9 +2962,12 @@ void ISSEventBuilder::CdFinder() {
 		if( rs_ediff_best < 9e12 && rindex_match >= 0 ) {
 			cd_evt[partid]->SetRing( cdrid_list[dE_idx][rindex_match] );
 			used_idx.push_back( rindex_match );
+			cd_evt[partid]->SetdETimeRing(best_ring_time);
 		}
-		else if( partid > 0 && rindex_reuse >= 0 )
+		else if( partid > 0 && rindex_reuse >= 0 ){
 			cd_evt[partid]->SetRing( cdrid_list[dE_idx][rindex_reuse] );
+		    cd_evt[partid]->SetdETimeRing(best_ring_time);
+		}
 		else
 			cd_evt[partid]->SetRing( 0xff ); // no ring found
 

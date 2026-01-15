@@ -156,7 +156,7 @@ public:
 	void SetEvent( std::vector<float> myenergy,
 				  std::vector<unsigned char> myid,
 				  unsigned char mysec, unsigned char myring,
-				  double mydetime, double myetime );
+				  double mydetime, double myetime, double mydetime_ring=1e7, double myetime_ring=1e7 );
 
 	void ClearEvent();
 
@@ -167,14 +167,18 @@ public:
 
 	inline void SetSector( unsigned char s ){ sec = s; };
 	inline void SetdETime( double t ){ detime = t; };
+	inline void SetdETimeRing( double t ){ detime_ring = t; };
 	inline void SetETime( double t ){ etime = t; };
+	inline void SetETimeRing( double t ){ etime_ring = t; };
 	inline void SetRing( unsigned char s ){ ring = s; };
 
 	inline unsigned char	GetDepth(){ return energy.size(); };
 	inline unsigned char	GetSector(){ return sec; };
 	inline double			GetTime(){ return detime; };
 	inline double			GetdETime(){ return detime; };
+	inline double           GetdETimeRing(){ return detime_ring;};
 	inline double			GetETime(){ return etime; };
+	inline double           GetETimeRing(){ return etime_ring;};
 	inline unsigned char	GetRing(){ return ring; };
 
 	inline std::vector<float>			GetEnergies(){ return energy; };
@@ -223,8 +227,11 @@ protected:
 	std::vector<float>			energy;	///< differential energy list, i.e. Silicon dE-E length = 2
 	std::vector<unsigned char>	id;		///< differential id list, i.e. dE = 0, E = 1, for example
 	unsigned char				sec;	///< sector of the recoil detector, i.e 0-3 for QQQ1 quadrants
-	double						detime;	///< time stamp of dE event
-	double						etime;	///< time stamp of E event
+	double						detime;	///< time stamp of dE event (sector)
+	double						etime;	///< time stamp of E event  (sector)
+	double                      detime_ring; ///< time stamp of dE event (ring)
+	double                      etime_ring; ///< time stamp of E event (ring)
+	std::vector<float>          energy_ring; ///< not used but nice to have.
 
 	// extra variables for CD events
 	unsigned char				ring;	///< ring of the CD detector
