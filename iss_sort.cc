@@ -893,6 +893,7 @@ void do_autocal(){
 	std::string name_output_file = "autocal.root";
 	std::string hadd_file_list = "";
 	std::string name_results_file = "autocal_results.cal";
+	std::string name_sigmas_file = "autocal_sigmas.dat";
 
 	// Check each file
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
@@ -933,7 +934,7 @@ void do_autocal(){
 
 	// Give this file to the autocalibrator
 	if( autocal.SetOutputFile( name_output_file ) ) return;
-	autocal.DoFits();
+	autocal.DoFits( name_sigmas_file );
 	autocal.SaveCalFile( name_results_file );
 
 }

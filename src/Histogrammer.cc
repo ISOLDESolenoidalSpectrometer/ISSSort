@@ -1002,6 +1002,18 @@ void ISSHistogrammer::MakeHists() {
 		htitle = "Excitation energy gated by fission fragments with a coincident gamma-ray in the energy gate;Excitation energy [keV];Counts per 20 keV";
 		Ex_fission_gamma = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
+		hname = "Ex_fission_1FF";
+		htitle = "Excitation energy gated by 1 fission fragment;Excitation energy [keV];Counts per 20 keV";
+		Ex_fission_1FF = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
+
+		hname = "Ex_fission_1FF_gamma";
+		htitle = "Excitation energy gated by 1 fission fragment and (any) gamma;Excitation energy [keV];Counts per 20 keV";
+		Ex_fission_1FF_gamma = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
+
+		hname = "Ex_fission_2FF";
+		htitle = "Excitation energy gated by 2 fission fragments 180 apart;Excitation energy [keV];Counts per 20 keV";
+		Ex_fission_2FF = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
+
 		hname = "Ex_fission_random";
 		htitle = "Excitation energy time-random gated by fission fragments;Excitation energy [keV];Counts per 20 keV";
 		Ex_fission_random = new TH1F( hname.data(), htitle.data(), react->HistExBins(), react->HistExMin(), react->HistExMax() );
@@ -2931,6 +2943,9 @@ void ISSHistogrammer::ResetHists() {
 		Ex_fission->Reset("ICESM");
 		Ex_fissionT->Reset("ICESM");
 		Ex_fission_gamma->Reset("ICESM");
+		Ex_fission_1FF->Reset("ICESM");
+		Ex_fission_1FF_gamma->Reset("ICESM");
+		Ex_fission_2FF->Reset("ICESM");
 		Ex_fission_random->Reset("ICESM");
 		Ex_fissionT_random->Reset("ICESM");
 		Ex_fission_gamma_random->Reset("ICESM");
@@ -3632,6 +3647,10 @@ unsigned long ISSHistogrammer::FillHists() {
 			bool energycut = false;
 			std::vector<unsigned int> promptgammaidx;
 			std::vector<unsigned int> randomgammaidx;
+			std::vector<unsigned int> promptgammaidx1FF;
+			bool has1FF = false;
+			bool has2FF = false;
+			bool has1FFgamma = false;
 
 			// If we have fission mode
 			if( react->IsFission() && set->GetNumberOfCDLayers() > 0 ) {
@@ -3641,6 +3660,9 @@ unsigned long ISSHistogrammer::FillHists() {
 
 					// Get CD event
 					cd_evt1 = read_evts->GetCDEvt(k);
+
+					if (  PromptCoincidence( cd_evt1, array_evt ) && cd_evt1->GetEnergyTotal() > 5e5 )
+					  has1FF = true;
 
 					// Time differences
 					tdiff = cd_evt1->GetTime() - array_evt->GetTime();
@@ -3675,6 +3697,9 @@ unsigned long ISSHistogrammer::FillHists() {
 						if( PromptCoincidence( cd_evt1, array_evt ) && PromptCoincidence( cd_evt1, cd_evt2 ) &&
 						   TMath::Abs( cd_evt1->GetSector() - cd_evt2->GetSector() ) >= 0.5*set->GetNumberOfCDSectors()-2 &&
 						   TMath::Abs( cd_evt1->GetSector() - cd_evt2->GetSector() ) <= 0.5*set->GetNumberOfCDSectors()+2 ){
+						  if ( cd_evt2->GetEnergyTotal() > 5e5 && cd_evt1->GetEnergyTotal() > 5e5 ){
+							has2FF = true;
+						  }
 
 							promptcheckT = true;
 
@@ -3736,7 +3761,27 @@ unsigned long ISSHistogrammer::FillHists() {
 
 					} // cd events 2
 
+					// Another loop for checking array - 1 FF - gamma coincidence
+					for( unsigned int m = 0; m < read_evts->GetGammaRayMultiplicity(); ++m ){
+
+					  gamma_evt1 = read_evts->GetGammaRayEvt(m);
+
+					  if( PromptCoincidence( gamma_evt1, array_evt ) )
+						  has1FFgamma = true;
+
+					}
+
 				} // cd events 1
+
+				// Fill Ex histogram gated on just 1 FF if its energy is larger than 0
+				if ( has1FF ){
+				  Ex_fission_1FF->Fill( react->GetEx() );
+
+				  if ( has1FFgamma )
+					Ex_fission_1FF_gamma->Fill( react->GetEx() );
+				}
+				if (has2FF)
+				  Ex_fission_2FF->Fill( react->GetEx() );
 
 				// Fill prompt hists
 				if( promptcheckT == true ){

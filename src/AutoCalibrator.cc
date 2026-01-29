@@ -820,7 +820,7 @@ void ISSAutoCalibrator::FindPeaks( TH1F *h, std::vector<float> &centroids, const
 /// \param[in] asic The asic number  (used for implementing custom parameter guesses)
 /// \param[in] chan The channel number  (used for implementing custom parameter guesses)
 /// \returns 1 if the fit worked, 0 if it did not
-bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt ) const {
+bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt, float &sigma ) const {
 
 	// Get mod, asic, chan
 	const unsigned int& mod = mac.mod;
@@ -1086,6 +1086,8 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 		PrintFitWarning( mac, "fit warning", "peak width " + std::to_string(width) + " > " + std::to_string(width_adc_threshold) + " channels in this spectrum");
 	}
 
+	sigma = par[1];
+
 	// Check the value of the chi^2
 	if ( chi2 > 1e5 ){
 
@@ -1126,7 +1128,7 @@ bool ISSAutoCalibrator::FitSpectrum( TH1F *h, std::vector<float> &centroids, std
 /// \param[in] mod Module number
 /// \param[in] asic ASIC number
 /// \param[in] chan Channel number
-void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac ) const {
+void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac, float sigma, std::vector<SigmaResult>& allResults ) const {
 	// Get mod, asic, chan
 	const unsigned int& mod = mac.mod;
 	const unsigned int& asic = mac.asic;
@@ -1202,6 +1204,16 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 								  calfit->GetParameter(1),
 								  0.0 );
 
+	float scaledFWHM = sigma * calfit->GetParameter(1) * 2*TMath::Sqrt(2*TMath::Log(2));
+
+	SigmaResult res;
+	res.mod = mod;
+	res.asic = asic;
+	res.chan = chan;
+	res.fwhm = scaledFWHM;
+
+	allResults.push_back(res);
+
 	// Calculate the residuals
 	float Residuals[NumberOfFoundAlphaPeaks], ResErr[NumberOfFoundAlphaPeaks];
 	for( int i = 0; i < NumberOfFoundAlphaPeaks; ++i ){
@@ -1259,12 +1271,13 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 /// - ISSAutoCalibrator::FitSpectrum()
 /// - ISSAutoCalibrator::CalibrateChannel()
 /// Error messages are printed if any of the fits fail or warnings are issued
-void ISSAutoCalibrator::DoFits() const {
+void ISSAutoCalibrator::DoFits( const std::string& name_sigmas_file ) const {
 
 	// Stuff for histogram and peaks
 	TH2F *m;
 	std::vector<float> centroids;
 	std::vector<float> errors;
+	std::vector<SigmaResult> allResults;
 
 	// Progress bar
 	int nchans = set->GetNumberOfArrayModules();
@@ -1298,7 +1311,7 @@ void ISSAutoCalibrator::DoFits() const {
 
 			// Loop over channels in the asic
 			for( chan = 0; chan < set->GetNumberOfArrayChannels(); chan++ ){
-				DoChannelFit( m, mac );
+			  DoChannelFit( m, mac, allResults );
 
 				// Print progress in percent complete
 				float chanNo = mod * set->GetNumberOfArrayASICs() * set->GetNumberOfArrayChannels();
@@ -1318,6 +1331,14 @@ void ISSAutoCalibrator::DoFits() const {
 
 	} // mos
 
+	std::ofstream out( name_sigmas_file );
+    for (const auto& res : allResults) {
+        out << "asic_" << res.mod
+            << "_" << res.asic
+            << "_" << res.chan
+            << ".FWHM: " << res.fwhm << "\n";
+    }
+
 	return;
 
 }
@@ -1327,7 +1348,7 @@ void ISSAutoCalibrator::DoFits() const {
 /// \param[in] mod  Module number
 /// \param[in] asic ASIC number
 /// \param[in] chan Channel number
-void ISSAutoCalibrator::DoChannelFit( TH2F* m, const ISSAutoCalModAsicChan& mac ) const {
+void ISSAutoCalibrator::DoChannelFit( TH2F* m, const ISSAutoCalModAsicChan& mac, std::vector<SigmaResult>& allResults ) const {
 	// Get mod, asic, chan
 	const unsigned int& mod = mac.mod;
 	const unsigned int& asic = mac.asic;
@@ -1343,6 +1364,7 @@ void ISSAutoCalibrator::DoChannelFit( TH2F* m, const ISSAutoCalModAsicChan& mac 
 		// Clear and resize the vectors holding the centroid and error information
 		std::vector<float> centroids;
 		std::vector<float> errors;
+		float sigma = 0.;
 		centroids.clear();
 		errors.clear();
 		centroids.resize( FF_num_alpha_peaks );
@@ -1382,7 +1404,7 @@ void ISSAutoCalibrator::DoChannelFit( TH2F* m, const ISSAutoCalModAsicChan& mac 
 		}
 
 		// Fit the spectrum with the user-defined peak shape, and get the status of the fit
-		bool fitisgood = FitSpectrum( h, centroids, errors, mac, plot_opt );
+		bool fitisgood = FitSpectrum( h, centroids, errors, mac, plot_opt, sigma );
 
 		// Print error messages if the user-defined fit fails for some reason
 		if( !fitisgood ) {
@@ -1401,7 +1423,7 @@ void ISSAutoCalibrator::DoChannelFit( TH2F* m, const ISSAutoCalModAsicChan& mac 
 		}
 
 		// Calibrate the channel
-		CalibrateChannel( centroids, errors, mac );
+		CalibrateChannel( centroids, errors, mac, sigma, allResults );
 
 	}
 

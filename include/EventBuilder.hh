@@ -388,6 +388,7 @@ private:
     std::vector<std::vector<TH2F*>> pn_td_Ep_uncorrected;	///< Vector of vector of 2D histograms pn-time difference vs p-side energy
     std::vector<std::vector<TH2F*>> pn_td_En_uncorrected;	///< Vector of vector of 2D histograms pn-time difference vs n-side energy
 	std::vector<std::vector<TH2F*>> pn_mult;				///< Vector of vector of 2D histograms p-side vs n-side multiplicity
+  std::vector<std::vector<TH1F*>> pn_11_ed;					///< Vector of vector of 2D histograms holding events with 1p and 1n hit
 
 	// Timing histograms
 	TH1F *tdiff;					///< Histogram containing the time difference between each real (not infodata) signal in the file
