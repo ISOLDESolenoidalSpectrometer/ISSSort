@@ -1003,391 +1003,392 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00893" name="l00893"></a><span class="lineno">  893</span>    std::string name_output_file = <span class="stringliteral">&quot;autocal.root&quot;</span>;</div>
 <div class="line"><a id="l00894" name="l00894"></a><span class="lineno">  894</span>    std::string hadd_file_list = <span class="stringliteral">&quot;&quot;</span>;</div>
 <div class="line"><a id="l00895" name="l00895"></a><span class="lineno">  895</span>    std::string name_results_file = <span class="stringliteral">&quot;autocal_results.cal&quot;</span>;</div>
-<div class="line"><a id="l00896" name="l00896"></a><span class="lineno">  896</span> </div>
-<div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span>    <span class="comment">// Check each file</span></div>
-<div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span>    <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size(); i++ ){</div>
-<div class="line"><a id="l00899" name="l00899"></a><span class="lineno">  899</span> </div>
-<div class="line"><a id="l00900" name="l00900"></a><span class="lineno">  900</span>      <span class="comment">// name of the input file as created in do_convert</span></div>
-<div class="line"><a id="l00901" name="l00901"></a><span class="lineno">  901</span>      name_input_file = <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(i).substr( <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(i).find_last_of(<span class="stringliteral">&quot;/&quot;</span>)+1);</div>
-<div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span>      name_input_file = <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> + <span class="stringliteral">&quot;/&quot;</span> + name_input_file + <span class="stringliteral">&quot;_source.root&quot;</span>;</div>
-<div class="line"><a id="l00903" name="l00903"></a><span class="lineno">  903</span> </div>
-<div class="line"><a id="l00904" name="l00904"></a><span class="lineno">  904</span>        <span class="comment">// Add to list if the converted file exists</span></div>
-<div class="line"><a id="l00905" name="l00905"></a><span class="lineno">  905</span>        ftest.open( name_input_file );</div>
-<div class="line"><a id="l00906" name="l00906"></a><span class="lineno">  906</span>        <span class="keywordflow">if</span>( ftest.is_open() ) {</div>
-<div class="line"><a id="l00907" name="l00907"></a><span class="lineno">  907</span> </div>
-<div class="line"><a id="l00908" name="l00908"></a><span class="lineno">  908</span>            ftest.close();</div>
-<div class="line"><a id="l00909" name="l00909"></a><span class="lineno">  909</span>            rtest = <span class="keyword">new</span> TFile( name_input_file.data() );</div>
-<div class="line"><a id="l00910" name="l00910"></a><span class="lineno">  910</span>            <span class="keywordflow">if</span>( !rtest-&gt;IsZombie() ) {</div>
-<div class="line"><a id="l00911" name="l00911"></a><span class="lineno">  911</span>                hadd_file_list += <span class="stringliteral">&quot; &quot;</span> + name_input_file;</div>
-<div class="line"><a id="l00912" name="l00912"></a><span class="lineno">  912</span>            }</div>
-<div class="line"><a id="l00913" name="l00913"></a><span class="lineno">  913</span>            <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00914" name="l00914"></a><span class="lineno">  914</span>                std::cout &lt;&lt; <span class="stringliteral">&quot;Skipping &quot;</span> &lt;&lt; name_input_file;</div>
-<div class="line"><a id="l00915" name="l00915"></a><span class="lineno">  915</span>                std::cout &lt;&lt; <span class="stringliteral">&quot;, it&#39;s broken&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00916" name="l00916"></a><span class="lineno">  916</span>            }</div>
-<div class="line"><a id="l00917" name="l00917"></a><span class="lineno">  917</span>            rtest-&gt;Close();</div>
-<div class="line"><a id="l00918" name="l00918"></a><span class="lineno">  918</span> </div>
-<div class="line"><a id="l00919" name="l00919"></a><span class="lineno">  919</span>        }</div>
-<div class="line"><a id="l00920" name="l00920"></a><span class="lineno">  920</span> </div>
-<div class="line"><a id="l00921" name="l00921"></a><span class="lineno">  921</span>        <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00922" name="l00922"></a><span class="lineno">  922</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Skipping &quot;</span> &lt;&lt; name_input_file;</div>
-<div class="line"><a id="l00923" name="l00923"></a><span class="lineno">  923</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;, file does not exist&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00924" name="l00924"></a><span class="lineno">  924</span>        }</div>
-<div class="line"><a id="l00925" name="l00925"></a><span class="lineno">  925</span> </div>
-<div class="line"><a id="l00926" name="l00926"></a><span class="lineno">  926</span>    }</div>
-<div class="line"><a id="l00927" name="l00927"></a><span class="lineno">  927</span> </div>
-<div class="line"><a id="l00928" name="l00928"></a><span class="lineno">  928</span>    <span class="comment">// Perform the hadd (doesn&#39;t work on Windows)</span></div>
-<div class="line"><a id="l00929" name="l00929"></a><span class="lineno">  929</span>    std::string cmd = <span class="stringliteral">&quot;hadd -k -T -v 0 -f &quot;</span>;</div>
-<div class="line"><a id="l00930" name="l00930"></a><span class="lineno">  930</span>    cmd += name_output_file;</div>
-<div class="line"><a id="l00931" name="l00931"></a><span class="lineno">  931</span>    cmd += hadd_file_list;</div>
-<div class="line"><a id="l00932" name="l00932"></a><span class="lineno">  932</span>    gSystem-&gt;Exec( cmd.data() );</div>
-<div class="line"><a id="l00933" name="l00933"></a><span class="lineno">  933</span> </div>
-<div class="line"><a id="l00934" name="l00934"></a><span class="lineno">  934</span>    <span class="comment">// Give this file to the autocalibrator</span></div>
-<div class="line"><a id="l00935" name="l00935"></a><span class="lineno">  935</span>    <span class="keywordflow">if</span>( autocal.<a class="code hl_function" href="classISSAutoCalibrator.html#a54be08df86f43f0735026e6c0a0cfac5">SetOutputFile</a>( name_output_file ) ) <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00936" name="l00936"></a><span class="lineno">  936</span>    autocal.<a class="code hl_function" href="classISSAutoCalibrator.html#a5a5073d92318d1da67c2e8ee1450fd5f">DoFits</a>();</div>
-<div class="line"><a id="l00937" name="l00937"></a><span class="lineno">  937</span>    autocal.<a class="code hl_function" href="classISSAutoCalibrator.html#a0bc3ffd378758ee9a4c3dabc73572dc5">SaveCalFile</a>( name_results_file );</div>
-<div class="line"><a id="l00938" name="l00938"></a><span class="lineno">  938</span> </div>
-<div class="line"><a id="l00939" name="l00939"></a><span class="lineno">  939</span>}</div>
+<div class="line"><a id="l00896" name="l00896"></a><span class="lineno">  896</span>    std::string name_sigmas_file = <span class="stringliteral">&quot;autocal_sigmas.dat&quot;</span>;</div>
+<div class="line"><a id="l00897" name="l00897"></a><span class="lineno">  897</span> </div>
+<div class="line"><a id="l00898" name="l00898"></a><span class="lineno">  898</span>    <span class="comment">// Check each file</span></div>
+<div class="line"><a id="l00899" name="l00899"></a><span class="lineno">  899</span>    <span class="keywordflow">for</span>( <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size(); i++ ){</div>
+<div class="line"><a id="l00900" name="l00900"></a><span class="lineno">  900</span> </div>
+<div class="line"><a id="l00901" name="l00901"></a><span class="lineno">  901</span>      <span class="comment">// name of the input file as created in do_convert</span></div>
+<div class="line"><a id="l00902" name="l00902"></a><span class="lineno">  902</span>      name_input_file = <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(i).substr( <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(i).find_last_of(<span class="stringliteral">&quot;/&quot;</span>)+1);</div>
+<div class="line"><a id="l00903" name="l00903"></a><span class="lineno">  903</span>      name_input_file = <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> + <span class="stringliteral">&quot;/&quot;</span> + name_input_file + <span class="stringliteral">&quot;_source.root&quot;</span>;</div>
+<div class="line"><a id="l00904" name="l00904"></a><span class="lineno">  904</span> </div>
+<div class="line"><a id="l00905" name="l00905"></a><span class="lineno">  905</span>        <span class="comment">// Add to list if the converted file exists</span></div>
+<div class="line"><a id="l00906" name="l00906"></a><span class="lineno">  906</span>        ftest.open( name_input_file );</div>
+<div class="line"><a id="l00907" name="l00907"></a><span class="lineno">  907</span>        <span class="keywordflow">if</span>( ftest.is_open() ) {</div>
+<div class="line"><a id="l00908" name="l00908"></a><span class="lineno">  908</span> </div>
+<div class="line"><a id="l00909" name="l00909"></a><span class="lineno">  909</span>            ftest.close();</div>
+<div class="line"><a id="l00910" name="l00910"></a><span class="lineno">  910</span>            rtest = <span class="keyword">new</span> TFile( name_input_file.data() );</div>
+<div class="line"><a id="l00911" name="l00911"></a><span class="lineno">  911</span>            <span class="keywordflow">if</span>( !rtest-&gt;IsZombie() ) {</div>
+<div class="line"><a id="l00912" name="l00912"></a><span class="lineno">  912</span>                hadd_file_list += <span class="stringliteral">&quot; &quot;</span> + name_input_file;</div>
+<div class="line"><a id="l00913" name="l00913"></a><span class="lineno">  913</span>            }</div>
+<div class="line"><a id="l00914" name="l00914"></a><span class="lineno">  914</span>            <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00915" name="l00915"></a><span class="lineno">  915</span>                std::cout &lt;&lt; <span class="stringliteral">&quot;Skipping &quot;</span> &lt;&lt; name_input_file;</div>
+<div class="line"><a id="l00916" name="l00916"></a><span class="lineno">  916</span>                std::cout &lt;&lt; <span class="stringliteral">&quot;, it&#39;s broken&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00917" name="l00917"></a><span class="lineno">  917</span>            }</div>
+<div class="line"><a id="l00918" name="l00918"></a><span class="lineno">  918</span>            rtest-&gt;Close();</div>
+<div class="line"><a id="l00919" name="l00919"></a><span class="lineno">  919</span> </div>
+<div class="line"><a id="l00920" name="l00920"></a><span class="lineno">  920</span>        }</div>
+<div class="line"><a id="l00921" name="l00921"></a><span class="lineno">  921</span> </div>
+<div class="line"><a id="l00922" name="l00922"></a><span class="lineno">  922</span>        <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00923" name="l00923"></a><span class="lineno">  923</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Skipping &quot;</span> &lt;&lt; name_input_file;</div>
+<div class="line"><a id="l00924" name="l00924"></a><span class="lineno">  924</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;, file does not exist&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00925" name="l00925"></a><span class="lineno">  925</span>        }</div>
+<div class="line"><a id="l00926" name="l00926"></a><span class="lineno">  926</span> </div>
+<div class="line"><a id="l00927" name="l00927"></a><span class="lineno">  927</span>    }</div>
+<div class="line"><a id="l00928" name="l00928"></a><span class="lineno">  928</span> </div>
+<div class="line"><a id="l00929" name="l00929"></a><span class="lineno">  929</span>    <span class="comment">// Perform the hadd (doesn&#39;t work on Windows)</span></div>
+<div class="line"><a id="l00930" name="l00930"></a><span class="lineno">  930</span>    std::string cmd = <span class="stringliteral">&quot;hadd -k -T -v 0 -f &quot;</span>;</div>
+<div class="line"><a id="l00931" name="l00931"></a><span class="lineno">  931</span>    cmd += name_output_file;</div>
+<div class="line"><a id="l00932" name="l00932"></a><span class="lineno">  932</span>    cmd += hadd_file_list;</div>
+<div class="line"><a id="l00933" name="l00933"></a><span class="lineno">  933</span>    gSystem-&gt;Exec( cmd.data() );</div>
+<div class="line"><a id="l00934" name="l00934"></a><span class="lineno">  934</span> </div>
+<div class="line"><a id="l00935" name="l00935"></a><span class="lineno">  935</span>    <span class="comment">// Give this file to the autocalibrator</span></div>
+<div class="line"><a id="l00936" name="l00936"></a><span class="lineno">  936</span>    <span class="keywordflow">if</span>( autocal.<a class="code hl_function" href="classISSAutoCalibrator.html#a54be08df86f43f0735026e6c0a0cfac5">SetOutputFile</a>( name_output_file ) ) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00937" name="l00937"></a><span class="lineno">  937</span>    autocal.<a class="code hl_function" href="classISSAutoCalibrator.html#af14bd2dc8925bf4fce9f94537b0af923">DoFits</a>( name_sigmas_file );</div>
+<div class="line"><a id="l00938" name="l00938"></a><span class="lineno">  938</span>    autocal.<a class="code hl_function" href="classISSAutoCalibrator.html#a0bc3ffd378758ee9a4c3dabc73572dc5">SaveCalFile</a>( name_results_file );</div>
+<div class="line"><a id="l00939" name="l00939"></a><span class="lineno">  939</span> </div>
+<div class="line"><a id="l00940" name="l00940"></a><span class="lineno">  940</span>}</div>
 </div>
-<div class="line"><a id="l00940" name="l00940"></a><span class="lineno">  940</span> </div>
-<div class="foldopen" id="foldopen00941" data-start="{" data-end="}">
-<div class="line"><a id="l00941" name="l00941"></a><span class="lineno"><a class="line" href="iss__sort_8cc.html#a0ddf1224851353fc92bfbff6f499fa97">  941</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="iss__sort_8cc.html#a0ddf1224851353fc92bfbff6f499fa97">main</a>( <span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[] ){</div>
-<div class="line"><a id="l00942" name="l00942"></a><span class="lineno">  942</span> </div>
-<div class="line"><a id="l00943" name="l00943"></a><span class="lineno">  943</span>    <span class="comment">// Command line interface, stolen from MiniballCoulexSort</span></div>
-<div class="line"><a id="l00944" name="l00944"></a><span class="lineno">  944</span>    <a class="code hl_class" href="classCommandLineInterface.html">CommandLineInterface</a> *<span class="keyword">interface </span>= new <a class="code hl_class" href="classCommandLineInterface.html">CommandLineInterface</a>();</div>
-<div class="line"><a id="l00945" name="l00945"></a><span class="lineno">  945</span> </div>
-<div class="line"><a id="l00946" name="l00946"></a><span class="lineno">  946</span>    interface-&gt;<a class="code hl_function" href="classCommandLineInterface.html#a7c2c2753fa255f169868cda2427dca09">Add</a>(<span class="stringliteral">&quot;-i&quot;</span>, <span class="stringliteral">&quot;List of input files&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a> );</div>
-<div class="line"><a id="l00947" name="l00947"></a><span class="lineno">  947</span>    interface-&gt;Add(<span class="stringliteral">&quot;-o&quot;</span>, <span class="stringliteral">&quot;Output file for histogram file&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a4bfaa4b497cb5e62d0cfc56f5ce8cfc9">output_name</a> );</div>
-<div class="line"><a id="l00948" name="l00948"></a><span class="lineno">  948</span>    interface-&gt;Add(<span class="stringliteral">&quot;-s&quot;</span>, <span class="stringliteral">&quot;Settings file&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a> );</div>
-<div class="line"><a id="l00949" name="l00949"></a><span class="lineno">  949</span>    interface-&gt;Add(<span class="stringliteral">&quot;-c&quot;</span>, <span class="stringliteral">&quot;Calibration file&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a> );</div>
-<div class="line"><a id="l00950" name="l00950"></a><span class="lineno">  950</span>    interface-&gt;Add(<span class="stringliteral">&quot;-r&quot;</span>, <span class="stringliteral">&quot;Reaction file&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a> );</div>
-<div class="line"><a id="l00951" name="l00951"></a><span class="lineno">  951</span>    interface-&gt;Add(<span class="stringliteral">&quot;-nptool&quot;</span>, <span class="stringliteral">&quot;Flag for NPTool simulation input&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a168afe80430d452277f1e1223cfe96ad">flag_nptool</a> );</div>
-<div class="line"><a id="l00952" name="l00952"></a><span class="lineno">  952</span>    interface-&gt;Add(<span class="stringliteral">&quot;-pace4&quot;</span>, <span class="stringliteral">&quot;Flag for PACE4 particle input&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a8be1132fc1d4ed4327e6da015dca266b">flag_pace4</a> );</div>
-<div class="line"><a id="l00953" name="l00953"></a><span class="lineno">  953</span>    interface-&gt;Add(<span class="stringliteral">&quot;-ebis&quot;</span>, <span class="stringliteral">&quot;Flag to define an EBIS only run, discarding data &gt;4ms after an EBIS event&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a55503ff77225231612ee8ea3b3fdc563">flag_ebis</a> );</div>
-<div class="line"><a id="l00954" name="l00954"></a><span class="lineno">  954</span>    interface-&gt;Add(<span class="stringliteral">&quot;-f&quot;</span>, <span class="stringliteral">&quot;Flag to force new ROOT conversion&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a985fef1e481004770256d46745047e88">flag_convert</a> );</div>
-<div class="line"><a id="l00955" name="l00955"></a><span class="lineno">  955</span>    interface-&gt;Add(<span class="stringliteral">&quot;-e&quot;</span>, <span class="stringliteral">&quot;Flag to force new event builder (new calibration)&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a105a04c58bd21374ef7ac2c2979808c8">flag_events</a> );</div>
-<div class="line"><a id="l00956" name="l00956"></a><span class="lineno">  956</span>    interface-&gt;Add(<span class="stringliteral">&quot;-source&quot;</span>, <span class="stringliteral">&quot;Flag to define an source only run&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#adb73828698a0a12204817ca52b87306d">flag_source</a> );</div>
-<div class="line"><a id="l00957" name="l00957"></a><span class="lineno">  957</span>    interface-&gt;Add(<span class="stringliteral">&quot;-autocal&quot;</span>, <span class="stringliteral">&quot;Flag to perform automatic calibration of alpha source data&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#adf35380934191656865ce6b2e87a075f">flag_autocal</a> );</div>
-<div class="line"><a id="l00958" name="l00958"></a><span class="lineno">  958</span>    interface-&gt;Add(<span class="stringliteral">&quot;-autocalfile&quot;</span>, <span class="stringliteral">&quot;Alpha source fit control file&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#af76db0e4927aade207c1fc171c0557e7">name_autocal_file</a> );</div>
-<div class="line"><a id="l00959" name="l00959"></a><span class="lineno">  959</span>    interface-&gt;Add(<span class="stringliteral">&quot;-print-settings&quot;</span>, <span class="stringliteral">&quot;Print settings&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a061119f5a08c61dd1fe3763b25a1f45e">flag_print_settings</a> );</div>
-<div class="line"><a id="l00960" name="l00960"></a><span class="lineno">  960</span>    interface-&gt;Add(<span class="stringliteral">&quot;-spy&quot;</span>, <span class="stringliteral">&quot;Flag to run the DataSpy&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#acfc4310b631d6d8bcfc7086cc6bef35d">flag_spy</a> );</div>
-<div class="line"><a id="l00961" name="l00961"></a><span class="lineno">  961</span>    interface-&gt;Add(<span class="stringliteral">&quot;-spyhists&quot;</span>, <span class="stringliteral">&quot;File containing histograms for monitoring in the spy&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a9c47c2546e083731399d4357c4962c71">spy_hists_file</a> );</div>
-<div class="line"><a id="l00962" name="l00962"></a><span class="lineno">  962</span>    interface-&gt;Add(<span class="stringliteral">&quot;-m&quot;</span>, <span class="stringliteral">&quot;Monitor input file every X seconds&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a78d5896ee413f173ff7e7fdcf9b912c7">mon_time</a> );</div>
-<div class="line"><a id="l00963" name="l00963"></a><span class="lineno">  963</span>    interface-&gt;Add(<span class="stringliteral">&quot;-p&quot;</span>, <span class="stringliteral">&quot;Port number for web server (default 8030)&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a61b9e2a604e69f931450c0996867e5b8">port_num</a> );</div>
-<div class="line"><a id="l00964" name="l00964"></a><span class="lineno">  964</span>    interface-&gt;Add(<span class="stringliteral">&quot;-d&quot;</span>, <span class="stringliteral">&quot;Output directory for sorted files&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> );</div>
-<div class="line"><a id="l00965" name="l00965"></a><span class="lineno">  965</span>    interface-&gt;Add(<span class="stringliteral">&quot;-g&quot;</span>, <span class="stringliteral">&quot;Launch the GUI&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a3570c7473853b430e9fab3b030ac450b">gui_flag</a> );</div>
-<div class="line"><a id="l00966" name="l00966"></a><span class="lineno">  966</span>    interface-&gt;Add(<span class="stringliteral">&quot;-h&quot;</span>, <span class="stringliteral">&quot;Print this help&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a47a15d53605fd7375635b3265f6d0ff2">help_flag</a> );</div>
-<div class="line"><a id="l00967" name="l00967"></a><span class="lineno">  967</span> </div>
-<div class="line"><a id="l00968" name="l00968"></a><span class="lineno">  968</span>    interface-&gt;CheckFlags( argc, argv );</div>
-<div class="line"><a id="l00969" name="l00969"></a><span class="lineno">  969</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a47a15d53605fd7375635b3265f6d0ff2">help_flag</a> ) {</div>
-<div class="line"><a id="l00970" name="l00970"></a><span class="lineno">  970</span> </div>
-<div class="line"><a id="l00971" name="l00971"></a><span class="lineno">  971</span>        interface-&gt;CheckFlags( 1, argv );</div>
-<div class="line"><a id="l00972" name="l00972"></a><span class="lineno">  972</span>        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00973" name="l00973"></a><span class="lineno">  973</span> </div>
-<div class="line"><a id="l00974" name="l00974"></a><span class="lineno">  974</span>    }</div>
-<div class="line"><a id="l00975" name="l00975"></a><span class="lineno">  975</span> </div>
-<div class="line"><a id="l00976" name="l00976"></a><span class="lineno">  976</span>    <span class="comment">// If we are launching the GUI</span></div>
-<div class="line"><a id="l00977" name="l00977"></a><span class="lineno">  977</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a3570c7473853b430e9fab3b030ac450b">gui_flag</a> || argc == 1 ) {</div>
-<div class="line"><a id="l00978" name="l00978"></a><span class="lineno">  978</span> </div>
-<div class="line"><a id="l00979" name="l00979"></a><span class="lineno">  979</span>        TApplication theApp( <span class="stringliteral">&quot;App&quot;</span>, &amp;argc, argv );</div>
-<div class="line"><a id="l00980" name="l00980"></a><span class="lineno">  980</span>        <span class="keyword">new</span> <a class="code hl_class" href="classISSGUI.html">ISSGUI</a>();</div>
-<div class="line"><a id="l00981" name="l00981"></a><span class="lineno">  981</span>        theApp.Run();</div>
-<div class="line"><a id="l00982" name="l00982"></a><span class="lineno">  982</span> </div>
-<div class="line"><a id="l00983" name="l00983"></a><span class="lineno">  983</span>        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00984" name="l00984"></a><span class="lineno">  984</span> </div>
-<div class="line"><a id="l00985" name="l00985"></a><span class="lineno">  985</span>    }</div>
-<div class="line"><a id="l00986" name="l00986"></a><span class="lineno">  986</span> </div>
-<div class="line"><a id="l00987" name="l00987"></a><span class="lineno">  987</span>    <span class="comment">// Check we have data files</span></div>
-<div class="line"><a id="l00988" name="l00988"></a><span class="lineno">  988</span>    <span class="keywordflow">if</span>( !<a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size() &amp;&amp; !<a class="code hl_variable" href="iss__sort_8cc.html#acfc4310b631d6d8bcfc7086cc6bef35d">flag_spy</a> ) {</div>
-<div class="line"><a id="l00989" name="l00989"></a><span class="lineno">  989</span> </div>
-<div class="line"><a id="l00990" name="l00990"></a><span class="lineno">  990</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;You have to provide at least one input file (data or simulation) unless you are in DataSpy mode!&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l00991" name="l00991"></a><span class="lineno">  991</span>            <span class="keywordflow">return</span> 1;</div>
-<div class="line"><a id="l00992" name="l00992"></a><span class="lineno">  992</span> </div>
-<div class="line"><a id="l00993" name="l00993"></a><span class="lineno">  993</span>    }</div>
-<div class="line"><a id="l00994" name="l00994"></a><span class="lineno">  994</span> </div>
-<div class="line"><a id="l00995" name="l00995"></a><span class="lineno">  995</span>    <span class="comment">// Check if this is a source run</span></div>
-<div class="line"><a id="l00996" name="l00996"></a><span class="lineno">  996</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#adf35380934191656865ce6b2e87a075f">flag_autocal</a> ){</div>
-<div class="line"><a id="l00997" name="l00997"></a><span class="lineno">  997</span> </div>
-<div class="line"><a id="l00998" name="l00998"></a><span class="lineno">  998</span>        <a class="code hl_variable" href="iss__sort_8cc.html#adb73828698a0a12204817ca52b87306d">flag_source</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00999" name="l00999"></a><span class="lineno">  999</span> </div>
-<div class="line"><a id="l01000" name="l01000"></a><span class="lineno"> 1000</span>        <span class="keywordflow">if</span> ( <a class="code hl_variable" href="iss__sort_8cc.html#af76db0e4927aade207c1fc171c0557e7">name_autocal_file</a>.length() &gt; 0 ){</div>
-<div class="line"><a id="l01001" name="l01001"></a><span class="lineno"> 1001</span> </div>
-<div class="line"><a id="l01002" name="l01002"></a><span class="lineno"> 1002</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Autocal file: &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#af76db0e4927aade207c1fc171c0557e7">name_autocal_file</a> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01003" name="l01003"></a><span class="lineno"> 1003</span> </div>
-<div class="line"><a id="l01004" name="l01004"></a><span class="lineno"> 1004</span>        }</div>
-<div class="line"><a id="l01005" name="l01005"></a><span class="lineno"> 1005</span> </div>
-<div class="line"><a id="l01006" name="l01006"></a><span class="lineno"> 1006</span>        <span class="keywordflow">else</span>{</div>
-<div class="line"><a id="l01007" name="l01007"></a><span class="lineno"> 1007</span> </div>
-<div class="line"><a id="l01008" name="l01008"></a><span class="lineno"> 1008</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;No autocal file provided. Using defaults.&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01009" name="l01009"></a><span class="lineno"> 1009</span>            <a class="code hl_variable" href="iss__sort_8cc.html#af76db0e4927aade207c1fc171c0557e7">name_autocal_file</a> = <span class="stringliteral">&quot;dummy&quot;</span>;</div>
-<div class="line"><a id="l01010" name="l01010"></a><span class="lineno"> 1010</span> </div>
-<div class="line"><a id="l01011" name="l01011"></a><span class="lineno"> 1011</span>        }</div>
-<div class="line"><a id="l01012" name="l01012"></a><span class="lineno"> 1012</span> </div>
-<div class="line"><a id="l01013" name="l01013"></a><span class="lineno"> 1013</span>    }</div>
-<div class="line"><a id="l01014" name="l01014"></a><span class="lineno"> 1014</span> </div>
-<div class="line"><a id="l01015" name="l01015"></a><span class="lineno"> 1015</span>    <span class="comment">// Check if we have real data, i.e. not simulation</span></div>
-<div class="line"><a id="l01016" name="l01016"></a><span class="lineno"> 1016</span>    <span class="keywordflow">if</span>( !<a class="code hl_variable" href="iss__sort_8cc.html#a8be1132fc1d4ed4327e6da015dca266b">flag_pace4</a> &amp;&amp; !<a class="code hl_variable" href="iss__sort_8cc.html#a168afe80430d452277f1e1223cfe96ad">flag_nptool</a> ) <a class="code hl_variable" href="iss__sort_8cc.html#a3d1492ba28dd95f2663d0fcb519f76ec">flag_data</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01017" name="l01017"></a><span class="lineno"> 1017</span> </div>
+<div class="line"><a id="l00941" name="l00941"></a><span class="lineno">  941</span> </div>
+<div class="foldopen" id="foldopen00942" data-start="{" data-end="}">
+<div class="line"><a id="l00942" name="l00942"></a><span class="lineno"><a class="line" href="iss__sort_8cc.html#a0ddf1224851353fc92bfbff6f499fa97">  942</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="iss__sort_8cc.html#a0ddf1224851353fc92bfbff6f499fa97">main</a>( <span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[] ){</div>
+<div class="line"><a id="l00943" name="l00943"></a><span class="lineno">  943</span> </div>
+<div class="line"><a id="l00944" name="l00944"></a><span class="lineno">  944</span>    <span class="comment">// Command line interface, stolen from MiniballCoulexSort</span></div>
+<div class="line"><a id="l00945" name="l00945"></a><span class="lineno">  945</span>    <a class="code hl_class" href="classCommandLineInterface.html">CommandLineInterface</a> *<span class="keyword">interface </span>= new <a class="code hl_class" href="classCommandLineInterface.html">CommandLineInterface</a>();</div>
+<div class="line"><a id="l00946" name="l00946"></a><span class="lineno">  946</span> </div>
+<div class="line"><a id="l00947" name="l00947"></a><span class="lineno">  947</span>    interface-&gt;<a class="code hl_function" href="classCommandLineInterface.html#a7c2c2753fa255f169868cda2427dca09">Add</a>(<span class="stringliteral">&quot;-i&quot;</span>, <span class="stringliteral">&quot;List of input files&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a> );</div>
+<div class="line"><a id="l00948" name="l00948"></a><span class="lineno">  948</span>    interface-&gt;Add(<span class="stringliteral">&quot;-o&quot;</span>, <span class="stringliteral">&quot;Output file for histogram file&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a4bfaa4b497cb5e62d0cfc56f5ce8cfc9">output_name</a> );</div>
+<div class="line"><a id="l00949" name="l00949"></a><span class="lineno">  949</span>    interface-&gt;Add(<span class="stringliteral">&quot;-s&quot;</span>, <span class="stringliteral">&quot;Settings file&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a> );</div>
+<div class="line"><a id="l00950" name="l00950"></a><span class="lineno">  950</span>    interface-&gt;Add(<span class="stringliteral">&quot;-c&quot;</span>, <span class="stringliteral">&quot;Calibration file&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a> );</div>
+<div class="line"><a id="l00951" name="l00951"></a><span class="lineno">  951</span>    interface-&gt;Add(<span class="stringliteral">&quot;-r&quot;</span>, <span class="stringliteral">&quot;Reaction file&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a> );</div>
+<div class="line"><a id="l00952" name="l00952"></a><span class="lineno">  952</span>    interface-&gt;Add(<span class="stringliteral">&quot;-nptool&quot;</span>, <span class="stringliteral">&quot;Flag for NPTool simulation input&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a168afe80430d452277f1e1223cfe96ad">flag_nptool</a> );</div>
+<div class="line"><a id="l00953" name="l00953"></a><span class="lineno">  953</span>    interface-&gt;Add(<span class="stringliteral">&quot;-pace4&quot;</span>, <span class="stringliteral">&quot;Flag for PACE4 particle input&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a8be1132fc1d4ed4327e6da015dca266b">flag_pace4</a> );</div>
+<div class="line"><a id="l00954" name="l00954"></a><span class="lineno">  954</span>    interface-&gt;Add(<span class="stringliteral">&quot;-ebis&quot;</span>, <span class="stringliteral">&quot;Flag to define an EBIS only run, discarding data &gt;4ms after an EBIS event&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a55503ff77225231612ee8ea3b3fdc563">flag_ebis</a> );</div>
+<div class="line"><a id="l00955" name="l00955"></a><span class="lineno">  955</span>    interface-&gt;Add(<span class="stringliteral">&quot;-f&quot;</span>, <span class="stringliteral">&quot;Flag to force new ROOT conversion&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a985fef1e481004770256d46745047e88">flag_convert</a> );</div>
+<div class="line"><a id="l00956" name="l00956"></a><span class="lineno">  956</span>    interface-&gt;Add(<span class="stringliteral">&quot;-e&quot;</span>, <span class="stringliteral">&quot;Flag to force new event builder (new calibration)&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a105a04c58bd21374ef7ac2c2979808c8">flag_events</a> );</div>
+<div class="line"><a id="l00957" name="l00957"></a><span class="lineno">  957</span>    interface-&gt;Add(<span class="stringliteral">&quot;-source&quot;</span>, <span class="stringliteral">&quot;Flag to define an source only run&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#adb73828698a0a12204817ca52b87306d">flag_source</a> );</div>
+<div class="line"><a id="l00958" name="l00958"></a><span class="lineno">  958</span>    interface-&gt;Add(<span class="stringliteral">&quot;-autocal&quot;</span>, <span class="stringliteral">&quot;Flag to perform automatic calibration of alpha source data&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#adf35380934191656865ce6b2e87a075f">flag_autocal</a> );</div>
+<div class="line"><a id="l00959" name="l00959"></a><span class="lineno">  959</span>    interface-&gt;Add(<span class="stringliteral">&quot;-autocalfile&quot;</span>, <span class="stringliteral">&quot;Alpha source fit control file&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#af76db0e4927aade207c1fc171c0557e7">name_autocal_file</a> );</div>
+<div class="line"><a id="l00960" name="l00960"></a><span class="lineno">  960</span>    interface-&gt;Add(<span class="stringliteral">&quot;-print-settings&quot;</span>, <span class="stringliteral">&quot;Print settings&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a061119f5a08c61dd1fe3763b25a1f45e">flag_print_settings</a> );</div>
+<div class="line"><a id="l00961" name="l00961"></a><span class="lineno">  961</span>    interface-&gt;Add(<span class="stringliteral">&quot;-spy&quot;</span>, <span class="stringliteral">&quot;Flag to run the DataSpy&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#acfc4310b631d6d8bcfc7086cc6bef35d">flag_spy</a> );</div>
+<div class="line"><a id="l00962" name="l00962"></a><span class="lineno">  962</span>    interface-&gt;Add(<span class="stringliteral">&quot;-spyhists&quot;</span>, <span class="stringliteral">&quot;File containing histograms for monitoring in the spy&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a9c47c2546e083731399d4357c4962c71">spy_hists_file</a> );</div>
+<div class="line"><a id="l00963" name="l00963"></a><span class="lineno">  963</span>    interface-&gt;Add(<span class="stringliteral">&quot;-m&quot;</span>, <span class="stringliteral">&quot;Monitor input file every X seconds&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a78d5896ee413f173ff7e7fdcf9b912c7">mon_time</a> );</div>
+<div class="line"><a id="l00964" name="l00964"></a><span class="lineno">  964</span>    interface-&gt;Add(<span class="stringliteral">&quot;-p&quot;</span>, <span class="stringliteral">&quot;Port number for web server (default 8030)&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a61b9e2a604e69f931450c0996867e5b8">port_num</a> );</div>
+<div class="line"><a id="l00965" name="l00965"></a><span class="lineno">  965</span>    interface-&gt;Add(<span class="stringliteral">&quot;-d&quot;</span>, <span class="stringliteral">&quot;Output directory for sorted files&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> );</div>
+<div class="line"><a id="l00966" name="l00966"></a><span class="lineno">  966</span>    interface-&gt;Add(<span class="stringliteral">&quot;-g&quot;</span>, <span class="stringliteral">&quot;Launch the GUI&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a3570c7473853b430e9fab3b030ac450b">gui_flag</a> );</div>
+<div class="line"><a id="l00967" name="l00967"></a><span class="lineno">  967</span>    interface-&gt;Add(<span class="stringliteral">&quot;-h&quot;</span>, <span class="stringliteral">&quot;Print this help&quot;</span>, &amp;<a class="code hl_variable" href="iss__sort_8cc.html#a47a15d53605fd7375635b3265f6d0ff2">help_flag</a> );</div>
+<div class="line"><a id="l00968" name="l00968"></a><span class="lineno">  968</span> </div>
+<div class="line"><a id="l00969" name="l00969"></a><span class="lineno">  969</span>    interface-&gt;CheckFlags( argc, argv );</div>
+<div class="line"><a id="l00970" name="l00970"></a><span class="lineno">  970</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a47a15d53605fd7375635b3265f6d0ff2">help_flag</a> ) {</div>
+<div class="line"><a id="l00971" name="l00971"></a><span class="lineno">  971</span> </div>
+<div class="line"><a id="l00972" name="l00972"></a><span class="lineno">  972</span>        interface-&gt;CheckFlags( 1, argv );</div>
+<div class="line"><a id="l00973" name="l00973"></a><span class="lineno">  973</span>        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00974" name="l00974"></a><span class="lineno">  974</span> </div>
+<div class="line"><a id="l00975" name="l00975"></a><span class="lineno">  975</span>    }</div>
+<div class="line"><a id="l00976" name="l00976"></a><span class="lineno">  976</span> </div>
+<div class="line"><a id="l00977" name="l00977"></a><span class="lineno">  977</span>    <span class="comment">// If we are launching the GUI</span></div>
+<div class="line"><a id="l00978" name="l00978"></a><span class="lineno">  978</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a3570c7473853b430e9fab3b030ac450b">gui_flag</a> || argc == 1 ) {</div>
+<div class="line"><a id="l00979" name="l00979"></a><span class="lineno">  979</span> </div>
+<div class="line"><a id="l00980" name="l00980"></a><span class="lineno">  980</span>        TApplication theApp( <span class="stringliteral">&quot;App&quot;</span>, &amp;argc, argv );</div>
+<div class="line"><a id="l00981" name="l00981"></a><span class="lineno">  981</span>        <span class="keyword">new</span> <a class="code hl_class" href="classISSGUI.html">ISSGUI</a>();</div>
+<div class="line"><a id="l00982" name="l00982"></a><span class="lineno">  982</span>        theApp.Run();</div>
+<div class="line"><a id="l00983" name="l00983"></a><span class="lineno">  983</span> </div>
+<div class="line"><a id="l00984" name="l00984"></a><span class="lineno">  984</span>        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00985" name="l00985"></a><span class="lineno">  985</span> </div>
+<div class="line"><a id="l00986" name="l00986"></a><span class="lineno">  986</span>    }</div>
+<div class="line"><a id="l00987" name="l00987"></a><span class="lineno">  987</span> </div>
+<div class="line"><a id="l00988" name="l00988"></a><span class="lineno">  988</span>    <span class="comment">// Check we have data files</span></div>
+<div class="line"><a id="l00989" name="l00989"></a><span class="lineno">  989</span>    <span class="keywordflow">if</span>( !<a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size() &amp;&amp; !<a class="code hl_variable" href="iss__sort_8cc.html#acfc4310b631d6d8bcfc7086cc6bef35d">flag_spy</a> ) {</div>
+<div class="line"><a id="l00990" name="l00990"></a><span class="lineno">  990</span> </div>
+<div class="line"><a id="l00991" name="l00991"></a><span class="lineno">  991</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;You have to provide at least one input file (data or simulation) unless you are in DataSpy mode!&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00992" name="l00992"></a><span class="lineno">  992</span>            <span class="keywordflow">return</span> 1;</div>
+<div class="line"><a id="l00993" name="l00993"></a><span class="lineno">  993</span> </div>
+<div class="line"><a id="l00994" name="l00994"></a><span class="lineno">  994</span>    }</div>
+<div class="line"><a id="l00995" name="l00995"></a><span class="lineno">  995</span> </div>
+<div class="line"><a id="l00996" name="l00996"></a><span class="lineno">  996</span>    <span class="comment">// Check if this is a source run</span></div>
+<div class="line"><a id="l00997" name="l00997"></a><span class="lineno">  997</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#adf35380934191656865ce6b2e87a075f">flag_autocal</a> ){</div>
+<div class="line"><a id="l00998" name="l00998"></a><span class="lineno">  998</span> </div>
+<div class="line"><a id="l00999" name="l00999"></a><span class="lineno">  999</span>        <a class="code hl_variable" href="iss__sort_8cc.html#adb73828698a0a12204817ca52b87306d">flag_source</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l01000" name="l01000"></a><span class="lineno"> 1000</span> </div>
+<div class="line"><a id="l01001" name="l01001"></a><span class="lineno"> 1001</span>        <span class="keywordflow">if</span> ( <a class="code hl_variable" href="iss__sort_8cc.html#af76db0e4927aade207c1fc171c0557e7">name_autocal_file</a>.length() &gt; 0 ){</div>
+<div class="line"><a id="l01002" name="l01002"></a><span class="lineno"> 1002</span> </div>
+<div class="line"><a id="l01003" name="l01003"></a><span class="lineno"> 1003</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Autocal file: &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#af76db0e4927aade207c1fc171c0557e7">name_autocal_file</a> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01004" name="l01004"></a><span class="lineno"> 1004</span> </div>
+<div class="line"><a id="l01005" name="l01005"></a><span class="lineno"> 1005</span>        }</div>
+<div class="line"><a id="l01006" name="l01006"></a><span class="lineno"> 1006</span> </div>
+<div class="line"><a id="l01007" name="l01007"></a><span class="lineno"> 1007</span>        <span class="keywordflow">else</span>{</div>
+<div class="line"><a id="l01008" name="l01008"></a><span class="lineno"> 1008</span> </div>
+<div class="line"><a id="l01009" name="l01009"></a><span class="lineno"> 1009</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;No autocal file provided. Using defaults.&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01010" name="l01010"></a><span class="lineno"> 1010</span>            <a class="code hl_variable" href="iss__sort_8cc.html#af76db0e4927aade207c1fc171c0557e7">name_autocal_file</a> = <span class="stringliteral">&quot;dummy&quot;</span>;</div>
+<div class="line"><a id="l01011" name="l01011"></a><span class="lineno"> 1011</span> </div>
+<div class="line"><a id="l01012" name="l01012"></a><span class="lineno"> 1012</span>        }</div>
+<div class="line"><a id="l01013" name="l01013"></a><span class="lineno"> 1013</span> </div>
+<div class="line"><a id="l01014" name="l01014"></a><span class="lineno"> 1014</span>    }</div>
+<div class="line"><a id="l01015" name="l01015"></a><span class="lineno"> 1015</span> </div>
+<div class="line"><a id="l01016" name="l01016"></a><span class="lineno"> 1016</span>    <span class="comment">// Check if we have real data, i.e. not simulation</span></div>
+<div class="line"><a id="l01017" name="l01017"></a><span class="lineno"> 1017</span>    <span class="keywordflow">if</span>( !<a class="code hl_variable" href="iss__sort_8cc.html#a8be1132fc1d4ed4327e6da015dca266b">flag_pace4</a> &amp;&amp; !<a class="code hl_variable" href="iss__sort_8cc.html#a168afe80430d452277f1e1223cfe96ad">flag_nptool</a> ) <a class="code hl_variable" href="iss__sort_8cc.html#a3d1492ba28dd95f2663d0fcb519f76ec">flag_data</a> = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l01018" name="l01018"></a><span class="lineno"> 1018</span> </div>
-<div class="line"><a id="l01019" name="l01019"></a><span class="lineno"> 1019</span>    <span class="comment">// Check if we should be monitoring the input</span></div>
-<div class="line"><a id="l01020" name="l01020"></a><span class="lineno"> 1020</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#acfc4310b631d6d8bcfc7086cc6bef35d">flag_spy</a> ) {</div>
-<div class="line"><a id="l01021" name="l01021"></a><span class="lineno"> 1021</span> </div>
-<div class="line"><a id="l01022" name="l01022"></a><span class="lineno"> 1022</span>        <span class="comment">// Register signal and signal handler for DataSpy only</span></div>
-<div class="line"><a id="l01023" name="l01023"></a><span class="lineno"> 1023</span>        <span class="comment">//signal( SIGINT, signal_callback_handler );</span></div>
-<div class="line"><a id="l01024" name="l01024"></a><span class="lineno"> 1024</span> </div>
-<div class="line"><a id="l01025" name="l01025"></a><span class="lineno"> 1025</span>        <a class="code hl_variable" href="iss__sort_8cc.html#ab52794e1af93cf9b7af34444c197cc28">flag_monitor</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01026" name="l01026"></a><span class="lineno"> 1026</span>        <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a78d5896ee413f173ff7e7fdcf9b912c7">mon_time</a> &lt; 0 ) <a class="code hl_variable" href="iss__sort_8cc.html#a78d5896ee413f173ff7e7fdcf9b912c7">mon_time</a> = 2;</div>
-<div class="line"><a id="l01027" name="l01027"></a><span class="lineno"> 1027</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;Getting data from shared memory every &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a78d5896ee413f173ff7e7fdcf9b912c7">mon_time</a>;</div>
-<div class="line"><a id="l01028" name="l01028"></a><span class="lineno"> 1028</span>        std::cout &lt;&lt; <span class="stringliteral">&quot; seconds using DataSpy&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01029" name="l01029"></a><span class="lineno"> 1029</span> </div>
-<div class="line"><a id="l01030" name="l01030"></a><span class="lineno"> 1030</span>    }</div>
-<div class="line"><a id="l01031" name="l01031"></a><span class="lineno"> 1031</span> </div>
-<div class="line"><a id="l01032" name="l01032"></a><span class="lineno"> 1032</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a78d5896ee413f173ff7e7fdcf9b912c7">mon_time</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size() == 1 ) {</div>
-<div class="line"><a id="l01033" name="l01033"></a><span class="lineno"> 1033</span> </div>
-<div class="line"><a id="l01034" name="l01034"></a><span class="lineno"> 1034</span>        <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a3d1492ba28dd95f2663d0fcb519f76ec">flag_data</a> ) {</div>
-<div class="line"><a id="l01035" name="l01035"></a><span class="lineno"> 1035</span> </div>
-<div class="line"><a id="l01036" name="l01036"></a><span class="lineno"> 1036</span>            <a class="code hl_variable" href="iss__sort_8cc.html#ab52794e1af93cf9b7af34444c197cc28">flag_monitor</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01037" name="l01037"></a><span class="lineno"> 1037</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Running sort in a loop every &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a78d5896ee413f173ff7e7fdcf9b912c7">mon_time</a>;</div>
-<div class="line"><a id="l01038" name="l01038"></a><span class="lineno"> 1038</span>            std::cout &lt;&lt; <span class="stringliteral">&quot; seconds\nMonitoring &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0) &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01039" name="l01039"></a><span class="lineno"> 1039</span> </div>
-<div class="line"><a id="l01040" name="l01040"></a><span class="lineno"> 1040</span>        }</div>
-<div class="line"><a id="l01041" name="l01041"></a><span class="lineno"> 1041</span> </div>
-<div class="line"><a id="l01042" name="l01042"></a><span class="lineno"> 1042</span>        <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01043" name="l01043"></a><span class="lineno"> 1043</span> </div>
-<div class="line"><a id="l01044" name="l01044"></a><span class="lineno"> 1044</span>            <a class="code hl_variable" href="iss__sort_8cc.html#ab52794e1af93cf9b7af34444c197cc28">flag_monitor</a> = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l01045" name="l01045"></a><span class="lineno"> 1045</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Cannot monitor simulation input files, switching to normal mode&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01046" name="l01046"></a><span class="lineno"> 1046</span> </div>
-<div class="line"><a id="l01047" name="l01047"></a><span class="lineno"> 1047</span>        }</div>
-<div class="line"><a id="l01048" name="l01048"></a><span class="lineno"> 1048</span> </div>
-<div class="line"><a id="l01049" name="l01049"></a><span class="lineno"> 1049</span>    }</div>
-<div class="line"><a id="l01050" name="l01050"></a><span class="lineno"> 1050</span> </div>
-<div class="line"><a id="l01051" name="l01051"></a><span class="lineno"> 1051</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a78d5896ee413f173ff7e7fdcf9b912c7">mon_time</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size() != 1 ) {</div>
-<div class="line"><a id="l01052" name="l01052"></a><span class="lineno"> 1052</span> </div>
-<div class="line"><a id="l01053" name="l01053"></a><span class="lineno"> 1053</span>        <a class="code hl_variable" href="iss__sort_8cc.html#ab52794e1af93cf9b7af34444c197cc28">flag_monitor</a> = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l01054" name="l01054"></a><span class="lineno"> 1054</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;Cannot monitor multiple input files, switching to normal mode&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01055" name="l01055"></a><span class="lineno"> 1055</span> </div>
-<div class="line"><a id="l01056" name="l01056"></a><span class="lineno"> 1056</span>    }</div>
-<div class="line"><a id="l01057" name="l01057"></a><span class="lineno"> 1057</span> </div>
-<div class="line"><a id="l01058" name="l01058"></a><span class="lineno"> 1058</span>    <span class="comment">// Check the directory we are writing to</span></div>
-<div class="line"><a id="l01059" name="l01059"></a><span class="lineno"> 1059</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a>.length() == 0 ) {</div>
-<div class="line"><a id="l01060" name="l01060"></a><span class="lineno"> 1060</span> </div>
-<div class="line"><a id="l01061" name="l01061"></a><span class="lineno"> 1061</span>        <span class="keywordflow">if</span>( <span class="keywordtype">bool</span>( <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size() ) ) {</div>
-<div class="line"><a id="l01062" name="l01062"></a><span class="lineno"> 1062</span> </div>
-<div class="line"><a id="l01063" name="l01063"></a><span class="lineno"> 1063</span>            <span class="comment">// Probably in the current working directory</span></div>
-<div class="line"><a id="l01064" name="l01064"></a><span class="lineno"> 1064</span>            <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0).find(<span class="stringliteral">&quot;/&quot;</span>) == std::string::npos )</div>
-<div class="line"><a id="l01065" name="l01065"></a><span class="lineno"> 1065</span>                <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> = <span class="stringliteral">&quot;./sorted&quot;</span>;</div>
-<div class="line"><a id="l01066" name="l01066"></a><span class="lineno"> 1066</span> </div>
-<div class="line"><a id="l01067" name="l01067"></a><span class="lineno"> 1067</span>            <span class="comment">// Called from a different directory</span></div>
-<div class="line"><a id="l01068" name="l01068"></a><span class="lineno"> 1068</span>            <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01069" name="l01069"></a><span class="lineno"> 1069</span> </div>
-<div class="line"><a id="l01070" name="l01070"></a><span class="lineno"> 1070</span>                <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> = <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0).substr( 0,</div>
-<div class="line"><a id="l01071" name="l01071"></a><span class="lineno"> 1071</span>                                                        <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0).find_last_of(<span class="stringliteral">&quot;/&quot;</span>) );</div>
-<div class="line"><a id="l01072" name="l01072"></a><span class="lineno"> 1072</span>                <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> += <span class="stringliteral">&quot;/sorted&quot;</span>;</div>
-<div class="line"><a id="l01073" name="l01073"></a><span class="lineno"> 1073</span> </div>
-<div class="line"><a id="l01074" name="l01074"></a><span class="lineno"> 1074</span>            }</div>
-<div class="line"><a id="l01075" name="l01075"></a><span class="lineno"> 1075</span> </div>
-<div class="line"><a id="l01076" name="l01076"></a><span class="lineno"> 1076</span>            <span class="comment">// Create the directory if it doesn&#39;t exist (not Windows compliant)</span></div>
-<div class="line"><a id="l01077" name="l01077"></a><span class="lineno"> 1077</span>            std::string cmd = <span class="stringliteral">&quot;mkdir -p &quot;</span> + <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a>;</div>
-<div class="line"><a id="l01078" name="l01078"></a><span class="lineno"> 1078</span>            gSystem-&gt;Exec( cmd.data() );</div>
-<div class="line"><a id="l01079" name="l01079"></a><span class="lineno"> 1079</span> </div>
-<div class="line"><a id="l01080" name="l01080"></a><span class="lineno"> 1080</span>        }</div>
-<div class="line"><a id="l01081" name="l01081"></a><span class="lineno"> 1081</span> </div>
-<div class="line"><a id="l01082" name="l01082"></a><span class="lineno"> 1082</span>        <span class="keywordflow">else</span> <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> = <span class="stringliteral">&quot;dataspy&quot;</span>;</div>
-<div class="line"><a id="l01083" name="l01083"></a><span class="lineno"> 1083</span> </div>
-<div class="line"><a id="l01084" name="l01084"></a><span class="lineno"> 1084</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;Sorted data files being saved to &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01085" name="l01085"></a><span class="lineno"> 1085</span> </div>
-<div class="line"><a id="l01086" name="l01086"></a><span class="lineno"> 1086</span>    }</div>
-<div class="line"><a id="l01087" name="l01087"></a><span class="lineno"> 1087</span> </div>
-<div class="line"><a id="l01088" name="l01088"></a><span class="lineno"> 1088</span>    <span class="comment">// Check the ouput file name</span></div>
-<div class="line"><a id="l01089" name="l01089"></a><span class="lineno"> 1089</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a4bfaa4b497cb5e62d0cfc56f5ce8cfc9">output_name</a>.length() == 0 ) {</div>
-<div class="line"><a id="l01090" name="l01090"></a><span class="lineno"> 1090</span> </div>
-<div class="line"><a id="l01091" name="l01091"></a><span class="lineno"> 1091</span>        <span class="keywordflow">if</span>( <span class="keywordtype">bool</span>( <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size() ) ) {</div>
-<div class="line"><a id="l01092" name="l01092"></a><span class="lineno"> 1092</span> </div>
-<div class="line"><a id="l01093" name="l01093"></a><span class="lineno"> 1093</span>            std::string name_input_file = <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0).substr( <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0).find_last_of(<span class="stringliteral">&quot;/&quot;</span>)+1,</div>
-<div class="line"><a id="l01094" name="l01094"></a><span class="lineno"> 1094</span>                                                                   <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0).length() - <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0).find_last_of(<span class="stringliteral">&quot;/&quot;</span>)-1 );</div>
-<div class="line"><a id="l01095" name="l01095"></a><span class="lineno"> 1095</span>            name_input_file = name_input_file.substr( 0,</div>
-<div class="line"><a id="l01096" name="l01096"></a><span class="lineno"> 1096</span>                                                     name_input_file.find_last_of(<span class="stringliteral">&quot;.&quot;</span>) );</div>
-<div class="line"><a id="l01097" name="l01097"></a><span class="lineno"> 1097</span> </div>
-<div class="line"><a id="l01098" name="l01098"></a><span class="lineno"> 1098</span>            <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size() &gt; 1 ) {</div>
-<div class="line"><a id="l01099" name="l01099"></a><span class="lineno"> 1099</span>                <a class="code hl_variable" href="iss__sort_8cc.html#a4bfaa4b497cb5e62d0cfc56f5ce8cfc9">output_name</a> = <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> + <span class="stringliteral">&quot;/&quot;</span> + name_input_file + <span class="stringliteral">&quot;_hists_&quot;</span>;</div>
-<div class="line"><a id="l01100" name="l01100"></a><span class="lineno"> 1100</span>                <a class="code hl_variable" href="iss__sort_8cc.html#a4bfaa4b497cb5e62d0cfc56f5ce8cfc9">output_name</a> += std::to_string(<a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size()) + <span class="stringliteral">&quot;_subruns.root&quot;</span>;</div>
-<div class="line"><a id="l01101" name="l01101"></a><span class="lineno"> 1101</span>            }</div>
-<div class="line"><a id="l01102" name="l01102"></a><span class="lineno"> 1102</span>            <span class="keywordflow">else</span></div>
-<div class="line"><a id="l01103" name="l01103"></a><span class="lineno"> 1103</span>                <a class="code hl_variable" href="iss__sort_8cc.html#a4bfaa4b497cb5e62d0cfc56f5ce8cfc9">output_name</a> = <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> + <span class="stringliteral">&quot;/&quot;</span> + name_input_file + <span class="stringliteral">&quot;_hists.root&quot;</span>;</div>
-<div class="line"><a id="l01104" name="l01104"></a><span class="lineno"> 1104</span> </div>
-<div class="line"><a id="l01105" name="l01105"></a><span class="lineno"> 1105</span>        }</div>
-<div class="line"><a id="l01106" name="l01106"></a><span class="lineno"> 1106</span> </div>
-<div class="line"><a id="l01107" name="l01107"></a><span class="lineno"> 1107</span>        <span class="keywordflow">else</span> <a class="code hl_variable" href="iss__sort_8cc.html#a4bfaa4b497cb5e62d0cfc56f5ce8cfc9">output_name</a> = <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> + <span class="stringliteral">&quot;/hists.root&quot;</span>;</div>
-<div class="line"><a id="l01108" name="l01108"></a><span class="lineno"> 1108</span> </div>
-<div class="line"><a id="l01109" name="l01109"></a><span class="lineno"> 1109</span>    }</div>
-<div class="line"><a id="l01110" name="l01110"></a><span class="lineno"> 1110</span> </div>
-<div class="line"><a id="l01111" name="l01111"></a><span class="lineno"> 1111</span>    <span class="comment">// Check we have a Settings file</span></div>
-<div class="line"><a id="l01112" name="l01112"></a><span class="lineno"> 1112</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a>.length() &gt; 0 ) {</div>
-<div class="line"><a id="l01113" name="l01113"></a><span class="lineno"> 1113</span> </div>
-<div class="line"><a id="l01114" name="l01114"></a><span class="lineno"> 1114</span>        <span class="comment">// Test if the file exists</span></div>
-<div class="line"><a id="l01115" name="l01115"></a><span class="lineno"> 1115</span>        std::ifstream ftest;</div>
-<div class="line"><a id="l01116" name="l01116"></a><span class="lineno"> 1116</span>        ftest.open( <a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a> );</div>
-<div class="line"><a id="l01117" name="l01117"></a><span class="lineno"> 1117</span>        <span class="keywordflow">if</span>( !ftest.is_open() ) {</div>
-<div class="line"><a id="l01118" name="l01118"></a><span class="lineno"> 1118</span> </div>
-<div class="line"><a id="l01119" name="l01119"></a><span class="lineno"> 1119</span>            std::cout &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a> &lt;&lt; <span class="stringliteral">&quot; does not exist.&quot;</span>;</div>
-<div class="line"><a id="l01120" name="l01120"></a><span class="lineno"> 1120</span>            std::cout &lt;&lt; <span class="stringliteral">&quot; Will attempt to read from ROOT file, or use defaults.&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01121" name="l01121"></a><span class="lineno"> 1121</span>            <a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a> = <span class="stringliteral">&quot;dummy&quot;</span>;</div>
-<div class="line"><a id="l01122" name="l01122"></a><span class="lineno"> 1122</span> </div>
-<div class="line"><a id="l01123" name="l01123"></a><span class="lineno"> 1123</span>        }</div>
-<div class="line"><a id="l01124" name="l01124"></a><span class="lineno"> 1124</span> </div>
-<div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span>        <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01126" name="l01126"></a><span class="lineno"> 1126</span> </div>
-<div class="line"><a id="l01127" name="l01127"></a><span class="lineno"> 1127</span>            ftest.close();</div>
-<div class="line"><a id="l01128" name="l01128"></a><span class="lineno"> 1128</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Settings file provided: &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01129" name="l01129"></a><span class="lineno"> 1129</span>            <a class="code hl_variable" href="iss__sort_8cc.html#a2da963072da52cd1884884057975f8b3">overwrite_set</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01130" name="l01130"></a><span class="lineno"> 1130</span> </div>
-<div class="line"><a id="l01131" name="l01131"></a><span class="lineno"> 1131</span>        }</div>
-<div class="line"><a id="l01132" name="l01132"></a><span class="lineno"> 1132</span> </div>
-<div class="line"><a id="l01133" name="l01133"></a><span class="lineno"> 1133</span>    }</div>
-<div class="line"><a id="l01134" name="l01134"></a><span class="lineno"> 1134</span>    <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01135" name="l01135"></a><span class="lineno"> 1135</span> </div>
-<div class="line"><a id="l01136" name="l01136"></a><span class="lineno"> 1136</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;No settings file provided.&quot;</span>;</div>
-<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span>        std::cout &lt;&lt; <span class="stringliteral">&quot; Will attempt to read from ROOT file, or use defaults.&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01138" name="l01138"></a><span class="lineno"> 1138</span>        <a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a> = <span class="stringliteral">&quot;dummy&quot;</span>;</div>
-<div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span> </div>
-<div class="line"><a id="l01140" name="l01140"></a><span class="lineno"> 1140</span>    }</div>
-<div class="line"><a id="l01141" name="l01141"></a><span class="lineno"> 1141</span> </div>
-<div class="line"><a id="l01142" name="l01142"></a><span class="lineno"> 1142</span>    <span class="comment">// Check we have a calibration file</span></div>
-<div class="line"><a id="l01143" name="l01143"></a><span class="lineno"> 1143</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a>.length() &gt; 0 ) {</div>
-<div class="line"><a id="l01144" name="l01144"></a><span class="lineno"> 1144</span> </div>
-<div class="line"><a id="l01145" name="l01145"></a><span class="lineno"> 1145</span>        <span class="comment">// Test if the file exists</span></div>
-<div class="line"><a id="l01146" name="l01146"></a><span class="lineno"> 1146</span>        std::ifstream ftest;</div>
-<div class="line"><a id="l01147" name="l01147"></a><span class="lineno"> 1147</span>        ftest.open( <a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a>.data() );</div>
-<div class="line"><a id="l01148" name="l01148"></a><span class="lineno"> 1148</span>        <span class="keywordflow">if</span>( !ftest.is_open() ) {</div>
-<div class="line"><a id="l01149" name="l01149"></a><span class="lineno"> 1149</span> </div>
-<div class="line"><a id="l01150" name="l01150"></a><span class="lineno"> 1150</span>            std::cout &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a> &lt;&lt; <span class="stringliteral">&quot; does not exist.&quot;</span>;</div>
-<div class="line"><a id="l01151" name="l01151"></a><span class="lineno"> 1151</span>            std::cout &lt;&lt; <span class="stringliteral">&quot; Will attempt to read from ROOT file, or use defaults.&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span>            <a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a> = <span class="stringliteral">&quot;dummy&quot;</span>;</div>
-<div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span> </div>
-<div class="line"><a id="l01154" name="l01154"></a><span class="lineno"> 1154</span>        }</div>
-<div class="line"><a id="l01155" name="l01155"></a><span class="lineno"> 1155</span> </div>
-<div class="line"><a id="l01156" name="l01156"></a><span class="lineno"> 1156</span>        <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01157" name="l01157"></a><span class="lineno"> 1157</span> </div>
-<div class="line"><a id="l01158" name="l01158"></a><span class="lineno"> 1158</span>            ftest.close();</div>
-<div class="line"><a id="l01159" name="l01159"></a><span class="lineno"> 1159</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Calibration file: &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01160" name="l01160"></a><span class="lineno"> 1160</span>            <a class="code hl_variable" href="iss__sort_8cc.html#af9f81236e86fb558e6611a3921cb01c3">overwrite_cal</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l01161" name="l01161"></a><span class="lineno"> 1161</span> </div>
-<div class="line"><a id="l01162" name="l01162"></a><span class="lineno"> 1162</span>        }</div>
-<div class="line"><a id="l01163" name="l01163"></a><span class="lineno"> 1163</span> </div>
-<div class="line"><a id="l01164" name="l01164"></a><span class="lineno"> 1164</span>    }</div>
-<div class="line"><a id="l01165" name="l01165"></a><span class="lineno"> 1165</span>    <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01166" name="l01166"></a><span class="lineno"> 1166</span> </div>
-<div class="line"><a id="l01167" name="l01167"></a><span class="lineno"> 1167</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;No calibration file provided.&quot;</span>;</div>
-<div class="line"><a id="l01168" name="l01168"></a><span class="lineno"> 1168</span>        std::cout &lt;&lt; <span class="stringliteral">&quot; Will attempt to read from ROOT file, or use defaults.&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01169" name="l01169"></a><span class="lineno"> 1169</span>        <a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a> = <span class="stringliteral">&quot;dummy&quot;</span>;</div>
-<div class="line"><a id="l01170" name="l01170"></a><span class="lineno"> 1170</span> </div>
-<div class="line"><a id="l01171" name="l01171"></a><span class="lineno"> 1171</span>    }</div>
-<div class="line"><a id="l01172" name="l01172"></a><span class="lineno"> 1172</span> </div>
-<div class="line"><a id="l01173" name="l01173"></a><span class="lineno"> 1173</span>    <span class="comment">// Check we have a reaction file</span></div>
-<div class="line"><a id="l01174" name="l01174"></a><span class="lineno"> 1174</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a>.length() &gt; 0 ) {</div>
-<div class="line"><a id="l01175" name="l01175"></a><span class="lineno"> 1175</span> </div>
-<div class="line"><a id="l01176" name="l01176"></a><span class="lineno"> 1176</span>        <span class="comment">// Test if the file exists</span></div>
-<div class="line"><a id="l01177" name="l01177"></a><span class="lineno"> 1177</span>        std::ifstream ftest;</div>
-<div class="line"><a id="l01178" name="l01178"></a><span class="lineno"> 1178</span>        ftest.open( <a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a>.data() );</div>
-<div class="line"><a id="l01179" name="l01179"></a><span class="lineno"> 1179</span>        <span class="keywordflow">if</span>( !ftest.is_open() ) {</div>
-<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"> 1180</span> </div>
-<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span>            std::cout &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a> &lt;&lt; <span class="stringliteral">&quot; does not exist.&quot;</span>;</div>
-<div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span>            std::cout &lt;&lt; <span class="stringliteral">&quot; Using defaults.&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01183" name="l01183"></a><span class="lineno"> 1183</span>            <a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a> = <span class="stringliteral">&quot;dummy&quot;</span>;</div>
-<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span> </div>
-<div class="line"><a id="l01185" name="l01185"></a><span class="lineno"> 1185</span>        }</div>
-<div class="line"><a id="l01186" name="l01186"></a><span class="lineno"> 1186</span> </div>
-<div class="line"><a id="l01187" name="l01187"></a><span class="lineno"> 1187</span>        <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01188" name="l01188"></a><span class="lineno"> 1188</span> </div>
-<div class="line"><a id="l01189" name="l01189"></a><span class="lineno"> 1189</span>            ftest.close();</div>
-<div class="line"><a id="l01190" name="l01190"></a><span class="lineno"> 1190</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Reaction file: &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01191" name="l01191"></a><span class="lineno"> 1191</span> </div>
-<div class="line"><a id="l01192" name="l01192"></a><span class="lineno"> 1192</span>        }</div>
-<div class="line"><a id="l01193" name="l01193"></a><span class="lineno"> 1193</span> </div>
-<div class="line"><a id="l01194" name="l01194"></a><span class="lineno"> 1194</span>    }</div>
-<div class="line"><a id="l01195" name="l01195"></a><span class="lineno"> 1195</span>    <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l01196" name="l01196"></a><span class="lineno"> 1196</span> </div>
-<div class="line"><a id="l01197" name="l01197"></a><span class="lineno"> 1197</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;No reaction file provided. Using defaults.&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01198" name="l01198"></a><span class="lineno"> 1198</span>        <a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a> = <span class="stringliteral">&quot;dummy&quot;</span>;</div>
-<div class="line"><a id="l01199" name="l01199"></a><span class="lineno"> 1199</span> </div>
-<div class="line"><a id="l01200" name="l01200"></a><span class="lineno"> 1200</span>    }</div>
-<div class="line"><a id="l01201" name="l01201"></a><span class="lineno"> 1201</span> </div>
-<div class="line"><a id="l01202" name="l01202"></a><span class="lineno"> 1202</span>    <a class="code hl_variable" href="iss__sort_8cc.html#aef2e709b38e28fdbbfe36870c344b223">myset</a> = std::make_shared&lt;ISSSettings&gt;( <a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a> );</div>
-<div class="line"><a id="l01203" name="l01203"></a><span class="lineno"> 1203</span>    <a class="code hl_variable" href="iss__sort_8cc.html#a9cbb4e440fed9c15c5b13cfcc175dd08">mycal</a> = std::make_shared&lt;ISSCalibration&gt;( <a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a>, <a class="code hl_variable" href="iss__sort_8cc.html#aef2e709b38e28fdbbfe36870c344b223">myset</a> );</div>
-<div class="line"><a id="l01204" name="l01204"></a><span class="lineno"> 1204</span>    <a class="code hl_variable" href="iss__sort_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a> = std::make_shared&lt;ISSReaction&gt;( <a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a>, <a class="code hl_variable" href="iss__sort_8cc.html#aef2e709b38e28fdbbfe36870c344b223">myset</a>, <a class="code hl_variable" href="iss__sort_8cc.html#adb73828698a0a12204817ca52b87306d">flag_source</a> );</div>
-<div class="line"><a id="l01205" name="l01205"></a><span class="lineno"> 1205</span> </div>
-<div class="line"><a id="l01206" name="l01206"></a><span class="lineno"> 1206</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="iss__sort_8cc.html#a061119f5a08c61dd1fe3763b25a1f45e">flag_print_settings</a>)</div>
-<div class="line"><a id="l01207" name="l01207"></a><span class="lineno"> 1207</span>        <a class="code hl_variable" href="iss__sort_8cc.html#aef2e709b38e28fdbbfe36870c344b223">myset</a>-&gt;PrintSettings();</div>
-<div class="line"><a id="l01208" name="l01208"></a><span class="lineno"> 1208</span> </div>
-<div class="line"><a id="l01209" name="l01209"></a><span class="lineno"> 1209</span>    <span class="comment">//-------------------//</span></div>
-<div class="line"><a id="l01210" name="l01210"></a><span class="lineno"> 1210</span>    <span class="comment">// Online monitoring //</span></div>
-<div class="line"><a id="l01211" name="l01211"></a><span class="lineno"> 1211</span>    <span class="comment">//-------------------//</span></div>
-<div class="line"><a id="l01212" name="l01212"></a><span class="lineno"> 1212</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#ab52794e1af93cf9b7af34444c197cc28">flag_monitor</a> || <a class="code hl_variable" href="iss__sort_8cc.html#acfc4310b631d6d8bcfc7086cc6bef35d">flag_spy</a> ) {</div>
-<div class="line"><a id="l01213" name="l01213"></a><span class="lineno"> 1213</span> </div>
-<div class="line"><a id="l01214" name="l01214"></a><span class="lineno"> 1214</span>        <span class="comment">// Make some data for the thread</span></div>
-<div class="line"><a id="l01215" name="l01215"></a><span class="lineno"> 1215</span>        <a class="code hl_struct" href="structthptr.html">thread_data</a> data;</div>
-<div class="line"><a id="l01216" name="l01216"></a><span class="lineno"> 1216</span>        data.<a class="code hl_variable" href="structthptr.html#aa91060b9e437bc75c71c75ddb56094a1">mycal</a> = <a class="code hl_variable" href="iss__sort_8cc.html#a9cbb4e440fed9c15c5b13cfcc175dd08">mycal</a>;</div>
-<div class="line"><a id="l01217" name="l01217"></a><span class="lineno"> 1217</span>        data.<a class="code hl_variable" href="structthptr.html#a0c759da75cc04676de801a4ac2322ddd">myset</a> = <a class="code hl_variable" href="iss__sort_8cc.html#aef2e709b38e28fdbbfe36870c344b223">myset</a>;</div>
-<div class="line"><a id="l01218" name="l01218"></a><span class="lineno"> 1218</span>        data.<a class="code hl_variable" href="structthptr.html#ab395163008ccdf285b71991bf23bc9d8">myreact</a> = <a class="code hl_variable" href="iss__sort_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a>;</div>
-<div class="line"><a id="l01219" name="l01219"></a><span class="lineno"> 1219</span> </div>
-<div class="line"><a id="l01220" name="l01220"></a><span class="lineno"> 1220</span>        <span class="comment">// Start the HTTP server from the main thread (should usually do this)</span></div>
-<div class="line"><a id="l01221" name="l01221"></a><span class="lineno"> 1221</span>        <a class="code hl_function" href="iss__sort_8cc.html#a7b61cf34aa410175d2e55fe2471f3fe7">start_http</a>();</div>
-<div class="line"><a id="l01222" name="l01222"></a><span class="lineno"> 1222</span>        gSystem-&gt;ProcessEvents();</div>
-<div class="line"><a id="l01223" name="l01223"></a><span class="lineno"> 1223</span> </div>
-<div class="line"><a id="l01224" name="l01224"></a><span class="lineno"> 1224</span>        <span class="comment">// Thread for the monitor process</span></div>
-<div class="line"><a id="l01225" name="l01225"></a><span class="lineno"> 1225</span>        TThread *th = <span class="keyword">new</span> TThread( <span class="stringliteral">&quot;monitor&quot;</span>, <a class="code hl_function" href="iss__sort_8cc.html#a41bfdfd4b3dc4ec83a7ad948b00d3993">monitor_run</a>, (<span class="keywordtype">void</span>*) &amp;data );</div>
-<div class="line"><a id="l01226" name="l01226"></a><span class="lineno"> 1226</span>        th-&gt;Run();</div>
-<div class="line"><a id="l01227" name="l01227"></a><span class="lineno"> 1227</span> </div>
-<div class="line"><a id="l01228" name="l01228"></a><span class="lineno"> 1228</span>        <span class="comment">// wait until we finish</span></div>
-<div class="line"><a id="l01229" name="l01229"></a><span class="lineno"> 1229</span>        <span class="keywordflow">while</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a5328d2378558c01ec007e61a8e0d100c">flag_alive</a> ){</div>
-<div class="line"><a id="l01230" name="l01230"></a><span class="lineno"> 1230</span> </div>
-<div class="line"><a id="l01231" name="l01231"></a><span class="lineno"> 1231</span>            gSystem-&gt;Sleep(10);</div>
-<div class="line"><a id="l01232" name="l01232"></a><span class="lineno"> 1232</span>            gSystem-&gt;ProcessEvents();</div>
-<div class="line"><a id="l01233" name="l01233"></a><span class="lineno"> 1233</span> </div>
-<div class="line"><a id="l01234" name="l01234"></a><span class="lineno"> 1234</span>        }</div>
-<div class="line"><a id="l01235" name="l01235"></a><span class="lineno"> 1235</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;Finished&quot;</span> &lt;&lt; std::endl;</div>
-<div class="line"><a id="l01236" name="l01236"></a><span class="lineno"> 1236</span> </div>
-<div class="line"><a id="l01237" name="l01237"></a><span class="lineno"> 1237</span>        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l01238" name="l01238"></a><span class="lineno"> 1238</span> </div>
-<div class="line"><a id="l01239" name="l01239"></a><span class="lineno"> 1239</span>    }</div>
-<div class="line"><a id="l01240" name="l01240"></a><span class="lineno"> 1240</span> </div>
+<div class="line"><a id="l01019" name="l01019"></a><span class="lineno"> 1019</span> </div>
+<div class="line"><a id="l01020" name="l01020"></a><span class="lineno"> 1020</span>    <span class="comment">// Check if we should be monitoring the input</span></div>
+<div class="line"><a id="l01021" name="l01021"></a><span class="lineno"> 1021</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#acfc4310b631d6d8bcfc7086cc6bef35d">flag_spy</a> ) {</div>
+<div class="line"><a id="l01022" name="l01022"></a><span class="lineno"> 1022</span> </div>
+<div class="line"><a id="l01023" name="l01023"></a><span class="lineno"> 1023</span>        <span class="comment">// Register signal and signal handler for DataSpy only</span></div>
+<div class="line"><a id="l01024" name="l01024"></a><span class="lineno"> 1024</span>        <span class="comment">//signal( SIGINT, signal_callback_handler );</span></div>
+<div class="line"><a id="l01025" name="l01025"></a><span class="lineno"> 1025</span> </div>
+<div class="line"><a id="l01026" name="l01026"></a><span class="lineno"> 1026</span>        <a class="code hl_variable" href="iss__sort_8cc.html#ab52794e1af93cf9b7af34444c197cc28">flag_monitor</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l01027" name="l01027"></a><span class="lineno"> 1027</span>        <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a78d5896ee413f173ff7e7fdcf9b912c7">mon_time</a> &lt; 0 ) <a class="code hl_variable" href="iss__sort_8cc.html#a78d5896ee413f173ff7e7fdcf9b912c7">mon_time</a> = 2;</div>
+<div class="line"><a id="l01028" name="l01028"></a><span class="lineno"> 1028</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;Getting data from shared memory every &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a78d5896ee413f173ff7e7fdcf9b912c7">mon_time</a>;</div>
+<div class="line"><a id="l01029" name="l01029"></a><span class="lineno"> 1029</span>        std::cout &lt;&lt; <span class="stringliteral">&quot; seconds using DataSpy&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01030" name="l01030"></a><span class="lineno"> 1030</span> </div>
+<div class="line"><a id="l01031" name="l01031"></a><span class="lineno"> 1031</span>    }</div>
+<div class="line"><a id="l01032" name="l01032"></a><span class="lineno"> 1032</span> </div>
+<div class="line"><a id="l01033" name="l01033"></a><span class="lineno"> 1033</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a78d5896ee413f173ff7e7fdcf9b912c7">mon_time</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size() == 1 ) {</div>
+<div class="line"><a id="l01034" name="l01034"></a><span class="lineno"> 1034</span> </div>
+<div class="line"><a id="l01035" name="l01035"></a><span class="lineno"> 1035</span>        <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a3d1492ba28dd95f2663d0fcb519f76ec">flag_data</a> ) {</div>
+<div class="line"><a id="l01036" name="l01036"></a><span class="lineno"> 1036</span> </div>
+<div class="line"><a id="l01037" name="l01037"></a><span class="lineno"> 1037</span>            <a class="code hl_variable" href="iss__sort_8cc.html#ab52794e1af93cf9b7af34444c197cc28">flag_monitor</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l01038" name="l01038"></a><span class="lineno"> 1038</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Running sort in a loop every &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a78d5896ee413f173ff7e7fdcf9b912c7">mon_time</a>;</div>
+<div class="line"><a id="l01039" name="l01039"></a><span class="lineno"> 1039</span>            std::cout &lt;&lt; <span class="stringliteral">&quot; seconds\nMonitoring &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0) &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01040" name="l01040"></a><span class="lineno"> 1040</span> </div>
+<div class="line"><a id="l01041" name="l01041"></a><span class="lineno"> 1041</span>        }</div>
+<div class="line"><a id="l01042" name="l01042"></a><span class="lineno"> 1042</span> </div>
+<div class="line"><a id="l01043" name="l01043"></a><span class="lineno"> 1043</span>        <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01044" name="l01044"></a><span class="lineno"> 1044</span> </div>
+<div class="line"><a id="l01045" name="l01045"></a><span class="lineno"> 1045</span>            <a class="code hl_variable" href="iss__sort_8cc.html#ab52794e1af93cf9b7af34444c197cc28">flag_monitor</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l01046" name="l01046"></a><span class="lineno"> 1046</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Cannot monitor simulation input files, switching to normal mode&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01047" name="l01047"></a><span class="lineno"> 1047</span> </div>
+<div class="line"><a id="l01048" name="l01048"></a><span class="lineno"> 1048</span>        }</div>
+<div class="line"><a id="l01049" name="l01049"></a><span class="lineno"> 1049</span> </div>
+<div class="line"><a id="l01050" name="l01050"></a><span class="lineno"> 1050</span>    }</div>
+<div class="line"><a id="l01051" name="l01051"></a><span class="lineno"> 1051</span> </div>
+<div class="line"><a id="l01052" name="l01052"></a><span class="lineno"> 1052</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a78d5896ee413f173ff7e7fdcf9b912c7">mon_time</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size() != 1 ) {</div>
+<div class="line"><a id="l01053" name="l01053"></a><span class="lineno"> 1053</span> </div>
+<div class="line"><a id="l01054" name="l01054"></a><span class="lineno"> 1054</span>        <a class="code hl_variable" href="iss__sort_8cc.html#ab52794e1af93cf9b7af34444c197cc28">flag_monitor</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l01055" name="l01055"></a><span class="lineno"> 1055</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;Cannot monitor multiple input files, switching to normal mode&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01056" name="l01056"></a><span class="lineno"> 1056</span> </div>
+<div class="line"><a id="l01057" name="l01057"></a><span class="lineno"> 1057</span>    }</div>
+<div class="line"><a id="l01058" name="l01058"></a><span class="lineno"> 1058</span> </div>
+<div class="line"><a id="l01059" name="l01059"></a><span class="lineno"> 1059</span>    <span class="comment">// Check the directory we are writing to</span></div>
+<div class="line"><a id="l01060" name="l01060"></a><span class="lineno"> 1060</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a>.length() == 0 ) {</div>
+<div class="line"><a id="l01061" name="l01061"></a><span class="lineno"> 1061</span> </div>
+<div class="line"><a id="l01062" name="l01062"></a><span class="lineno"> 1062</span>        <span class="keywordflow">if</span>( <span class="keywordtype">bool</span>( <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size() ) ) {</div>
+<div class="line"><a id="l01063" name="l01063"></a><span class="lineno"> 1063</span> </div>
+<div class="line"><a id="l01064" name="l01064"></a><span class="lineno"> 1064</span>            <span class="comment">// Probably in the current working directory</span></div>
+<div class="line"><a id="l01065" name="l01065"></a><span class="lineno"> 1065</span>            <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0).find(<span class="stringliteral">&quot;/&quot;</span>) == std::string::npos )</div>
+<div class="line"><a id="l01066" name="l01066"></a><span class="lineno"> 1066</span>                <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> = <span class="stringliteral">&quot;./sorted&quot;</span>;</div>
+<div class="line"><a id="l01067" name="l01067"></a><span class="lineno"> 1067</span> </div>
+<div class="line"><a id="l01068" name="l01068"></a><span class="lineno"> 1068</span>            <span class="comment">// Called from a different directory</span></div>
+<div class="line"><a id="l01069" name="l01069"></a><span class="lineno"> 1069</span>            <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01070" name="l01070"></a><span class="lineno"> 1070</span> </div>
+<div class="line"><a id="l01071" name="l01071"></a><span class="lineno"> 1071</span>                <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> = <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0).substr( 0,</div>
+<div class="line"><a id="l01072" name="l01072"></a><span class="lineno"> 1072</span>                                                        <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0).find_last_of(<span class="stringliteral">&quot;/&quot;</span>) );</div>
+<div class="line"><a id="l01073" name="l01073"></a><span class="lineno"> 1073</span>                <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> += <span class="stringliteral">&quot;/sorted&quot;</span>;</div>
+<div class="line"><a id="l01074" name="l01074"></a><span class="lineno"> 1074</span> </div>
+<div class="line"><a id="l01075" name="l01075"></a><span class="lineno"> 1075</span>            }</div>
+<div class="line"><a id="l01076" name="l01076"></a><span class="lineno"> 1076</span> </div>
+<div class="line"><a id="l01077" name="l01077"></a><span class="lineno"> 1077</span>            <span class="comment">// Create the directory if it doesn&#39;t exist (not Windows compliant)</span></div>
+<div class="line"><a id="l01078" name="l01078"></a><span class="lineno"> 1078</span>            std::string cmd = <span class="stringliteral">&quot;mkdir -p &quot;</span> + <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a>;</div>
+<div class="line"><a id="l01079" name="l01079"></a><span class="lineno"> 1079</span>            gSystem-&gt;Exec( cmd.data() );</div>
+<div class="line"><a id="l01080" name="l01080"></a><span class="lineno"> 1080</span> </div>
+<div class="line"><a id="l01081" name="l01081"></a><span class="lineno"> 1081</span>        }</div>
+<div class="line"><a id="l01082" name="l01082"></a><span class="lineno"> 1082</span> </div>
+<div class="line"><a id="l01083" name="l01083"></a><span class="lineno"> 1083</span>        <span class="keywordflow">else</span> <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> = <span class="stringliteral">&quot;dataspy&quot;</span>;</div>
+<div class="line"><a id="l01084" name="l01084"></a><span class="lineno"> 1084</span> </div>
+<div class="line"><a id="l01085" name="l01085"></a><span class="lineno"> 1085</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;Sorted data files being saved to &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01086" name="l01086"></a><span class="lineno"> 1086</span> </div>
+<div class="line"><a id="l01087" name="l01087"></a><span class="lineno"> 1087</span>    }</div>
+<div class="line"><a id="l01088" name="l01088"></a><span class="lineno"> 1088</span> </div>
+<div class="line"><a id="l01089" name="l01089"></a><span class="lineno"> 1089</span>    <span class="comment">// Check the ouput file name</span></div>
+<div class="line"><a id="l01090" name="l01090"></a><span class="lineno"> 1090</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a4bfaa4b497cb5e62d0cfc56f5ce8cfc9">output_name</a>.length() == 0 ) {</div>
+<div class="line"><a id="l01091" name="l01091"></a><span class="lineno"> 1091</span> </div>
+<div class="line"><a id="l01092" name="l01092"></a><span class="lineno"> 1092</span>        <span class="keywordflow">if</span>( <span class="keywordtype">bool</span>( <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size() ) ) {</div>
+<div class="line"><a id="l01093" name="l01093"></a><span class="lineno"> 1093</span> </div>
+<div class="line"><a id="l01094" name="l01094"></a><span class="lineno"> 1094</span>            std::string name_input_file = <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0).substr( <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0).find_last_of(<span class="stringliteral">&quot;/&quot;</span>)+1,</div>
+<div class="line"><a id="l01095" name="l01095"></a><span class="lineno"> 1095</span>                                                                   <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0).length() - <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.at(0).find_last_of(<span class="stringliteral">&quot;/&quot;</span>)-1 );</div>
+<div class="line"><a id="l01096" name="l01096"></a><span class="lineno"> 1096</span>            name_input_file = name_input_file.substr( 0,</div>
+<div class="line"><a id="l01097" name="l01097"></a><span class="lineno"> 1097</span>                                                     name_input_file.find_last_of(<span class="stringliteral">&quot;.&quot;</span>) );</div>
+<div class="line"><a id="l01098" name="l01098"></a><span class="lineno"> 1098</span> </div>
+<div class="line"><a id="l01099" name="l01099"></a><span class="lineno"> 1099</span>            <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size() &gt; 1 ) {</div>
+<div class="line"><a id="l01100" name="l01100"></a><span class="lineno"> 1100</span>                <a class="code hl_variable" href="iss__sort_8cc.html#a4bfaa4b497cb5e62d0cfc56f5ce8cfc9">output_name</a> = <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> + <span class="stringliteral">&quot;/&quot;</span> + name_input_file + <span class="stringliteral">&quot;_hists_&quot;</span>;</div>
+<div class="line"><a id="l01101" name="l01101"></a><span class="lineno"> 1101</span>                <a class="code hl_variable" href="iss__sort_8cc.html#a4bfaa4b497cb5e62d0cfc56f5ce8cfc9">output_name</a> += std::to_string(<a class="code hl_variable" href="iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647">input_names</a>.size()) + <span class="stringliteral">&quot;_subruns.root&quot;</span>;</div>
+<div class="line"><a id="l01102" name="l01102"></a><span class="lineno"> 1102</span>            }</div>
+<div class="line"><a id="l01103" name="l01103"></a><span class="lineno"> 1103</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l01104" name="l01104"></a><span class="lineno"> 1104</span>                <a class="code hl_variable" href="iss__sort_8cc.html#a4bfaa4b497cb5e62d0cfc56f5ce8cfc9">output_name</a> = <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> + <span class="stringliteral">&quot;/&quot;</span> + name_input_file + <span class="stringliteral">&quot;_hists.root&quot;</span>;</div>
+<div class="line"><a id="l01105" name="l01105"></a><span class="lineno"> 1105</span> </div>
+<div class="line"><a id="l01106" name="l01106"></a><span class="lineno"> 1106</span>        }</div>
+<div class="line"><a id="l01107" name="l01107"></a><span class="lineno"> 1107</span> </div>
+<div class="line"><a id="l01108" name="l01108"></a><span class="lineno"> 1108</span>        <span class="keywordflow">else</span> <a class="code hl_variable" href="iss__sort_8cc.html#a4bfaa4b497cb5e62d0cfc56f5ce8cfc9">output_name</a> = <a class="code hl_variable" href="iss__sort_8cc.html#a3483ccd74f9895052e7a70038921dce6">datadir_name</a> + <span class="stringliteral">&quot;/hists.root&quot;</span>;</div>
+<div class="line"><a id="l01109" name="l01109"></a><span class="lineno"> 1109</span> </div>
+<div class="line"><a id="l01110" name="l01110"></a><span class="lineno"> 1110</span>    }</div>
+<div class="line"><a id="l01111" name="l01111"></a><span class="lineno"> 1111</span> </div>
+<div class="line"><a id="l01112" name="l01112"></a><span class="lineno"> 1112</span>    <span class="comment">// Check we have a Settings file</span></div>
+<div class="line"><a id="l01113" name="l01113"></a><span class="lineno"> 1113</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a>.length() &gt; 0 ) {</div>
+<div class="line"><a id="l01114" name="l01114"></a><span class="lineno"> 1114</span> </div>
+<div class="line"><a id="l01115" name="l01115"></a><span class="lineno"> 1115</span>        <span class="comment">// Test if the file exists</span></div>
+<div class="line"><a id="l01116" name="l01116"></a><span class="lineno"> 1116</span>        std::ifstream ftest;</div>
+<div class="line"><a id="l01117" name="l01117"></a><span class="lineno"> 1117</span>        ftest.open( <a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a> );</div>
+<div class="line"><a id="l01118" name="l01118"></a><span class="lineno"> 1118</span>        <span class="keywordflow">if</span>( !ftest.is_open() ) {</div>
+<div class="line"><a id="l01119" name="l01119"></a><span class="lineno"> 1119</span> </div>
+<div class="line"><a id="l01120" name="l01120"></a><span class="lineno"> 1120</span>            std::cout &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a> &lt;&lt; <span class="stringliteral">&quot; does not exist.&quot;</span>;</div>
+<div class="line"><a id="l01121" name="l01121"></a><span class="lineno"> 1121</span>            std::cout &lt;&lt; <span class="stringliteral">&quot; Will attempt to read from ROOT file, or use defaults.&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01122" name="l01122"></a><span class="lineno"> 1122</span>            <a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a> = <span class="stringliteral">&quot;dummy&quot;</span>;</div>
+<div class="line"><a id="l01123" name="l01123"></a><span class="lineno"> 1123</span> </div>
+<div class="line"><a id="l01124" name="l01124"></a><span class="lineno"> 1124</span>        }</div>
+<div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span> </div>
+<div class="line"><a id="l01126" name="l01126"></a><span class="lineno"> 1126</span>        <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01127" name="l01127"></a><span class="lineno"> 1127</span> </div>
+<div class="line"><a id="l01128" name="l01128"></a><span class="lineno"> 1128</span>            ftest.close();</div>
+<div class="line"><a id="l01129" name="l01129"></a><span class="lineno"> 1129</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Settings file provided: &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01130" name="l01130"></a><span class="lineno"> 1130</span>            <a class="code hl_variable" href="iss__sort_8cc.html#a2da963072da52cd1884884057975f8b3">overwrite_set</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l01131" name="l01131"></a><span class="lineno"> 1131</span> </div>
+<div class="line"><a id="l01132" name="l01132"></a><span class="lineno"> 1132</span>        }</div>
+<div class="line"><a id="l01133" name="l01133"></a><span class="lineno"> 1133</span> </div>
+<div class="line"><a id="l01134" name="l01134"></a><span class="lineno"> 1134</span>    }</div>
+<div class="line"><a id="l01135" name="l01135"></a><span class="lineno"> 1135</span>    <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01136" name="l01136"></a><span class="lineno"> 1136</span> </div>
+<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;No settings file provided.&quot;</span>;</div>
+<div class="line"><a id="l01138" name="l01138"></a><span class="lineno"> 1138</span>        std::cout &lt;&lt; <span class="stringliteral">&quot; Will attempt to read from ROOT file, or use defaults.&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span>        <a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a> = <span class="stringliteral">&quot;dummy&quot;</span>;</div>
+<div class="line"><a id="l01140" name="l01140"></a><span class="lineno"> 1140</span> </div>
+<div class="line"><a id="l01141" name="l01141"></a><span class="lineno"> 1141</span>    }</div>
+<div class="line"><a id="l01142" name="l01142"></a><span class="lineno"> 1142</span> </div>
+<div class="line"><a id="l01143" name="l01143"></a><span class="lineno"> 1143</span>    <span class="comment">// Check we have a calibration file</span></div>
+<div class="line"><a id="l01144" name="l01144"></a><span class="lineno"> 1144</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a>.length() &gt; 0 ) {</div>
+<div class="line"><a id="l01145" name="l01145"></a><span class="lineno"> 1145</span> </div>
+<div class="line"><a id="l01146" name="l01146"></a><span class="lineno"> 1146</span>        <span class="comment">// Test if the file exists</span></div>
+<div class="line"><a id="l01147" name="l01147"></a><span class="lineno"> 1147</span>        std::ifstream ftest;</div>
+<div class="line"><a id="l01148" name="l01148"></a><span class="lineno"> 1148</span>        ftest.open( <a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a>.data() );</div>
+<div class="line"><a id="l01149" name="l01149"></a><span class="lineno"> 1149</span>        <span class="keywordflow">if</span>( !ftest.is_open() ) {</div>
+<div class="line"><a id="l01150" name="l01150"></a><span class="lineno"> 1150</span> </div>
+<div class="line"><a id="l01151" name="l01151"></a><span class="lineno"> 1151</span>            std::cout &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a> &lt;&lt; <span class="stringliteral">&quot; does not exist.&quot;</span>;</div>
+<div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span>            std::cout &lt;&lt; <span class="stringliteral">&quot; Will attempt to read from ROOT file, or use defaults.&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span>            <a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a> = <span class="stringliteral">&quot;dummy&quot;</span>;</div>
+<div class="line"><a id="l01154" name="l01154"></a><span class="lineno"> 1154</span> </div>
+<div class="line"><a id="l01155" name="l01155"></a><span class="lineno"> 1155</span>        }</div>
+<div class="line"><a id="l01156" name="l01156"></a><span class="lineno"> 1156</span> </div>
+<div class="line"><a id="l01157" name="l01157"></a><span class="lineno"> 1157</span>        <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01158" name="l01158"></a><span class="lineno"> 1158</span> </div>
+<div class="line"><a id="l01159" name="l01159"></a><span class="lineno"> 1159</span>            ftest.close();</div>
+<div class="line"><a id="l01160" name="l01160"></a><span class="lineno"> 1160</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Calibration file: &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01161" name="l01161"></a><span class="lineno"> 1161</span>            <a class="code hl_variable" href="iss__sort_8cc.html#af9f81236e86fb558e6611a3921cb01c3">overwrite_cal</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l01162" name="l01162"></a><span class="lineno"> 1162</span> </div>
+<div class="line"><a id="l01163" name="l01163"></a><span class="lineno"> 1163</span>        }</div>
+<div class="line"><a id="l01164" name="l01164"></a><span class="lineno"> 1164</span> </div>
+<div class="line"><a id="l01165" name="l01165"></a><span class="lineno"> 1165</span>    }</div>
+<div class="line"><a id="l01166" name="l01166"></a><span class="lineno"> 1166</span>    <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01167" name="l01167"></a><span class="lineno"> 1167</span> </div>
+<div class="line"><a id="l01168" name="l01168"></a><span class="lineno"> 1168</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;No calibration file provided.&quot;</span>;</div>
+<div class="line"><a id="l01169" name="l01169"></a><span class="lineno"> 1169</span>        std::cout &lt;&lt; <span class="stringliteral">&quot; Will attempt to read from ROOT file, or use defaults.&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01170" name="l01170"></a><span class="lineno"> 1170</span>        <a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a> = <span class="stringliteral">&quot;dummy&quot;</span>;</div>
+<div class="line"><a id="l01171" name="l01171"></a><span class="lineno"> 1171</span> </div>
+<div class="line"><a id="l01172" name="l01172"></a><span class="lineno"> 1172</span>    }</div>
+<div class="line"><a id="l01173" name="l01173"></a><span class="lineno"> 1173</span> </div>
+<div class="line"><a id="l01174" name="l01174"></a><span class="lineno"> 1174</span>    <span class="comment">// Check we have a reaction file</span></div>
+<div class="line"><a id="l01175" name="l01175"></a><span class="lineno"> 1175</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a>.length() &gt; 0 ) {</div>
+<div class="line"><a id="l01176" name="l01176"></a><span class="lineno"> 1176</span> </div>
+<div class="line"><a id="l01177" name="l01177"></a><span class="lineno"> 1177</span>        <span class="comment">// Test if the file exists</span></div>
+<div class="line"><a id="l01178" name="l01178"></a><span class="lineno"> 1178</span>        std::ifstream ftest;</div>
+<div class="line"><a id="l01179" name="l01179"></a><span class="lineno"> 1179</span>        ftest.open( <a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a>.data() );</div>
+<div class="line"><a id="l01180" name="l01180"></a><span class="lineno"> 1180</span>        <span class="keywordflow">if</span>( !ftest.is_open() ) {</div>
+<div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span> </div>
+<div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span>            std::cout &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a> &lt;&lt; <span class="stringliteral">&quot; does not exist.&quot;</span>;</div>
+<div class="line"><a id="l01183" name="l01183"></a><span class="lineno"> 1183</span>            std::cout &lt;&lt; <span class="stringliteral">&quot; Using defaults.&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span>            <a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a> = <span class="stringliteral">&quot;dummy&quot;</span>;</div>
+<div class="line"><a id="l01185" name="l01185"></a><span class="lineno"> 1185</span> </div>
+<div class="line"><a id="l01186" name="l01186"></a><span class="lineno"> 1186</span>        }</div>
+<div class="line"><a id="l01187" name="l01187"></a><span class="lineno"> 1187</span> </div>
+<div class="line"><a id="l01188" name="l01188"></a><span class="lineno"> 1188</span>        <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01189" name="l01189"></a><span class="lineno"> 1189</span> </div>
+<div class="line"><a id="l01190" name="l01190"></a><span class="lineno"> 1190</span>            ftest.close();</div>
+<div class="line"><a id="l01191" name="l01191"></a><span class="lineno"> 1191</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Reaction file: &quot;</span> &lt;&lt; <a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01192" name="l01192"></a><span class="lineno"> 1192</span> </div>
+<div class="line"><a id="l01193" name="l01193"></a><span class="lineno"> 1193</span>        }</div>
+<div class="line"><a id="l01194" name="l01194"></a><span class="lineno"> 1194</span> </div>
+<div class="line"><a id="l01195" name="l01195"></a><span class="lineno"> 1195</span>    }</div>
+<div class="line"><a id="l01196" name="l01196"></a><span class="lineno"> 1196</span>    <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l01197" name="l01197"></a><span class="lineno"> 1197</span> </div>
+<div class="line"><a id="l01198" name="l01198"></a><span class="lineno"> 1198</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;No reaction file provided. Using defaults.&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01199" name="l01199"></a><span class="lineno"> 1199</span>        <a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a> = <span class="stringliteral">&quot;dummy&quot;</span>;</div>
+<div class="line"><a id="l01200" name="l01200"></a><span class="lineno"> 1200</span> </div>
+<div class="line"><a id="l01201" name="l01201"></a><span class="lineno"> 1201</span>    }</div>
+<div class="line"><a id="l01202" name="l01202"></a><span class="lineno"> 1202</span> </div>
+<div class="line"><a id="l01203" name="l01203"></a><span class="lineno"> 1203</span>    <a class="code hl_variable" href="iss__sort_8cc.html#aef2e709b38e28fdbbfe36870c344b223">myset</a> = std::make_shared&lt;ISSSettings&gt;( <a class="code hl_variable" href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a> );</div>
+<div class="line"><a id="l01204" name="l01204"></a><span class="lineno"> 1204</span>    <a class="code hl_variable" href="iss__sort_8cc.html#a9cbb4e440fed9c15c5b13cfcc175dd08">mycal</a> = std::make_shared&lt;ISSCalibration&gt;( <a class="code hl_variable" href="iss__sort_8cc.html#a7b1c1da93caeee9b88946f8ef147d915">name_cal_file</a>, <a class="code hl_variable" href="iss__sort_8cc.html#aef2e709b38e28fdbbfe36870c344b223">myset</a> );</div>
+<div class="line"><a id="l01205" name="l01205"></a><span class="lineno"> 1205</span>    <a class="code hl_variable" href="iss__sort_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a> = std::make_shared&lt;ISSReaction&gt;( <a class="code hl_variable" href="iss__sort_8cc.html#a8168d4a599aa55b6698b1f37c99138cd">name_react_file</a>, <a class="code hl_variable" href="iss__sort_8cc.html#aef2e709b38e28fdbbfe36870c344b223">myset</a>, <a class="code hl_variable" href="iss__sort_8cc.html#adb73828698a0a12204817ca52b87306d">flag_source</a> );</div>
+<div class="line"><a id="l01206" name="l01206"></a><span class="lineno"> 1206</span> </div>
+<div class="line"><a id="l01207" name="l01207"></a><span class="lineno"> 1207</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="iss__sort_8cc.html#a061119f5a08c61dd1fe3763b25a1f45e">flag_print_settings</a>)</div>
+<div class="line"><a id="l01208" name="l01208"></a><span class="lineno"> 1208</span>        <a class="code hl_variable" href="iss__sort_8cc.html#aef2e709b38e28fdbbfe36870c344b223">myset</a>-&gt;PrintSettings();</div>
+<div class="line"><a id="l01209" name="l01209"></a><span class="lineno"> 1209</span> </div>
+<div class="line"><a id="l01210" name="l01210"></a><span class="lineno"> 1210</span>    <span class="comment">//-------------------//</span></div>
+<div class="line"><a id="l01211" name="l01211"></a><span class="lineno"> 1211</span>    <span class="comment">// Online monitoring //</span></div>
+<div class="line"><a id="l01212" name="l01212"></a><span class="lineno"> 1212</span>    <span class="comment">//-------------------//</span></div>
+<div class="line"><a id="l01213" name="l01213"></a><span class="lineno"> 1213</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#ab52794e1af93cf9b7af34444c197cc28">flag_monitor</a> || <a class="code hl_variable" href="iss__sort_8cc.html#acfc4310b631d6d8bcfc7086cc6bef35d">flag_spy</a> ) {</div>
+<div class="line"><a id="l01214" name="l01214"></a><span class="lineno"> 1214</span> </div>
+<div class="line"><a id="l01215" name="l01215"></a><span class="lineno"> 1215</span>        <span class="comment">// Make some data for the thread</span></div>
+<div class="line"><a id="l01216" name="l01216"></a><span class="lineno"> 1216</span>        <a class="code hl_struct" href="structthptr.html">thread_data</a> data;</div>
+<div class="line"><a id="l01217" name="l01217"></a><span class="lineno"> 1217</span>        data.mycal = <a class="code hl_variable" href="iss__sort_8cc.html#a9cbb4e440fed9c15c5b13cfcc175dd08">mycal</a>;</div>
+<div class="line"><a id="l01218" name="l01218"></a><span class="lineno"> 1218</span>        data.myset = <a class="code hl_variable" href="iss__sort_8cc.html#aef2e709b38e28fdbbfe36870c344b223">myset</a>;</div>
+<div class="line"><a id="l01219" name="l01219"></a><span class="lineno"> 1219</span>        data.myreact = <a class="code hl_variable" href="iss__sort_8cc.html#abbea46ae8b763b9287acca715d1a91eb">myreact</a>;</div>
+<div class="line"><a id="l01220" name="l01220"></a><span class="lineno"> 1220</span> </div>
+<div class="line"><a id="l01221" name="l01221"></a><span class="lineno"> 1221</span>        <span class="comment">// Start the HTTP server from the main thread (should usually do this)</span></div>
+<div class="line"><a id="l01222" name="l01222"></a><span class="lineno"> 1222</span>        <a class="code hl_function" href="iss__sort_8cc.html#a7b61cf34aa410175d2e55fe2471f3fe7">start_http</a>();</div>
+<div class="line"><a id="l01223" name="l01223"></a><span class="lineno"> 1223</span>        gSystem-&gt;ProcessEvents();</div>
+<div class="line"><a id="l01224" name="l01224"></a><span class="lineno"> 1224</span> </div>
+<div class="line"><a id="l01225" name="l01225"></a><span class="lineno"> 1225</span>        <span class="comment">// Thread for the monitor process</span></div>
+<div class="line"><a id="l01226" name="l01226"></a><span class="lineno"> 1226</span>        TThread *th = <span class="keyword">new</span> TThread( <span class="stringliteral">&quot;monitor&quot;</span>, <a class="code hl_function" href="iss__sort_8cc.html#a41bfdfd4b3dc4ec83a7ad948b00d3993">monitor_run</a>, (<span class="keywordtype">void</span>*) &amp;data );</div>
+<div class="line"><a id="l01227" name="l01227"></a><span class="lineno"> 1227</span>        th-&gt;Run();</div>
+<div class="line"><a id="l01228" name="l01228"></a><span class="lineno"> 1228</span> </div>
+<div class="line"><a id="l01229" name="l01229"></a><span class="lineno"> 1229</span>        <span class="comment">// wait until we finish</span></div>
+<div class="line"><a id="l01230" name="l01230"></a><span class="lineno"> 1230</span>        <span class="keywordflow">while</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a5328d2378558c01ec007e61a8e0d100c">flag_alive</a> ){</div>
+<div class="line"><a id="l01231" name="l01231"></a><span class="lineno"> 1231</span> </div>
+<div class="line"><a id="l01232" name="l01232"></a><span class="lineno"> 1232</span>            gSystem-&gt;Sleep(10);</div>
+<div class="line"><a id="l01233" name="l01233"></a><span class="lineno"> 1233</span>            gSystem-&gt;ProcessEvents();</div>
+<div class="line"><a id="l01234" name="l01234"></a><span class="lineno"> 1234</span> </div>
+<div class="line"><a id="l01235" name="l01235"></a><span class="lineno"> 1235</span>        }</div>
+<div class="line"><a id="l01236" name="l01236"></a><span class="lineno"> 1236</span>        std::cout &lt;&lt; <span class="stringliteral">&quot;Finished&quot;</span> &lt;&lt; std::endl;</div>
+<div class="line"><a id="l01237" name="l01237"></a><span class="lineno"> 1237</span> </div>
+<div class="line"><a id="l01238" name="l01238"></a><span class="lineno"> 1238</span>        <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l01239" name="l01239"></a><span class="lineno"> 1239</span> </div>
+<div class="line"><a id="l01240" name="l01240"></a><span class="lineno"> 1240</span>    }</div>
 <div class="line"><a id="l01241" name="l01241"></a><span class="lineno"> 1241</span> </div>
-<div class="line"><a id="l01242" name="l01242"></a><span class="lineno"> 1242</span>    <span class="comment">//------------------//</span></div>
-<div class="line"><a id="l01243" name="l01243"></a><span class="lineno"> 1243</span>    <span class="comment">// Run the analysis //</span></div>
-<div class="line"><a id="l01244" name="l01244"></a><span class="lineno"> 1244</span>    <span class="comment">//------------------//</span></div>
-<div class="line"><a id="l01245" name="l01245"></a><span class="lineno"> 1245</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a3d1492ba28dd95f2663d0fcb519f76ec">flag_data</a> ) {</div>
-<div class="line"><a id="l01246" name="l01246"></a><span class="lineno"> 1246</span> </div>
-<div class="line"><a id="l01247" name="l01247"></a><span class="lineno"> 1247</span>        <span class="comment">// Convert MIDAS file and time sort</span></div>
-<div class="line"><a id="l01248" name="l01248"></a><span class="lineno"> 1248</span>        <a class="code hl_function" href="iss__sort_8cc.html#a6b67fa70c3afd18f323ab1d0551c71aa">do_convert</a>();</div>
-<div class="line"><a id="l01249" name="l01249"></a><span class="lineno"> 1249</span> </div>
-<div class="line"><a id="l01250" name="l01250"></a><span class="lineno"> 1250</span>        <span class="comment">// If it&#39;s not a source run, do the event building</span></div>
-<div class="line"><a id="l01251" name="l01251"></a><span class="lineno"> 1251</span>        <span class="keywordflow">if</span>( !<a class="code hl_variable" href="iss__sort_8cc.html#adb73828698a0a12204817ca52b87306d">flag_source</a> &amp;&amp; !<a class="code hl_variable" href="iss__sort_8cc.html#adf35380934191656865ce6b2e87a075f">flag_autocal</a> ) {</div>
-<div class="line"><a id="l01252" name="l01252"></a><span class="lineno"> 1252</span> </div>
-<div class="line"><a id="l01253" name="l01253"></a><span class="lineno"> 1253</span>            <span class="comment">// Build events and if successful, do histogramming</span></div>
-<div class="line"><a id="l01254" name="l01254"></a><span class="lineno"> 1254</span>            <span class="keywordflow">if</span>( <a class="code hl_function" href="iss__sort_8cc.html#ab5f9325905b9db1cc945f2f8cd5a6513">do_build</a>() ) <a class="code hl_function" href="iss__sort_8cc.html#aab6b0506267cf908785df7061640da3d">do_hist</a>();</div>
-<div class="line"><a id="l01255" name="l01255"></a><span class="lineno"> 1255</span> </div>
-<div class="line"><a id="l01256" name="l01256"></a><span class="lineno"> 1256</span>        }</div>
-<div class="line"><a id="l01257" name="l01257"></a><span class="lineno"> 1257</span> </div>
-<div class="line"><a id="l01258" name="l01258"></a><span class="lineno"> 1258</span>        <span class="comment">// Autocal routine is run independently</span></div>
-<div class="line"><a id="l01259" name="l01259"></a><span class="lineno"> 1259</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#adf35380934191656865ce6b2e87a075f">flag_autocal</a> ) <a class="code hl_function" href="iss__sort_8cc.html#a417c46c732aafe248f660e29d192513a">do_autocal</a>();</div>
-<div class="line"><a id="l01260" name="l01260"></a><span class="lineno"> 1260</span> </div>
-<div class="line"><a id="l01261" name="l01261"></a><span class="lineno"> 1261</span>    }</div>
-<div class="line"><a id="l01262" name="l01262"></a><span class="lineno"> 1262</span> </div>
-<div class="line"><a id="l01263" name="l01263"></a><span class="lineno"> 1263</span>    <span class="comment">// Simulation analysis - PACE4</span></div>
-<div class="line"><a id="l01264" name="l01264"></a><span class="lineno"> 1264</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a8be1132fc1d4ed4327e6da015dca266b">flag_pace4</a> ) <a class="code hl_function" href="iss__sort_8cc.html#ae49c16159637d80af64e4e2a65469a5d">do_pace4</a>();</div>
-<div class="line"><a id="l01265" name="l01265"></a><span class="lineno"> 1265</span> </div>
-<div class="line"><a id="l01266" name="l01266"></a><span class="lineno"> 1266</span>    <span class="comment">// Simulation analysis - NPTool</span></div>
-<div class="line"><a id="l01267" name="l01267"></a><span class="lineno"> 1267</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a168afe80430d452277f1e1223cfe96ad">flag_nptool</a> ) {</div>
-<div class="line"><a id="l01268" name="l01268"></a><span class="lineno"> 1268</span> </div>
-<div class="line"><a id="l01269" name="l01269"></a><span class="lineno"> 1269</span>        <a class="code hl_function" href="iss__sort_8cc.html#a66b146cfee8f1533ab4a7e186c6b3927">do_nptool</a>();</div>
-<div class="line"><a id="l01270" name="l01270"></a><span class="lineno"> 1270</span>        <a class="code hl_function" href="iss__sort_8cc.html#aab6b0506267cf908785df7061640da3d">do_hist</a>();</div>
-<div class="line"><a id="l01271" name="l01271"></a><span class="lineno"> 1271</span> </div>
-<div class="line"><a id="l01272" name="l01272"></a><span class="lineno"> 1272</span>    }</div>
-<div class="line"><a id="l01273" name="l01273"></a><span class="lineno"> 1273</span> </div>
-<div class="line"><a id="l01274" name="l01274"></a><span class="lineno"> 1274</span>    std::cout &lt;&lt; <span class="stringliteral">&quot;\n\nFinished!\n&quot;</span>;</div>
-<div class="line"><a id="l01275" name="l01275"></a><span class="lineno"> 1275</span> </div>
-<div class="line"><a id="l01276" name="l01276"></a><span class="lineno"> 1276</span>    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l01277" name="l01277"></a><span class="lineno"> 1277</span> </div>
-<div class="line"><a id="l01278" name="l01278"></a><span class="lineno"> 1278</span>}</div>
+<div class="line"><a id="l01242" name="l01242"></a><span class="lineno"> 1242</span> </div>
+<div class="line"><a id="l01243" name="l01243"></a><span class="lineno"> 1243</span>    <span class="comment">//------------------//</span></div>
+<div class="line"><a id="l01244" name="l01244"></a><span class="lineno"> 1244</span>    <span class="comment">// Run the analysis //</span></div>
+<div class="line"><a id="l01245" name="l01245"></a><span class="lineno"> 1245</span>    <span class="comment">//------------------//</span></div>
+<div class="line"><a id="l01246" name="l01246"></a><span class="lineno"> 1246</span>    <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a3d1492ba28dd95f2663d0fcb519f76ec">flag_data</a> ) {</div>
+<div class="line"><a id="l01247" name="l01247"></a><span class="lineno"> 1247</span> </div>
+<div class="line"><a id="l01248" name="l01248"></a><span class="lineno"> 1248</span>        <span class="comment">// Convert MIDAS file and time sort</span></div>
+<div class="line"><a id="l01249" name="l01249"></a><span class="lineno"> 1249</span>        <a class="code hl_function" href="iss__sort_8cc.html#a6b67fa70c3afd18f323ab1d0551c71aa">do_convert</a>();</div>
+<div class="line"><a id="l01250" name="l01250"></a><span class="lineno"> 1250</span> </div>
+<div class="line"><a id="l01251" name="l01251"></a><span class="lineno"> 1251</span>        <span class="comment">// If it&#39;s not a source run, do the event building</span></div>
+<div class="line"><a id="l01252" name="l01252"></a><span class="lineno"> 1252</span>        <span class="keywordflow">if</span>( !<a class="code hl_variable" href="iss__sort_8cc.html#adb73828698a0a12204817ca52b87306d">flag_source</a> &amp;&amp; !<a class="code hl_variable" href="iss__sort_8cc.html#adf35380934191656865ce6b2e87a075f">flag_autocal</a> ) {</div>
+<div class="line"><a id="l01253" name="l01253"></a><span class="lineno"> 1253</span> </div>
+<div class="line"><a id="l01254" name="l01254"></a><span class="lineno"> 1254</span>            <span class="comment">// Build events and if successful, do histogramming</span></div>
+<div class="line"><a id="l01255" name="l01255"></a><span class="lineno"> 1255</span>            <span class="keywordflow">if</span>( <a class="code hl_function" href="iss__sort_8cc.html#ab5f9325905b9db1cc945f2f8cd5a6513">do_build</a>() ) <a class="code hl_function" href="iss__sort_8cc.html#aab6b0506267cf908785df7061640da3d">do_hist</a>();</div>
+<div class="line"><a id="l01256" name="l01256"></a><span class="lineno"> 1256</span> </div>
+<div class="line"><a id="l01257" name="l01257"></a><span class="lineno"> 1257</span>        }</div>
+<div class="line"><a id="l01258" name="l01258"></a><span class="lineno"> 1258</span> </div>
+<div class="line"><a id="l01259" name="l01259"></a><span class="lineno"> 1259</span>        <span class="comment">// Autocal routine is run independently</span></div>
+<div class="line"><a id="l01260" name="l01260"></a><span class="lineno"> 1260</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#adf35380934191656865ce6b2e87a075f">flag_autocal</a> ) <a class="code hl_function" href="iss__sort_8cc.html#a417c46c732aafe248f660e29d192513a">do_autocal</a>();</div>
+<div class="line"><a id="l01261" name="l01261"></a><span class="lineno"> 1261</span> </div>
+<div class="line"><a id="l01262" name="l01262"></a><span class="lineno"> 1262</span>    }</div>
+<div class="line"><a id="l01263" name="l01263"></a><span class="lineno"> 1263</span> </div>
+<div class="line"><a id="l01264" name="l01264"></a><span class="lineno"> 1264</span>    <span class="comment">// Simulation analysis - PACE4</span></div>
+<div class="line"><a id="l01265" name="l01265"></a><span class="lineno"> 1265</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a8be1132fc1d4ed4327e6da015dca266b">flag_pace4</a> ) <a class="code hl_function" href="iss__sort_8cc.html#ae49c16159637d80af64e4e2a65469a5d">do_pace4</a>();</div>
+<div class="line"><a id="l01266" name="l01266"></a><span class="lineno"> 1266</span> </div>
+<div class="line"><a id="l01267" name="l01267"></a><span class="lineno"> 1267</span>    <span class="comment">// Simulation analysis - NPTool</span></div>
+<div class="line"><a id="l01268" name="l01268"></a><span class="lineno"> 1268</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span>( <a class="code hl_variable" href="iss__sort_8cc.html#a168afe80430d452277f1e1223cfe96ad">flag_nptool</a> ) {</div>
+<div class="line"><a id="l01269" name="l01269"></a><span class="lineno"> 1269</span> </div>
+<div class="line"><a id="l01270" name="l01270"></a><span class="lineno"> 1270</span>        <a class="code hl_function" href="iss__sort_8cc.html#a66b146cfee8f1533ab4a7e186c6b3927">do_nptool</a>();</div>
+<div class="line"><a id="l01271" name="l01271"></a><span class="lineno"> 1271</span>        <a class="code hl_function" href="iss__sort_8cc.html#aab6b0506267cf908785df7061640da3d">do_hist</a>();</div>
+<div class="line"><a id="l01272" name="l01272"></a><span class="lineno"> 1272</span> </div>
+<div class="line"><a id="l01273" name="l01273"></a><span class="lineno"> 1273</span>    }</div>
+<div class="line"><a id="l01274" name="l01274"></a><span class="lineno"> 1274</span> </div>
+<div class="line"><a id="l01275" name="l01275"></a><span class="lineno"> 1275</span>    std::cout &lt;&lt; <span class="stringliteral">&quot;\n\nFinished!\n&quot;</span>;</div>
+<div class="line"><a id="l01276" name="l01276"></a><span class="lineno"> 1276</span> </div>
+<div class="line"><a id="l01277" name="l01277"></a><span class="lineno"> 1277</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l01278" name="l01278"></a><span class="lineno"> 1278</span> </div>
+<div class="line"><a id="l01279" name="l01279"></a><span class="lineno"> 1279</span>}</div>
 </div>
 <div class="ttc" id="aAutoCalibrator_8hh_html"><div class="ttname"><a href="AutoCalibrator_8hh.html">AutoCalibrator.hh</a></div></div>
 <div class="ttc" id="aCalibration_8hh_html"><div class="ttname"><a href="Calibration_8hh.html">Calibration.hh</a></div></div>
@@ -1405,14 +1406,14 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="aclassDataSpy_html_a67b1a61c51bec9710dd41745cd391411"><div class="ttname"><a href="classDataSpy.html#a67b1a61c51bec9710dd41745cd391411">DataSpy::Open</a></div><div class="ttdeci">int Open(int id)</div><div class="ttdef"><b>Definition</b> <a href="DataSpy_8cc_source.html#l00013">DataSpy.cc:13</a></div></div>
 <div class="ttc" id="aclassDataSpy_html_a6b0d5ce46b1db185c67e9e5c11481ed9"><div class="ttname"><a href="classDataSpy.html#a6b0d5ce46b1db185c67e9e5c11481ed9">DataSpy::Read</a></div><div class="ttdeci">int Read(int id, char *data, unsigned int length)</div><div class="ttdef"><b>Definition</b> <a href="DataSpy_8cc_source.html#l00186">DataSpy.cc:186</a></div></div>
 <div class="ttc" id="aclassDataSpy_html_a8b4dfe008033b29e17ecd4004ddade2c"><div class="ttname"><a href="classDataSpy.html#a8b4dfe008033b29e17ecd4004ddade2c">DataSpy::Close</a></div><div class="ttdeci">int Close(int id)</div><div class="ttdef"><b>Definition</b> <a href="DataSpy_8cc_source.html#l00080">DataSpy.cc:80</a></div></div>
-<div class="ttc" id="aclassISSAutoCalibrator_html"><div class="ttname"><a href="classISSAutoCalibrator.html">ISSAutoCalibrator</a></div><div class="ttdef"><b>Definition</b> <a href="AutoCalibrator_8hh_source.html#l00086">AutoCalibrator.hh:86</a></div></div>
+<div class="ttc" id="aclassISSAutoCalibrator_html"><div class="ttname"><a href="classISSAutoCalibrator.html">ISSAutoCalibrator</a></div><div class="ttdef"><b>Definition</b> <a href="AutoCalibrator_8hh_source.html#l00093">AutoCalibrator.hh:93</a></div></div>
 <div class="ttc" id="aclassISSAutoCalibrator_html_a0bc3ffd378758ee9a4c3dabc73572dc5"><div class="ttname"><a href="classISSAutoCalibrator.html#a0bc3ffd378758ee9a4c3dabc73572dc5">ISSAutoCalibrator::SaveCalFile</a></div><div class="ttdeci">void SaveCalFile(const std::string &amp;name_results_file)</div><div class="ttdoc">Saves the calibration to a file.</div><div class="ttdef"><b>Definition</b> <a href="AutoCalibrator_8cc_source.html#l00376">AutoCalibrator.cc:376</a></div></div>
-<div class="ttc" id="aclassISSAutoCalibrator_html_a482dadce31e2db243e9d98b7952c95b2"><div class="ttname"><a href="classISSAutoCalibrator.html#a482dadce31e2db243e9d98b7952c95b2">ISSAutoCalibrator::GetFitShapeName</a></div><div class="ttdeci">std::string GetFitShapeName() const</div><div class="ttdoc">Returns the name of the assigned fit shape used in the ISSAutoCalibrator.</div><div class="ttdef"><b>Definition</b> <a href="AutoCalibrator_8hh_source.html#l00118">AutoCalibrator.hh:118</a></div></div>
-<div class="ttc" id="aclassISSAutoCalibrator_html_a536cbda302433be392f13f99286f4637"><div class="ttname"><a href="classISSAutoCalibrator.html#a536cbda302433be392f13f99286f4637">ISSAutoCalibrator::AddCalibration</a></div><div class="ttdeci">void AddCalibration(std::shared_ptr&lt; ISSCalibration &gt; mycal)</div><div class="ttdef"><b>Definition</b> <a href="AutoCalibrator_8hh_source.html#l00107">AutoCalibrator.hh:107</a></div></div>
+<div class="ttc" id="aclassISSAutoCalibrator_html_a482dadce31e2db243e9d98b7952c95b2"><div class="ttname"><a href="classISSAutoCalibrator.html#a482dadce31e2db243e9d98b7952c95b2">ISSAutoCalibrator::GetFitShapeName</a></div><div class="ttdeci">std::string GetFitShapeName() const</div><div class="ttdoc">Returns the name of the assigned fit shape used in the ISSAutoCalibrator.</div><div class="ttdef"><b>Definition</b> <a href="AutoCalibrator_8hh_source.html#l00125">AutoCalibrator.hh:125</a></div></div>
+<div class="ttc" id="aclassISSAutoCalibrator_html_a536cbda302433be392f13f99286f4637"><div class="ttname"><a href="classISSAutoCalibrator.html#a536cbda302433be392f13f99286f4637">ISSAutoCalibrator::AddCalibration</a></div><div class="ttdeci">void AddCalibration(std::shared_ptr&lt; ISSCalibration &gt; mycal)</div><div class="ttdef"><b>Definition</b> <a href="AutoCalibrator_8hh_source.html#l00114">AutoCalibrator.hh:114</a></div></div>
 <div class="ttc" id="aclassISSAutoCalibrator_html_a54be08df86f43f0735026e6c0a0cfac5"><div class="ttname"><a href="classISSAutoCalibrator.html#a54be08df86f43f0735026e6c0a0cfac5">ISSAutoCalibrator::SetOutputFile</a></div><div class="ttdeci">int SetOutputFile(const std::string &amp;output_file_name)</div><div class="ttdoc">Sets the name of the output root file produced by the autocal hadd-ing process.</div><div class="ttdef"><b>Definition</b> <a href="AutoCalibrator_8cc_source.html#l00357">AutoCalibrator.cc:357</a></div></div>
-<div class="ttc" id="aclassISSAutoCalibrator_html_a5a5073d92318d1da67c2e8ee1450fd5f"><div class="ttname"><a href="classISSAutoCalibrator.html#a5a5073d92318d1da67c2e8ee1450fd5f">ISSAutoCalibrator::DoFits</a></div><div class="ttdeci">void DoFits() const</div><div class="ttdoc">The heart of this class, moving from alpha spectra to a calibration.</div><div class="ttdef"><b>Definition</b> <a href="AutoCalibrator_8cc_source.html#l01262">AutoCalibrator.cc:1262</a></div></div>
-<div class="ttc" id="aclassISSAutoCalibrator_html_ab8c58b251621b0da380c4a608853f1f6"><div class="ttname"><a href="classISSAutoCalibrator.html#ab8c58b251621b0da380c4a608853f1f6">ISSAutoCalibrator::OnlyManualFitStatus</a></div><div class="ttdeci">bool OnlyManualFitStatus() const</div><div class="ttdoc">Returns the manual fit status of the ISSAutoCalibrator.</div><div class="ttdef"><b>Definition</b> <a href="AutoCalibrator_8hh_source.html#l00117">AutoCalibrator.hh:117</a></div></div>
-<div class="ttc" id="aclassISSAutoCalibrator_html_ae2e79575341a00e994df36119f7804f5"><div class="ttname"><a href="classISSAutoCalibrator.html#ae2e79575341a00e994df36119f7804f5">ISSAutoCalibrator::GetDebugStatus</a></div><div class="ttdeci">bool GetDebugStatus() const</div><div class="ttdoc">Adds a progress bar to the GUI.</div><div class="ttdef"><b>Definition</b> <a href="AutoCalibrator_8hh_source.html#l00116">AutoCalibrator.hh:116</a></div></div>
+<div class="ttc" id="aclassISSAutoCalibrator_html_ab8c58b251621b0da380c4a608853f1f6"><div class="ttname"><a href="classISSAutoCalibrator.html#ab8c58b251621b0da380c4a608853f1f6">ISSAutoCalibrator::OnlyManualFitStatus</a></div><div class="ttdeci">bool OnlyManualFitStatus() const</div><div class="ttdoc">Returns the manual fit status of the ISSAutoCalibrator.</div><div class="ttdef"><b>Definition</b> <a href="AutoCalibrator_8hh_source.html#l00124">AutoCalibrator.hh:124</a></div></div>
+<div class="ttc" id="aclassISSAutoCalibrator_html_ae2e79575341a00e994df36119f7804f5"><div class="ttname"><a href="classISSAutoCalibrator.html#ae2e79575341a00e994df36119f7804f5">ISSAutoCalibrator::GetDebugStatus</a></div><div class="ttdeci">bool GetDebugStatus() const</div><div class="ttdoc">Adds a progress bar to the GUI.</div><div class="ttdef"><b>Definition</b> <a href="AutoCalibrator_8hh_source.html#l00123">AutoCalibrator.hh:123</a></div></div>
+<div class="ttc" id="aclassISSAutoCalibrator_html_af14bd2dc8925bf4fce9f94537b0af923"><div class="ttname"><a href="classISSAutoCalibrator.html#af14bd2dc8925bf4fce9f94537b0af923">ISSAutoCalibrator::DoFits</a></div><div class="ttdeci">void DoFits(const std::string &amp;name_sigmas_file) const</div><div class="ttdoc">The heart of this class, moving from alpha spectra to a calibration.</div><div class="ttdef"><b>Definition</b> <a href="AutoCalibrator_8cc_source.html#l01274">AutoCalibrator.cc:1274</a></div></div>
 <div class="ttc" id="aclassISSConverter_html"><div class="ttname"><a href="classISSConverter.html">ISSConverter</a></div><div class="ttdef"><b>Definition</b> <a href="Converter_8hh_source.html#l00041">Converter.hh:41</a></div></div>
 <div class="ttc" id="aclassISSConverter_html_a1528e5f0ac4e37df224554a30cd34fab"><div class="ttname"><a href="classISSConverter.html#a1528e5f0ac4e37df224554a30cd34fab">ISSConverter::MakeHists</a></div><div class="ttdeci">void MakeHists()</div><div class="ttdef"><b>Definition</b> <a href="Converter_8cc_source.html#l00107">Converter.cc:107</a></div></div>
 <div class="ttc" id="aclassISSConverter_html_a2e69438b12ac6630015b3a32e761711b"><div class="ttname"><a href="classISSConverter.html#a2e69438b12ac6630015b3a32e761711b">ISSConverter::ConvertFile</a></div><div class="ttdeci">int ConvertFile(std::string input_file_name, unsigned long start_block=0, long end_block=-1)</div><div class="ttdef"><b>Definition</b> <a href="Converter_8cc_source.html#l01922">Converter.cc:1922</a></div></div>
@@ -1437,15 +1438,15 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="aclassISSHistogrammer_html"><div class="ttname"><a href="classISSHistogrammer.html">ISSHistogrammer</a></div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00042">Histogrammer.hh:42</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_a086cf6e3099f9a7c0cf7f359fe6d1c92"><div class="ttname"><a href="classISSHistogrammer.html#a086cf6e3099f9a7c0cf7f359fe6d1c92">ISSHistogrammer::SetOutput</a></div><div class="ttdeci">void SetOutput(std::string output_file_name)</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8cc_source.html#l00026">Histogrammer.cc:26</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_a0d8c203efb6ea42830d39275a29a5426"><div class="ttname"><a href="classISSHistogrammer.html#a0d8c203efb6ea42830d39275a29a5426">ISSHistogrammer::GenerateReaction</a></div><div class="ttdeci">void GenerateReaction(std::string react_file, bool flag_source)</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00089">Histogrammer.hh:89</a></div></div>
-<div class="ttc" id="aclassISSHistogrammer_html_a0fdb1a625faf3edc6158491331158b23"><div class="ttname"><a href="classISSHistogrammer.html#a0fdb1a625faf3edc6158491331158b23">ISSHistogrammer::SetInputFile</a></div><div class="ttdeci">void SetInputFile(std::vector&lt; std::string &gt; input_file_names)</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8cc_source.html#l04963">Histogrammer.cc:4963</a></div></div>
-<div class="ttc" id="aclassISSHistogrammer_html_a251a03fbd6222b9cfd9830f35dc3d34a"><div class="ttname"><a href="classISSHistogrammer.html#a251a03fbd6222b9cfd9830f35dc3d34a">ISSHistogrammer::SetPace4File</a></div><div class="ttdeci">void SetPace4File(std::vector&lt; std::string &gt; input_file_names)</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8cc_source.html#l05020">Histogrammer.cc:5020</a></div></div>
+<div class="ttc" id="aclassISSHistogrammer_html_a0fdb1a625faf3edc6158491331158b23"><div class="ttname"><a href="classISSHistogrammer.html#a0fdb1a625faf3edc6158491331158b23">ISSHistogrammer::SetInputFile</a></div><div class="ttdeci">void SetInputFile(std::vector&lt; std::string &gt; input_file_names)</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8cc_source.html#l05008">Histogrammer.cc:5008</a></div></div>
+<div class="ttc" id="aclassISSHistogrammer_html_a251a03fbd6222b9cfd9830f35dc3d34a"><div class="ttname"><a href="classISSHistogrammer.html#a251a03fbd6222b9cfd9830f35dc3d34a">ISSHistogrammer::SetPace4File</a></div><div class="ttdeci">void SetPace4File(std::vector&lt; std::string &gt; input_file_names)</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8cc_source.html#l05065">Histogrammer.cc:5065</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_a3910f9bf39ccc91d5e8c020c933408c1"><div class="ttname"><a href="classISSHistogrammer.html#a3910f9bf39ccc91d5e8c020c933408c1">ISSHistogrammer::AddReaction</a></div><div class="ttdeci">void AddReaction(std::shared_ptr&lt; ISSReaction &gt; myreact)</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00088">Histogrammer.hh:88</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_a6a18fa901c9c26086739c49cce169d06"><div class="ttname"><a href="classISSHistogrammer.html#a6a18fa901c9c26086739c49cce169d06">ISSHistogrammer::AddSettings</a></div><div class="ttdeci">void AddSettings(std::shared_ptr&lt; ISSSettings &gt; myset)</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00084">Histogrammer.hh:84</a></div></div>
 <div class="ttc" id="aclassISSHistogrammer_html_ab036a59de1676e1c5c26655a72d823c3"><div class="ttname"><a href="classISSHistogrammer.html#ab036a59de1676e1c5c26655a72d823c3">ISSHistogrammer::CloseOutput</a></div><div class="ttdeci">void CloseOutput()</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8hh_source.html#l00065">Histogrammer.hh:65</a></div></div>
-<div class="ttc" id="aclassISSHistogrammer_html_ab2d9b4029d6510a1cfb7385897d20b1b"><div class="ttname"><a href="classISSHistogrammer.html#ab2d9b4029d6510a1cfb7385897d20b1b">ISSHistogrammer::FillHists</a></div><div class="ttdeci">unsigned long FillHists()</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8cc_source.html#l03221">Histogrammer.cc:3221</a></div></div>
+<div class="ttc" id="aclassISSHistogrammer_html_ab2d9b4029d6510a1cfb7385897d20b1b"><div class="ttname"><a href="classISSHistogrammer.html#ab2d9b4029d6510a1cfb7385897d20b1b">ISSHistogrammer::FillHists</a></div><div class="ttdeci">unsigned long FillHists()</div><div class="ttdef"><b>Definition</b> <a href="Histogrammer_8cc_source.html#l03236">Histogrammer.cc:3236</a></div></div>
 <div class="ttc" id="aiss__sort_8cc_html_a012d3e3edd791494c472a00a9c8c5972"><div class="ttname"><a href="iss__sort_8cc.html#a012d3e3edd791494c472a00a9c8c5972">name_set_file</a></div><div class="ttdeci">std::string name_set_file</div><div class="ttdef"><b>Definition</b> <a href="#l00071">iss_sort.cc:71</a></div></div>
 <div class="ttc" id="aiss__sort_8cc_html_a061119f5a08c61dd1fe3763b25a1f45e"><div class="ttname"><a href="iss__sort_8cc.html#a061119f5a08c61dd1fe3763b25a1f45e">flag_print_settings</a></div><div class="ttdeci">bool flag_print_settings</div><div class="ttdef"><b>Definition</b> <a href="#l00109">iss_sort.cc:109</a></div></div>
-<div class="ttc" id="aiss__sort_8cc_html_a0ddf1224851353fc92bfbff6f499fa97"><div class="ttname"><a href="iss__sort_8cc.html#a0ddf1224851353fc92bfbff6f499fa97">main</a></div><div class="ttdeci">int main(int argc, char *argv[])</div><div class="ttdef"><b>Definition</b> <a href="#l00941">iss_sort.cc:941</a></div></div>
+<div class="ttc" id="aiss__sort_8cc_html_a0ddf1224851353fc92bfbff6f499fa97"><div class="ttname"><a href="iss__sort_8cc.html#a0ddf1224851353fc92bfbff6f499fa97">main</a></div><div class="ttdeci">int main(int argc, char *argv[])</div><div class="ttdef"><b>Definition</b> <a href="#l00942">iss_sort.cc:942</a></div></div>
 <div class="ttc" id="aiss__sort_8cc_html_a105a04c58bd21374ef7ac2c2979808c8"><div class="ttname"><a href="iss__sort_8cc.html#a105a04c58bd21374ef7ac2c2979808c8">flag_events</a></div><div class="ttdeci">bool flag_events</div><div class="ttdef"><b>Definition</b> <a href="#l00079">iss_sort.cc:79</a></div></div>
 <div class="ttc" id="aiss__sort_8cc_html_a168afe80430d452277f1e1223cfe96ad"><div class="ttname"><a href="iss__sort_8cc.html#a168afe80430d452277f1e1223cfe96ad">flag_nptool</a></div><div class="ttdeci">bool flag_nptool</div><div class="ttdef"><b>Definition</b> <a href="#l00084">iss_sort.cc:84</a></div></div>
 <div class="ttc" id="aiss__sort_8cc_html_a1df93d2f6c1e93268560339db2eee6df"><div class="ttname"><a href="iss__sort_8cc.html#a1df93d2f6c1e93268560339db2eee6df">thread_data</a></div><div class="ttdeci">struct thptr thread_data</div></div>

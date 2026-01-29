@@ -113,21 +113,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a54be08df86f43f0735026e6c0a0cfac5" id="r_a54be08df86f43f0735026e6c0a0cfac5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54be08df86f43f0735026e6c0a0cfac5">SetOutputFile</a> (const std::string &amp;output_file_name)</td></tr>
 <tr class="memdesc:a54be08df86f43f0735026e6c0a0cfac5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the name of the output root file produced by the autocal hadd-ing process.  <br /></td></tr>
 <tr class="separator:a54be08df86f43f0735026e6c0a0cfac5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a5073d92318d1da67c2e8ee1450fd5f" id="r_a5a5073d92318d1da67c2e8ee1450fd5f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a5073d92318d1da67c2e8ee1450fd5f">DoFits</a> () const</td></tr>
-<tr class="memdesc:a5a5073d92318d1da67c2e8ee1450fd5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The heart of this class, moving from alpha spectra to a calibration.  <br /></td></tr>
-<tr class="separator:a5a5073d92318d1da67c2e8ee1450fd5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a348c2f34d5836091766c28ed3d8b6644" id="r_a348c2f34d5836091766c28ed3d8b6644"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a348c2f34d5836091766c28ed3d8b6644">DoChannelFit</a> (TH2F *h, const <a class="el" href="structISSAutoCalModAsicChan.html">ISSAutoCalModAsicChan</a> &amp;mac) const</td></tr>
-<tr class="memdesc:a348c2f34d5836091766c28ed3d8b6644"><td class="mdescLeft">&#160;</td><td class="mdescRight">The insides of the <a class="el" href="#a5a5073d92318d1da67c2e8ee1450fd5f" title="The heart of this class, moving from alpha spectra to a calibration.">DoFits()</a> function that calibrates for a given channel.  <br /></td></tr>
-<tr class="separator:a348c2f34d5836091766c28ed3d8b6644"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af14bd2dc8925bf4fce9f94537b0af923" id="r_af14bd2dc8925bf4fce9f94537b0af923"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af14bd2dc8925bf4fce9f94537b0af923">DoFits</a> (const std::string &amp;name_sigmas_file) const</td></tr>
+<tr class="memdesc:af14bd2dc8925bf4fce9f94537b0af923"><td class="mdescLeft">&#160;</td><td class="mdescRight">The heart of this class, moving from alpha spectra to a calibration.  <br /></td></tr>
+<tr class="separator:af14bd2dc8925bf4fce9f94537b0af923"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bd250ddeb47fbb25d6b99fc337156ed" id="r_a4bd250ddeb47fbb25d6b99fc337156ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4bd250ddeb47fbb25d6b99fc337156ed">DoChannelFit</a> (TH2F *h, const <a class="el" href="structISSAutoCalModAsicChan.html">ISSAutoCalModAsicChan</a> &amp;mac, std::vector&lt; <a class="el" href="structSigmaResult.html">SigmaResult</a> &gt; &amp;allResult) const</td></tr>
+<tr class="memdesc:a4bd250ddeb47fbb25d6b99fc337156ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">The insides of the <a class="el" href="#af14bd2dc8925bf4fce9f94537b0af923" title="The heart of this class, moving from alpha spectra to a calibration.">DoFits()</a> function that calibrates for a given channel.  <br /></td></tr>
+<tr class="separator:a4bd250ddeb47fbb25d6b99fc337156ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a357e49ff75cb96afb3856722f95096ce" id="r_a357e49ff75cb96afb3856722f95096ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a357e49ff75cb96afb3856722f95096ce">FindPeaks</a> (TH1F *h, std::vector&lt; float &gt; &amp;centroids, const <a class="el" href="structISSAutoCalModAsicChan.html">ISSAutoCalModAsicChan</a> &amp;mac, <a class="el" href="structISSAutoCalPlottingOptions.html">ISSAutoCalPlottingOptions</a> &amp;plot_opt) const</td></tr>
 <tr class="memdesc:a357e49ff75cb96afb3856722f95096ce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the desired number of alpha peaks.  <br /></td></tr>
 <tr class="separator:a357e49ff75cb96afb3856722f95096ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f54288dd23df9c254ddb7f788b14c45" id="r_a1f54288dd23df9c254ddb7f788b14c45"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f54288dd23df9c254ddb7f788b14c45">FitSpectrum</a> (TH1F *h, std::vector&lt; float &gt; &amp;centroids, std::vector&lt; float &gt; &amp;errors, const <a class="el" href="structISSAutoCalModAsicChan.html">ISSAutoCalModAsicChan</a> &amp;mac, <a class="el" href="structISSAutoCalPlottingOptions.html">ISSAutoCalPlottingOptions</a> &amp;plot_opt) const</td></tr>
-<tr class="memdesc:a1f54288dd23df9c254ddb7f788b14c45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fits the found/specified peaks with the user-specified fit shape.  <br /></td></tr>
-<tr class="separator:a1f54288dd23df9c254ddb7f788b14c45"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a075094a829616ca20b5767d59ee6a952" id="r_a075094a829616ca20b5767d59ee6a952"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a075094a829616ca20b5767d59ee6a952">CalibrateChannel</a> (std::vector&lt; float &gt; &amp;centroids, std::vector&lt; float &gt; &amp;errors, const <a class="el" href="structISSAutoCalModAsicChan.html">ISSAutoCalModAsicChan</a> &amp;mac) const</td></tr>
-<tr class="memdesc:a075094a829616ca20b5767d59ee6a952"><td class="mdescLeft">&#160;</td><td class="mdescRight">Communicates with the <a class="el" href="classISSCalibration.html" title="A class to read in the calibration file in ROOT&#39;s TConfig format.">ISSCalibration</a> object to produce a calibration file.  <br /></td></tr>
-<tr class="separator:a075094a829616ca20b5767d59ee6a952"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83982ab50b63a7545401761874e1c9ac" id="r_a83982ab50b63a7545401761874e1c9ac"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a83982ab50b63a7545401761874e1c9ac">FitSpectrum</a> (TH1F *h, std::vector&lt; float &gt; &amp;centroids, std::vector&lt; float &gt; &amp;errors, const <a class="el" href="structISSAutoCalModAsicChan.html">ISSAutoCalModAsicChan</a> &amp;mac, <a class="el" href="structISSAutoCalPlottingOptions.html">ISSAutoCalPlottingOptions</a> &amp;plot_opt, float &amp;sigma) const</td></tr>
+<tr class="memdesc:a83982ab50b63a7545401761874e1c9ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fits the found/specified peaks with the user-specified fit shape.  <br /></td></tr>
+<tr class="separator:a83982ab50b63a7545401761874e1c9ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b6eb792c2723db1268162c352e53075" id="r_a1b6eb792c2723db1268162c352e53075"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b6eb792c2723db1268162c352e53075">CalibrateChannel</a> (std::vector&lt; float &gt; &amp;centroids, std::vector&lt; float &gt; &amp;errors, const <a class="el" href="structISSAutoCalModAsicChan.html">ISSAutoCalModAsicChan</a> &amp;mac, float sigma, std::vector&lt; <a class="el" href="structSigmaResult.html">SigmaResult</a> &gt; &amp;allResults) const</td></tr>
+<tr class="memdesc:a1b6eb792c2723db1268162c352e53075"><td class="mdescLeft">&#160;</td><td class="mdescRight">Communicates with the <a class="el" href="classISSCalibration.html" title="A class to read in the calibration file in ROOT&#39;s TConfig format.">ISSCalibration</a> object to produce a calibration file.  <br /></td></tr>
+<tr class="separator:a1b6eb792c2723db1268162c352e53075"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bc3ffd378758ee9a4c3dabc73572dc5" id="r_a0bc3ffd378758ee9a4c3dabc73572dc5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0bc3ffd378758ee9a4c3dabc73572dc5">SaveCalFile</a> (const std::string &amp;name_results_file)</td></tr>
 <tr class="memdesc:a0bc3ffd378758ee9a4c3dabc73572dc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Saves the calibration to a file.  <br /></td></tr>
 <tr class="separator:a0bc3ffd378758ee9a4c3dabc73572dc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -295,7 +295,7 @@ Private Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00086">86</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00093">93</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aa6848de03ad7e0a1e4b37a9bbb1b46c3" name="aa6848de03ad7e0a1e4b37a9bbb1b46c3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa6848de03ad7e0a1e4b37a9bbb1b46c3">&#9670;&#160;</a></span>ISSAutoCalibrator()</h2>
@@ -358,7 +358,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00091">91</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00098">98</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -386,7 +386,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00107">107</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00114">114</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -415,12 +415,12 @@ Private Attributes</h2></td></tr>
 
 <p>Assigns the calibration pointer in the <a class="el" href="classISSAutoCalibrator.html">ISSAutoCalibrator</a> object. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00111">111</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00118">118</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
-<a id="a075094a829616ca20b5767d59ee6a952" name="a075094a829616ca20b5767d59ee6a952"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a075094a829616ca20b5767d59ee6a952">&#9670;&#160;</a></span>CalibrateChannel()</h2>
+<a id="a1b6eb792c2723db1268162c352e53075" name="a1b6eb792c2723db1268162c352e53075"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b6eb792c2723db1268162c352e53075">&#9670;&#160;</a></span>CalibrateChannel()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -438,7 +438,17 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structISSAutoCalModAsicChan.html">ISSAutoCalModAsicChan</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>mac</em></span>&#160;) const</td>
+          <td class="paramtype">const <a class="el" href="structISSAutoCalModAsicChan.html">ISSAutoCalModAsicChan</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>mac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float</td>          <td class="paramname"><span class="paramname"><em>sigma</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structSigmaResult.html">SigmaResult</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>allResults</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -446,8 +456,8 @@ Private Attributes</h2></td></tr>
 <p>Communicates with the <a class="el" href="classISSCalibration.html" title="A class to read in the calibration file in ROOT&#39;s TConfig format.">ISSCalibration</a> object to produce a calibration file. </p>
 <p>Does a linear fit of the ADC value against the calculated alpha particle energy. This does a fancy correction to the energy based on where the particle lands on the array. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">centroids</td><td>Vector of floats (passed by reference) containing the fitted centroids from the <a class="el" href="#a1f54288dd23df9c254ddb7f788b14c45" title="Fits the found/specified peaks with the user-specified fit shape.">ISSAutoCalibrator::FitSpectrum()</a> function </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">errors</td><td>Vector of floats (passed by reference) containing the errors of the fitted centroids from the <a class="el" href="#a1f54288dd23df9c254ddb7f788b14c45" title="Fits the found/specified peaks with the user-specified fit shape.">ISSAutoCalibrator::FitSpectrum()</a> function </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">centroids</td><td>Vector of floats (passed by reference) containing the fitted centroids from the <a class="el" href="#a83982ab50b63a7545401761874e1c9ac" title="Fits the found/specified peaks with the user-specified fit shape.">ISSAutoCalibrator::FitSpectrum()</a> function </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">errors</td><td>Vector of floats (passed by reference) containing the errors of the fitted centroids from the <a class="el" href="#a83982ab50b63a7545401761874e1c9ac" title="Fits the found/specified peaks with the user-specified fit shape.">ISSAutoCalibrator::FitSpectrum()</a> function </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">mod</td><td>Module number </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">asic</td><td>ASIC number </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">chan</td><td>Channel number </td></tr>
@@ -455,12 +465,12 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8cc_source.html#l01129">1129</a> of file <a class="el" href="AutoCalibrator_8cc_source.html">AutoCalibrator.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8cc_source.html#l01131">1131</a> of file <a class="el" href="AutoCalibrator_8cc_source.html">AutoCalibrator.cc</a>.</p>
 
 </div>
 </div>
-<a id="a348c2f34d5836091766c28ed3d8b6644" name="a348c2f34d5836091766c28ed3d8b6644"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a348c2f34d5836091766c28ed3d8b6644">&#9670;&#160;</a></span>DoChannelFit()</h2>
+<a id="a4bd250ddeb47fbb25d6b99fc337156ed" name="a4bd250ddeb47fbb25d6b99fc337156ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bd250ddeb47fbb25d6b99fc337156ed">&#9670;&#160;</a></span>DoChannelFit()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -473,12 +483,17 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structISSAutoCalModAsicChan.html">ISSAutoCalModAsicChan</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>mac</em></span>&#160;) const</td>
+          <td class="paramtype">const <a class="el" href="structISSAutoCalModAsicChan.html">ISSAutoCalModAsicChan</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>mac</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structSigmaResult.html">SigmaResult</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>allResults</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>The insides of the <a class="el" href="#a5a5073d92318d1da67c2e8ee1450fd5f" title="The heart of this class, moving from alpha spectra to a calibration.">DoFits()</a> function that calibrates for a given channel. </p>
+<p>The insides of the <a class="el" href="#af14bd2dc8925bf4fce9f94537b0af923" title="The heart of this class, moving from alpha spectra to a calibration.">DoFits()</a> function that calibrates for a given channel. </p>
 <p>Calibrates a particular channel for fitting </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">m</td><td>The 2D histogram that is used to generate all of the 1D histograms for a given mod,asic pair </td></tr>
@@ -489,12 +504,12 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8cc_source.html#l01330">1330</a> of file <a class="el" href="AutoCalibrator_8cc_source.html">AutoCalibrator.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8cc_source.html#l01351">1351</a> of file <a class="el" href="AutoCalibrator_8cc_source.html">AutoCalibrator.cc</a>.</p>
 
 </div>
 </div>
-<a id="a5a5073d92318d1da67c2e8ee1450fd5f" name="a5a5073d92318d1da67c2e8ee1450fd5f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5a5073d92318d1da67c2e8ee1450fd5f">&#9670;&#160;</a></span>DoFits()</h2>
+<a id="af14bd2dc8925bf4fce9f94537b0af923" name="af14bd2dc8925bf4fce9f94537b0af923"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af14bd2dc8925bf4fce9f94537b0af923">&#9670;&#160;</a></span>DoFits()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -502,7 +517,7 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname">void ISSAutoCalibrator::DoFits </td>
           <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name_sigmas_file</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -511,11 +526,11 @@ Private Attributes</h2></td></tr>
 <p>The heart of this class, moving from alpha spectra to a calibration. </p>
 <p>Calls a lot of the functions in this class so that the behaviour can be controlled. For every module-asic-channel combination, this function calls:</p><ul>
 <li><a class="el" href="#a357e49ff75cb96afb3856722f95096ce" title="Finds the desired number of alpha peaks.">ISSAutoCalibrator::FindPeaks()</a></li>
-<li><a class="el" href="#a1f54288dd23df9c254ddb7f788b14c45" title="Fits the found/specified peaks with the user-specified fit shape.">ISSAutoCalibrator::FitSpectrum()</a></li>
-<li><a class="el" href="#a075094a829616ca20b5767d59ee6a952" title="Communicates with the ISSCalibration object to produce a calibration file.">ISSAutoCalibrator::CalibrateChannel()</a> Error messages are printed if any of the fits fail or warnings are issued </li>
+<li><a class="el" href="#a83982ab50b63a7545401761874e1c9ac" title="Fits the found/specified peaks with the user-specified fit shape.">ISSAutoCalibrator::FitSpectrum()</a></li>
+<li><a class="el" href="#a1b6eb792c2723db1268162c352e53075" title="Communicates with the ISSCalibration object to produce a calibration file.">ISSAutoCalibrator::CalibrateChannel()</a> Error messages are printed if any of the fits fail or warnings are issued </li>
 </ul>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8cc_source.html#l01262">1262</a> of file <a class="el" href="AutoCalibrator_8cc_source.html">AutoCalibrator.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8cc_source.html#l01274">1274</a> of file <a class="el" href="AutoCalibrator_8cc_source.html">AutoCalibrator.cc</a>.</p>
 
 </div>
 </div>
@@ -549,10 +564,10 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Finds the desired number of alpha peaks. </p>
-<p>Looks throughout the alpha spectrum and determines where the alpha peaks are likely to be located. It then sets the values of centroids when it has found the number of peaks it thinks are correct. If it finds one less than expected, it will set centroids to have a dummy peak in the final position, which will then be dealt with in the <a class="el" href="#a1f54288dd23df9c254ddb7f788b14c45" title="Fits the found/specified peaks with the user-specified fit shape.">ISSAutoCalibrator::FitSpectrum()</a> function. The results of its peak-finding stages are printed out if the debug flag is enabled. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Looks throughout the alpha spectrum and determines where the alpha peaks are likely to be located. It then sets the values of centroids when it has found the number of peaks it thinks are correct. If it finds one less than expected, it will set centroids to have a dummy peak in the final position, which will then be dealt with in the <a class="el" href="#a83982ab50b63a7545401761874e1c9ac" title="Fits the found/specified peaks with the user-specified fit shape.">ISSAutoCalibrator::FitSpectrum()</a> function. The results of its peak-finding stages are printed out if the debug flag is enabled. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">h</td><td>The alpha spectrum histogram </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">centroids</td><td>A vector of floats (passed by reference) that will store the guesses for the centroids for the <a class="el" href="#a1f54288dd23df9c254ddb7f788b14c45" title="Fits the found/specified peaks with the user-specified fit shape.">ISSAutoCalibrator::FitSpectrum()</a> stage </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">centroids</td><td>A vector of floats (passed by reference) that will store the guesses for the centroids for the <a class="el" href="#a83982ab50b63a7545401761874e1c9ac" title="Fits the found/specified peaks with the user-specified fit shape.">ISSAutoCalibrator::FitSpectrum()</a> stage </td></tr>
   </table>
   </dd>
 </dl>
@@ -561,8 +576,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a1f54288dd23df9c254ddb7f788b14c45" name="a1f54288dd23df9c254ddb7f788b14c45"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1f54288dd23df9c254ddb7f788b14c45">&#9670;&#160;</a></span>FitSpectrum()</h2>
+<a id="a83982ab50b63a7545401761874e1c9ac" name="a83982ab50b63a7545401761874e1c9ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83982ab50b63a7545401761874e1c9ac">&#9670;&#160;</a></span>FitSpectrum()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -590,7 +605,12 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structISSAutoCalPlottingOptions.html">ISSAutoCalPlottingOptions</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>plot_opt</em></span>&#160;) const</td>
+          <td class="paramtype"><a class="el" href="structISSAutoCalPlottingOptions.html">ISSAutoCalPlottingOptions</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>plot_opt</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;</td>          <td class="paramname"><span class="paramname"><em>sigma</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -646,7 +666,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8cc_source.html#l01445">1445</a> of file <a class="el" href="AutoCalibrator_8cc_source.html">AutoCalibrator.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8cc_source.html#l01467">1467</a> of file <a class="el" href="AutoCalibrator_8cc_source.html">AutoCalibrator.cc</a>.</p>
 
 </div>
 </div>
@@ -676,7 +696,7 @@ Private Attributes</h2></td></tr>
 <p>Adds a progress bar to the GUI. </p>
 <p>Returns the debug status of the <a class="el" href="classISSAutoCalibrator.html">ISSAutoCalibrator</a> </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00116">116</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00123">123</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -705,7 +725,7 @@ Private Attributes</h2></td></tr>
 
 <p>Returns the name of the assigned fit shape used in the <a class="el" href="classISSAutoCalibrator.html">ISSAutoCalibrator</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00118">118</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00125">125</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -734,7 +754,7 @@ Private Attributes</h2></td></tr>
 
 <p>Returns the manual fit status of the <a class="el" href="classISSAutoCalibrator.html">ISSAutoCalibrator</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00117">117</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00124">124</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -782,7 +802,7 @@ Private Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8cc_source.html#l01419">1419</a> of file <a class="el" href="AutoCalibrator_8cc_source.html">AutoCalibrator.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8cc_source.html#l01441">1441</a> of file <a class="el" href="AutoCalibrator_8cc_source.html">AutoCalibrator.cc</a>.</p>
 
 </div>
 </div>
@@ -861,7 +881,7 @@ Private Attributes</h2></td></tr>
 
 <p>Sets the name of the autocal input file in the class. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00094">94</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00101">101</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -916,7 +936,7 @@ Private Attributes</h2></td></tr>
 
 <p>Allows the printing of more information to the console and more images to disk. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00146">146</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00153">153</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -942,7 +962,7 @@ Private Attributes</h2></td></tr>
 
 <p>Constrains fitting to only those specified in the autocal input file. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00147">147</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00154">154</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -968,7 +988,7 @@ Private Attributes</h2></td></tr>
 
 <p>Decide whether to print calibrations for fits that failed. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00151">151</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00158">158</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -994,7 +1014,7 @@ Private Attributes</h2></td></tr>
 
 <p>True if the GUI is being used. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00139">139</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00146">146</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1020,7 +1040,7 @@ Private Attributes</h2></td></tr>
 
 <p>The name of the autocal file used to control the fits. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00143">143</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00150">150</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1046,7 +1066,7 @@ Private Attributes</h2></td></tr>
 
 <p>Pointer to the calibration object. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00133">133</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00140">140</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1072,7 +1092,7 @@ Private Attributes</h2></td></tr>
 
 <p>The lower limit for the amplitude of a peak expressed as a fraction of the height of the bin. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00166">166</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00173">173</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1098,7 +1118,7 @@ Private Attributes</h2></td></tr>
 
 <p>The upper limit for the amplitude of a peak expressed as a fraction of the height of the bin. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00167">167</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00174">174</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1124,7 +1144,7 @@ Private Attributes</h2></td></tr>
 
 <p>Initial guess for background of alpha spectrum. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00154">154</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00161">161</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1150,7 +1170,7 @@ Private Attributes</h2></td></tr>
 
 <p>Lower limit for background of alpha spectrum. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00155">155</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00162">162</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1176,7 +1196,7 @@ Private Attributes</h2></td></tr>
 
 <p>Upper limit for background of alpha spectrum. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00156">156</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00163">163</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1202,7 +1222,7 @@ Private Attributes</h2></td></tr>
 
 <p>Initial guess for alpha for crystal ball fit in alpha spectrum. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00160">160</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00167">167</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1228,7 +1248,7 @@ Private Attributes</h2></td></tr>
 
 <p>Lower limit for alpha for crystal ball fit in alpha spectrum. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00161">161</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00168">168</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1254,7 +1274,7 @@ Private Attributes</h2></td></tr>
 
 <p>Upper limit for alpha for crystal ball fit in alpha spectrum. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00162">162</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00169">169</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1280,7 +1300,7 @@ Private Attributes</h2></td></tr>
 
 <p>Initial guess for n for crystal ball fit in alpha spectrum. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00163">163</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00170">170</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1306,7 +1326,7 @@ Private Attributes</h2></td></tr>
 
 <p>Lower limit for n for crystal ball fit in alpha spectrum. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00164">164</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00171">171</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1332,7 +1352,7 @@ Private Attributes</h2></td></tr>
 
 <p>Upper limit for n for crystal ball fit in alpha spectrum. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00165">165</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00172">172</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1358,7 +1378,7 @@ Private Attributes</h2></td></tr>
 
 <p>Puts a lower limit on the channel number where peaks can be identified and fit. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00171">171</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00178">178</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1384,7 +1404,7 @@ Private Attributes</h2></td></tr>
 
 <p>Puts an upper limit on the channel number where peaks can be identified and fit. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00172">172</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00179">179</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1410,7 +1430,7 @@ Private Attributes</h2></td></tr>
 
 <p>Ensures that the number of counts has dipped to this fraction of the height of the last peak before being ready to record another peak. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00170">170</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00177">177</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1436,7 +1456,7 @@ Private Attributes</h2></td></tr>
 
 <p>This fraction multiplied by the maximum amplitude in the spectrum determines a threshold on the number of counts, over which each peak must rise. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00169">169</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00176">176</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1462,7 +1482,7 @@ Private Attributes</h2></td></tr>
 
 <p>A guess for the width of a window, centred on the centroid guess, that determines the upper and lower bounds for the centroid parameter. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00168">168</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00175">175</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1488,7 +1508,7 @@ Private Attributes</h2></td></tr>
 
 <p>Initial guess for sigma of each peak in alpha spectrum. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00157">157</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00164">164</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1514,7 +1534,7 @@ Private Attributes</h2></td></tr>
 
 <p>Lower limit for sigma of each peak in alpha spectrum. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00158">158</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00165">165</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1540,7 +1560,7 @@ Private Attributes</h2></td></tr>
 
 <p>Upper limit for sigma of each peak in alpha spectrum. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00159">159</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00166">166</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1566,7 +1586,7 @@ Private Attributes</h2></td></tr>
 
 <p>Set by the user to say that IF a peak is missing, THEN it will guess whether it is the first or last peak. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00173">173</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00180">180</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1592,7 +1612,7 @@ Private Attributes</h2></td></tr>
 
 <p>Boolean for deciding whether the channel is to be ignored (e.g. contains bad/no data) or not. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00186">186</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00193">193</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1618,7 +1638,7 @@ Private Attributes</h2></td></tr>
 
 <p>The file format to print the autocal images. Must be supported by ROOT! </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00150">150</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00157">157</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1644,7 +1664,7 @@ Private Attributes</h2></td></tr>
 
 <p>Boolean for deciding whether the channel is being manually fit or not. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00185">185</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00192">192</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1670,7 +1690,7 @@ Private Attributes</h2></td></tr>
 
 <p>Vector used to store background guesses for the fits. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00176">176</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00183">183</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1696,7 +1716,7 @@ Private Attributes</h2></td></tr>
 
 <p>Vector used to store background lower bound limits for the fits. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00177">177</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00184">184</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1722,7 +1742,7 @@ Private Attributes</h2></td></tr>
 
 <p>Vector used to store background upper bound limits for the fits. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00178">178</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00185">185</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1748,7 +1768,7 @@ Private Attributes</h2></td></tr>
 
 <p>Vector used to store centroid guesses for the fits. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00182">182</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00189">189</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1774,7 +1794,7 @@ Private Attributes</h2></td></tr>
 
 <p>Vector used to store centroid lower bound limits for the fits. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00183">183</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00190">190</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1800,7 +1820,7 @@ Private Attributes</h2></td></tr>
 
 <p>Vector used to store centroid upper bound limits for the fits. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00184">184</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00191">191</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1826,7 +1846,7 @@ Private Attributes</h2></td></tr>
 
 <p>Boolean for deciding whether the missing peak is first or last (default is value of default_missing_peak_is_last) </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00187">187</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00194">194</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1852,7 +1872,7 @@ Private Attributes</h2></td></tr>
 
 <p>Vector used to store sigma (standard deviation) guesses for the fits. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00179">179</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00186">186</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1878,7 +1898,7 @@ Private Attributes</h2></td></tr>
 
 <p>Vector used to store sigma lower bound limits for the fits. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00180">180</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00187">187</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1904,7 +1924,7 @@ Private Attributes</h2></td></tr>
 
 <p>Vector used to store sigma upper bound limits for the fits. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00181">181</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00188">188</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1930,7 +1950,7 @@ Private Attributes</h2></td></tr>
 
 <p>Stores the fit shape for peak-fitting. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00148">148</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00155">155</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1956,7 +1976,7 @@ Private Attributes</h2></td></tr>
 
 <p>The output file resulting from the hadd process of all the input files to iss_sort. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00127">127</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00134">134</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -1982,7 +2002,7 @@ Private Attributes</h2></td></tr>
 
 <p>A progress bar for this stage in the GUI. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00140">140</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00147">147</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -2008,7 +2028,7 @@ Private Attributes</h2></td></tr>
 
 <p>Pointer to the reaction object. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00136">136</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00143">143</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -2034,7 +2054,7 @@ Private Attributes</h2></td></tr>
 
 <p>Factor by which to rebin the ADC value that makes up the alpha particle spectrum. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00149">149</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00156">156</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>
@@ -2060,7 +2080,7 @@ Private Attributes</h2></td></tr>
 
 <p>Pointer to the settings object. </p>
 
-<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00130">130</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AutoCalibrator_8hh_source.html#l00137">137</a> of file <a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>.</p>
 
 </div>
 </div>

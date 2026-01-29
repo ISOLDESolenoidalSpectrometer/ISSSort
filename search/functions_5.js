@@ -13,5 +13,5 @@ var searchData=
   ['fissioncut_10',['FissionCut',['../classISSHistogrammer.html#ace993d06bb6c40713775317e12eb259f',1,'ISSHistogrammer']]],
   ['fissioncutheavy_11',['FissionCutHeavy',['../classISSHistogrammer.html#a842d92eb6848b53072a6889a6a75f84c',1,'ISSHistogrammer']]],
   ['fissioncutlight_12',['FissionCutLight',['../classISSHistogrammer.html#aaa381d8e0787053cb5e494dc0db36953',1,'ISSHistogrammer']]],
-  ['fitspectrum_13',['FitSpectrum',['../classISSAutoCalibrator.html#a1f54288dd23df9c254ddb7f788b14c45',1,'ISSAutoCalibrator']]]
+  ['fitspectrum_13',['FitSpectrum',['../classISSAutoCalibrator.html#a83982ab50b63a7545401761874e1c9ac',1,'ISSAutoCalibrator']]]
 ];

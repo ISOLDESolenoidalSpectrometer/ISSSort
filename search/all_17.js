@@ -86,8 +86,9 @@ var searchData=
   ['tissdata_2ecc_83',['TIssData.cc',['../TIssData_8cc.html',1,'']]],
   ['tissdata_2ehh_84',['TIssData.hh',['../TIssData_8hh.html',1,'']]],
   ['trace_85',['trace',['../classISSVmeData.html#aad1971402b66b98f82d80343cbb72fa2',1,'ISSVmeData']]],
-  ['tw_5fgraph_86',['tw_graph',['../classISSCalibration.html#a2cc001788cdffa62d15dc0ecad528e23',1,'ISSCalibration']]],
-  ['twgraphfile_87',['twgraphfile',['../classISSCalibration.html#a0e7609a8ae4057fa382e4900df7404a5',1,'ISSCalibration']]],
-  ['twgraphname_88',['twgraphname',['../classISSCalibration.html#a70d4fabffebc424aa227182e0dc2046c',1,'ISSCalibration']]],
-  ['type_89',['type',['../classISSGammaRayEvt.html#ae916f8083fb460f9d9f1687756fbb8c1',1,'ISSGammaRayEvt']]]
+  ['true_86',['True',['../namespaceplotting__fwhm.html#a8dfc41c3c030dced053d5411fa107949',1,'plotting_fwhm']]],
+  ['tw_5fgraph_87',['tw_graph',['../classISSCalibration.html#a2cc001788cdffa62d15dc0ecad528e23',1,'ISSCalibration']]],
+  ['twgraphfile_88',['twgraphfile',['../classISSCalibration.html#a0e7609a8ae4057fa382e4900df7404a5',1,'ISSCalibration']]],
+  ['twgraphname_89',['twgraphname',['../classISSCalibration.html#a70d4fabffebc424aa227182e0dc2046c',1,'ISSCalibration']]],
+  ['type_90',['type',['../classISSGammaRayEvt.html#ae916f8083fb460f9d9f1687756fbb8c1',1,'ISSGammaRayEvt']]]
 ];

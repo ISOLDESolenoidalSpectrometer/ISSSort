@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['data_0',['data',['../classISSConverter.html#a4994dd0ae3123d37f6f89b9e58124c50',1,'ISSConverter']]],
+  ['data_0',['data',['../classISSConverter.html#a4994dd0ae3123d37f6f89b9e58124c50',1,'ISSConverter::data'],['../namespaceplotting__fwhm.html#a553dae87bbaf1f1855e59b6ad02067aa',1,'plotting_fwhm.data']]],
   ['data_5fblock_5fsize_1',['DATA_BLOCK_SIZE',['../classISSConverter.html#aa359b31cae0ba6a6004f3e1dfa4c764b',1,'ISSConverter']]],
   ['data_5fmap_2',['data_map',['../classISSConverter.html#a3adf141e1a5b7c38d194b33a87d2ceef',1,'ISSConverter']]],
   ['data_5fvector_3',['data_vector',['../classISSConverter.html#adbc8213a1646dcf52236043a6902185b',1,'ISSConverter']]],

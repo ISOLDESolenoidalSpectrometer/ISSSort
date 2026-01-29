@@ -126,10 +126,10 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        t-&gt;GetEntry(i);</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="comment">// Check if it is FebexData</span></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">if</span>( !data-&gt;<a class="code hl_function" href="classISSDataPackets.html#ab3aa028f80cb84602f8fca5be4dac30f">IsVme</a>() ) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">if</span>( !data-&gt;IsVme() ) <span class="keywordflow">continue</span>;</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="comment">// If it is febex, get the data packet</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keyword">auto</span> vmedata = data-&gt;<a class="code hl_function" href="classISSDataPackets.html#a49c01f64c853508d2e38e7118f6d9162">GetVmeData</a>();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keyword">auto</span> vmedata = data-&gt;GetVmeData();</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="comment">// Draw trace</span></div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">if</span>( vmedata-&gt;GetTraceLength() &gt; 0 ) {</div>
@@ -159,8 +159,6 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
 <div class="ttc" id="aReaction_8cc_html_adec064332fb7f7c5788d798dafbd9c7d"><div class="ttname"><a href="Reaction_8cc.html#adec064332fb7f7c5788d798dafbd9c7d">root</a></div><div class="ttdeci">double root</div><div class="ttdef"><b>Definition</b> <a href="Reaction_8cc_source.html#l00025">Reaction.cc:25</a></div></div>
 <div class="ttc" id="aclassISSDataPackets_html"><div class="ttname"><a href="classISSDataPackets.html">ISSDataPackets</a></div><div class="ttdef"><b>Definition</b> <a href="DataPackets_8hh_source.html#l00208">DataPackets.hh:208</a></div></div>
-<div class="ttc" id="aclassISSDataPackets_html_a49c01f64c853508d2e38e7118f6d9162"><div class="ttname"><a href="classISSDataPackets.html#a49c01f64c853508d2e38e7118f6d9162">ISSDataPackets::GetVmeData</a></div><div class="ttdeci">std::shared_ptr&lt; ISSVmeData &gt; GetVmeData() const</div><div class="ttdef"><b>Definition</b> <a href="DataPackets_8hh_source.html#l00239">DataPackets.hh:239</a></div></div>
-<div class="ttc" id="aclassISSDataPackets_html_ab3aa028f80cb84602f8fca5be4dac30f"><div class="ttname"><a href="classISSDataPackets.html#ab3aa028f80cb84602f8fca5be4dac30f">ISSDataPackets::IsVme</a></div><div class="ttdeci">bool IsVme() const</div><div class="ttdef"><b>Definition</b> <a href="DataPackets_8hh_source.html#l00222">DataPackets.hh:222</a></div></div>
 <div class="ttc" id="aread__traces_8cc_html_a0ffcc97e669d6a9e7fbd69d968f972c2"><div class="ttname"><a href="read__traces_8cc.html#a0ffcc97e669d6a9e7fbd69d968f972c2">read_traces</a></div><div class="ttdeci">void read_traces(std::string filename=&quot;sorted/test_traces.root&quot;)</div><div class="ttdef"><b>Definition</b> <a href="#l00005">read_traces.cc:5</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

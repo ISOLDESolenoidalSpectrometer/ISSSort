@@ -7,7 +7,7 @@ var searchData=
   ['info_5fdata_4',['info_data',['../classISSConverter.html#a6ed8f038c2b00b36456c64670d85b4bc',1,'ISSConverter::info_data'],['../classISSEventBuilder.html#a1dc839f77265f4465906c315feb1f27b',1,'ISSEventBuilder::info_data']]],
   ['info_5fpackets_5',['info_packets',['../classISSDataPackets.html#a90ec41753b99398049a0817d622585ba',1,'ISSDataPackets']]],
   ['initialise_6',['Initialise',['../classISSCalibration.html#a6b80d6f860dcd8475fff3334b1348ddf',1,'ISSCalibration::Initialise()'],['../classISSEventBuilder.html#a6e5cd4126fb1832fe68ceadea4f074ad',1,'ISSEventBuilder::Initialise()'],['../classISSHistogrammer.html#a4afff1a62c1ad2dfadcdaa00fd44bced',1,'ISSHistogrammer::Initialise()']]],
-  ['input_5ffile_7',['input_file',['../classISSEventBuilder.html#affdcfbd58766054ee114ecc31c21c4ca',1,'ISSEventBuilder']]],
+  ['input_5ffile_7',['input_file',['../classISSEventBuilder.html#affdcfbd58766054ee114ecc31c21c4ca',1,'ISSEventBuilder::input_file'],['../namespaceplotting__fwhm.html#acaa701c5dc5f14d10efe6c175a92185a',1,'plotting_fwhm.input_file']]],
   ['input_5fnames_8',['input_names',['../iss__sort_8cc.html#aa4dadb650d7b8d8398e397198e0d7647',1,'iss_sort.cc']]],
   ['input_5ftree_9',['input_tree',['../classISSEventBuilder.html#afb320e39833bdf05295dbbbbb4f998dd',1,'ISSEventBuilder::input_tree'],['../classISSHistogrammer.html#a593d48167ab278709c64ff69ee5d2a46',1,'ISSHistogrammer::input_tree']]],
   ['inputfile_10',['InputFile',['../classISSCalibration.html#a3d8c61732dec37e3c7c38eb7b86e61ac',1,'ISSCalibration::InputFile()'],['../classISSReaction.html#a4f667357690073d112416ab926714317',1,'ISSReaction::InputFile()'],['../classISSSettings.html#ab893c6e2e9aebc6dc2399b81674932b3',1,'ISSSettings::InputFile()']]],

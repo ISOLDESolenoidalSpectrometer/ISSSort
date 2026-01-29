@@ -5,7 +5,7 @@ var searchData=
   ['caentime_2',['CaenTime',['../classISSCalibration.html#a4263cc9626c34f09ff3b424375522a3f',1,'ISSCalibration']]],
   ['caentype_3',['CaenType',['../classISSCalibration.html#add460876fbf212fdd11de1037ff06782',1,'ISSCalibration']]],
   ['calculatepulseheightcorrection_4',['CalculatePulseHeightCorrection',['../classISSReaction.html#a02b9af4c92541a2dd44e20169ed0447b',1,'ISSReaction']]],
-  ['calibratechannel_5',['CalibrateChannel',['../classISSAutoCalibrator.html#a075094a829616ca20b5767d59ee6a952',1,'ISSAutoCalibrator']]],
+  ['calibratechannel_5',['CalibrateChannel',['../classISSAutoCalibrator.html#a1b6eb792c2723db1268162c352e53075',1,'ISSAutoCalibrator']]],
   ['cdfinder_6',['CdFinder',['../classISSEventBuilder.html#a84a2815d678963dea1e617cd6c43a9e9',1,'ISSEventBuilder']]],
   ['checkflags_7',['CheckFlags',['../classCommandLineInterface.html#a1f6bfeecf308188d8dc222055953e18e',1,'CommandLineInterface']]],
   ['classdef_8',['ClassDef',['../classISSSingleLayerDetectorEvt.html#af7386755f47bfecf62e420f85a5b5577',1,'ISSSingleLayerDetectorEvt::ClassDef()'],['../classISSMwpcEvt.html#aa01578712689f133503a9cb18445e604',1,'ISSMwpcEvt::ClassDef()'],['../classISSElumEvt.html#a109df37ee52ce68aff26afcd137f1f4e',1,'ISSElumEvt::ClassDef()'],['../classISSGammaRayEvt.html#ad72ba2273352c43628787e9a96d08939',1,'ISSGammaRayEvt::ClassDef()'],['../classISSLumeEvt.html#a3981c77cce6ba7f613bf1d22168caabc',1,'ISSLumeEvt::ClassDef()'],['../classISSCDEvt.html#a1a209648473ed17091a011aa4050d949',1,'ISSCDEvt::ClassDef()'],['../classTIssData.html#aafd5dd96301cb214fa711a569257816f',1,'TIssData::ClassDef()']]],
