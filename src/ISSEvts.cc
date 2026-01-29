@@ -179,8 +179,9 @@ void ISSEvts::AddEvt( std::shared_ptr<ISSCDEvt> event ) {
 					  event->GetSector(),		// Sector
 					  event->GetRing(),			// Ring
 					  event->GetdETime(),		// dE time
-					  event->GetETime() );		// E time
-
+					   event->GetETime() ,      // E time
+					   event->GetETimeRing(),   // E time ring
+					   event->GetdETimeRing()); // dE time ring
 
 	cd_event.push_back( fill_evt );
 
@@ -204,14 +205,21 @@ void ISSSingleLayerDetectorEvt::SetEvent( float myenergy, unsigned char myid,
 
 }
 
-ISSMultiLayerDetectorEvt::ISSMultiLayerDetectorEvt(){}
+ISSMultiLayerDetectorEvt::ISSMultiLayerDetectorEvt(){
+
+  detime = NAN;
+  detime_ring = NAN;
+  etime = NAN;
+  etime_ring = NAN;
+  ring = (unsigned char)-1;
+}
 ISSMultiLayerDetectorEvt::~ISSMultiLayerDetectorEvt(){}
 
 
 void ISSMultiLayerDetectorEvt::SetEvent( std::vector<float> myenergy,
 										std::vector<unsigned char> myid,
 										unsigned char mysec, unsigned char myring,
-										double mydetime, double myetime ) {
+										 double mydetime, double myetime, double mydetime_ring, double myetime_ring ) {
 
 	if( myenergy.size() != myid.size() ) {
 
@@ -227,7 +235,10 @@ void ISSMultiLayerDetectorEvt::SetEvent( std::vector<float> myenergy,
 	sec = mysec;
 	ring = myring;
 	detime = mydetime;
+	detime_ring = mydetime_ring;
 	etime = myetime;
+	etime_ring = myetime_ring;
+
 
 	return;
 
