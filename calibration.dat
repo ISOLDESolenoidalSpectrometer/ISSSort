@@ -6,16 +6,17 @@
 # pass this file to iss_sort with the -c flag
 #
 # Format - Array calibration
-# asic_<mod>_<asic>_<ch>.Offset:	// energy calibration offset (default = -30000.0)
-# asic_<mod>_<asic>_<ch>.Gain:		// energy calirbation gain (default = 15.0)
-# asic_<mod>_<asic>_<ch>.GainQuadr:	// energy calibration quadratic term (default = 0.0)
-# asic_<mod>_<asic>_<ch>.Threshold:	// software threshold in adc units (default = 0)
-# asic_<mod>_<asic>.Time:			// time offset in ns (default = 0.0)
-# asic_<mod>_<asic>.Enabled:		// enabled (true or 1) or disable (false or 0) ASIC by ASIC (default = 1)
-# asic_<mod>_<asic>.WalkType:		// time walk type: 0 = Annie's function, 1 = Sam's function, 2 = TGraph method
-# asic_<mod>_<asic>.Walk<N>.Hit<X>:	// time walk parameters, N (=0-4), for hit bit X (=0/1) data
+# asic_<mod>_<asic>_<ch>.Offset:	    // energy calibration offset (default = -30000.0)
+# asic_<mod>_<asic>_<ch>.Gain:		    // energy calirbation gain (default = 15.0)
+# asic_<mod>_<asic>_<ch>.GainQuadr:	    // energy calibration quadratic term (default = 0.0)
+# asic_<mod>_<asic>_<ch>.Threshold:	    // software threshold in adc units (default = 0)
+# asic_<mod>_<asic>.Time:			    // time offset in ns (default = 0.0)
+# asic_<mod>_<asic>.Enabled:		    // enabled (true or 1) or disable (false or 0) ASIC by ASIC (default = 1)
+# asic_<mod>_<asic>.WalkType:		    // time walk type: 0 = Annie's function, 1 = Sam's function, 2 = TGraph method, 3 = Akima sub-spline interpolation method
+# asic_<mod>_<asic>.Walk<N>.Hit<X>:	    // time walk parameters, N (=0-4), for hit bit X (=0/1) data
 # asic_<mod>_<asic>.WalkFile.Hit<X>:	// ROOT file containing the TGraph for the time walk, for hit bit X (=0/1) data. Default: NULL
 # asic_<mod>_<asic>.WalkName.Hit<X>:	// name of the TGraph object inside the ROOT file, for hit bit X (=0/1) data. Default: Graph
+# asic.WalkFileInterp:                  // ROOT file containing TGraph objects for WalkType '3'. TGraphs in the file are expected to have names of the form "tw_<module>_<asic>_<hitbit>"; see https://git.chalmers.se/expsubphys/erik/tools/twhelper. Default: NULL
 #
 # Format - CAEN calibration
 # caen_<mod>_<ch>.Offset:		// energy calibration offset (default = 0.0)
