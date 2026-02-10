@@ -80,5 +80,10 @@ var searchData=
   ['tw_5fgraph_77',['tw_graph',['../classISSCalibration.html#a2cc001788cdffa62d15dc0ecad528e23',1,'ISSCalibration']]],
   ['twgraphfile_78',['twgraphfile',['../classISSCalibration.html#a0e7609a8ae4057fa382e4900df7404a5',1,'ISSCalibration']]],
   ['twgraphname_79',['twgraphname',['../classISSCalibration.html#a70d4fabffebc424aa227182e0dc2046c',1,'ISSCalibration']]],
-  ['type_80',['type',['../classISSGammaRayEvt.html#ae916f8083fb460f9d9f1687756fbb8c1',1,'ISSGammaRayEvt']]]
+  ['twinterpfile_80',['twinterpfile',['../classISSCalibration.html#ac720311afb401cc8e7f1d30cd53ba42a',1,'ISSCalibration']]],
+  ['twinterpn_81',['twinterpn',['../classISSCalibration.html#ab0dad4082a712cb2899d46ebe7bf4f51',1,'ISSCalibration']]],
+  ['twinterps_82',['twinterps',['../classISSCalibration.html#a457e7ef59ba1fd082c1f7ac6c90238f4',1,'ISSCalibration']]],
+  ['twinterpx_83',['twinterpx',['../classISSCalibration.html#a7eb893e38edfae694f112452f15689b3',1,'ISSCalibration']]],
+  ['twinterpy_84',['twinterpy',['../classISSCalibration.html#ace834203fc53a875a0185e386e6477ab',1,'ISSCalibration']]],
+  ['type_85',['type',['../classISSGammaRayEvt.html#ae916f8083fb460f9d9f1687756fbb8c1',1,'ISSGammaRayEvt']]]
 ];
