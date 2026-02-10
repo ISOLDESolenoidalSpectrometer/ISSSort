@@ -44,7 +44,7 @@ DOC_HTML	:= documentation.html
 
 ROOTCPPFLAGS	:= $(shell root-config --cflags)
 ROOTLDFLAGS		:= $(shell root-config --ldflags)
-ROOTLIBS		:= $(shell root-config --glibs) -lRHTTP -lThread
+ROOTLIBS		:= $(shell root-config --glibs) -lRHTTP -lThread -lMathMore
 LIBS			:= $(ROOTLIBS) $(LIBEXTRA)
 
 # Compiler.

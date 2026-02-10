@@ -90,6 +90,8 @@ ISSCalibration::ISSCalibration( ISSCalibration *mycal ){
 	fMesyTime		= mycal->GetMesyTimes();
 	fMesyType		= mycal->GetMesyTypes();
 
+	twinterps = mycal->GetTWInterpolators();
+
 	Initialise();
 
 }
@@ -120,6 +122,40 @@ void ISSCalibration::Initialise(){
 	fb = new TF1( "walk_derivative", walk_derivative, -2e4, 2e4, 5 );
 	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kBRENT );
 
+	// Interpolation of timewalk curves with WalkType '4'
+	if (twinterpfile != "NULL") {
+		for( unsigned int mod = 0; mod < set->GetNumberOfArrayModules(); mod++ ) {
+			for( unsigned int asic = 0; asic < set->GetNumberOfArrayASICs(); asic++ ) {
+				if (fAsicWalkType[mod][asic] == 3) {
+					for( unsigned int hitbit = 0; hitbit < HitN - 1 /*TODO: implement for hit bit 1*/; hitbit++ ) {
+						TFile *tw_file = new TFile( twinterpfile.c_str(), "READ" );
+						if( tw_file->IsZombie() ) {
+							std::cout << "Couldn't open " << twinterpfile << " correctly" << std::endl;
+						} else {
+							// one file containing all TGraphs named "tw_<mod>_<asic>_<hitbit>"
+							std::string key = "tw_" + std::to_string( mod ) + "_" + std::to_string( asic ) + "_" + std::to_string( hitbit );
+							if( !tw_file->GetListOfKeys()->Contains( key.c_str() ) ) {
+								std::cout << "Couldn't find " << key << " in " << twinterpfile << std::endl;
+							} else {
+								auto graph = TGraph( *dynamic_cast<TGraph*>( tw_file->Get( key.c_str() )->Clone() ) );
+								// we need to know about the extremes in x and y later, and we cannot retrieve them from the Interpolation object itself, unfortunately, so we have to record them separately...
+								int N = graph.GetN();
+								twinterpn[mod][asic][hitbit] = N;
+								Double_t* x = graph.GetX();
+								Double_t* y = graph.GetY();
+								for (int i = 0; i < N; i++) {
+									twinterpx[mod][asic][hitbit].emplace_back(x[i]);
+									twinterpy[mod][asic][hitbit].emplace_back(y[i]);
+								}
+								twinterps[mod][asic][hitbit] = std::make_shared<ROOT::Math::Interpolator>(twinterpx[mod][asic][hitbit], twinterpy[mod][asic][hitbit], ROOT::Math::Interpolation::kAKIMA);
+							}
+						}
+						tw_file->Close();
+					}
+				}
+			}
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -281,18 +317,31 @@ void ISSCalibration::ReadCalibration() {
 	tw_graph.resize( set->GetNumberOfArrayModules()  );
 	twgraphfile.resize( set->GetNumberOfArrayModules()  );
 	twgraphname.resize( set->GetNumberOfArrayModules()  );
+	twinterps.resize( set->GetNumberOfArrayModules() );
+	twinterpn.resize( set->GetNumberOfArrayModules() );
+	twinterpx.resize( set->GetNumberOfArrayModules() );
+	twinterpy.resize( set->GetNumberOfArrayModules() );
+	twinterpfile = config->GetValue( "asic.WalkFileInterp", "NULL" );
 
 	for( unsigned int mod = 0; mod < set->GetNumberOfArrayModules(); mod++ ){
 
 		tw_graph[mod].resize( set->GetNumberOfArrayASICs() );
 		twgraphfile[mod].resize( set->GetNumberOfArrayASICs() );
 		twgraphname[mod].resize( set->GetNumberOfArrayASICs() );
+		twinterps[mod].resize( set->GetNumberOfArrayASICs() );
+		twinterpn[mod].resize( set->GetNumberOfArrayASICs() );
+		twinterpx[mod].resize( set->GetNumberOfArrayASICs() );
+		twinterpy[mod].resize( set->GetNumberOfArrayASICs() );
 
 		for( unsigned int asic = 0; asic < set->GetNumberOfArrayASICs(); asic++ ){
 
 			tw_graph[mod][asic].resize( HitN );
 			twgraphfile[mod][asic].resize( HitN );
 			twgraphname[mod][asic].resize( HitN );
+			twinterps[mod][asic].resize( HitN );
+			twinterpn[mod][asic].resize( HitN );
+			twinterpx[mod][asic].resize( HitN );
+			twinterpy[mod][asic].resize( HitN );
 
 			for( unsigned int i = 0; i < HitN; i++ ) {
 
@@ -443,6 +492,39 @@ float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energ
 			if( hit )walk = -tw_graph[mod][asic][1]->Eval(energy);
 			else walk = -tw_graph[mod][asic][0]->Eval(energy);
 
+		}
+
+		/*
+		 * Employ interpolations per ASIC
+		 */
+		else if (fAsicWalkType[mod][asic] == 3) {
+			auto n = twinterpn[mod][asic][0];
+			auto x = twinterpx[mod][asic][0];
+			auto y = twinterpy[mod][asic][0];
+			double logE = log10(energy);
+			if (!hit /*hit bit zero*/) {
+				if (logE <= x[0]) {
+					// below interpolation range, assume that TW is linear towards lower energies, find a straight line-continuation between the first two points in the interpolation and return a value corresponding to this
+					// TODO: might be more elegant to take values e.g. 25% and 75% between x[0] and x[1]? or one could sample the interpolator and make a linear fit...
+					double x0 = x[0];
+					double y0 = y[0];
+					double x1 = x[1];
+					double y1 = y[1];
+					double a = (y1 - y0)/(x1 - x0);
+					double b = y1 - a*x1;
+					walk = -(a*logE+b);
+				} else if (x[0] < logE && logE < x[n-1]) {
+					// we are within the interpolation range, evaluate it and return the result
+					walk = -twinterps[mod][asic][hit]->Eval(logE);
+				} else {
+					// above interpolation range, assume that TW has reached its asymptotic value and return the y value corresponding to maximum x within the interpolation range
+					walk = -y[n-1];
+				}
+			} else /*hit bit one*/ {
+				// TODO: implement for hit bit one.
+				// for now, we simply assume that TW has reached its asymptotic value and return the y value corresponding to maximum x within the interpolation range for hit bit zero
+				walk = -y[n-1];
+			}
 		}
 
 		else{

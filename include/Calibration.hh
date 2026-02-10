@@ -16,6 +16,7 @@
 #include "TGraph.h"
 #include "TFile.h"
 #include "Math/RootFinder.h"
+#include "Math/Interpolator.h"
 #include "Math/Functor.h"
 
 // Settings header
@@ -68,6 +69,7 @@ public:
 	std::vector<std::vector<unsigned char>> GetAsicWalkTypes(){ return fAsicWalkType; };
 	std::vector<std::vector<std::vector<std::string>>> GetTWGraphFiles(){ return twgraphfile; };
 	std::vector<std::vector<std::vector<std::string>>> GetTWGraphNames(){ return twgraphname; };
+	std::vector<std::vector<std::vector<std::shared_ptr<ROOT::Math::Interpolator>>>> GetTWInterpolators(){ return twinterps; };
 
 	std::vector<std::vector<float>> GetCaenOffsets(){ return fCaenOffset; };
 	std::vector<std::vector<float>> GetCaenGains(){ return fCaenGain; };
@@ -352,6 +354,11 @@ private:
 	std::vector<std::vector<std::vector<std::string>>> twgraphname;			///< The names of the time walk graphs
 	std::vector<std::vector<std::vector<std::shared_ptr<TGraph>>>> tw_graph;	///<! Vector containing time walk graphs
 
+	// Time-walk Interpolators
+	std::string twinterpfile;
+	std::vector<std::vector<std::vector<std::vector<Double_t>>>> twinterpx, twinterpy;
+	std::vector<std::vector<std::vector<Int_t>>> twinterpn;
+	std::vector<std::vector<std::vector<std::shared_ptr<ROOT::Math::Interpolator>>>> twinterps;   ///<! Vector containing time walk interpolators
 
 	ClassDef( ISSCalibration, 10 )
 
