@@ -2921,6 +2921,8 @@ void ISSEventBuilder::CdFinder() {
 		double sectime_cur = cd_evt[partid]->GetdETime();
 		double secen_cur = cd_evt[partid]->GetEnergy(0);
 
+		double best_ring_time = 1e7;
+
 		// Find matching ring, easy if there is only 1
 		int rindex_match = -1;
 		int rindex_reuse = -1;
@@ -2946,6 +2948,8 @@ void ISSEventBuilder::CdFinder() {
 					rindex_match = j;
 					rs_ediff_best = rs_ediff_cur;
 
+					best_ring_time = cdrtd_list[dE_idx][j];
+
 				}
 
 				// otherwise add it to a list we might need to reuse later
@@ -2959,9 +2963,12 @@ void ISSEventBuilder::CdFinder() {
 		if( rs_ediff_best < 9e12 && rindex_match >= 0 ) {
 			cd_evt[partid]->SetRing( cdrid_list[dE_idx][rindex_match] );
 			used_idx.push_back( rindex_match );
+			cd_evt[partid]->SetdETimeRing(best_ring_time);
 		}
-		else if( partid > 0 && rindex_reuse >= 0 )
+		else if( partid > 0 && rindex_reuse >= 0 ){
 			cd_evt[partid]->SetRing( cdrid_list[dE_idx][rindex_reuse] );
+		    cd_evt[partid]->SetdETimeRing(best_ring_time);
+		}
 		else
 			cd_evt[partid]->SetRing( 0xff ); // no ring found
 
@@ -3009,6 +3016,56 @@ void ISSEventBuilder::CdFinder() {
 				bool skip_flag = false;
 				if( std::find( used_idx.begin(), used_idx.end(), j ) != used_idx.end() )
 					continue;
+
+                //======================START (ADDING OF R-S MATCHING ALSO IN THE E DETECTOR)==========================
+                // Loop over rings in the E detector to find a matching ring
+
+                int matching_ring_index = -1; // This will hold the matching ring index
+                int reuse_ring_index = -1;
+                double best_time_diff = 1e7; // Initialize to a very large number
+                double best_en_diff = 8e12;
+                double best_ring_time = 1e7;
+
+
+                //Check matching with rings in the E detector. Loop over rings in the E layer (for matching)
+                for (unsigned int k = 0; k < cdrtd_list[i].size(); ++k) {
+
+                  bool ring_used = false;
+                  if( std::find( used_idx.begin(), used_idx.end(), k ) != used_idx.end() )
+                        ring_used = true;
+
+                  double time_diff = TMath::Abs(cdrtd_list[i][k] - cd_evt[partid]->GetETime());
+                  double en_diff  = TMath::Abs(cdren_list[i][k] - cd_evt[partid]->GetEnergy(1));
+
+                  // Check if the time difference is within the allowed window and if they are close in energy
+                  if (time_diff < set->GetCDRSHitWindow() && en_diff < best_en_diff) {
+
+
+                        if( !ring_used ){
+
+                          matching_ring_index = k;
+                          best_time_diff = time_diff;
+
+                          best_ring_time = cdrtd_list[i][k];
+                          //std::cout<<"Time ring E detector: "<<best_ring_time<<std::endl;
+                        }
+                        else reuse_ring_index = k;
+                  }
+                }
+
+                if( best_en_diff < 9e12 && matching_ring_index >=0 ){
+                  cd_evt[partid]->SetRing( cdrid_list[i][matching_ring_index]);
+                  cd_evt[partid]->SetETimeRing( best_ring_time );
+                }
+                else if( partid > 0 && reuse_ring_index >=0 ){
+                  cd_evt[partid]->SetRing( cdrid_list[i][reuse_ring_index]);
+                  cd_evt[partid]->SetETimeRing( best_ring_time );
+                }
+                else
+                  cd_evt[partid]->SetRing( 0xff );
+
+                //=============================END===================================================
+
 
 				// Check all other sector hits to find a neighbour
 				for( unsigned int k = j+1; k < cdsen_list[i].size(); k++ ) {
