@@ -743,8 +743,8 @@ public:
 
 		// Hit information is derived, depends on array orientation
 		if( z_meas < 0 ) {
-			mod = ISSArrayEvt::FindModule( -1.0 * phi_meas );
-			nid = ISSArrayEvt::FindNID( -1.0 * phi_meas );
+			mod = ISSArrayEvt::FindModule( TMath::TwoPi() - phi_meas );
+			nid = ISSArrayEvt::FindNID( TMath::TwoPi() - phi_meas );
 			row = ISSArrayEvt::FindRow( -1.0 * ( z_meas - react->GetArrayDistance() ) );
 			pid = ISSArrayEvt::FindPID( -1.0 * ( z_meas - react->GetArrayDistance() ) );
 		}
