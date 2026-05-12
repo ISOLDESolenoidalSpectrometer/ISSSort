@@ -12,5 +12,6 @@ var searchData=
   ['monitor_5frun_9',['monitor_run',['../iss__sort_8cc.html#a41bfdfd4b3dc4ec83a7ad948b00d3993',1,'iss_sort.cc']]],
   ['multialphagaussianbg_10',['MultiAlphaGaussianBG',['../FitFunctions_8hh.html#a50900a332624e1c01c2adad19a3de747',1,'FitFunctions.hh']]],
   ['multicrystalballfunctionbg_11',['MultiCrystalBallFunctionBG',['../FitFunctions_8hh.html#a94f13373ad46a7348c5e9d0dc19ef37c',1,'FitFunctions.hh']]],
-  ['mwpcfinder_12',['MwpcFinder',['../classISSEventBuilder.html#a666a793f30d2556ca2a17552d4f75719',1,'ISSEventBuilder']]]
+  ['mwpcfinder_12',['MwpcFinder',['../classISSEventBuilder.html#a666a793f30d2556ca2a17552d4f75719',1,'ISSEventBuilder']]],
+  ['mwpctacsumcut_13',['MwpcTacSumCut',['../classISSHistogrammer.html#a724ba36ff330861396866e7aea7afe5f',1,'ISSHistogrammer']]]
 ];
