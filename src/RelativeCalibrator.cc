@@ -246,8 +246,6 @@ void ISSRelativeCalibrator::CalibratePsides() {
 				// If we have the n-side tag, set the gain and offset
 				if( k == ptag ) {
 					std::cout << "!! This is the p-side tag channel, cross-check check the parameters below !!" << std::endl;
-					pgain = fit_gain;
-					poffset = fit_offset;
 				}
 
 				// Get the output names for the calibration file
@@ -315,6 +313,10 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 			std::string cname = "cal_n_" + std::to_string(i) + "_" + std::to_string(j);
 			canv[i][j] = std::make_unique<TCanvas>( cname.data(), cname.data(), 800, 1000 );
 
+			// Get the p-side gain and offset
+			pgain = cal->GetAsicGains().at(i).at(j).at(ptag);
+			poffset = cal->GetAsicOffsets().at(i).at(j).at(ptag);
+
 			// Loop over all the strips
 			for( unsigned int k = 0; k < set->GetNumberOfArrayNstrips()*2; ++k ) {
 
@@ -377,18 +379,14 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 
 void ISSRelativeCalibrator::FillPixelHists() {
 
-	// Variables for the finder algorithm
-	std::vector<unsigned char> pindex;
-	std::vector<unsigned char> nindex;
-
 	// Do each module and row individually
 	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
 
 		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
 
-			// Reset variables for a new detector element
-			std::vector<unsigned char>().swap(pindex);
-			std::vector<unsigned char>().swap(nindex);
+			// Variables for the finder algorithm
+			std::vector<unsigned char> pindex;
+			std::vector<unsigned char> nindex;
 
 			// Loop over p-side events
 			for( unsigned int k = 0; k < pQ_list.size(); ++k ) {
@@ -427,12 +425,12 @@ void ISSRelativeCalibrator::FillPixelHists() {
 			unsigned int nQ = nQ_list[nindex[0]];
 
 			// skip events with very diiferent energies
-			if( nQ / pQ > 1.5 || pQ / nQ > 1.5 ) continue;
+			//if( nQ / pQ > 1.5 || pQ / nQ > 1.5 ) continue;
 
 			// For p-side tags
 			if( pid == ptag ) {
 
-				array_nQ_pQ[i][j][pid]->Fill( nQ, pQ );
+				array_nQ_pQ[i][j][nid]->Fill( nQ, pQ );
 
 			}
 			
