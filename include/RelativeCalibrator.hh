@@ -199,8 +199,8 @@ private:
 	unsigned long n_entries;
 
 	// CD histograms
-	std::vector<std::vector<std::vector<TH2F*>>> array_pQ_nQ;
-	std::vector<std::vector<std::vector<TH2F*>>> array_nQ_pQ;
+	std::vector<std::vector<std::vector<TH2S*>>> array_pQ_nQ;
+	std::vector<std::vector<std::vector<TH2S*>>> array_nQ_pQ;
 
 };
 

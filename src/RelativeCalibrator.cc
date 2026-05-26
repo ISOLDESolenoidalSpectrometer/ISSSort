@@ -161,7 +161,7 @@ void ISSRelativeCalibrator::MakeHists(){
 				htitle += ", row " + std::to_string(j) + ", pid " + std::to_string(k);
 				htitle += ", nid " + std::to_string(ntag);
 				htitle += ";n-side (ADC units);p-side (ADC units);Counts";
-				array_nQ_pQ[i][j][k] = new TH2F( hname.data(), htitle.data(),
+				array_nQ_pQ[i][j][k] = new TH2S( hname.data(), htitle.data(),
 											  2048, 0, 4096, 2048, 0, 4096 );
 				histlist->Add(array_nQ_pQ[i][j][k]);
 
@@ -177,7 +177,7 @@ void ISSRelativeCalibrator::MakeHists(){
 				htitle += ", row " + std::to_string(j) + ", pid " + std::to_string(ptag);
 				htitle += ", nid " + std::to_string(k);
 				htitle += ";p-side (ADC units);n-side (ADC units);Counts";
-				array_pQ_nQ[i][j][k] = new TH2F( hname.data(), htitle.data(),
+				array_pQ_nQ[i][j][k] = new TH2S( hname.data(), htitle.data(),
 											  2048, 0, 4096, 2048, 0, 4096 );
 				histlist->Add(array_pQ_nQ[i][j][k]);
 
@@ -312,7 +312,7 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 		// Loop over the sectors
 		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
 
-			std::string cname = "cdcal_n_" + std::to_string(i) + "_" + std::to_string(j);
+			std::string cname = "cal_n_" + std::to_string(i) + "_" + std::to_string(j);
 			canv[i][j] = std::make_unique<TCanvas>( cname.data(), cname.data(), 800, 1000 );
 
 			// Loop over all the strips
@@ -321,8 +321,8 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 				// Get the right histogram to do the fit
 				auto res = array_pQ_nQ[i][j][k]->Fit( nfit.get(), "QWL" );
 				if( res != 0 ) continue;
-				double fit_gain = 1.0 / nfit->GetParameter(1);
-				double fit_offset = -1.0 * nfit->GetParameter(0) * fit_gain;
+				double fit_gain = pgain / nfit->GetParameter(1);
+				double fit_offset = poffset - nfit->GetParameter(0) * fit_gain;
 
 				// If we have the n-side tag, set the gain and offset
 				if( k == ntag ) {
