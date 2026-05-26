@@ -20,19 +20,12 @@ else
 	DICTEXT   := _rdict.pcm
 endif
 
-# Note: SONAMESWITCH would be used as $(SONAMESWITCH)$@ in the rule
-# for building $(LIB_DIR)/libiss_sort.so .  However, that causes the
-# dynamic linker to not search for the library but just use the name
-# as a path when it contains a /.  That means that iss_sort cannot be
-# called from another directory.
 PLATFORM:=$(shell uname)
 ifeq ($(PLATFORM),Darwin)
 SHAREDSWITCH = -Qunused-arguments -shared -undefined dynamic_lookup -dynamiclib
-SONAMESWITCH = -Wl,-install_name,'@executable_path/../lib/'# NO ENDING SPACE
 OSDEF = -DMACOSX
 else
 SHAREDSWITCH = -shared
-SONAMESWITCH = -Wl,-soname,# NO ENDING SPACE
 OSDEF = -DLINUX
 LIBEXTRA = -lrt
 endif
