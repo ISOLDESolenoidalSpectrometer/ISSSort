@@ -151,25 +151,9 @@ void ISSRelativeCalibrator::MakeHists(){
 
 		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
 
-			array_nQ_pQ[i][j].resize( set->GetNumberOfArrayPstrips() );
+			array_pQ_nQ[i][j].resize( set->GetNumberOfArrayPstrips() );
 
 			for( unsigned int k = 0; k < set->GetNumberOfArrayPstrips(); ++k ) {
-
-				hname  = "array_" + std::to_string(i) + "_" + std::to_string(j);
-				hname  += "_nQ_" + std::to_string(ntag) + "_pQ_" + std::to_string(k);
-				htitle  = "CD n-side ADC value vs p-side ADC value for module " + std::to_string(i);
-				htitle += ", row " + std::to_string(j) + ", pid " + std::to_string(k);
-				htitle += ", nid " + std::to_string(ntag);
-				htitle += ";n-side (ADC units);p-side (ADC units);Counts";
-				array_nQ_pQ[i][j][k] = new TH2S( hname.data(), htitle.data(),
-												1024, 0, 4096, 1024, 0, 4096 );
-				histlist->Add(array_nQ_pQ[i][j][k]);
-
-			} // k
-
-			array_pQ_nQ[i][j].resize( set->GetNumberOfArrayNstrips()*2 );
-
-			for( unsigned int k = 0; k < set->GetNumberOfArrayNstrips()*2; ++k ) {
 
 				hname  = "array_" + std::to_string(i) + "_" + std::to_string(j);
 				hname  += "_pQ_" + std::to_string(ptag) + "_nQ_" + std::to_string(k);
@@ -180,6 +164,22 @@ void ISSRelativeCalibrator::MakeHists(){
 				array_pQ_nQ[i][j][k] = new TH2S( hname.data(), htitle.data(),
 												1024, 0, 4096, 1024, 0, 4096 );
 				histlist->Add(array_pQ_nQ[i][j][k]);
+
+			} // k
+
+			array_nQ_pQ[i][j].resize( set->GetNumberOfArrayNstrips()*2 );
+
+			for( unsigned int k = 0; k < set->GetNumberOfArrayNstrips()*2; ++k ) {
+
+				hname  = "array_" + std::to_string(i) + "_" + std::to_string(j);
+				hname  += "_nQ_" + std::to_string(ntag) + "_pQ_" + std::to_string(k);
+				htitle  = "CD n-side ADC value vs p-side ADC value for module " + std::to_string(i);
+				htitle += ", row " + std::to_string(j) + ", pid " + std::to_string(k);
+				htitle += ", nid " + std::to_string(ntag);
+				htitle += ";n-side (ADC units);p-side (ADC units);Counts";
+				array_nQ_pQ[i][j][k] = new TH2S( hname.data(), htitle.data(),
+												1024, 0, 4096, 1024, 0, 4096 );
+				histlist->Add(array_nQ_pQ[i][j][k]);
 
 			} // k
 
@@ -238,7 +238,7 @@ void ISSRelativeCalibrator::CalibratePsides() {
 			for( unsigned int k = 0; k < set->GetNumberOfArrayPstrips(); ++k ) {
 
 				// Get the right histogram to do the fit
-				auto res = array_nQ_pQ[i][j][k]->Fit( pfit.get(), "QWL" );
+				auto res = array_pQ_nQ[i][j][k]->Fit( pfit.get(), "QWL" );
 				if( res != 0 ) continue;
 				double fit_gain = ngain / pfit->GetParameter(1);
 				double fit_offset = noffset - pfit->GetParameter(0) * fit_gain;
@@ -319,7 +319,7 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 			for( unsigned int k = 0; k < set->GetNumberOfArrayNstrips()*2; ++k ) {
 
 				// Get the right histogram to do the fit
-				auto res = array_pQ_nQ[i][j][k]->Fit( nfit.get(), "QWL" );
+				auto res = array_nQ_pQ[i][j][k]->Fit( nfit.get(), "QWL" );
 				if( res != 0 ) continue;
 				double fit_gain = pgain / nfit->GetParameter(1);
 				double fit_offset = poffset - nfit->GetParameter(0) * fit_gain;
@@ -432,14 +432,14 @@ void ISSRelativeCalibrator::FillPixelHists() {
 			// For p-side tags
 			if( pid == ptag ) {
 
-				array_pQ_nQ[i][j][nid]->Fill( pQ, nQ );
+				array_nQ_pQ[i][j][pid]->Fill( nQ, pQ );
 
 			}
 			
 			// For n-side tags
 			if( nid == ntag ) {
 
-				array_nQ_pQ[i][j][pid]->Fill( nQ, pQ );
+				array_pQ_nQ[i][j][pid]->Fill( pQ, nQ );
 
 			}
 
