@@ -129,6 +129,18 @@ void ISSRelativeCalibrator::Initialise(){
 	std::vector<bool>().swap(phit_list);
 	std::vector<bool>().swap(nhit_list);
 
+	// Offset vectors
+	poffset.resize( set->GetNumberOfArrayModules() );
+	noffset.resize( set->GetNumberOfArrayModules() );
+	pgain.resize( set->GetNumberOfArrayModules() );
+	ngain.resize( set->GetNumberOfArrayModules() );
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
+		poffset[i].resize( set->GetNumberOfArrayRows() );
+		noffset[i].resize( set->GetNumberOfArrayRows() );
+		pgain[i].resize( set->GetNumberOfArrayRows() );
+		ngain[i].resize( set->GetNumberOfArrayRows() );
+	}
+
 	return;
 	
 }
@@ -232,7 +244,7 @@ void ISSRelativeCalibrator::CalibratePsides() {
 		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
 
 			std::string cname = "cal_p_" + std::to_string(i) + "_" + std::to_string(j);
-			canv[i][j] = std::make_unique<TCanvas>( cname.data(), cname.data(), 800, 1000 );
+			canv[i][j] = std::make_unique<TCanvas>( cname.data(), cname.data(), 600, 600 );
 
 			// Loop over all the strips
 			for( unsigned int k = 0; k < set->GetNumberOfArrayPstrips(); ++k ) {
@@ -240,8 +252,8 @@ void ISSRelativeCalibrator::CalibratePsides() {
 				// Get the right histogram to do the fit
 				auto res = array_pQ_nQ[i][j][k]->Fit( pfit.get(), "QWL" );
 				if( res != 0 ) continue;
-				double fit_gain = ngain / pfit->GetParameter(1);
-				double fit_offset = noffset - pfit->GetParameter(0) * fit_gain;
+				double fit_gain = ngain[i][j] / pfit->GetParameter(1);
+				double fit_offset = noffset[i][j] - pfit->GetParameter(0) * fit_gain;
 
 				// If we have the n-side tag, set the gain and offset
 				if( k == ptag ) {
@@ -314,8 +326,13 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 			canv[i][j] = std::make_unique<TCanvas>( cname.data(), cname.data(), 800, 1000 );
 
 			// Get the p-side gain and offset
-			pgain = cal->GetAsicGains().at(i).at(j).at(ptag);
-			poffset = cal->GetAsicOffsets().at(i).at(j).at(ptag);
+			int pmod  = i;
+			int pasic = set->GetArrayAsic(i,j,0,ptag);
+			int pch   = set->GetArrayChannel(i,j,0,ptag);
+			if( pasic < 0 || pch < 0 ) continue;
+
+			pgain[i][j] = cal->GetAsicGains().at(pmod).at(pasic).at(pch);
+			poffset[i][j] = cal->GetAsicOffsets().at(pmod).at(pasic).at(pch);
 
 			// Loop over all the strips
 			for( unsigned int k = 0; k < set->GetNumberOfArrayNstrips()*2; ++k ) {
@@ -323,13 +340,13 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 				// Get the right histogram to do the fit
 				auto res = array_nQ_pQ[i][j][k]->Fit( nfit.get(), "QWL" );
 				if( res != 0 ) continue;
-				double fit_gain = pgain / nfit->GetParameter(1);
-				double fit_offset = poffset - nfit->GetParameter(0) * fit_gain;
+				double fit_gain = pgain[i][j] / nfit->GetParameter(1);
+				double fit_offset = poffset[i][j] - nfit->GetParameter(0) * fit_gain;
 
 				// If we have the n-side tag, set the gain and offset
 				if( k == ntag ) {
-					ngain = fit_gain;
-					noffset = fit_offset;
+					ngain[i][j] = fit_gain;
+					noffset[i][j] = fit_offset;
 				}
 
 				// Get the output names for the calibration file

@@ -189,10 +189,10 @@ private:
 	unsigned char ntag = 0;
 
 	// Reference calibration coefficients
-	double noffset = 0.0;
-	double ngain = 1.0;
-	double poffset = 0.0;
-	double pgain = 1.0;
+	std::vector<std::vector<float>> noffset;
+	std::vector<std::vector<float>> ngain;
+	std::vector<std::vector<float>> poffset;
+	std::vector<std::vector<float>> pgain;
 
 	// Counters
 	unsigned long hit_ctr;
