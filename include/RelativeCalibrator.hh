@@ -23,6 +23,7 @@
 #include <TKey.h>
 #include <TCanvas.h>
 #include <TF1.h>
+#include <TLinearFitter.h>
 #include <TROOT.h>
 
 // Settings header

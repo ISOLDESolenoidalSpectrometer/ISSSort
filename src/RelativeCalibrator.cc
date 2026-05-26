@@ -228,7 +228,8 @@ void ISSRelativeCalibrator::ResetHists(){
 void ISSRelativeCalibrator::CalibratePsides() {
 
 	// Create a TF1 for the linear fit
-	auto pfit = std::make_unique<TF1>( "pfit", "[0]+[1]*x", 0, 1e9 );
+	auto plf = std::make_unique<TLinearFitter>( 1, "pol1" );
+	auto pfit = std::make_unique<TF1>( "pfit", "[0]+[1]*x", 0, 4096 );
 
 	// Some canvases to check fits
 	gErrorIgnoreLevel = kError;
@@ -249,11 +250,43 @@ void ISSRelativeCalibrator::CalibratePsides() {
 			// Loop over all the strips
 			for( unsigned int k = 0; k < set->GetNumberOfArrayPstrips(); ++k ) {
 
-				// Get the right histogram to do the fit
-				auto res = array_pQ_nQ[i][j][k]->Fit( pfit.get(), "QWL" );
-				if( res != 0 ) continue;
-				double fit_gain = ngain[i][j] / pfit->GetParameter(1);
-				double fit_offset = noffset[i][j] - pfit->GetParameter(0) * fit_gain;
+				// Start with a fresh LinearFitter
+				plf->ClearPoints();
+
+				// Get the data for the linear regression
+				for( int xbin = 1; xbin <= array_pQ_nQ[i][j][k]->GetNbinsX(); ++xbin ){
+
+					for( int ybin = 1; ybin <= array_pQ_nQ[i][j][k]->GetNbinsY(); ++ybin ){
+
+						// Check that we have at least one count in the bin
+						double counts = array_pQ_nQ[i][j][k]->GetBinContent( xbin, ybin );
+						if( counts <= 0 ) continue;
+
+						// The calculate the weight and add it
+						double xval[1] = { array_pQ_nQ[i][j][k]->GetXaxis()->GetBinCenter( xbin ) };
+						double yval = array_pQ_nQ[i][j][k]->GetYaxis()->GetBinCenter( ybin );
+						double err = 1.0 / TMath::Sqrt( counts );
+						plf->AddPoint( xval, yval, err );
+
+					} // ybin
+
+				} // xbin
+
+				// Do a robust linear evaluation of 70% of the points
+				if( plf->GetNpoints() < 5 ) continue;
+				plf->EvalRobust( 0.7 );
+				pfit->SetParameters( plf->GetParameter(0), plf->GetParameter(1) );
+
+				// Get the parameters out
+				double fit_gain = ngain[i][j] / plf->GetParameter(1);
+				double fit_offset = noffset[i][j] - plf->GetParameter(0) * fit_gain;
+
+
+				// Directly fit the histogram (old method)
+				//auto res = array_pQ_nQ[i][j][k]->Fit( pfit.get(), "QWL" );
+				//if( res != 0 ) continue;
+				//double fit_gain = ngain[i][j] / pfit->GetParameter(1);
+				//double fit_offset = noffset[i][j] - pfit->GetParameter(0) * fit_gain;
 
 				// If we have the n-side tag, set the gain and offset
 				if( k == ptag ) {
@@ -283,6 +316,10 @@ void ISSRelativeCalibrator::CalibratePsides() {
 				output_cal << gainstr << std::endl;
 				output_cal << offsetstr << std::endl;
 
+				// Draw plot on Canvas
+				array_pQ_nQ[i][j][k]->Draw("colz");
+				pfit->Draw("same");
+
 				// Print to a file
 				std::string pdfname = cname + ".pdf";
 				if( k == 0 && set->GetNumberOfArrayPstrips() != 1 )
@@ -307,7 +344,8 @@ void ISSRelativeCalibrator::CalibratePsides() {
 void ISSRelativeCalibrator::CalibrateNsides() {
 
 	// Create a TF1 for the linear fit
-	auto nfit = std::make_unique<TF1>( "nfit", "[0]+[1]*x", 0, 1e9 );
+	auto nlf = std::make_unique<TLinearFitter>( 1, "pol1" );
+	auto nfit = std::make_unique<TF1>( "nfit", "[0]+[1]*x", 0, 4096 );
 
 	// Some canvases to check fits
 	gErrorIgnoreLevel = kError;
@@ -337,11 +375,43 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 			// Loop over all the strips
 			for( unsigned int k = 0; k < set->GetNumberOfArrayNstrips()*2; ++k ) {
 
-				// Get the right histogram to do the fit
-				auto res = array_nQ_pQ[i][j][k]->Fit( nfit.get(), "QWL" );
-				if( res != 0 ) continue;
-				double fit_gain = pgain[i][j] / nfit->GetParameter(1);
-				double fit_offset = poffset[i][j] - nfit->GetParameter(0) * fit_gain;
+				// Start with a fresh LinearFitter
+				nlf->ClearPoints();
+
+				// Get the data for the linear regression
+				for( int xbin = 1; xbin <= array_nQ_pQ[i][j][k]->GetNbinsX(); ++xbin ){
+
+					for( int ybin = 1; ybin <= array_nQ_pQ[i][j][k]->GetNbinsY(); ++ybin ){
+
+						// Check that we have at least one count in the bin
+						double counts = array_nQ_pQ[i][j][k]->GetBinContent( xbin, ybin );
+						if( counts <= 0 ) continue;
+
+						// The calculate the weight and add it
+						double xval[1] = { array_pQ_nQ[i][j][k]->GetXaxis()->GetBinCenter( xbin ) };
+						double yval = array_pQ_nQ[i][j][k]->GetYaxis()->GetBinCenter( ybin );
+						double err = 1.0 / TMath::Sqrt( counts );
+						nlf->AddPoint( xval, yval, err );
+
+					} // ybin
+
+				} // xbin
+
+				// Do a robust linear evaluation of 70% of the points
+				if( nlf->GetNpoints() < 5 ) continue;
+				nlf->EvalRobust( 0.7 );
+				nfit->SetParameters( nlf->GetParameter(0), nlf->GetParameter(1) );
+
+				// Get the parameters out
+				double fit_gain = pgain[i][j] / nlf->GetParameter(1);
+				double fit_offset = poffset[i][j] - nlf->GetParameter(0) * fit_gain;
+
+
+				// Directly fit the histogram (old method)
+				//auto res = array_nQ_pQ[i][j][k]->Fit( nfit.get(), "QWL" );
+				//if( res != 0 ) continue;
+				//double fit_gain = pgain[i][j] / nfit->GetParameter(1);
+				//double fit_offset = poffset[i][j] - nfit->GetParameter(0) * fit_gain;
 
 				// If we have the n-side tag, set the gain and offset
 				if( k == ntag ) {
@@ -372,6 +442,10 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 				std::cout << offsetstr << std::endl;
 				output_cal << gainstr << std::endl;
 				output_cal << offsetstr << std::endl;
+
+				// Draw plot on Canvas
+				array_nQ_pQ[i][j][k]->Draw("colz");
+				nfit->Draw("same");
 
 				// Print to a file
 				std::string pdfname = cname + ".pdf";
