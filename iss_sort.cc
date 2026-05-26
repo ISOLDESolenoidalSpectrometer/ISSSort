@@ -47,6 +47,11 @@
 # include "AutoCalibrator.hh"
 #endif
 
+// RelativeCalibrator header
+#ifndef __RELATIVECALIBRATOR_HH
+# include "RelativeCalibrator.hh"
+#endif
+
 // DataSpy header
 #ifndef __DATASPY_HH
 # include "DataSpy.hh"
@@ -84,6 +89,11 @@ bool flag_pace4 = false;
 bool flag_nptool = false;
 bool flag_ebis = false;
 
+// Do we want to do the relative calibration of the array?
+bool flag_relcal = false;
+std::string relcal_strips;
+unsigned char relcal_pid = 12;
+unsigned char relcal_nid = 2;
 
 // select what steps of the analysis to be forced
 std::vector<bool> force_convert;
@@ -939,6 +949,62 @@ void do_autocal(){
 
 }
 
+void do_relcal(){
+
+	//-----------------------------------//
+	// Relative calibration of the array //
+	//-----------------------------------//
+	ISSRelativeCalibrator rc;
+	std::cout << "\n +++ ISS Analysis:: processing RelativeCalibration +++" << std::endl;
+
+	std::ifstream ftest;
+	std::string name_input_file;
+
+	std::vector<std::string> name_hist_files;
+
+	// Update settings and calibration files (required)
+	rc.AddSettings( myset );
+	rc.AddCalibration( mycal );
+
+	// We are going to chain all the input files now
+	for( unsigned int i = 0; i < input_names.size(); i++ ){
+
+		name_input_file = input_names.at(i).substr( input_names.at(i).find_last_of("/")+1,
+												   input_names.at(i).length() - input_names.at(i).find_last_of("/")-1 );
+		name_input_file = name_input_file.substr( 0,
+												 name_input_file.find_last_of(".") );
+		name_input_file = datadir_name + "/" + name_input_file + ".root";
+
+		ftest.open( name_input_file );
+		if( !ftest.is_open() ) {
+
+			std::cerr << name_input_file << " does not exist" << std::endl;
+			continue;
+
+		}
+		else ftest.close();
+
+		name_hist_files.push_back( name_input_file );
+
+	}
+
+	// Only do something if there are valid files
+	if( name_hist_files.size() ) {
+
+		rc.SetPsideTagId( relcal_pid );
+		rc.SetNsideTagId( relcal_nid );
+		rc.SetOutput( output_name );
+		rc.SetInputFile( name_hist_files );
+		rc.FillHists();
+		rc.CloseOutput();
+
+	}
+
+	return;
+
+}
+
+
 int main( int argc, char *argv[] ){
 
 	// Command line interface, stolen from MiniballCoulexSort
@@ -957,6 +1023,7 @@ int main( int argc, char *argv[] ){
 	interface->Add("-source", "Flag to define an source only run", &flag_source );
 	interface->Add("-autocal", "Flag to perform automatic calibration of alpha source data", &flag_autocal );
 	interface->Add("-autocalfile", "Alpha source fit control file", &name_autocal_file );
+	interface->Add("-relcal", "Make the array calibration plots with pid and nid as the reference strips, given in the string format p<pid>n<nid>", &relcal_strips );
 	interface->Add("-print-settings", "Print settings", &flag_print_settings );
 	interface->Add("-spy", "Flag to run the DataSpy", &flag_spy );
 	interface->Add("-spyhists", "File containing histograms for monitoring in the spy", &spy_hists_file );
@@ -1016,6 +1083,21 @@ int main( int argc, char *argv[] ){
 	// Check if we have real data, i.e. not simulation
 	if( !flag_pace4 && !flag_nptool ) flag_data = true;
 
+	// Check if we are doing the CD calibration
+	if( relcal_strips.length() > 0 ) {
+
+		flag_relcal = true;
+		std::stringstream ss(relcal_strips);
+		unsigned char str1, str2;
+		unsigned int id1, id2;
+		ss >> str1 >> id1 >> str2 >> id2;
+
+		if( str1 == 'p' ) relcal_pid = id1;
+		if( str2 == 'p' ) relcal_pid = id2;
+		if( str1 == 'n' ) relcal_nid = id1;
+		if( str2 == 'n' ) relcal_nid = id2;
+
+	}
 
 	// Check if we should be monitoring the input
 	if( flag_spy ) {
@@ -1096,16 +1178,30 @@ int main( int argc, char *argv[] ){
 			name_input_file = name_input_file.substr( 0,
 													 name_input_file.find_last_of(".") );
 
-			if( input_names.size() > 1 ) {
+			if( flag_autocal ) {
+
+				output_name = datadir_name + "/" + name_input_file + "_autocal.root";
+			}
+
+			else if( flag_relcal ) {
+
+				output_name = datadir_name + "/" + name_input_file + "_relcal.root";
+
+			}
+
+			else if( input_names.size() > 1 ) {
+
 				output_name = datadir_name + "/" + name_input_file + "_hists_";
 				output_name += std::to_string(input_names.size()) + "_subruns.root";
+
 			}
+
 			else
 				output_name = datadir_name + "/" + name_input_file + "_hists.root";
 
 		}
 
-		else output_name = datadir_name + "/hists.root";
+		else output_name = datadir_name + "/monitor_hists.root";
 
 	}
 
@@ -1249,7 +1345,7 @@ int main( int argc, char *argv[] ){
 		do_convert();
 
 		// If it's not a source run, do the event building
-		if( !flag_source && !flag_autocal ) {
+		if( !flag_source && !flag_autocal && !flag_relcal ) {
 
 			// Build events and if successful, do histogramming
 			if( do_build() ) do_hist();
@@ -1258,6 +1354,9 @@ int main( int argc, char *argv[] ){
 
 		// Autocal routine is run independently
 		else if( flag_autocal ) do_autocal();
+
+		// Relative calibration routine is run independently
+		else if( flag_relcal ) do_relcal();
 
 	}
 

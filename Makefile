@@ -71,6 +71,7 @@ OBJECTS =  		$(SRC_DIR)/AutoCalibrator.o \
 				$(SRC_DIR)/ISSEvts.o \
 				$(SRC_DIR)/ISSGUI.o \
 				$(SRC_DIR)/Reaction.o \
+				$(SRC_DIR)/RelativeCalibrator.o \
 				$(SRC_DIR)/Settings.o \
 				$(SRC_DIR)/TIssData.o
 
@@ -87,6 +88,7 @@ DEPENDENCIES =  $(INC_DIR)/AutoCalibrator.hh \
 				$(INC_DIR)/ISSEvts.hh \
 				$(INC_DIR)/ISSGUI.hh \
 				$(INC_DIR)/Reaction.hh \
+				$(INC_DIR)/RelativeCalibrator.hh \
 				$(INC_DIR)/Settings.hh \
 				$(INC_DIR)/TIssData.hh
 

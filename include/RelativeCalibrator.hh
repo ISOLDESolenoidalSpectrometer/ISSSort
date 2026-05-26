@@ -1,5 +1,5 @@
-#ifndef __CDCALIBRATOR_HH
-#define __CDCALIBRATOR_HH
+#ifndef __RELATIVECALIBRATOR_HH
+#define __RELATIVECALIBRATOR_HH
 
 #include <fstream>
 #include <iostream>
@@ -10,6 +10,7 @@
 
 #include <TFile.h>
 #include <TTree.h>
+#include <TTreeIndex.h>
 #include <TMath.h>
 #include <TChain.h>
 #include <TH1.h>
@@ -41,25 +42,38 @@
 
 
 
-class MiniballCDCalibrator {
+class ISSRelativeCalibrator {
 
 public:
 
-	MiniballCDCalibrator( std::shared_ptr<MiniballSettings> myset );
-	~MiniballCDCalibrator() {};
+	ISSRelativeCalibrator();
+	~ISSRelativeCalibrator() {};
 
 	void	SetInputFile( std::vector<std::string> input_file_names );
 	void	SetInputFile( std::string input_file_name );
 	void	SetInputTree( TTree *user_tree );
-	void	SetMBSInfoTree( TTree *user_tree );
 	void	SetOutput( std::string output_file_name, bool cWrite = false );
 	void	StartFile();	///< called for every file
 	void	Initialise();	///< called for every event
 	void	MakeHists();
 	void	ResetHists();
 	
-	inline void AddCalibration( std::shared_ptr<MiniballCalibration> mycal ){
+	/// Adds the settings from the external settings file to the class
+	/// \param[in] myset The ISSSettings object which is constructed by the ISSSettings constructor used in iss_sort.cc
+	inline void AddSettings( std::shared_ptr<ISSSettings> myset ){
+		set = myset;
+		overwrite_set = true;
+	};
+
+	/// Adds the calibration from the external calibration file to the class
+	/// \param[in] mycal The ISSCalibration object which is constructed by the ISSCalibration constructor used in iss_sort.cc
+	inline void AddCalibration( std::shared_ptr<ISSCalibration> mycal ){
+		if( set.get() == nullptr ){
+			std::cerr << "No settings given... Exiting!!" << std::endl;
+			exit(0);
+		}
 		cal = mycal;
+		cal->AddSettings( set );
 		overwrite_cal = true;
 	};
 	inline void AddProgressBar( std::shared_ptr<TGProgressBar> myprog ){
@@ -72,8 +86,6 @@ public:
 
 	void CalibratePsides();
 	void CalibrateNsides();
-	bool FindCDChannels( int det, int sec, int side, int strip, int &adc, int &ch );
-	bool FindCDChannels( int det, int sec, int side, int strip, int &sfp, int &board, int &ch );
 
 	unsigned long	FillHists();
 	void			FillPixelHists();
@@ -90,7 +102,6 @@ public:
 	}; ///< Closes the output files from this class
 	inline void PurgeOutput(){
 		input_tree->Reset();
-		mbsinfo_tree->Reset();
 		output_file->Purge(2);
 	}
 
@@ -98,27 +109,25 @@ public:
 private:
 	
 	/// Input tree
-	TFile *input_file;
-	TChain *input_tree;
-	TChain *mbsinfo_tree;
-	MiniballDataPackets *in_data = nullptr;
-	MBSInfoPackets *mbs_info = nullptr;
-	std::shared_ptr<DgfData> dgf_data;
-	std::shared_ptr<AdcData> adc_data;
-	std::shared_ptr<FebexData> febex_data;
-	std::shared_ptr<InfoData> info_data;
+	TFile *input_file;							///< Pointer to the time-sorted input ROOT file
+	TChain *input_tree;							///< Pointer to the TTree in the data input file
+	ISSDataPackets *in_data = nullptr;			///< Pointer to the TBranch containing the data in the time-sorted input ROOT file
+	std::shared_ptr<ISSAsicData> asic_data;		///< Pointer to a given entry in the tree of some data from the ASICs
+	std::shared_ptr<ISSVmeData> vme_data;		///< Pointer to a given entry in the tree of generic VME data from CAEN or Mesytec
+	std::shared_ptr<ISSInfoData> info_data;		///< Pointer to a given entry in the tree of the "info" datatype
 
 	/// Outputs
 	TFile *output_file;
 	std::ofstream output_cal;
 
 	// Do calibration
-	std::shared_ptr<MiniballCalibration> cal;
-	bool overwrite_cal;
-	
+	std::shared_ptr<ISSCalibration> cal; ///< Pointer to an ISSCalibration object, used for accessing gain-matching parameters and thresholds
+	bool overwrite_cal; ///< Boolean determining whether an energy calibration should be used (true) or not (false). Set in the ISSEventBuilder::AddCalibration function
+
 	// Settings file
-	std::shared_ptr<MiniballSettings> set;
-	
+	std::shared_ptr<ISSSettings> set; ///< Pointer to the settings object. Assigned in constructor
+	bool overwrite_set; ///< Boolean determining whether an settings should be used (true) or not (false). Set in the ISSEventBuilder::AddSettings function
+
 	// Progress bar
 	bool _prog_;
 	std::shared_ptr<TGProgressBar> prog;
@@ -144,30 +153,36 @@ private:
 	unsigned long long	time_prev, time_min, time_max, time_first;
 
 	// Data variables - generic
-	unsigned char		mysfp;			///< sfp number
-	unsigned char		myboard;		///< febex board number
-	//unsigned char		mydgf;			///< DGF module number
-	unsigned char		myadc;			///< ADC module number
-	unsigned char		mych;			///< channel number
-	unsigned long long	mytime;			///< absolute timestamp
-	long				myhittime;		///< hit time with respect to event time
-	unsigned long long	myeventid;		///< MBS event id
-	unsigned long long	preveventid;	///< previous MBS event id
-	unsigned long long	myeventtime;	///< MBS event time
-	float 				myenergy;		///< calibrated energy
-	bool				mythres;		///< above threshold?
-	bool				mypileup;		///< pileup flag?
-	bool				myclipped;		///< clipped flag?
+	unsigned char		mymod;		///< module number
+	unsigned char		mych;		///< channel number
+	double				mytime;		///< absolute timestamp
+	float 				myenergy;	///< calibrated energy
+	int 				mywalk;		///< time walk correction
+	bool				mythres;	///< above threshold?
+
+	// Data variables - Array
+	unsigned char		myasic;		///< ASIC number
+	unsigned char		myside;		///< p-side = 0; n-side = 1
+	unsigned char		myrow;		///< 4 wafers along array, 2 dE-E, 13 for gas
+	int					mystrip;	///< strip number for DSSSD
+	bool				myhitbit;	///< hit bit enabled?
 
 
-	// CD detector specific variables
-	std::vector<float>					cd_en_list;		///< list of CD energies for ParticleFinder
-	std::vector<unsigned int>			cd_Q_list;		///< list of CD uncalibrated energies for ParticleFinder
-	std::vector<unsigned long long>		cd_ts_list;		///< list of CD timestamps for ParticleFinder
-	std::vector<unsigned char>			cd_det_list;	///< list of CD detector IDs
-	std::vector<unsigned char>			cd_sec_list;	///< list of CD sector IDs
-	std::vector<unsigned char>			cd_side_list;	///< list of CD side IDs; 0 = p, 1 = n
-	std::vector<unsigned char>			cd_strip_list;	///< list of CD strip IDs
+	// Array variables
+	std::vector<float>			pQ_list;	///< list of p-side ADC values
+	std::vector<float>			nQ_list;	///< list of n-side ADC values
+	std::vector<double>			ptd_list;	///< list of p-side time differences without time walk correction
+	std::vector<double>			ntd_list;	///< list of n-side time differences without time walk correction
+	std::vector<double>			pwalk_list;	///< list of p-side time differences WITH time walk correction
+	std::vector<double>			nwalk_list;	///< list of n-side time differences WITH time walk correction
+	std::vector<char>			pid_list;	///< list of p-side strip ids
+	std::vector<char>			nid_list;	///< list of n-side strip ids
+	std::vector<char>			pmod_list;	///< list of p-side modules numbers
+	std::vector<char>			nmod_list;	///< list of n-side modules numbers
+	std::vector<char>			prow_list;	///< list of p-side row numbers
+	std::vector<char>			nrow_list;	///< list of n-side row numbers
+	std::vector<bool>			phit_list;	///< list of p-side hit bit values
+	std::vector<bool>			nhit_list;	///< list of n-side hit bit values
 
 	// Tag strips for calibration
 	unsigned char ptag = 0;
@@ -182,14 +197,10 @@ private:
 	// Counters
 	unsigned long hit_ctr;
 	unsigned long n_entries;
-	unsigned long n_mbs_entries;
 
 	// CD histograms
-	std::vector<std::vector<std::vector<TH2F*>>> cd_pen_nen;
-	std::vector<std::vector<std::vector<TH2F*>>> cd_nen_pen;
-	std::vector<std::vector<std::vector<TH2F*>>> cd_pen_nQ;
-	std::vector<std::vector<std::vector<TH2F*>>> cd_nQ_pQ;
-
+	std::vector<std::vector<std::vector<TH2F*>>> array_pQ_nQ;
+	std::vector<std::vector<std::vector<TH2F*>>> array_nQ_pQ;
 
 };
 
