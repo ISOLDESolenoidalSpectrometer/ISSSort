@@ -802,8 +802,154 @@ void ISSSettings::ReadSettings() {
 
 	}
 
+	// Map the array
+	ArrayMapping();
+
 	// Finished
 	delete config;
+
+}
+
+
+void ISSSettings::ArrayMapping(){
+
+	// p-side = 0; n-side = 1;
+	asic_side.push_back(0); // asic 0 = p-side
+	asic_side.push_back(1); // asic 1 = n-side
+	asic_side.push_back(0); // asic 2 = p-side
+	asic_side.push_back(0); // asic 3 = p-side
+	asic_side.push_back(1); // asic 4 = n-side
+	asic_side.push_back(0); // asic 5 = p-side
+
+	asic_row.push_back(0); // asic 0 = row 0 p-side
+	asic_row.push_back(0); // asic 1 = row 0 and 1 n-side
+	asic_row.push_back(1); // asic 2 = row 1 p-side
+	asic_row.push_back(2); // asic 3 = row 2 p-side
+	asic_row.push_back(2); // asic 4 = row 2 and 3 n-side
+	asic_row.push_back(3); // asic 5 = row 3 p-side
+
+	array_row.resize( GetNumberOfArrayASICs() );
+	array_pid.resize( GetNumberOfArrayASICs() );
+	array_nid.resize( GetNumberOfArrayASICs() );
+
+	// Loop over ASICs in a module
+	for( unsigned int i = 0; i < GetNumberOfArrayASICs(); ++i ) {
+
+		// Loop over channels in each ASIC
+		for( unsigned int j = 0; j < GetNumberOfArrayChannels(); ++j ) {
+
+			// p-side: all channels used; fill n-side with -1; fill array_row with row number for p-side
+			if( asic_side.at(i) == 0 ) {
+
+				array_pid[i].push_back( j );
+				array_nid[i].push_back( -1 );
+				array_row.at(i).push_back( asic_row.at(i) );
+
+			}
+
+			// n-side: 11 channels per ASIC 0/2A; fill p-side with -1; fill array row for n-side
+			else if( j >= 11 && j <= 21 ) {
+
+				unsigned char mystrip = j - 11;
+				array_nid[i].push_back( mystrip );
+				array_pid[i].push_back( -1 );
+				array_row.at(i).push_back( asic_row.at(i) );
+
+			}
+
+			// n-side: 11 channels per ASIC 0/2B; fill p-side with -1; fill array row for n-side
+			else if( j >= 28 && j <= 38 ) {
+
+				unsigned char mystrip = 38 - j + GetNumberOfArrayNstrips();
+				array_nid[i].push_back( mystrip );
+				array_pid[i].push_back( -1 );
+				array_row.at(i).push_back( asic_row.at(i) );
+
+			}
+
+			// n-side: 11 channels per ASIC 1/3B; fill p-side with -1; fill array row for n-side
+			else if( j >= 89 && j <= 99 ) {
+
+				unsigned char mystrip = j - 89 + GetNumberOfArrayNstrips();
+				array_nid[i].push_back( mystrip );
+				array_pid[i].push_back( -1 );
+				array_row.at(i).push_back( asic_row.at(i) + 1 ); // nside need incrementing for odd wafers
+
+			}
+
+			// n-side: 11 channels per ASIC 1/3A; fill p-side with -1; fill array row for n-side
+			else if( j >= 106 && j <= 116 ) {
+
+				unsigned char mystrip = 116 - j;
+				array_nid[i].push_back( mystrip );
+				array_pid[i].push_back( -1 );
+				array_row.at(i).push_back( asic_row.at(i) + 1 ); // nside need incrementing for odd wafers
+
+			}
+
+			// n-side and p-side: empty channels -> set to -1; set array_row to 0
+			else {
+
+				array_nid[i].push_back( -1 );
+				array_pid[i].push_back( -1 );
+				array_row.at(i).push_back( 0 );	// N.B. these should only be for unused channels for the n-sides, but this is an actual row number so could run into problems down the line...
+
+			}
+
+		}
+
+	}
+
+	return;
+
+}
+
+std::vector<int> ISSSettings::GetArrayDAQInfo( unsigned char mod, unsigned char row, unsigned char side, unsigned char strip ){
+
+	/// Return the DAQ information for an array channel
+	/// \param[in] mod module number
+	/// \param[in] row row number along the array
+	/// \param[in] side p-side (0) or n-side (1)
+	/// \param[in] strip strip ID
+	/// \return a vector containing the ASIC and Channel numbers
+
+	std::vector<int> daqinfo(3,-1);
+
+	// Loop over all modules, ASICs and channels to find a match
+	for( unsigned int i = 0; i < GetNumberOfArrayModules(); ++i ) {
+
+		// Can check the module at this point
+		if( mod != i ) continue;
+
+		// Loop over ASICs
+		for( unsigned int j = 0; j < GetNumberOfArrayASICs(); ++j ) {
+
+			// Can check the side at this point
+			if( mod != i ) continue;
+
+			// Loop over channels
+			for( unsigned int k = 0; k < GetNumberOfArrayChannels(); ++k ) {
+
+				// test for complete match (not currently testing module, maybe after an upgrade)
+				if( GetArraySide(i,j) == (int)side &&
+				   GetArrayRow(i,j,k) == (int)row &&
+				   GetArrayStrip(i,j,k) == (int)strip ) {
+
+					daqinfo[0] = i;
+					daqinfo[1] = j;
+					daqinfo[2] = k;
+					return daqinfo;
+
+				} // test
+
+			} // k - channel
+
+		} // j - board
+
+	} // i - sfp
+
+
+	return daqinfo;
 
 }
 

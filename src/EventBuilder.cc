@@ -20,101 +20,6 @@ ISSEventBuilder::ISSEventBuilder(){
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/// This maps the vectors for the array just once, assuming you dont change array geomerty between run files!
-void ISSEventBuilder::ArrayMapping(){
-
-	// p-side = 0; n-side = 1;
-	asic_side.push_back(0); // asic 0 = p-side
-	asic_side.push_back(1); // asic 1 = n-side
-	asic_side.push_back(0); // asic 2 = p-side
-	asic_side.push_back(0); // asic 3 = p-side
-	asic_side.push_back(1); // asic 4 = n-side
-	asic_side.push_back(0); // asic 5 = p-side
-
-	asic_row.push_back(0); // asic 0 = row 0 p-side
-	asic_row.push_back(0); // asic 1 = row 0 and 1 n-side
-	asic_row.push_back(1); // asic 2 = row 1 p-side
-	asic_row.push_back(2); // asic 3 = row 2 p-side
-	asic_row.push_back(2); // asic 4 = row 2 and 3 n-side
-	asic_row.push_back(3); // asic 5 = row 3 p-side
-
-	array_row.resize( set->GetNumberOfArrayASICs() );
-	array_pid.resize( set->GetNumberOfArrayASICs() );
-	array_nid.resize( set->GetNumberOfArrayASICs() );
-
-	// Loop over ASICs in a module
-	for( unsigned int i = 0; i < set->GetNumberOfArrayASICs(); ++i ) {
-
-		// Loop over channels in each ASIC
-		for( unsigned int j = 0; j < set->GetNumberOfArrayChannels(); ++j ) {
-
-			// p-side: all channels used; fill n-side with -1; fill array_row with row number for p-side
-			if( asic_side.at(i) == 0 ) {
-
-				array_pid[i].push_back( j );
-				array_nid[i].push_back( -1 );
-				array_row.at(i).push_back( asic_row.at(i) );
-
-			}
-
-			// n-side: 11 channels per ASIC 0/2A; fill p-side with -1; fill array row for n-side
-			else if( j >= 11 && j <= 21 ) {
-
-				mystrip = j - 11;
-				array_nid[i].push_back( mystrip );
-				array_pid[i].push_back( -1 );
-				array_row.at(i).push_back( asic_row.at(i) );
-
-			}
-
-			// n-side: 11 channels per ASIC 0/2B; fill p-side with -1; fill array row for n-side
-			else if( j >= 28 && j <= 38 ) {
-
-				mystrip = 38 - j + set->GetNumberOfArrayNstrips();
-				array_nid[i].push_back( mystrip );
-				array_pid[i].push_back( -1 );
-				array_row.at(i).push_back( asic_row.at(i) );
-
-			}
-
-			// n-side: 11 channels per ASIC 1/3B; fill p-side with -1; fill array row for n-side
-			else if( j >= 89 && j <= 99 ) {
-
-				mystrip = j - 89 + set->GetNumberOfArrayNstrips();
-				array_nid[i].push_back( mystrip );
-				array_pid[i].push_back( -1 );
-				array_row.at(i).push_back( asic_row.at(i) + 1 ); // nside need incrementing for odd wafers
-
-			}
-
-			// n-side: 11 channels per ASIC 1/3A; fill p-side with -1; fill array row for n-side
-			else if( j >= 106 && j <= 116 ) {
-
-				mystrip = 116 - j;
-				array_nid[i].push_back( mystrip );
-				array_pid[i].push_back( -1 );
-				array_row.at(i).push_back( asic_row.at(i) + 1 ); // nside need incrementing for odd wafers
-
-			}
-
-			// n-side and p-side: empty channels -> set to -1; set array_row to 0
-			else {
-
-				array_nid[i].push_back( -1 );
-				array_pid[i].push_back( -1 );
-				array_row.at(i).push_back( 0 );	// N.B. these should only be for unused channels for the n-sides, but this is an actual row number so could run into problems down the line...
-
-			}
-
-		}
-
-	}
-
-	return;
-
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 /// Reset private-member counters, arrays and flags for processing the next input file. Called in the ISSEventBuilder::SetInputFile and ISSEventBuilder::SetInputTree functions
 void ISSEventBuilder::StartFile(){
@@ -216,9 +121,6 @@ void ISSEventBuilder::ConfigureInput() {
 		cal->AddSettings( set );
 
 	}
-
-	// Do the array mapping just once after settings
-	ArrayMapping();
 
 	// Setup counters
 	StartFile();
@@ -525,8 +427,8 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			mymod = asic_data->GetModule();
 			mych = asic_data->GetChannel();
 			myasic = asic_data->GetAsic();
-			myside = asic_side.at( myasic );
-			myrow = array_row.at( myasic ).at( mych );
+			myside = set->GetArraySide( mymod, myasic );
+			myrow = set->GetArrayRow( mymod, myasic, mych );
 			myhitbit = asic_data->GetHitBit();
 			if( overwrite_cal ) {
 
@@ -553,7 +455,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// p-side event
 			if( myside == 0 && mythres ) {
 
-				mystrip = array_pid.at( myasic ).at( mych );
+				mystrip = set->GetArrayStrip( mymod, myasic, mych );
 
 				// Only use if it is an event from a detector
 				if( mystrip >= 0 ) {
@@ -579,7 +481,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			// n-side event
 			else if( myside == 1 && mythres ) {
 
-				mystrip = array_nid.at( asic_data->GetAsic() ).at( asic_data->GetChannel() );
+				mystrip = set->GetArrayStrip( mymod, myasic, mych );
 
 				// Only use if it is an event from a detector
 				if( mystrip >= 0 ) {

@@ -129,19 +129,15 @@ public:
 
 	inline void CloseOutput(){
 		output_tree->ResetBranchAddresses();
-		PurgeOutput();
 		std::cout << " Writing output file...\r";
 		std::cout.flush();
 		output_file->Write( 0, TObject::kWriteDelete );
-			output_file->cd("/");
+		output_file->cd("/");
 		set->Write( "Settings", TObject::kWriteDelete );
 		std::cout << " Writing output file... Done!" << std::endl << std::endl;
+		PurgeOutput();
 		output_file->Close();
-		//input_tree->ResetBranchAddresses();
-		//nptool_tree->ResetBranchAddresses();
 		input_file->Close();
-		//if( in_data != nullptr ) delete in_data;
-		//if( sim_data != nullptr ) delete sim_data;
 		log_file.close(); //?? to close or not to close?
 	}; ///< Closes the output files from this class
 	inline void PurgeOutput(){ output_file->Purge(2); }
@@ -154,7 +150,7 @@ public:
 
 private:
 
-	/// Input treze
+	/// Input tree
 	TFile *input_file;							///< Pointer to the time-sorted input ROOT file
 	TTree *input_tree;							///< Pointer to the TTree in the data input file
 	TTree *nptool_tree;							///< Pointer to the TTree in the simulation input file
@@ -212,13 +208,6 @@ private:
 
 	// These things are in the settings file
 	long build_window;  ///< Length of build window in ns
-
-	// Some more things that should be in a settings file
-	std::vector<unsigned char> asic_side; ///< Vector containing 0 for p-side and 1 for n-side where the index is the asic number
-	std::vector<unsigned char> asic_row; ///< Vector containing the smallest row number for a given p/n-side asic where the index is the asic number
-	std::vector<std::vector<unsigned char>> array_row; ///< Gives the row of the array for each channel (accessed via asic number and channel number on strip). Unused channels have their value as 0
-	std::vector<std::vector<int>> array_pid; ///< Gives each p-side strip on the array a unique number for identification (accessed via asic number and channel number on strip)
-	std::vector<std::vector<int>> array_nid; ///< Gives each n-side strip on the array a number for identification (accessed via asic number and channel number on strip)
 
 	// Flags
 	bool flag_close_event; ///< Determines if the event should be closed for a given hit
@@ -388,7 +377,7 @@ private:
     std::vector<std::vector<TH2F*>> pn_td_Ep_uncorrected;	///< Vector of vector of 2D histograms pn-time difference vs p-side energy
     std::vector<std::vector<TH2F*>> pn_td_En_uncorrected;	///< Vector of vector of 2D histograms pn-time difference vs n-side energy
 	std::vector<std::vector<TH2F*>> pn_mult;				///< Vector of vector of 2D histograms p-side vs n-side multiplicity
-  std::vector<std::vector<TH1F*>> pn_11_ed;					///< Vector of vector of 2D histograms holding events with 1p and 1n hit
+	std::vector<std::vector<TH1F*>> pn_11_ed;				///< Vector of vector of 2D histograms holding events with 1p and 1n hit
 
 	// Timing histograms
 	TH1F *tdiff;					///< Histogram containing the time difference between each real (not infodata) signal in the file

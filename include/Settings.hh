@@ -41,6 +41,36 @@ public:
 	inline unsigned int GetNumberOfArrayPstrips(){ return n_array_pstrip; };
 	inline unsigned int GetNumberOfArrayNstrips(){ return n_array_nstrip; };
 
+	// Array mapping
+	void ArrayMapping();
+	inline int GetArraySide( unsigned char mod, unsigned char asic ){
+		if( mod < GetNumberOfArrayModules() && asic < GetNumberOfArrayASICs() )
+			return asic_side[asic];
+		else return -1;
+	};
+	inline int GetArrayRow( unsigned char mod, unsigned char asic, unsigned char ch ){
+		if( mod < GetNumberOfArrayModules() && asic < GetNumberOfArrayASICs() && ch < GetNumberOfArrayChannels() )
+			return array_row[asic][ch];
+		else return -1;
+	};
+	inline int GetArrayStrip( unsigned char mod, unsigned char asic, unsigned char ch ){
+		if( mod < GetNumberOfArrayModules() && asic < GetNumberOfArrayASICs() && ch < GetNumberOfArrayChannels() ) {
+			if( asic_side[asic] == 0 ) return array_pid[asic][ch];
+			else if( asic_side[asic] == 1 ) return array_nid[asic][ch];
+		}
+		return -1;
+	};
+	std::vector<int> GetArrayDAQInfo( unsigned char mod, unsigned char row, unsigned char side, unsigned char strip );
+	inline int GetArrayModule( unsigned char mod, unsigned char row, unsigned char side, unsigned char strip ){
+		return GetArrayDAQInfo( mod, row, side, strip ).at(0);
+	};
+	inline int GetArrayAsic( unsigned char mod, unsigned char row, unsigned char side, unsigned char strip ){
+		return GetArrayDAQInfo( mod, row, side, strip ).at(1);
+	};
+	inline int GetArrayChannel( unsigned char mod, unsigned char row, unsigned char side, unsigned char strip ){
+		return GetArrayDAQInfo( mod, row, side, strip ).at(2);
+	};
+
 
 	// CAEN settings
 	inline unsigned char GetNumberOfCAENModules(){ return n_caen_mod; };
@@ -259,6 +289,13 @@ private:
 	unsigned char n_array_mod;	///< 3 modules make a full array
 	unsigned char n_array_asic;	///< 4 p-side + 2 n-side per module
 	unsigned char n_array_ch;	///< 128 channels per ASIC
+
+	// Array mapping
+	std::vector<unsigned char> asic_side;				///< Vector containing 0 for p-side and 1 for n-side where the index is the asic number
+	std::vector<unsigned char> asic_row;				///< Vector containing the smallest row number for a given p/n-side asic where the index is the asic number
+	std::vector<std::vector<unsigned char>> array_row;	///< Gives the row of the array for each channel (accessed via asic number and channel number on strip). Unused channels have their value as 0
+	std::vector<std::vector<int>> array_pid;			///< Gives each p-side strip on the array a unique number for identification (accessed via asic number and channel number on strip)
+	std::vector<std::vector<int>> array_nid;			///< Gives each n-side strip on the array a number for identification (accessed via asic number and channel number on strip)
 
 	// Array geometry
 	unsigned char n_array_row;		///< 4x2 DSSSDs per module, but paired; dE-E for recoil, gas cathodes (13?)
