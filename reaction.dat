@@ -69,54 +69,63 @@
 #ArrayRecoil_PromptTime.Max: 300
 #ArrayRecoil_RandomTime.Min: 600
 #ArrayRecoil_RandomTime.Max: 1200
+#ArrayRecoil_FillRatio: 1          # Default is ratio of time windows
 
 ## Array-Gamma windows
 #ArrayGamma_PromptTime.Min: -500
 #ArrayGamma_PromptTime.Max: 500
 #ArrayGamma_RandomTime.Min: 1000
 #ArrayGamma_RandomTime.Max: 2000
+#ArrayGamma_FillRatio: 1           # Default is ratio of time windows
 
 ## ELUM-Recoil windows
 #ElumRecoil_PromptTime.Min: -300
 #ElumRecoil_PromptTime.Max: 300
 #ElumRecoil_RandomTime.Min: 600
 #ElumRecoil_RandomTime.Max: 1200
+#ElumRecoil_FillRatio: 1           # Default is ratio of time windows
 
 ## Array-Fission windows
 #ArrayFission_PromptTime.Min: -300
 #ArrayFission_PromptTime.Max: 300
 #ArrayFission_RandomTime.Min: 600
 #ArrayFission_RandomTime.Max: 1200
+#ArrayFission_FillRatio: 1           # Default is ratio of time windows
 
 ## LUME-Recoil windows
 #LumeRecoil_PromptTime.Min: -300
 #LumeRecoil_PromptTime.Max: 300
 #LumeRecoil_RandomTime.Min: 600
 #LumeRecoil_RandomTime.Max: 1200
+#LumeRecoil_FillRatio: 1           # Default is ratio of time windows
 
 ## Fission-Fission windows
 #FissionFission_PromptTime.Min: -300
 #FissionFission_PromptTime.Max: 300
 #FissionFission_RandomTime.Min: 600
 #FissionFission_RandomTime.Max: 1200
+#FissionFission_FillRatio: 1           # Default is ratio of time windows
 
 ## Fission-Gamma windows
 #FissionGamma_PromptTime.Min: -300
 #FissionGamma_PromptTime.Max: 300
 #FissionGamma_RandomTime.Min: 600
 #FissionGamma_RandomTime.Max: 1200
+#FissionGamma_FillRatio: 1           # Default is ratio of time windows
 
 ## Recoil-Gamma windows
 #RecoilGamma_PromptTime.Min: -300
 #RecoilGamma_PromptTime.Max: 300
 #RecoilGamma_RandomTime.Min: 600
 #RecoilGamma_RandomTime.Max: 1200
+#RecoilGamma_FillRatio: 1           # Default is ratio of time windows
 
 ## Gamma-Gamma windows
 #GammaGamma_PromptTime.Min: -300
 #GammaGamma_PromptTime.Max: 300
 #GammaGamma_RandomTime.Min: 600
 #GammaGamma_RandomTime.Max: 1200
+#GammaGamma_FillRatio: 1           # Default is ratio of time windows
 
 ## MWPC TAC sum gate
 #MWPC_axis_0_TAC_sum.Min: 

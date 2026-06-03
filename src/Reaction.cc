@@ -1269,6 +1269,8 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 		dEdx_n = GetNuclearEnergyLoss( E, range, gStopping[4], gStopping[5] );
 
 		// From W. N. Lennard et al. NIM A248 (1986) 454
+		// "Nonlinear response of Si detectors for low-Z ions"
+		// (Enhanced pulse height with increasing Z.)
 		double PHC = e0_Si - k_Si * dEdx_e;
 		PHC = e0_Si / PHC;
 		Edet += dE * PHC;
