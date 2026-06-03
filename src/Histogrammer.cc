@@ -4033,6 +4033,8 @@ unsigned long ISSHistogrammer::FillHists() {
 
 					recoil_evt = read_evts->GetRecoilEvt(k);
 					generic_evt = recoil_evt;
+					promptcheckT = PromptCoincidence( recoil_evt, array_evt );
+					randomcheckT = RandomCoincidence( recoil_evt, array_evt );
 					energycut = RecoilCut( recoil_evt );
 					bg_frac = react->GetArrayRecoilFillRatio();
 

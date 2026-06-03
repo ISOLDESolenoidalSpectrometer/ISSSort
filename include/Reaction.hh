@@ -202,7 +202,7 @@ public:
 	// Getters
 	inline bool   		IsFission(){ return fission; }; ///< returns true/false if we are studying fission of the recoiling nucleus
 	inline unsigned int RecoilType(){ return recoil_evt_type; };
-	inline bool  		CheckIfGraphicalRecoilCut(){ return recoil_cut_graphical; }; ///< returns true/false if we are applying a graphical cut to the recoil or just an energy cut
+	inline bool  		CheckIfGraphicalRecoilCut(){ return recoil_cut_graphical; }; ///< returns true when applying a graphical cut to the recoil and false when using a 1D energy cut on a single segment of the Bragg chamber
 
 	inline double GetField(){ return Mfield; };///< Getter for the magnetic field strength
 	inline double GetField_corr(){ return Mfield*T_to_mm; };///< Calculates magnetic field strength in MeV/ e*mm*c
