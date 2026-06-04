@@ -186,7 +186,7 @@ public:
 	inline bool GetOverflowRejection(){ return overflow_reject; };
 
 	// Array Calibrator controls
-	inline double GetRelativeCalibratorAllowanceSlope(){ return relcal_allowance; };
+	inline double GetRelativeCalibratorAllowance(){ return relcal_allowance; };
 	inline double GetRelativeCalibratorSmallOffset(){ return relcal_offset_small; };
 	inline double GetRelativeCalibratorLargeOffset(){ return relcal_offset_large; };
 	inline double GetRelativeCalibratorRobustFraction(){ return relcal_robust_fraction; };
