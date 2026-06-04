@@ -185,6 +185,13 @@ public:
 	inline bool GetClippedRejection(){ return clipped_reject; };
 	inline bool GetOverflowRejection(){ return overflow_reject; };
 
+	// Array Calibrator controls
+	inline double GetRelativeCalibratorAllowanceSlope(){ return relcal_allowance; };
+	inline double GetRelativeCalibratorSmallOffset(){ return relcal_offset_small; };
+	inline double GetRelativeCalibratorLargeOffset(){ return relcal_offset_large; };
+	inline double GetRelativeCalibratorRobustFraction(){ return relcal_robust_fraction; };
+
+
 	// Recoil detector
 	inline unsigned char GetNumberOfRecoilSectors(){ return n_recoil_sector; };
 	inline unsigned char GetNumberOfRecoilLayers(){ return n_recoil_layer; };
@@ -374,6 +381,13 @@ private:
 	// Event rejection
 	bool clipped_reject;	///< reject events if firmware marks them as clipped signals
 	bool overflow_reject;	///< reject events if their energy is in the overflow
+
+
+	// Relative calibrator control options
+	double relcal_allowance;					///< Fraction of the slope of maximum bin ->slope varied by this amount; default is 0.1 or 10%
+	double relcal_offset_small;					///< Offset for cut with varied slope to select data to include in the fit; default is 50 keV
+	double relcal_offset_large;					///< Offset for cut with fixed slope; default is 150 keV
+	double relcal_robust_fraction;				///< Fraction used in the Robust fitting, data has to fit at least amount of data points; default is 0.7 or 70%
 
 
 	// Recoil detectors

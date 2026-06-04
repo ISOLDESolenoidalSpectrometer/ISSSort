@@ -107,8 +107,8 @@ public:
 	void DoFits( const std::string& name_sigmas_file ) const; ///< The heart of this class, moving from alpha spectra to a calibration
 	void DoChannelFit( TH2F*h, const ISSAutoCalModAsicChan& mac, std::vector<SigmaResult>& allResult ) const; ///< The insides of the DoFits() function that calibrates for a given channel
 	void FindPeaks( TH1F *h, std::vector<float> &centroids, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt ) const; ///< Finds the desired number of alpha peaks
-  bool FitSpectrum( TH1F *h, std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt, float &sigma ) const; ///< Fits the found/specified peaks with the user-specified fit shape
-  void CalibrateChannel( std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac, float sigma, std::vector<SigmaResult>& allResults ) const; ///< Communicates with the ISSCalibration object to produce a calibration file
+	bool FitSpectrum( TH1F *h, std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt, float &sigma ) const; ///< Fits the found/specified peaks with the user-specified fit shape
+	void CalibrateChannel( std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac, float sigma, std::vector<SigmaResult>& allResults ) const; ///< Communicates with the ISSCalibration object to produce a calibration file
 	void SaveCalFile( const std::string& name_results_file ); ///< Saves the calibration to a file
 
 	inline void AddCalibration( std::shared_ptr<ISSCalibration> mycal ){
@@ -127,6 +127,7 @@ public:
 		else if ( myfit == fit_shape::crystalball ){ return "Crystal Ball"; }
 		else{ return "UNDEFINED"; }
 	} ///< Returns the name of the assigned fit shape used in the ISSAutoCalibrator
+
 
 private:
 

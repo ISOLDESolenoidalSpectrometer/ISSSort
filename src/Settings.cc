@@ -303,6 +303,13 @@ void ISSSettings::ReadSettings() {
 	overflow_reject = config->GetValue( "OverflowRejection", true );
 
 
+	// Array Calibrator controls
+	relcal_allowance		= config->GetValue( "RelativeCalibrator.Allowance", 0.1 ); // Fraction of the slope of maximum bin, default 0.1 or 10%
+	relcal_offset_small		= config->GetValue( "RelativeCalibrator.SmallOffset", 50. ); // Offset for cut with varied slope, default 50 keV
+	relcal_offset_large		= config->GetValue( "RelativeCalibrator.LargeOffset", 150. ); // Offset for cut with fixed slope, default 100 keV
+	relcal_robust_fraction	= config->GetValue( "RelativeCalibrator.RobustFraction", 0.1 ); // fraction used in the Robust fitting, default 0.7 or 70%
+
+
 	// Recoil detector
 	n_recoil_sector = config->GetValue( "NumberOfRecoilSectors", 4 );
 	n_recoil_layer  = config->GetValue( "NumberOfRecoilLayers", 2 );
