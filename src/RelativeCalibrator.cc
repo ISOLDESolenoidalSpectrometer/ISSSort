@@ -230,6 +230,7 @@ void ISSRelativeCalibrator::CalibratePsides() {
 	// Create a TF1 for the linear fit
 	auto plf = std::make_unique<TLinearFitter>( 1, "pol1" );
 	auto pfit = std::make_unique<TF1>( "pfit", "[0]+[1]*x", 0, 4096 );
+	auto pres = std::make_unique<TGraph>();
 
 	// Some canvases to check fits
 	gErrorIgnoreLevel = kError;
@@ -255,20 +256,59 @@ void ISSRelativeCalibrator::CalibratePsides() {
 				// Start with a fresh LinearFitter
 				plf->ClearPoints();
 
+				// Calculate slope for this maximum bin:
+				int binMax = array_pQ_nQ[i][j][k]->GetMaximumBin();
+				int binx, biny, binz;
+				array_pQ_nQ[i][j][k]->GetBinXYZ( binMax, binx, biny, binz );
+
+				// Get ADC values
+				double x_peak = array_pQ_nQ[i][j][k]->GetXaxis()->GetBinCenter(binx);
+				double y_peak = array_pQ_nQ[i][j][k]->GetYaxis()->GetBinCenter(biny);
+
+				// Calculate approximate gain
+				double m_0;
+				if( x_peak != 0 ) m_0 = y_peak / x_peak;
+				else m_0 = 1.0;
+
+				// Get information for the cuts
+				double allowance = set->GetRelativeCalibratorAllowance();
+				double d0 = ( set->GetRelativeCalibratorSmallOffset() - noffset[i][j] ) / ngain[i][j];
+				double d1 = ( set->GetRelativeCalibratorLargeOffset() - noffset[i][j] ) / ngain[i][j];
+
+				// Vectors to hold the data for the residuals plot
+				std::vector<double> fitX;
+				std::vector<double> fitY;
+
 				// Get the data for the linear regression
 				for( int xbin = 1; xbin <= array_pQ_nQ[i][j][k]->GetNbinsX(); ++xbin ){
 
+					// Get x value
+					double xval = array_pQ_nQ[i][j][k]->GetXaxis()->GetBinCenter( xbin );
+
 					for( int ybin = 1; ybin <= array_pQ_nQ[i][j][k]->GetNbinsY(); ++ybin ){
+
+						// Get y value
+						double yval = array_pQ_nQ[i][j][k]->GetYaxis()->GetBinCenter( ybin );
 
 						// Check that we have at least one count in the bin
 						double counts = array_pQ_nQ[i][j][k]->GetBinContent( xbin, ybin );
 						if( counts <= 0 ) continue;
 
-						// The calculate the weight and add it
-						double xval[1] = { array_pQ_nQ[i][j][k]->GetXaxis()->GetBinCenter( xbin ) };
-						double yval = array_pQ_nQ[i][j][k]->GetYaxis()->GetBinCenter( ybin );
-						double err = 1.0 / TMath::Sqrt( counts );
-						plf->AddPoint( xval, yval, err );
+						// cuts to select the data
+						if( yval < (m_0 + allowance * m_0) * xval + d0 &&
+							yval > (m_0 - allowance * m_0) * xval - d0 &&
+							yval < m_0 * xval + d1 && yval > m_0 * xval - d1 ) {
+
+							// Calculate weight and add data point to fit
+							double err = 1.0 / TMath::Sqrt( counts );
+							double xx[1] = { xval };
+							plf->AddPoint( xx, yval, err );
+
+							// Save for residual plot
+							fitX.push_back(xval);
+							fitY.push_back(yval);
+
+						}
 
 					} // ybin
 
@@ -276,19 +316,12 @@ void ISSRelativeCalibrator::CalibratePsides() {
 
 				// Do a robust linear evaluation of 70% of the points
 				if( plf->GetNpoints() < 5 ) continue;
-				plf->EvalRobust( 0.7 );
+				plf->EvalRobust( set->GetRelativeCalibratorRobustFraction() );
 				pfit->SetParameters( plf->GetParameter(0), plf->GetParameter(1) );
 
 				// Get the parameters out
 				double fit_gain = ngain[i][j] / plf->GetParameter(1);
 				double fit_offset = noffset[i][j] - plf->GetParameter(0) * fit_gain;
-
-
-				// Directly fit the histogram (old method)
-				//auto res = array_pQ_nQ[i][j][k]->Fit( pfit.get(), "QWL" );
-				//if( res != 0 ) continue;
-				//double fit_gain = ngain[i][j] / pfit->GetParameter(1);
-				//double fit_offset = noffset[i][j] - pfit->GetParameter(0) * fit_gain;
 
 				// If we have the n-side tag, set the gain and offset
 				if( k == ptag ) {
@@ -318,11 +351,30 @@ void ISSRelativeCalibrator::CalibratePsides() {
 				output_cal << gainstr << std::endl;
 				output_cal << offsetstr << std::endl;
 
-				// Draw plot on Canvas
+				// Draw histogram on Canvas
+				canv[i][j]->Clear();
 				array_pQ_nQ[i][j][k]->Draw("colz");
+				pfit->SetLineColor(kRed);
 				pfit->Draw("same");
 
-				// Print to a file
+				// Print histogram page
+				canv[i][j]->Print( pdfname.data(), "pdf" );
+
+				// Make residuals plot
+				pres->Set(0);
+
+				// Loop over data points in the fit and calculate residual
+				for( unsigned int ip = 0; ip < fitX.size(); ip++ )
+					pres->SetPoint( pres->GetN(), fitX[ip], fitY[ip] - pfit->Eval(fitX[ip]) );
+
+				// Draw residual graph and print to PDF
+				canv[i][j]->Clear();
+				std::string restitle = "p-side calibration - Residuals Det ";
+				restitle += std::to_string(i) + " Sec " + std::to_string(j) + " Strip "+ std::to_string(k);
+				restitle += ";p-side raw charge pQ (ADC units);residual (nQ - fit(pQ)) (ADC units)";
+				pres->SetTitle( restitle.data() );
+				pres->SetMarkerStyle(20);
+				pres->Draw("AP");
 				canv[i][j]->Print( pdfname.data(), "pdf" );
 
 			} // k
@@ -346,6 +398,7 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 	// Create a TF1 for the linear fit
 	auto nlf = std::make_unique<TLinearFitter>( 1, "pol1" );
 	auto nfit = std::make_unique<TF1>( "nfit", "[0]+[1]*x", 0, 4096 );
+	auto nres = std::make_unique<TGraph>();
 
 	// Some canvases to check fits
 	gErrorIgnoreLevel = kError;
@@ -380,20 +433,59 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 				// Start with a fresh LinearFitter
 				nlf->ClearPoints();
 
+				// Calculate slope for this maximum bin:
+				int binMax = array_nQ_pQ[i][j][k]->GetMaximumBin();
+				int binx, biny, binz;
+				array_nQ_pQ[i][j][k]->GetBinXYZ( binMax, binx, biny, binz );
+
+				// Get ADC values
+				double x_peak = array_nQ_pQ[i][j][k]->GetXaxis()->GetBinCenter(binx);
+				double y_peak = array_nQ_pQ[i][j][k]->GetYaxis()->GetBinCenter(biny);
+
+				// Calculate approximate gain
+				double m_0;
+				if( x_peak != 0 ) m_0 = y_peak / x_peak;
+				else m_0 = 1.0;
+
+				// Get information for the cuts
+				double allowance = set->GetRelativeCalibratorAllowance();
+				double d0 = ( set->GetRelativeCalibratorSmallOffset() - poffset[i][j] ) / pgain[i][j];
+				double d1 = ( set->GetRelativeCalibratorLargeOffset() - poffset[i][j] ) / pgain[i][j];
+
+				// Vectors to hold the data for the residuals plot
+				std::vector<double> fitX;
+				std::vector<double> fitY;
+
 				// Get the data for the linear regression
 				for( int xbin = 1; xbin <= array_nQ_pQ[i][j][k]->GetNbinsX(); ++xbin ){
 
+					// Get x value
+					double xval = array_nQ_pQ[i][j][k]->GetXaxis()->GetBinCenter( xbin );
+
 					for( int ybin = 1; ybin <= array_nQ_pQ[i][j][k]->GetNbinsY(); ++ybin ){
+
+						// Get y value
+						double yval = array_nQ_pQ[i][j][k]->GetYaxis()->GetBinCenter( ybin );
 
 						// Check that we have at least one count in the bin
 						double counts = array_nQ_pQ[i][j][k]->GetBinContent( xbin, ybin );
 						if( counts <= 0 ) continue;
 
-						// The calculate the weight and add it
-						double xval[1] = { array_pQ_nQ[i][j][k]->GetXaxis()->GetBinCenter( xbin ) };
-						double yval = array_pQ_nQ[i][j][k]->GetYaxis()->GetBinCenter( ybin );
-						double err = 1.0 / TMath::Sqrt( counts );
-						nlf->AddPoint( xval, yval, err );
+						// cuts to select the data
+						if( yval < (m_0 + allowance * m_0) * xval + d0 &&
+						    yval > (m_0 - allowance * m_0) * xval - d0 &&
+						    yval < m_0 * xval + d1 && yval > m_0 * xval - d1 ) {
+
+							// Calculate weight and add data point to fit
+							double err = 1.0 / TMath::Sqrt( counts );
+							double xx[1] = { xval };
+							nlf->AddPoint( xx, yval, err );
+
+							// Save for residual plot
+							fitX.push_back(xval);
+							fitY.push_back(yval);
+
+						}
 
 					} // ybin
 
@@ -401,19 +493,12 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 
 				// Do a robust linear evaluation of 70% of the points
 				if( nlf->GetNpoints() < 5 ) continue;
-				nlf->EvalRobust( 0.7 );
+				nlf->EvalRobust( set->GetRelativeCalibratorRobustFraction() );
 				nfit->SetParameters( nlf->GetParameter(0), nlf->GetParameter(1) );
 
 				// Get the parameters out
 				double fit_gain = pgain[i][j] / nlf->GetParameter(1);
 				double fit_offset = poffset[i][j] - nlf->GetParameter(0) * fit_gain;
-
-
-				// Directly fit the histogram (old method)
-				//auto res = array_nQ_pQ[i][j][k]->Fit( nfit.get(), "QWL" );
-				//if( res != 0 ) continue;
-				//double fit_gain = pgain[i][j] / nfit->GetParameter(1);
-				//double fit_offset = poffset[i][j] - nfit->GetParameter(0) * fit_gain;
 
 				// If we have the n-side tag, set the gain and offset
 				if( k == ntag ) {
@@ -445,11 +530,30 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 				output_cal << gainstr << std::endl;
 				output_cal << offsetstr << std::endl;
 
-				// Draw plot on Canvas
+				// Draw histogram on Canvas
+				canv[i][j]->Clear();
 				array_nQ_pQ[i][j][k]->Draw("colz");
+				nfit->SetLineColor(kRed);
 				nfit->Draw("same");
 
 				// Print to a file
+				canv[i][j]->Print( pdfname.data(), "pdf" );
+
+				// Make residuals plot
+				nres->Set(0);
+
+				// Loop over data points in the fit and calculate residual
+				for( unsigned int ip = 0; ip < fitX.size(); ip++ )
+					nres->SetPoint( nres->GetN(), fitX[ip], fitY[ip] - nfit->Eval(fitX[ip]) );
+
+				// Draw residual graph and print to PDF
+				canv[i][j]->Clear();
+				std::string restitle = "p-side calibration - Residuals Det ";
+				restitle += std::to_string(i) + " Sec " + std::to_string(j) + " Strip "+ std::to_string(k);
+				restitle += ";p-side raw charge pQ (ADC units);residual (nQ - fit(pQ)) (ADC units)";
+				nres->SetTitle( restitle.data() );
+				nres->SetMarkerStyle(20);
+				nres->Draw("AP");
 				canv[i][j]->Print( pdfname.data(), "pdf" );
 
 			} // k
