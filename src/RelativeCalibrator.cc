@@ -245,7 +245,9 @@ void ISSRelativeCalibrator::CalibratePsides() {
 		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
 
 			std::string cname = "cal_p_" + std::to_string(i) + "_" + std::to_string(j);
+			std::string pdfname = cname + ".pdf";
 			canv[i][j] = std::make_unique<TCanvas>( cname.data(), cname.data(), 600, 600 );
+			canv[i][j]->Print( (pdfname + "[").data() , "pdf" );
 
 			// Loop over all the strips
 			for( unsigned int k = 0; k < set->GetNumberOfArrayPstrips(); ++k ) {
@@ -321,14 +323,12 @@ void ISSRelativeCalibrator::CalibratePsides() {
 				pfit->Draw("same");
 
 				// Print to a file
-				std::string pdfname = cname + ".pdf";
-				if( k == 0 && set->GetNumberOfArrayPstrips() != 1 )
-					pdfname += "(";
-				else if( k > 0 && k == set->GetNumberOfArrayPstrips() - 1 )
-					pdfname += ")";
 				canv[i][j]->Print( pdfname.data(), "pdf" );
 
 			} // k
+
+			// Close PDF
+			canv[i][j]->Print( (pdfname + "]").data(), "pdf");
 
 		} // j
 
@@ -361,7 +361,9 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
 
 			std::string cname = "cal_n_" + std::to_string(i) + "_" + std::to_string(j);
+			std::string pdfname = cname + ".pdf";
 			canv[i][j] = std::make_unique<TCanvas>( cname.data(), cname.data(), 800, 1000 );
+			canv[i][j]->Print( (pdfname + "[").data() , "pdf" );
 
 			// Get the p-side gain and offset
 			int pmod  = i;
@@ -448,14 +450,12 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 				nfit->Draw("same");
 
 				// Print to a file
-				std::string pdfname = cname + ".pdf";
-				if( k == 0 && set->GetNumberOfArrayNstrips() != 1 )
-					pdfname += "(";
-				else if( k > 0 && k == set->GetNumberOfArrayNstrips() - 1 )
-					pdfname += ")";
 				canv[i][j]->Print( pdfname.data(), "pdf" );
 
 			} // k
+
+			// Close PDF
+			canv[i][j]->Print( (pdfname + "]").data(), "pdf");
 
 		} // j
 
