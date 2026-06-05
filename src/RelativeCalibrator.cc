@@ -174,7 +174,7 @@ void ISSRelativeCalibrator::MakeHists(){
 				htitle += ", nid " + std::to_string(k);
 				htitle += ";p-side (ADC units);n-side (ADC units);Counts";
 				array_pQ_nQ[i][j][k] = new TH2S( hname.data(), htitle.data(),
-												1024, 0, 4096, 1024, 0, 4096 );
+												2048, 0, 4096, 2048, 0, 4096 );
 				histlist->Add(array_pQ_nQ[i][j][k]);
 
 			} // k
@@ -190,7 +190,7 @@ void ISSRelativeCalibrator::MakeHists(){
 				htitle += ", nid " + std::to_string(ntag);
 				htitle += ";n-side (ADC units);p-side (ADC units);Counts";
 				array_nQ_pQ[i][j][k] = new TH2S( hname.data(), htitle.data(),
-												1024, 0, 4096, 1024, 0, 4096 );
+												2048, 0, 4096, 2048, 0, 4096 );
 				histlist->Add(array_nQ_pQ[i][j][k]);
 
 			} // k
