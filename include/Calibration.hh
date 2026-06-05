@@ -360,7 +360,7 @@ private:
 	std::vector<std::vector<std::vector<Int_t>>> twinterpn;
 	std::vector<std::vector<std::vector<std::shared_ptr<ROOT::Math::Interpolator>>>> twinterps;   ///<! Vector containing time walk interpolators
 
-	ClassDef( ISSCalibration, 10 )
+	ClassDef( ISSCalibration, 11 )
 
 };
 

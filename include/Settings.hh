@@ -467,7 +467,7 @@ private:
 	std::vector<std::vector<std::vector<char>>> cd_side;			///< A channel map for the CD sides (rings = 0, sectors = 1) (-1 if not a CD)
 
 
-	ClassDef( ISSSettings, 10 )
+	ClassDef( ISSSettings, 11 )
 
 };
 
