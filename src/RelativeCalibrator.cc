@@ -272,8 +272,8 @@ void ISSRelativeCalibrator::CalibratePsides() {
 
 				// Get information for the cuts
 				double allowance = set->GetRelativeCalibratorAllowance();
-				double d0 = ( set->GetRelativeCalibratorSmallOffset() - noffset[i][j] ) / ngain[i][j];
-				double d1 = ( set->GetRelativeCalibratorLargeOffset() - noffset[i][j] ) / ngain[i][j];
+				double d0 = set->GetRelativeCalibratorSmallOffset() / ngain[i][j];
+				double d1 = set->GetRelativeCalibratorLargeOffset() / ngain[i][j];
 
 				// Vectors to hold the data for the residuals plot
 				std::vector<double> fitX;
@@ -449,8 +449,8 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 
 				// Get information for the cuts
 				double allowance = set->GetRelativeCalibratorAllowance();
-				double d0 = ( set->GetRelativeCalibratorSmallOffset() - poffset[i][j] ) / pgain[i][j];
-				double d1 = ( set->GetRelativeCalibratorLargeOffset() - poffset[i][j] ) / pgain[i][j];
+				double d0 = set->GetRelativeCalibratorSmallOffset() / pgain[i][j];
+				double d1 = set->GetRelativeCalibratorLargeOffset() / pgain[i][j];
 
 				// Vectors to hold the data for the residuals plot
 				std::vector<double> fitX;
