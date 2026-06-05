@@ -107,8 +107,8 @@
 ##------------------------------#
 ## Relative calibration control #
 ##------------------------------#
-#RelativeCalibrator.Allowance: 0.1			# relative difference between p-n ADC values to pass cut (combined with SmallOffset below)
-#RelativeCalibrator.SmallOffset: 50			# absolute difference between p-n ADC values to pass cut (combined with Allowance above)
+#RelativeCalibrator.Allowance: 0.15			# relative difference between p-n ADC values to pass cut (±gradient of cut, combined with SmallOffset below)
+#RelativeCalibrator.SmallOffset: 100		# absolute difference between p-n ADC values to pass cut (±offset of cut, combined with Allowance above)
 #RelativeCalibrator.LargeOffset: 150		# maximum absolute difference between p-n ADC values to pass cut
 #RelativeCalibrator.RobustFraction: 0.7		# robust fitting routine must include at least this number of the data points
 
