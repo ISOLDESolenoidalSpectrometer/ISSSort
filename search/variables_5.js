@@ -149,7 +149,7 @@ var searchData=
   ['etime_146',['etime',['../classISSMultiLayerDetectorEvt.html#a5847864445ed1624043b49b29ed34a15',1,'ISSMultiLayerDetectorEvt']]],
   ['etot_5fcm_147',['Etot_cm',['../classISSRxInfo.html#a0cc74e15174ce49718f25a41e77f9dcb',1,'ISSRxInfo']]],
   ['etot_5flab_148',['Etot_lab',['../classISSRxInfo.html#a9e99a9de8b745e13316f148afd6591f5',1,'ISSRxInfo']]],
-  ['event_5fopen_149',['event_open',['../classISSEventBuilder.html#ac0a99cbccb8d652b60bd2f2a1b01e574',1,'ISSEventBuilder']]],
+  ['event_5fopen_149',['event_open',['../classISSEventBuilder.html#ac0a99cbccb8d652b60bd2f2a1b01e574',1,'ISSEventBuilder::event_open'],['../classISSRelativeCalibrator.html#adba03c2fd8d9c71fd05625f4a126c74e',1,'ISSRelativeCalibrator::event_open']]],
   ['event_5fwindow_150',['event_window',['../classISSSettings.html#a9577e72f291c720d30ce51dd98b06397',1,'ISSSettings']]],
   ['evszcutfile_151',['evszcutfile',['../classISSReaction.html#ab8e40b35d77220f697c8a46fee95522f',1,'ISSReaction']]],
   ['evszcutname_152',['evszcutname',['../classISSReaction.html#a04a1fd09e0469d805fa94df73765dec6',1,'ISSReaction']]],

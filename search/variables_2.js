@@ -24,7 +24,7 @@ var searchData=
   ['buffer_5fstatus_21',['buffer_status',['../structs__buffer__header.html#a15c70f380113f9463b5a13abbea01620',1,'s_buffer_header']]],
   ['buffers_5foffset_22',['buffers_offset',['../classDataSpy.html#a85d9934e8f57b13fa90d69a3f325c530',1,'DataSpy']]],
   ['build_5fby_5ftm_5fstp_23',['build_by_tm_stp',['../classISSSettings.html#a95f671678327b9081c6e705c8fb6c386',1,'ISSSettings']]],
-  ['build_5fwindow_24',['build_window',['../classISSEventBuilder.html#ae248a3eaa62d8fd1ca8b68f8d888cf28',1,'ISSEventBuilder']]],
+  ['build_5fwindow_24',['build_window',['../classISSEventBuilder.html#ae248a3eaa62d8fd1ca8b68f8d888cf28',1,'ISSEventBuilder::build_window'],['../classISSRelativeCalibrator.html#a0ecb8d87b5de4e0e477da36b947355de',1,'ISSRelativeCalibrator::build_window']]],
   ['but_5fadd_25',['but_add',['../classISSGUI.html#a965ad563d43e480096bbdf1adad56a96',1,'ISSGUI']]],
   ['but_5fcal_26',['but_cal',['../classISSGUI.html#a4d650736395246c123e5afb18099ed8c',1,'ISSGUI']]],
   ['but_5fdel_27',['but_del',['../classISSGUI.html#af4f9e80afadfaf12870a103399ee4484',1,'ISSGUI']]],

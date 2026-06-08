@@ -40,9 +40,10 @@ var searchData=
   ['do_5fhist_37',['do_hist',['../iss__sort_8cc.html#aab6b0506267cf908785df7061640da3d',1,'iss_sort.cc']]],
   ['do_5fnptool_38',['do_nptool',['../iss__sort_8cc.html#a66b146cfee8f1533ab4a7e186c6b3927',1,'iss_sort.cc']]],
   ['do_5fpace4_39',['do_pace4',['../iss__sort_8cc.html#ae49c16159637d80af64e4e2a65469a5d',1,'iss_sort.cc']]],
-  ['dochannelfit_40',['DoChannelFit',['../classISSAutoCalibrator.html#a4bd250ddeb47fbb25d6b99fc337156ed',1,'ISSAutoCalibrator']]],
-  ['dofits_41',['DoFits',['../classISSAutoCalibrator.html#af14bd2dc8925bf4fce9f94537b0af923',1,'ISSAutoCalibrator']]],
-  ['download_42',['Download',['../index.html#autotoc_md2',1,'']]],
-  ['dsim_43',['dsim',['../classISSReaction.html#ac1f129ae2c5512d6d05073d3f9e27b6a',1,'ISSReaction']]],
-  ['dump_44',['Dump',['../classTIssData.html#ac73a6666e30f51612fee9efcafbe7555',1,'TIssData']]]
+  ['do_5frelcal_40',['do_relcal',['../iss__sort_8cc.html#afce734358c15b01ca52fdffccedbfc72',1,'iss_sort.cc']]],
+  ['dochannelfit_41',['DoChannelFit',['../classISSAutoCalibrator.html#a4bd250ddeb47fbb25d6b99fc337156ed',1,'ISSAutoCalibrator']]],
+  ['dofits_42',['DoFits',['../classISSAutoCalibrator.html#af14bd2dc8925bf4fce9f94537b0af923',1,'ISSAutoCalibrator']]],
+  ['download_43',['Download',['../index.html#autotoc_md2',1,'']]],
+  ['dsim_44',['dsim',['../classISSReaction.html#ac1f129ae2c5512d6d05073d3f9e27b6a',1,'ISSReaction']]],
+  ['dump_45',['Dump',['../classTIssData.html#ac73a6666e30f51612fee9efcafbe7555',1,'TIssData']]]
 ];

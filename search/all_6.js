@@ -25,7 +25,7 @@ var searchData=
   ['buffer_5fstatus_22',['buffer_status',['../structs__buffer__header.html#a15c70f380113f9463b5a13abbea01620',1,'s_buffer_header']]],
   ['buffers_5foffset_23',['buffers_offset',['../classDataSpy.html#a85d9934e8f57b13fa90d69a3f325c530',1,'DataSpy']]],
   ['build_5fby_5ftm_5fstp_24',['build_by_tm_stp',['../classISSSettings.html#a95f671678327b9081c6e705c8fb6c386',1,'ISSSettings']]],
-  ['build_5fwindow_25',['build_window',['../classISSEventBuilder.html#ae248a3eaa62d8fd1ca8b68f8d888cf28',1,'ISSEventBuilder']]],
+  ['build_5fwindow_25',['build_window',['../classISSEventBuilder.html#ae248a3eaa62d8fd1ca8b68f8d888cf28',1,'ISSEventBuilder::build_window'],['../classISSRelativeCalibrator.html#a0ecb8d87b5de4e0e477da36b947355de',1,'ISSRelativeCalibrator::build_window']]],
   ['buildbytimestamp_26',['BuildByTimeStamp',['../classISSSettings.html#aa010dbb0c74cb96099e2648a25cf4369',1,'ISSSettings']]],
   ['builder_27',['Step 3: Event Builder',['../index.html#autotoc_md8',1,'']]],
   ['buildevents_28',['BuildEvents',['../classISSEventBuilder.html#a0036a116af31820786913be558a1f190',1,'ISSEventBuilder']]],

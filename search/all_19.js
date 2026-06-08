@@ -3,7 +3,7 @@ var searchData=
   ['verbose_0',['Verbose',['../classDataSpy.html#af7f516e7a0d0b99e298038344f559853',1,'DataSpy']]],
   ['verbose_1',['verbose',['../classDataSpy.html#aef942c1d27554cca3ff1c0bae3332379',1,'DataSpy']]],
   ['vme_2',['vme',['../classISSVmeData.html#a0162b8b9189fdb90ff6121a8e5dcc26c',1,'ISSVmeData']]],
-  ['vme_5fdata_3',['vme_data',['../classISSEventBuilder.html#a4c6a1c57b424ba9ddbb9e0a54faad308',1,'ISSEventBuilder']]],
+  ['vme_5fdata_3',['vme_data',['../classISSEventBuilder.html#a4c6a1c57b424ba9ddbb9e0a54faad308',1,'ISSEventBuilder::vme_data'],['../classISSRelativeCalibrator.html#a8b1993a003ff00b91dbb3d765d013257',1,'ISSRelativeCalibrator::vme_data']]],
   ['vme_5febis_5fch_4',['vme_ebis_ch',['../classISSSettings.html#abe5b952bfc646a2c79a7eb402b17ae61',1,'ISSSettings']]],
   ['vme_5febis_5fcrate_5',['vme_ebis_crate',['../classISSSettings.html#aac4361c7aab9c25de169dd1806ec6b98',1,'ISSSettings']]],
   ['vme_5febis_5fmod_6',['vme_ebis_mod',['../classISSSettings.html#a513c2b2e8f506ca5e7cd88e892311da5',1,'ISSSettings']]],

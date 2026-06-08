@@ -156,7 +156,7 @@ var searchData=
   ['etot_5flab_153',['Etot_lab',['../classISSRxInfo.html#a9e99a9de8b745e13316f148afd6591f5',1,'ISSRxInfo']]],
   ['evaporation_20simulations_154',['PACE4 fusion-evaporation simulations',['../index.html#autotoc_md12',1,'']]],
   ['event_20builder_155',['Step 3: Event Builder',['../index.html#autotoc_md8',1,'']]],
-  ['event_5fopen_156',['event_open',['../classISSEventBuilder.html#ac0a99cbccb8d652b60bd2f2a1b01e574',1,'ISSEventBuilder']]],
+  ['event_5fopen_156',['event_open',['../classISSEventBuilder.html#ac0a99cbccb8d652b60bd2f2a1b01e574',1,'ISSEventBuilder::event_open'],['../classISSRelativeCalibrator.html#adba03c2fd8d9c71fd05625f4a126c74e',1,'ISSRelativeCalibrator::event_open']]],
   ['event_5fwindow_157',['event_window',['../classISSSettings.html#a9577e72f291c720d30ce51dd98b06397',1,'ISSSettings']]],
   ['eventbuilder_2ecc_158',['EventBuilder.cc',['../EventBuilder_8cc.html',1,'']]],
   ['eventbuilder_2ehh_159',['EventBuilder.hh',['../EventBuilder_8hh.html',1,'']]],

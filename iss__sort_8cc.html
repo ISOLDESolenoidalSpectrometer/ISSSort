@@ -101,6 +101,7 @@ $(function(){ initResizable(false); });
 <code>#include &quot;<a class="el" href="EventBuilder_8hh_source.html">EventBuilder.hh</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Histogrammer_8hh_source.html">Histogrammer.hh</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="AutoCalibrator_8hh_source.html">AutoCalibrator.hh</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="RelativeCalibrator_8hh_source.html">RelativeCalibrator.hh</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="DataSpy_8hh_source.html">DataSpy.hh</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="ISSGUI_8hh_source.html">ISSGUI.hh</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="CommandLineInterface_8hh_source.html">CommandLineInterface.hh</a>&quot;</code><br />
@@ -150,6 +151,8 @@ Functions</h2></td></tr>
 <tr class="separator:ae49c16159637d80af64e4e2a65469a5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a417c46c732aafe248f660e29d192513a" id="r_a417c46c732aafe248f660e29d192513a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a417c46c732aafe248f660e29d192513a">do_autocal</a> ()</td></tr>
 <tr class="separator:a417c46c732aafe248f660e29d192513a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afce734358c15b01ca52fdffccedbfc72" id="r_afce734358c15b01ca52fdffccedbfc72"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afce734358c15b01ca52fdffccedbfc72">do_relcal</a> ()</td></tr>
+<tr class="separator:afce734358c15b01ca52fdffccedbfc72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97" id="r_a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
 <tr class="separator:a0ddf1224851353fc92bfbff6f499fa97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -185,6 +188,14 @@ Variables</h2></td></tr>
 <tr class="separator:a168afe80430d452277f1e1223cfe96ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55503ff77225231612ee8ea3b3fdc563" id="r_a55503ff77225231612ee8ea3b3fdc563"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a55503ff77225231612ee8ea3b3fdc563">flag_ebis</a> = false</td></tr>
 <tr class="separator:a55503ff77225231612ee8ea3b3fdc563"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4040e28b65a8c4efb3b3169d2f72f9c" id="r_ab4040e28b65a8c4efb3b3169d2f72f9c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4040e28b65a8c4efb3b3169d2f72f9c">flag_relcal</a> = false</td></tr>
+<tr class="separator:ab4040e28b65a8c4efb3b3169d2f72f9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65a6042ca6eed0eb5c863f865e0bceb4" id="r_a65a6042ca6eed0eb5c863f865e0bceb4"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a65a6042ca6eed0eb5c863f865e0bceb4">relcal_strips</a></td></tr>
+<tr class="separator:a65a6042ca6eed0eb5c863f865e0bceb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabd0a11d71ccb980323738b5fc637359" id="r_aabd0a11d71ccb980323738b5fc637359"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aabd0a11d71ccb980323738b5fc637359">relcal_pid</a> = 12</td></tr>
+<tr class="separator:aabd0a11d71ccb980323738b5fc637359"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ad85183810a9758e64c23da87283f6f" id="r_a6ad85183810a9758e64c23da87283f6f"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6ad85183810a9758e64c23da87283f6f">relcal_nid</a> = 2</td></tr>
+<tr class="separator:a6ad85183810a9758e64c23da87283f6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71ec30e3061cf2bef50f5573ccd9d3e1" id="r_a71ec30e3061cf2bef50f5573ccd9d3e1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a71ec30e3061cf2bef50f5573ccd9d3e1">force_convert</a></td></tr>
 <tr class="separator:a71ec30e3061cf2bef50f5573ccd9d3e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6715617560e88e649da70bfb6de343b" id="r_af6715617560e88e649da70bfb6de343b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af6715617560e88e649da70bfb6de343b">force_events</a> = false</td></tr>
@@ -263,7 +274,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00872">872</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00882">882</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -282,7 +293,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00568">568</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00578">578</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -301,7 +312,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00482">482</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00492">492</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -320,7 +331,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00673">673</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00683">683</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -339,7 +350,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00739">739</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00749">749</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -358,7 +369,26 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00821">821</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00831">831</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+
+</div>
+</div>
+<a id="afce734358c15b01ca52fdffccedbfc72" name="afce734358c15b01ca52fdffccedbfc72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afce734358c15b01ca52fdffccedbfc72">&#9670;&#160;</a></span>do_relcal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void do_relcal </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00952">952</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -381,7 +411,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00942">942</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l01008">1008</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -405,7 +435,7 @@ Variables</h2></td></tr>
 </blockquote>
 <p>open the data spy</p>
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00170">170</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00180">180</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -424,7 +454,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00418">418</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00428">428</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -443,7 +473,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00144">144</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00154">154</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -462,7 +492,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00148">148</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00158">158</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -481,7 +511,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00152">152</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00162">162</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -500,7 +530,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00164">164</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00174">174</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -519,7 +549,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00384">384</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00394">394</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -538,7 +568,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00160">160</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00170">170</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -557,7 +587,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00156">156</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00166">166</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -574,7 +604,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00139">139</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00149">149</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -590,7 +620,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00070">70</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00075">75</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -606,7 +636,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00140">140</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00150">150</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -622,7 +652,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00100">100</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00110">110</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -638,7 +668,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00081">81</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00086">86</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -654,7 +684,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00078">78</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00083">83</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -670,7 +700,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00082">82</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00087">87</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -686,7 +716,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00085">85</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00090">90</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -702,7 +732,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00079">79</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00084">84</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -718,7 +748,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00104">104</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00114">114</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -734,7 +764,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00084">84</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00089">89</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -750,7 +780,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00083">83</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00088">88</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -766,7 +796,23 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00109">109</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00119">119</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+
+</div>
+</div>
+<a id="ab4040e28b65a8c4efb3b3169d2f72f9c" name="ab4040e28b65a8c4efb3b3169d2f72f9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4040e28b65a8c4efb3b3169d2f72f9c">&#9670;&#160;</a></span>flag_relcal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool flag_relcal = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00093">93</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -782,7 +828,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00080">80</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00085">85</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -798,7 +844,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00099">99</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00109">109</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -814,7 +860,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00089">89</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00099">99</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -830,7 +876,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00090">90</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00100">100</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -846,7 +892,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00093">93</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00103">103</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -862,7 +908,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00096">96</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00106">106</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -878,7 +924,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00141">141</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00151">151</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -894,7 +940,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00075">75</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00080">80</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -910,7 +956,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00105">105</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00115">115</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -926,7 +972,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00113">113</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00123">123</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -942,7 +988,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00117">117</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00127">127</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -958,7 +1004,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00108">108</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00118">118</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -974,7 +1020,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00074">74</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00079">79</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -990,7 +1036,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00072">72</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00077">77</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -1006,7 +1052,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00073">73</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00078">78</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -1022,7 +1068,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00071">71</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00076">76</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -1038,7 +1084,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00101">101</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00111">111</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -1054,7 +1100,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00069">69</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00074">74</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -1070,7 +1116,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00114">114</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00124">124</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -1086,7 +1132,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00110">110</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00120">120</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -1102,7 +1148,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00123">123</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00133">133</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -1118,7 +1164,55 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00121">121</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00131">131</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+
+</div>
+</div>
+<a id="a6ad85183810a9758e64c23da87283f6f" name="a6ad85183810a9758e64c23da87283f6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ad85183810a9758e64c23da87283f6f">&#9670;&#160;</a></span>relcal_nid</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char relcal_nid = 2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00096">96</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+
+</div>
+</div>
+<a id="aabd0a11d71ccb980323738b5fc637359" name="aabd0a11d71ccb980323738b5fc637359"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabd0a11d71ccb980323738b5fc637359">&#9670;&#160;</a></span>relcal_pid</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char relcal_pid = 12</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00095">95</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+
+</div>
+</div>
+<a id="a65a6042ca6eed0eb5c863f865e0bceb4" name="a65a6042ca6eed0eb5c863f865e0bceb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65a6042ca6eed0eb5c863f865e0bceb4">&#9670;&#160;</a></span>relcal_strips</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string relcal_strips</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00094">94</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -1134,7 +1228,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00120">120</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00130">130</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -1150,7 +1244,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00122">122</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00132">132</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>
@@ -1166,7 +1260,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00124">124</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="iss__sort_8cc_source.html#l00134">134</a> of file <a class="el" href="iss__sort_8cc_source.html">iss_sort.cc</a>.</p>
 
 </div>
 </div>

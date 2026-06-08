@@ -11,7 +11,7 @@ var searchData=
   ['caen_5fpulser_5fcode_8',['caen_pulser_code',['../classISSSettings.html#a1c01028725d72c1582b1c1993508837f',1,'ISSSettings']]],
   ['caen_5fpulser_5fmod_9',['caen_pulser_mod',['../classISSSettings.html#a751268ad3cf575c89c45e7a90322fefc',1,'ISSSettings']]],
   ['caen_5ftime_10',['caen_time',['../classISSEventBuilder.html#a237e8bf98d0d296006958dffea9d3843',1,'ISSEventBuilder']]],
-  ['cal_11',['cal',['../classISSAutoCalibrator.html#a036f1c7510e78c2b3e7db06d69ac2768',1,'ISSAutoCalibrator::cal'],['../classISSConverter.html#a1e1bacf3232934dba5c3b20865398753',1,'ISSConverter::cal'],['../classISSEventBuilder.html#a00a2fcd0e24c458b26e34c65048f5543',1,'ISSEventBuilder::cal']]],
+  ['cal_11',['cal',['../classISSAutoCalibrator.html#a036f1c7510e78c2b3e7db06d69ac2768',1,'ISSAutoCalibrator::cal'],['../classISSConverter.html#a1e1bacf3232934dba5c3b20865398753',1,'ISSConverter::cal'],['../classISSEventBuilder.html#a00a2fcd0e24c458b26e34c65048f5543',1,'ISSEventBuilder::cal'],['../classISSRelativeCalibrator.html#a630a97b61146f5b7f255fd30c9c0049c',1,'ISSRelativeCalibrator::cal']]],
   ['cd_5fch_12',['cd_ch',['../classISSSettings.html#a290b734277135a3c080d96f578f7ae72',1,'ISSSettings']]],
   ['cd_5fctr_13',['cd_ctr',['../classISSEventBuilder.html#a1eae200b5f987a58932b833b5af9e071',1,'ISSEventBuilder']]],
   ['cd_5fdd_5fhit_5fwindow_14',['cd_dd_hit_window',['../classISSSettings.html#a324effb78dfedf996d60e28ba7980d79',1,'ISSSettings']]],

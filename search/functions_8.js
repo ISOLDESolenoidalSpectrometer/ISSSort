@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['initialise_0',['Initialise',['../classISSCalibration.html#a6b80d6f860dcd8475fff3334b1348ddf',1,'ISSCalibration::Initialise()'],['../classISSEventBuilder.html#a6e5cd4126fb1832fe68ceadea4f074ad',1,'ISSEventBuilder::Initialise()'],['../classISSHistogrammer.html#a4afff1a62c1ad2dfadcdaa00fd44bced',1,'ISSHistogrammer::Initialise()']]],
+  ['initialise_0',['Initialise',['../classISSCalibration.html#a6b80d6f860dcd8475fff3334b1348ddf',1,'ISSCalibration::Initialise()'],['../classISSEventBuilder.html#a6e5cd4126fb1832fe68ceadea4f074ad',1,'ISSEventBuilder::Initialise()'],['../classISSHistogrammer.html#a4afff1a62c1ad2dfadcdaa00fd44bced',1,'ISSHistogrammer::Initialise()'],['../classISSRelativeCalibrator.html#af9cfd81b7d8cd53dec2de481c6ebdcba',1,'ISSRelativeCalibrator::Initialise()']]],
   ['inputfile_1',['InputFile',['../classISSCalibration.html#a3d8c61732dec37e3c7c38eb7b86e61ac',1,'ISSCalibration::InputFile()'],['../classISSReaction.html#a4f667357690073d112416ab926714317',1,'ISSReaction::InputFile()'],['../classISSSettings.html#ab893c6e2e9aebc6dc2399b81674932b3',1,'ISSSettings::InputFile()']]],
   ['isalldata_2',['IsAllData',['../classISSSettings.html#ae049638c2652c1689731e6b5a1843b7d',1,'ISSSettings']]],
   ['isasic_3',['IsAsic',['../classISSDataPackets.html#a6ebf8ef2844faeede33ebd7763f5dc5a',1,'ISSDataPackets']]],
@@ -46,12 +46,13 @@ var searchData=
   ['issparticle_43',['ISSParticle',['../classISSParticle.html#a40bb83282da2fb260f5fb652d25cc485',1,'ISSParticle']]],
   ['issreaction_44',['ISSReaction',['../classISSReaction.html#a4ee669e7a5f1e10359588e2818391fdb',1,'ISSReaction']]],
   ['issrecoilevt_45',['ISSRecoilEvt',['../classISSRecoilEvt.html#aab345a52ce92f144eca5140d0d083944',1,'ISSRecoilEvt']]],
-  ['issrxevent_46',['ISSRxEvent',['../classISSRxEvent.html#a988d00b53bb68cb323127b11a0d70458',1,'ISSRxEvent']]],
-  ['issrxinfo_47',['ISSRxInfo',['../classISSRxInfo.html#acf13a39adcec7c9c18bba2c6064ee8d0',1,'ISSRxInfo']]],
-  ['isssettings_48',['ISSSettings',['../classISSSettings.html#abf07559bdebb3ff90a68589e2884fd75',1,'ISSSettings::ISSSettings()'],['../classISSSettings.html#a23210aa970f57be18a93b7793a7d5821',1,'ISSSettings::ISSSettings(std::string filename)'],['../classISSSettings.html#a39c47b90fad881724bc187864bd278f5',1,'ISSSettings::ISSSettings(ISSSettings *myset)']]],
-  ['isssinglelayerdetectorevt_49',['ISSSingleLayerDetectorEvt',['../classISSSingleLayerDetectorEvt.html#a457174a4d254a3341ead06ea972e0149',1,'ISSSingleLayerDetectorEvt']]],
-  ['issvmedata_50',['ISSVmeData',['../classISSVmeData.html#a1922db91ff1fb4d04f1fe039caaf12a8',1,'ISSVmeData']]],
-  ['isszerodegreeevt_51',['ISSZeroDegreeEvt',['../classISSZeroDegreeEvt.html#aa3edeb86122fb7eca611bc14f370ed5f',1,'ISSZeroDegreeEvt']]],
-  ['isvme_52',['IsVme',['../classISSDataPackets.html#ab3aa028f80cb84602f8fca5be4dac30f',1,'ISSDataPackets']]],
-  ['iszd_53',['IsZD',['../classISSSettings.html#ab949b57a0be2c6db4a991e082b77d255',1,'ISSSettings']]]
+  ['issrelativecalibrator_46',['ISSRelativeCalibrator',['../classISSRelativeCalibrator.html#ad0ab2952560d7ad798b7c45e9f9f9045',1,'ISSRelativeCalibrator']]],
+  ['issrxevent_47',['ISSRxEvent',['../classISSRxEvent.html#a988d00b53bb68cb323127b11a0d70458',1,'ISSRxEvent']]],
+  ['issrxinfo_48',['ISSRxInfo',['../classISSRxInfo.html#acf13a39adcec7c9c18bba2c6064ee8d0',1,'ISSRxInfo']]],
+  ['isssettings_49',['ISSSettings',['../classISSSettings.html#abf07559bdebb3ff90a68589e2884fd75',1,'ISSSettings::ISSSettings()'],['../classISSSettings.html#a23210aa970f57be18a93b7793a7d5821',1,'ISSSettings::ISSSettings(std::string filename)'],['../classISSSettings.html#a39c47b90fad881724bc187864bd278f5',1,'ISSSettings::ISSSettings(ISSSettings *myset)']]],
+  ['isssinglelayerdetectorevt_50',['ISSSingleLayerDetectorEvt',['../classISSSingleLayerDetectorEvt.html#a457174a4d254a3341ead06ea972e0149',1,'ISSSingleLayerDetectorEvt']]],
+  ['issvmedata_51',['ISSVmeData',['../classISSVmeData.html#a1922db91ff1fb4d04f1fe039caaf12a8',1,'ISSVmeData']]],
+  ['isszerodegreeevt_52',['ISSZeroDegreeEvt',['../classISSZeroDegreeEvt.html#aa3edeb86122fb7eca611bc14f370ed5f',1,'ISSZeroDegreeEvt']]],
+  ['isvme_53',['IsVme',['../classISSDataPackets.html#ab3aa028f80cb84602f8fca5be4dac30f',1,'ISSDataPackets']]],
+  ['iszd_54',['IsZD',['../classISSSettings.html#ab949b57a0be2c6db4a991e082b77d255',1,'ISSSettings']]]
 ];

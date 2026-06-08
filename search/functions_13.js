@@ -26,11 +26,12 @@ var searchData=
   ['_7eissparticle_23',['~ISSParticle',['../classISSParticle.html#a3ea161117233c763a3b3360a576e7eb1',1,'ISSParticle']]],
   ['_7eissreaction_24',['~ISSReaction',['../classISSReaction.html#a17c9a6875fa0e794ca891b223f429ae7',1,'ISSReaction']]],
   ['_7eissrecoilevt_25',['~ISSRecoilEvt',['../classISSRecoilEvt.html#a3df2f824ec9436aeaedc0ad83e3d1bda',1,'ISSRecoilEvt']]],
-  ['_7eissrxevent_26',['~ISSRxEvent',['../classISSRxEvent.html#a356ee9683fa118f7f612670a5df9415d',1,'ISSRxEvent']]],
-  ['_7eissrxinfo_27',['~ISSRxInfo',['../classISSRxInfo.html#a601e705e2e719e14c80f484624dd67a9',1,'ISSRxInfo']]],
-  ['_7eisssettings_28',['~ISSSettings',['../classISSSettings.html#ae390b7a7e6ad207a3dd0b60c047e6b95',1,'ISSSettings']]],
-  ['_7eisssinglelayerdetectorevt_29',['~ISSSingleLayerDetectorEvt',['../classISSSingleLayerDetectorEvt.html#a775dd2ad9fb175401983f00e11f09d44',1,'ISSSingleLayerDetectorEvt']]],
-  ['_7eissvmedata_30',['~ISSVmeData',['../classISSVmeData.html#a02ec974c168bec767adefc38ec8446a5',1,'ISSVmeData']]],
-  ['_7eisszerodegreeevt_31',['~ISSZeroDegreeEvt',['../classISSZeroDegreeEvt.html#aa0f8d3b45c38e155e41f38d5f294faae',1,'ISSZeroDegreeEvt']]],
-  ['_7etissdata_32',['~TIssData',['../classTIssData.html#aed013a690b484668103ddb8234c0844c',1,'TIssData']]]
+  ['_7eissrelativecalibrator_26',['~ISSRelativeCalibrator',['../classISSRelativeCalibrator.html#affb1d252d97fad59f0afae51101d9656',1,'ISSRelativeCalibrator']]],
+  ['_7eissrxevent_27',['~ISSRxEvent',['../classISSRxEvent.html#a356ee9683fa118f7f612670a5df9415d',1,'ISSRxEvent']]],
+  ['_7eissrxinfo_28',['~ISSRxInfo',['../classISSRxInfo.html#a601e705e2e719e14c80f484624dd67a9',1,'ISSRxInfo']]],
+  ['_7eisssettings_29',['~ISSSettings',['../classISSSettings.html#ae390b7a7e6ad207a3dd0b60c047e6b95',1,'ISSSettings']]],
+  ['_7eisssinglelayerdetectorevt_30',['~ISSSingleLayerDetectorEvt',['../classISSSingleLayerDetectorEvt.html#a775dd2ad9fb175401983f00e11f09d44',1,'ISSSingleLayerDetectorEvt']]],
+  ['_7eissvmedata_31',['~ISSVmeData',['../classISSVmeData.html#a02ec974c168bec767adefc38ec8446a5',1,'ISSVmeData']]],
+  ['_7eisszerodegreeevt_32',['~ISSZeroDegreeEvt',['../classISSZeroDegreeEvt.html#aa0f8d3b45c38e155e41f38d5f294faae',1,'ISSZeroDegreeEvt']]],
+  ['_7etissdata_33',['~TIssData',['../classTIssData.html#aed013a690b484668103ddb8234c0844c',1,'TIssData']]]
 ];

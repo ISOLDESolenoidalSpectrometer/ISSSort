@@ -26,10 +26,11 @@ var searchData=
   ['issparticle_23',['ISSParticle',['../classISSParticle.html',1,'']]],
   ['issreaction_24',['ISSReaction',['../classISSReaction.html',1,'']]],
   ['issrecoilevt_25',['ISSRecoilEvt',['../classISSRecoilEvt.html',1,'']]],
-  ['issrxevent_26',['ISSRxEvent',['../classISSRxEvent.html',1,'']]],
-  ['issrxinfo_27',['ISSRxInfo',['../classISSRxInfo.html',1,'']]],
-  ['isssettings_28',['ISSSettings',['../classISSSettings.html',1,'']]],
-  ['isssinglelayerdetectorevt_29',['ISSSingleLayerDetectorEvt',['../classISSSingleLayerDetectorEvt.html',1,'']]],
-  ['issvmedata_30',['ISSVmeData',['../classISSVmeData.html',1,'']]],
-  ['isszerodegreeevt_31',['ISSZeroDegreeEvt',['../classISSZeroDegreeEvt.html',1,'']]]
+  ['issrelativecalibrator_26',['ISSRelativeCalibrator',['../classISSRelativeCalibrator.html',1,'']]],
+  ['issrxevent_27',['ISSRxEvent',['../classISSRxEvent.html',1,'']]],
+  ['issrxinfo_28',['ISSRxInfo',['../classISSRxInfo.html',1,'']]],
+  ['isssettings_29',['ISSSettings',['../classISSSettings.html',1,'']]],
+  ['isssinglelayerdetectorevt_30',['ISSSingleLayerDetectorEvt',['../classISSSingleLayerDetectorEvt.html',1,'']]],
+  ['issvmedata_31',['ISSVmeData',['../classISSVmeData.html',1,'']]],
+  ['isszerodegreeevt_32',['ISSZeroDegreeEvt',['../classISSZeroDegreeEvt.html',1,'']]]
 ];

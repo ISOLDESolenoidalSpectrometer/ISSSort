@@ -111,24 +111,28 @@ Execute</h1>
 </div><!-- fragment --><p>If you start the code without any flags, it will launch the GUI. To run in batch mode, simple pass at least one file to the programme with the -i flag.</p>
 <p>The input options are described below.</p>
 <div class="fragment"><div class="line">use iss_sort with following flags:</div>
-<div class="line">        [-i           &lt;vector&lt;string&gt;&gt;: List of input files]</div>
-<div class="line">        [-o           &lt;string        &gt;: Output file for histogram file]</div>
-<div class="line">        [-s           &lt;string        &gt;: Settings file]</div>
-<div class="line">        [-c           &lt;string        &gt;: Calibration file]</div>
-<div class="line">        [-r           &lt;string        &gt;: Reaction file]</div>
-<div class="line">        [-nptool                      : Flag for NPTool simulation input]</div>
-<div class="line">        [-pace4                       : Flag for PACE4 particle input]</div>
-<div class="line">        [-f                           : Flag to force new ROOT conversion]</div>
-<div class="line">        [-e                           : Flag to force new event builder (new calibration)]</div>
-<div class="line">        [-source                      : Flag to define an source only run]</div>
-<div class="line">        [-autocal                     : Flag to perform automatic calibration of alpha source data]</div>
-<div class="line">        [-autocalfile &lt;string        &gt;: Alpha source fit control file]</div>
-<div class="line">        [-spy                         : Flag to run the DataSpy]</div>
-<div class="line">        [-m           &lt;int           &gt;: Monitor input file every X seconds]</div>
-<div class="line">        [-p           &lt;int           &gt;: Port number for web server (default 8030)]</div>
-<div class="line">        [-d           &lt;string        &gt;: Output directory for sorted files]</div>
-<div class="line">        [-g                           : Launch the GUI]</div>
-<div class="line">        [-h                           : Print this help]</div>
+<div class="line">        [-i              &lt;vector&lt;string&gt;&gt;: List of input files]</div>
+<div class="line">        [-o              &lt;string        &gt;: Output file for histogram file]</div>
+<div class="line">        [-s              &lt;string        &gt;: Settings file]</div>
+<div class="line">        [-c              &lt;string        &gt;: Calibration file]</div>
+<div class="line">        [-r              &lt;string        &gt;: Reaction file]</div>
+<div class="line">        [-nptool                         : Flag for NPTool simulation input]</div>
+<div class="line">        [-pace4                          : Flag for PACE4 particle input]</div>
+<div class="line">        [-ebis                           : Flag to define an EBIS only run, discarding data &gt;4ms after an EBIS event]</div>
+<div class="line">        [-f                              : Flag to force new ROOT conversion]</div>
+<div class="line">        [-e                              : Flag to force new event builder (new calibration)]</div>
+<div class="line">        [-source                         : Flag to define an source only run]</div>
+<div class="line">        [-autocal                        : Flag to perform automatic calibration of alpha source data]</div>
+<div class="line">        [-autocalfile    &lt;string        &gt;: Alpha source fit control file]</div>
+<div class="line">        [-relcal         &lt;string        &gt;: Make the array calibration plots with pid and nid as the reference strips, given in the string format p&lt;pid&gt;n&lt;nid&gt;]</div>
+<div class="line">        [-print-settings                 : Print settings]</div>
+<div class="line">        [-spy                            : Flag to run the DataSpy]</div>
+<div class="line">        [-spyhists       &lt;string        &gt;: File containing histograms for monitoring in the spy]</div>
+<div class="line">        [-m              &lt;int           &gt;: Monitor input file every X seconds]</div>
+<div class="line">        [-p              &lt;int           &gt;: Port number for web server (default 8030)]</div>
+<div class="line">        [-d              &lt;string        &gt;: Output directory for sorted files]</div>
+<div class="line">        [-g                              : Launch the GUI]</div>
+<div class="line">        [-h                              : Print this help]</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md5"></a>
 Sorting Philosophy</h1>
 <p>The code can be run entirely with default values, meaning that none of the additional input files are required in order to sort the data.</p>
