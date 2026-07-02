@@ -2387,8 +2387,7 @@ void ISSEventBuilder::RecoilFinder() {
 			// Fill the tree and get ready for next recoil event
 			write_evts->AddEvt( recoil_evt );
 			recoil_ctr++;
-			layers.clear();
-
+			layers.resize(1,rid_list[i]);
 		}
 
 	}
