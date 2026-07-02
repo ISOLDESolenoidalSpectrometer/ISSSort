@@ -4033,8 +4033,15 @@ unsigned long ISSHistogrammer::FillHists() {
 
 					recoil_evt = read_evts->GetRecoilEvt(k);
 					generic_evt = recoil_evt;
-					promptcheckT = PromptCoincidence( recoil_evt, array_evt );
-					randomcheckT = RandomCoincidence( recoil_evt, array_evt );
+
+					// if ( ! react->GetTimingCut(array_evt->GetModule(), array_evt->GetRow())->IsInside(generic_evt->GetTime() - array_evt->GetTime(), array_evt->GetEnergy()) ) {
+					// 	continue;
+					// }
+
+					if (! promptcheckT) // if any of the recoils pass, count it
+						promptcheckT = PromptCoincidence( recoil_evt, array_evt );
+					if (! randomcheckT)
+						randomcheckT = RandomCoincidence( recoil_evt, array_evt );
 					energycut = RecoilCut( recoil_evt );
 					bg_frac = react->GetArrayRecoilFillRatio();
 
@@ -4078,13 +4085,13 @@ unsigned long ISSHistogrammer::FillHists() {
 				else break;
 
 				// Check for prompt events with recoils
-				if( promptcheckT )
-					if( energycut )
+				if( PromptCoincidence( recoil_evt, array_evt ) )
+					if( energycut ) {
 						promptcheckE = true;
 
 				// Check for random events with recoils
-				if( randomcheckT )
-					if( energycut )
+				if( RandomCoincidence( recoil_evt, array_evt ) )
+					if( energycut ) {
 						randomcheckE = true;
 
 			} // k

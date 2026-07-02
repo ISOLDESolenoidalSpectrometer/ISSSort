@@ -2341,7 +2341,11 @@ void ISSEventBuilder::RecoilFinder() {
 				flag_skip = false;
 				for( unsigned int k = 0; k < index.size(); ++k ) {
 					if( index[k] == j ) flag_skip = true;
-					if( (int)layers[k] == rid_list[j] ) flag_skip = true;
+				}
+				for( unsigned int k = 0; k < layers.size(); ++k) {
+					if( (int)layers[k] == rid_list[j] ) {
+						flag_skip = true;
+					}
 				}
 
 				// Found a match
@@ -2383,6 +2387,7 @@ void ISSEventBuilder::RecoilFinder() {
 			// Fill the tree and get ready for next recoil event
 			write_evts->AddEvt( recoil_evt );
 			recoil_ctr++;
+			layers.clear();
 
 		}
 
