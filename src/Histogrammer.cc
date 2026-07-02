@@ -4034,10 +4034,6 @@ unsigned long ISSHistogrammer::FillHists() {
 					recoil_evt = read_evts->GetRecoilEvt(k);
 					generic_evt = recoil_evt;
 
-					// if ( ! react->GetTimingCut(array_evt->GetModule(), array_evt->GetRow())->IsInside(generic_evt->GetTime() - array_evt->GetTime(), array_evt->GetEnergy()) ) {
-					// 	continue;
-					// }
-
 					if (! promptcheckT) // if any of the recoils pass, count it
 						promptcheckT = PromptCoincidence( recoil_evt, array_evt );
 					if (! randomcheckT)
