@@ -4084,12 +4084,13 @@ unsigned long ISSHistogrammer::FillHists() {
 				if( PromptCoincidence( recoil_evt, array_evt ) )
 					if( energycut ) {
 						promptcheckE = true;
+					}
 
 				// Check for random events with recoils
 				if( RandomCoincidence( recoil_evt, array_evt ) )
 					if( energycut ) {
 						randomcheckE = true;
-
+					}
 			} // k
 
 			// Fill prompt hists
