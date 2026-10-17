@@ -3315,7 +3315,7 @@ unsigned long ISSHistogrammer::FillHists() {
 			else array_evt = read_evts->GetArrayEvt(j);
 
 			// Do the reaction
-			react->MakeReaction( array_evt->GetPosition(), array_evt->GetEnergy() );
+			react->MakeReaction( array_evt );
 
 			// Setup the output tree if user wants it
 			if( react->RxTreeEnabled() ) {
