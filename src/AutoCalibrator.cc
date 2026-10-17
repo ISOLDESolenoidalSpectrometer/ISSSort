@@ -1140,37 +1140,27 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 	// Simple linear fit
 	std::unique_ptr<TF1> calfit = std::make_unique<TF1>( "calfit", "pol1", default_fit_peak_channel_threshold_lb, default_fit_peak_channel_threshold_ub );
 
-	// Work out the x,y,z position (approximatley)
-	// We would need to work with coincidences to do this properly
-	// Then we could avoid some of this and use the ISSEvts class
-	float z;
+	// Work out the row
 	int row = asic;
 	int side = mod * 2 + 1;
 	if( asic >= 1 ) row--;
 	if( asic >= 4 ) row--;
-	if( asic == 0 || asic == 2 || asic == 3 || asic == 5 ){
 
-		z = 127.5 - (float)chan;		// take centre of the end strip
-
-	}
-	else {
-
-		z = 64.0;
+	// Work out the strip ID
+	int sid = chan;
+	if( asic == 1 || asic == 4 ){
 		if( chan > 64 ) row++;
 		if( chan < 24 || chan > 104 ) side--;
-
 	}
 
-	z *= 0.953;							// p-side strip pitch = 0.953 mm
-	z += 1.508;							// distance from wafer edge to active region
-	z += 125.5 * (3.0 - (float)row);	// move to correct row (125.0 mm wafer length + 0.5 mm inter-wafer gap)
-
-	// Assume it's in the centre of the side
-	TVector2 vec2( 27.0, 0.0 ); // 54.0 mm face-to-face
-	vec2 = vec2.Rotate( -1.0 * TMath::Pi() / 6. );		// first face is at -30˚
-	vec2 = vec2.Rotate( side * 2. * TMath::Pi() / 6. );	// rotate 60˚ for each face
-
-	TVector3 vec3( vec2.X(), vec2.Y(), z );
+	// Work out the x,y,z position from an ISSEvt
+	std::shared_ptr<ISSArrayEvt> array_evt;
+	if( asic == 1 || asic == 4 ) {
+		array_evt->SetEvent( 1000., 1000., 64, sid, 0., 0., 0, 0, mod, row );
+	}
+	else {
+		array_evt->SetEvent( 1000., 1000., sid, 5, 0., 0., 0, 0, mod, row );
+	}
 
 	// Calculate the detected alpha energies
 	float DetectedEnergy[NumberOfFoundAlphaPeaks];
@@ -1178,11 +1168,11 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 
 		// First calculate the energy loss through the dead layer
 		if(my_missing_peak_is_last[mod][asic][chan] == true && NumberOfFoundAlphaPeaks < 4)
-		    DetectedEnergy[i] = react->SimulateDecay( vec3, FF_alpha_peak_energy[i] ); // Read the first 3 alpha peak energies
+		    DetectedEnergy[i] = react->SimulateDecay( array_evt, FF_alpha_peak_energy[i] ); // Read the first 3 alpha peak energies
 		else if(my_missing_peak_is_last[mod][asic][chan] == false && NumberOfFoundAlphaPeaks < 4)
-			DetectedEnergy[i] = react->SimulateDecay( vec3, FF_alpha_peak_energy[i+1] ); // Read the last 3 alpha peak energies
+			DetectedEnergy[i] = react->SimulateDecay( array_evt, FF_alpha_peak_energy[i+1] ); // Read the last 3 alpha peak energies
         else
-            DetectedEnergy[i] = react->SimulateDecay( vec3, FF_alpha_peak_energy[i] );  // Read all 4 alpha peak energies
+            DetectedEnergy[i] = react->SimulateDecay( array_evt, FF_alpha_peak_energy[i] );  // Read all 4 alpha peak energies
 		// Now correct for the pulse-height correction
 		DetectedEnergy[i] = react->GetPulseHeightCorrection( DetectedEnergy[i], false );
 

@@ -40,6 +40,11 @@
 # include "Reaction.hh"
 #endif
 
+// ISSEvts header
+#ifndef __ISSEVTS_HH
+# include "ISSEvts.hh"
+#endif
+
 // Fit functions
 #ifndef _FitFunctions_hh
 #include "FitFunctions.hh"

@@ -215,88 +215,6 @@ ISSReaction::ISSReaction( std::string filename, std::shared_ptr<ISSSettings> mys
 
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/// ISS Copy constructor
-//ISSReaction::ISSReaction( ISSReaction &t ){
-//
-//	set = t.GetSettings();
-//
-//	SetFile( t.GetFileName() );
-//
-//	Beam = t.CopyBeam();
-//	Target = t.CopyTarget();
-//	Ejectile = t.CopyEjectile();
-//	Recoil = t.CopyRecoil();
-//
-//	ame_be = t.GetMassTables();
-//	Mfield = t.GetField();
-//
-//	z0 = t.GetArrayDistance();
-//	deadlayer = t.GetArrayDeadlayer();
-//
-//	elum_z = t.GetELUMDistance();
-//	elum_rin = t.GetELUMInnerRadius();
-//	elum_rout = t.GetELUMOuterRadius();
-//	elum_deadlayer = t.GetELUMDeadlayer();
-//
-//	EBIS_On = t.GetEBISOnTime();
-//	EBIS_Off = t.GetEBISOffTime();
-//	EBIS_ratio = t.GetEBISFillRatio();
-//
-//	t1_min_time = t.GetT1MinTime();
-//	t1_max_time = t.GetT1MaxTime();
-//
-//	x_offset = t.GetOffsetX();
-//	y_offset = t.GetOffsetY();
-//
-//	flag_source = t.IsSource();
-//
-//	nrecoilcuts = t.GetNumberOfRecoilCuts();
-//	nevszcuts = t.GetNumberOfEvsZCuts();
-//
-//	// Copy the cuts
-//	for( unsigned int i = 0; i < nrecoilcuts; ++i )
-//		recoil_cut.push_back( t.GetRecoilCut(i) );
-//
-//	for( unsigned int i = 0; i < nevszcuts; ++i )
-//		e_vs_z_cut.push_back( t.GetEvsZCut(i) );
-//
-//
-//	// Get the stopping powers in TGraphs
-//	stopping = true;
-//	for( unsigned int i = 0; i < 6; ++i ) {
-//		gStopping.push_back( std::make_unique<TGraph>() );
-//		gRange.push_back( std::make_unique<TGraph>() );
-//	}
-//
-//	if( !flag_source ) {
-//		stopping &= ReadStoppingPowers( Beam.GetIsotope(), Target.GetIsotope(), gStopping[0], gRange[0] );
-//		stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), Target.GetIsotope(), gStopping[1], gRange[1] );
-//	}
-//	stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), "Al", gStopping[2], gRange[2] );
-//
-//	// Get the electric and nuclear stopping powers for the PHC in a TGraph
-//	phcurves = true;
-//	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[3], gRange[3], true, false ); // electric only from SRIM files
-//	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[4], gRange[4], false, true ); // nuclear only from SRIM files
-//	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[5], gRange[5] );				 // total stopping from SRIM files
-//
-//	// Get the PHC data in a TGraph
-//	gPHC = std::make_unique<TGraph>();
-//	gPHC_inv = std::make_unique<TGraph>();
-//	CalculatePulseHeightCorrection( Ejectile.GetIsotope() );
-//
-//	// Root finder for the simulation function
-//	t.CopyMinimisationFunction( fa );
-//	t.CopyMinimisationDerivative( fb );
-//	rf = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
-//	rfsim = std::make_unique<ROOT::Math::RootFinder>( ROOT::Math::RootFinder::kGSL_NEWTON );
-//	fsim = new TF1( "theta_cm_function",   theta_cm_function,   0.0, TMath::Pi(), 9 );
-//	dsim = new TF1( "theta_cm_derivative", theta_cm_derivative, 0.0, TMath::Pi(), 9 );
-//
-//	// TODO: copy the time gates
-//
-//}
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Adds a binding energy from a string from the mass table to the ame_be
@@ -538,9 +456,28 @@ void ISSReaction::ReadReaction() {
 	// Magnetic field stuff
 	Mfield = config->GetValue( "Mfield", 2.0 );
 
-	// Detector to target distances and dead layer of Si
+	// Detector to target distances
 	z0 = config->GetValue( "ArrayDistance", -100.0 );
-	deadlayer = config->GetValue( "ArrayDeadlayer", 0.0004 ); // units of mm of Al
+
+	// Get dead layers for the array wafers
+	deadlayer.resize( set->GetNumberOfArrayModules() );
+	for( unsigned int i = 0; i < set->GetNumberOfArrayModules(); ++i ) {
+
+		deadlayer[i].resize( set->GetNumberOfArrayRows() );
+		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
+
+			deadlayer[i][j].resize(2);
+			for( char k = 0; k < 2; ++k ) {
+
+				// Read in old-style (global) values first, then overwrite with new
+				deadlayer[i][j][j] = config->GetValue( "ArrayDeadlayer", 0.0004 ); // units of mm of Si
+				deadlayer[i][j][j] = config->GetValue( Form( "ArrayDeadlayer_%d_%d%c", i, j, (char)(k+'A') ), deadlayer[i][j][k] ); // units of mm of Si
+
+			} // k
+
+		} // j
+
+	} // i
 
 	// Get particle properties
 	Beam.SetA( config->GetValue( "BeamA", 30 ) );
@@ -1362,10 +1299,13 @@ double ISSReaction::SimulateEmission( double en, double theta_lab, double phi_la
 	Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
 
 	// Calculate the energy loss in the deadlayer
-	if( detector == 0 )
-		dist = deadlayer / TMath::Abs( TMath::Cos( theta_lab - TMath::PiOver2() ) );
-	else if( detector == 1 )
-		dist = elum_deadlayer / TMath::Abs( TMath::Sin( theta_lab - TMath::PiOver2() ) );
+	dist = 0.0;
+	if( detector == 0 ) {
+		dist = GetArrayDeadlayer(0,0,'A') / TMath::Abs( TMath::Cos( theta_lab - TMath::PiOver2() ) );
+	}
+	else if( detector == 1 ) {
+		dist = GetELUMDeadlayer() / TMath::Abs( TMath::Sin( theta_lab - TMath::PiOver2() ) );
+	}
 	eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[2] );
 	Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
 
@@ -1373,6 +1313,33 @@ double ISSReaction::SimulateEmission( double en, double theta_lab, double phi_la
 
 }
 
+//////////
+/// Top-level function to simulate decay for an array event
+double ISSReaction::SimulateDecay( std::shared_ptr<ISSArrayEvt> array_evt, double en ){
+
+	// Get the dead layer
+	double dl = GetArrayDeadlayer( array_evt->GetModule(), array_evt->GetRow(), array_evt->GetFace() );
+
+	// Call main function
+	return SimulateDecay( array_evt->GetPosition(), en, dl, 0 );
+
+}
+
+//////////
+/// Top-level function to simulate decay for an ELUM event
+double ISSReaction::SimulateDecay( std::shared_ptr<ISSElumEvt> elum_evt, double en ){
+
+	// Centre of the ELUM
+	double elum_z = GetELUMDistance();
+	double elum_rin = GetELUMInnerRadius();
+	double elum_rout = GetELUMOuterRadius();
+	TVector3 elum_hit( 0.5*(elum_rout+elum_rin), 0.0, elum_z );
+	elum_evt->SetEnergy(en); // not needed but silences compiler
+
+	// Call main function
+	return SimulateDecay( elum_hit, en, GetELUMDeadlayer(), 1 );
+
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /// This function will use the interaction position and decay energy of an ejectile
@@ -1382,7 +1349,7 @@ double ISSReaction::SimulateEmission( double en, double theta_lab, double phi_la
 /// \param[in] en The energy of the decay
 /// \param[in] detector The detector to simulate: 0 = array, 1 = ELUM, 2 = recoil Si
 /// \returns en-eloss
-double ISSReaction::SimulateDecay( TVector3 vec, double en, int detector ){
+double ISSReaction::SimulateDecay( TVector3 vec, double en, double dl, int detector ){
 
 	// Apply the X and Y offsets directly to the TVector3 input
 	// We move the array opposite to the target, which replicates the same
@@ -1393,13 +1360,13 @@ double ISSReaction::SimulateDecay( TVector3 vec, double en, int detector ){
 	// Set the input parameters, might use them in another function
 	Ejectile.SetEnergyLab(en);			// ejectile energy in keV
 	z_meas = vec.Z();					// measured z in mm
-	if( z0 < 0 ) {						// upstream
+	phi_meas = vec.Phi();
+	if( z0 < 0 && detector == 1 ) {		// upstream
 		z_meas = z0 - z_meas;
 		phi_meas = TMath::TwoPi() - vec.Phi();
 	}
-	else {								// downstream
+	else if( detector == 1 ) {				// downstream
 		z_meas += z0;
-		phi_meas = vec.Phi();
 	}
 
 	//------------------------//
@@ -1443,10 +1410,12 @@ double ISSReaction::SimulateDecay( TVector3 vec, double en, int detector ){
 	// Calculate the energy loss
 	// Distance is postive because energy is lost
 	double dist = 0.0;
-	if( detector == 0 )
-		dist = deadlayer / TMath::Abs( TMath::Cos( alpha ) );
-	else if( detector == 1 )
-		dist = elum_deadlayer / TMath::Abs( TMath::Sin( alpha ) );
+	if( detector == 0 ) {
+		dist = dl / TMath::Abs( TMath::Cos( alpha ) );
+	}
+	else if( detector == 1 ) {
+		dist = dl / TMath::Abs( TMath::Sin( alpha ) );
+	}
 	double eloss = GetEnergyLoss( en, dist, gStopping[2] );
 
 	//std::cout << "z = " << z_meas << " mm, angle = ";
@@ -1540,7 +1509,14 @@ void ISSReaction::SimulateReaction( TVector3 vec ){
 /// theta_cm, theta_lab, Ex, E_lab, etc.
 /// \param[in] vec The interaction point
 /// \param[in] en The initial energy of the ejectile
-void ISSReaction::MakeReaction( TVector3 vec, double en ){
+void ISSReaction::MakeReaction( std::shared_ptr<ISSArrayEvt> array_evt ){
+
+	// First find the module and row numbers, get the vector and energy
+	TVector3 vec = array_evt->GetPosition();
+	double en = array_evt->GetEnergy();
+	unsigned char mod = array_evt->GetModule();
+	unsigned char row = array_evt->GetRow();
+	char face = array_evt->GetFace();
 
 	// Apply the X and Y offsets directly to the TVector3 input
 	// We move the array opposite to the target, which replicates the same
@@ -1604,7 +1580,7 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 
 			// Distance is negative because energy needs to be recovered
 			// First we recover the energy lost in the Si dead layer
-			double dist = -1.0 * deadlayer / TMath::Abs( TMath::Cos( alpha ) );
+			double dist = -1.0 * GetArrayDeadlayer(mod,row,face) / TMath::Abs( TMath::Cos( alpha ) );
 			double eloss = GetEnergyLoss( en, dist, gStopping[2] );
 			Ejectile.SetEnergyLab( en - eloss );
 
