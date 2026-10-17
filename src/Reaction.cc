@@ -695,15 +695,6 @@ void ISSReaction::ReadReaction() {
 	hist_range_lume[0] = config->GetValue( "Hists.LUME.Min", 0.0 );				// lower limit for CD/Fission histograms
 	hist_range_lume[1] = config->GetValue( "Hists.LUME.Max", 12e3 );			// upper limit for CD/Fission histograms
 
-	// Array-Recoil time windows
-	array_recoil_prompt[0] = config->GetValue( "ArrayRecoil_PromptTime.Min", -300.0 );	// lower limit for array-recoil prompt time difference
-	array_recoil_prompt[1] = config->GetValue( "ArrayRecoil_PromptTime.Max", 300.0 );		// upper limit for array-recoil prompt time difference
-	array_recoil_random[0] = config->GetValue( "ArrayRecoil_RandomTime.Min", 600.0 );		// lower limit for array-recoil random time difference
-	array_recoil_random[1] = config->GetValue( "ArrayRecoil_RandomTime.Max", 1200.0 );	// upper limit for array-recoil random time difference
-
-	// Array-Recoil fill ratios
-	array_recoil_ratio = config->GetValue( "ArrayRecoil_FillRatio", GetArrayRecoilTimeRatio() );
-
 	// Array-Gamma time windows
 	array_gamma_prompt[0] = config->GetValue( "ArrayGamma_PromptTime.Min", -500.0 );	// lower limit for array-gamma prompt time difference
 	array_gamma_prompt[1] = config->GetValue( "ArrayGamma_PromptTime.Max", 500.0 );		// upper limit for array-gamma prompt time difference
@@ -730,6 +721,15 @@ void ISSReaction::ReadReaction() {
 
 	// Array-Fission fill ratios
 	array_fission_ratio = config->GetValue( "ArrayFission_FillRatio", GetArrayFissionTimeRatio() );
+
+	// Array-Recoil time windows (copy values of array_fission in case we use fission detector as recoil)
+	array_recoil_prompt[0] = config->GetValue( "ArrayRecoil_PromptTime.Min", array_fission_prompt[0] );	// lower limit for array-recoil prompt time difference
+	array_recoil_prompt[1] = config->GetValue( "ArrayRecoil_PromptTime.Max", array_fission_prompt[1] );	// upper limit for array-recoil prompt time difference
+	array_recoil_random[0] = config->GetValue( "ArrayRecoil_RandomTime.Min", array_fission_random[0] );	// lower limit for array-recoil random time difference
+	array_recoil_random[1] = config->GetValue( "ArrayRecoil_RandomTime.Max", array_fission_random[1] );	// upper limit for array-recoil random time difference
+
+	// Array-Recoil fill ratios
+	array_recoil_ratio = config->GetValue( "ArrayRecoil_FillRatio", GetArrayRecoilTimeRatio() );
 
 	// Lume-Recoil time windows
 	lume_recoil_prompt[0] = config->GetValue( "LumeRecoil_PromptTime.Min", -300.0 );	// lower limit for lume-recoil prompt time difference

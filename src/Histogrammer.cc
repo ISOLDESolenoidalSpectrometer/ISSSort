@@ -4081,16 +4081,17 @@ unsigned long ISSHistogrammer::FillHists() {
 				else break;
 
 				// Check for prompt events with recoils
-				if( PromptCoincidence( recoil_evt, array_evt ) )
+				if( PromptCoincidence( generic_evt, array_evt ) )
 					if( energycut ) {
 						promptcheckE = true;
 					}
 
 				// Check for random events with recoils
-				if( RandomCoincidence( recoil_evt, array_evt ) )
+				if( RandomCoincidence( generic_evt, array_evt ) )
 					if( energycut ) {
 						randomcheckE = true;
 					}
+
 			} // k
 
 			// Fill prompt hists

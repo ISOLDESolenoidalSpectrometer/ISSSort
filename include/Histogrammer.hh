@@ -99,6 +99,14 @@ public:
 		_prog_ = true;
 	};
 
+
+	// Generic recoil type event - array coincidence
+	inline bool	PromptCoincidence( std::shared_ptr<ISSMultiLayerDetectorEvt> r, std::shared_ptr<ISSArrayEvt> a ){
+		if( r->GetTime() - a->GetTime() > react->GetArrayRecoilPromptTime(0) &&
+		   r->GetTime() - a->GetTime() < react->GetArrayRecoilPromptTime(1) ) return true;
+		else return false;
+	};
+
 	// Recoil - array coincidence
 	inline bool	PromptCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSArrayEvt> a ){
 		if( r->GetTime() - a->GetTime() > react->GetArrayRecoilPromptTime(0) &&
@@ -162,9 +170,15 @@ public:
 		else return false;
 	};
 
+	inline bool	RandomCoincidence( std::shared_ptr<ISSMultiLayerDetectorEvt> r, std::shared_ptr<ISSArrayEvt> a ){
+		if( r->GetTime() - a->GetTime() > react->GetArrayRecoilRandomTime(0) &&
+		   r->GetTime() - a->GetTime() < react->GetArrayRecoilRandomTime(1) ) return true;
+		else return false;
+	};
+
 	inline bool	RandomCoincidence( std::shared_ptr<ISSRecoilEvt> r, std::shared_ptr<ISSArrayEvt> a ){
 		if( r->GetTime() - a->GetTime() > react->GetArrayRecoilRandomTime(0) &&
-			r->GetTime() - a->GetTime() < react->GetArrayRecoilRandomTime(1) ) return true;
+		   r->GetTime() - a->GetTime() < react->GetArrayRecoilRandomTime(1) ) return true;
 		else return false;
 	};
 
