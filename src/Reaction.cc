@@ -466,11 +466,16 @@ void ISSReaction::ReadReaction() {
 		deadlayer[i].resize( set->GetNumberOfArrayRows() );
 		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
 
-			// Read in old-style (global) values first, then overwrite with new
-			deadlayer[i][j] = config->GetValue( "ArrayDeadlayer", 0.0004 ); // units of mm of Si
-			deadlayer[i][j] = config->GetValue( Form( "ArrayDeadlayer_%d_%d", i, j ), deadlayer[i][j] ); // units of mm of Si
+			deadlayer[i][j].resize(2);
+			for( char k = 0; k < 2; ++k ) {
 
-		}
+				// Read in old-style (global) values first, then overwrite with new
+				deadlayer[i][j][j] = config->GetValue( "ArrayDeadlayer", 0.0004 ); // units of mm of Si
+				deadlayer[i][j][j] = config->GetValue( Form( "ArrayDeadlayer_%d_%d%c", i, j, (char)(k+'A') ), deadlayer[i][j][k] ); // units of mm of Si
+
+			} // k
+
+		} // j
 
 	} // i
 
@@ -1296,7 +1301,7 @@ double ISSReaction::SimulateEmission( double en, double theta_lab, double phi_la
 	// Calculate the energy loss in the deadlayer
 	dist = 0.0;
 	if( detector == 0 ) {
-		dist = GetArrayDeadlayer(0,0) / TMath::Abs( TMath::Cos( theta_lab - TMath::PiOver2() ) );
+		dist = GetArrayDeadlayer(0,0,'A') / TMath::Abs( TMath::Cos( theta_lab - TMath::PiOver2() ) );
 	}
 	else if( detector == 1 ) {
 		dist = GetELUMDeadlayer() / TMath::Abs( TMath::Sin( theta_lab - TMath::PiOver2() ) );
@@ -1312,9 +1317,11 @@ double ISSReaction::SimulateEmission( double en, double theta_lab, double phi_la
 /// Top-level function to simulate decay for an array event
 double ISSReaction::SimulateDecay( std::shared_ptr<ISSArrayEvt> array_evt, double en ){
 
+	// Get the dead layer
+	double dl = GetArrayDeadlayer( array_evt->GetModule(), array_evt->GetRow(), array_evt->GetFace() );
+
 	// Call main function
-	return SimulateDecay( array_evt->GetPosition(), en,
-						 GetArrayDeadlayer( array_evt->GetModule(), array_evt->GetRow() ), 0 );
+	return SimulateDecay( array_evt->GetPosition(), en, dl, 0 );
 
 }
 
@@ -1507,8 +1514,9 @@ void ISSReaction::MakeReaction( std::shared_ptr<ISSArrayEvt> array_evt ){
 	// First find the module and row numbers, get the vector and energy
 	TVector3 vec = array_evt->GetPosition();
 	double en = array_evt->GetEnergy();
-	unsigned char mod =  array_evt->GetModule();
-	unsigned char row =  array_evt->GetRow();
+	unsigned char mod = array_evt->GetModule();
+	unsigned char row = array_evt->GetRow();
+	char face = array_evt->GetFace();
 
 	// Apply the X and Y offsets directly to the TVector3 input
 	// We move the array opposite to the target, which replicates the same
@@ -1572,7 +1580,7 @@ void ISSReaction::MakeReaction( std::shared_ptr<ISSArrayEvt> array_evt ){
 
 			// Distance is negative because energy needs to be recovered
 			// First we recover the energy lost in the Si dead layer
-			double dist = -1.0 * GetArrayDeadlayer(mod,row) / TMath::Abs( TMath::Cos( alpha ) );
+			double dist = -1.0 * GetArrayDeadlayer(mod,row,face) / TMath::Abs( TMath::Cos( alpha ) );
 			double eloss = GetEnergyLoss( en, dist, gStopping[2] );
 			Ejectile.SetEnergyLab( en - eloss );
 

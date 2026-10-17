@@ -209,9 +209,9 @@ public:
 	inline double GetField(){ return Mfield; };///< Getter for the magnetic field strength
 	inline double GetField_corr(){ return Mfield*T_to_mm; };///< Calculates magnetic field strength in MeV/ e*mm*c
 	inline double GetArrayDistance(){ return z0; };///< Getter for the distance between the array and first silicon wafer
-	inline double GetArrayDeadlayer( unsigned char mod = 0, unsigned char row = 0 ){
-		if( mod < set->GetNumberOfArrayModules() && row < set->GetNumberOfArrayRows() ){
-			return deadlayer[mod][row];
+	inline double GetArrayDeadlayer( unsigned char mod = 0, unsigned char row = 0, char side = 'A' ){
+		if( mod < set->GetNumberOfArrayModules() && row < set->GetNumberOfArrayRows() && ( side == 'A' || side == 'B' ) ){
+			return deadlayer[mod][row][side-'A'];
 		}
 		else return 0.0;
 	};		///< Getter for the array dead layer
@@ -506,10 +506,11 @@ public:
 	// Setters
 	inline void	SetField( double m ){ Mfield = m; };					///< Setter for the magnetic field strength
 	inline void	SetArrayDistance( double d ){ z0 = d; };				///< Setter for the distance between the target and first silicon wafer of the array
-	inline void	SetArrayDeadlayer( unsigned mod, unsigned row, double d ){
+	inline void	SetArrayDeadlayer( unsigned char mod, unsigned char row, char side, double d ){
 		if( mod < set->GetNumberOfArrayModules() &&
-		    row < set->GetNumberOfArrayRows() )
-		deadlayer[row][mod] = d;
+		    row < set->GetNumberOfArrayRows() &&
+		    ( side == 'A' || side == 'B' ) )
+		deadlayer[row][mod][side-'A'] = d;
 	};		///< Setter for the array dead layer
 	inline void	SetELUMDistance( double d ){ elum_z = d; };				///< Setter for the distance between the target and ELUM silicon
 	inline void	SetELUMDeadlayer( double d ){ elum_deadlayer = d; };	///< Setter for the ELUM dead layer
@@ -587,9 +588,9 @@ private:
 	std::map< std::string, double > ame_be;///< List of binding energies from AME2020
 
 	// Stuff with the magnet and detectors
-	double Mfield;								///< Magnetic field strength in Telsa
-	double z0;									///< Distance between the array and first silicon wafer
-	std::vector<std::vector<double>> deadlayer;	///< Dead layer on array silicon in mm of Si equivalent
+	double Mfield;												///< Magnetic field strength in Telsa
+	double z0;													///< Distance between the array and first silicon wafer
+	std::vector<std::vector<std::vector<double>>> deadlayer;	///< Dead layer on array silicon in mm of Si equivalent
 
 	// Reaction partners
 	ISSParticle Beam;		///< Beam particle
