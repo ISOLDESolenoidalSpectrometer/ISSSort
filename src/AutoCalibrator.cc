@@ -1141,21 +1141,14 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 	std::unique_ptr<TF1> calfit = std::make_unique<TF1>( "calfit", "pol1", default_fit_peak_channel_threshold_lb, default_fit_peak_channel_threshold_ub );
 
 	// Work out the row
-	int row = asic;
-	int side = mod * 2 + 1;
-	if( asic >= 1 ) row--;
-	if( asic >= 4 ) row--;
+	int row = set->GetArrayRow( mod, asic, chan );
 
 	// Work out the strip ID
-	int sid = chan;
-	if( asic == 1 || asic == 4 ){
-		if( chan > 64 ) row++;
-		if( chan < 24 || chan > 104 ) side--;
-	}
+	int sid = set->GetArrayStrip( mod, asic, chan );
 
 	// Work out the x,y,z position from an ISSEvt
 	std::shared_ptr<ISSArrayEvt> array_evt;
-	if( asic == 1 || asic == 4 ) {
+	if( set->GetArraySide( mod, asic ) == 1 ) {
 		array_evt->SetEvent( 1000., 1000., 64, sid, 0., 0., 0, 0, mod, row );
 	}
 	else {
