@@ -470,8 +470,8 @@ void ISSReaction::ReadReaction() {
 			for( char k = 0; k < 2; ++k ) {
 
 				// Read in old-style (global) values first, then overwrite with new
-				deadlayer[i][j][j] = config->GetValue( "ArrayDeadlayer", 0.0004 ); // units of mm of Si
-				deadlayer[i][j][j] = config->GetValue( Form( "ArrayDeadlayer_%d_%d%c", i, j, (char)(k+'A') ), deadlayer[i][j][k] ); // units of mm of Si
+				deadlayer[i][j][k] = config->GetValue( "ArrayDeadlayer", 0.0004 ); // units of mm of Si
+				deadlayer[i][j][k] = config->GetValue( Form( "ArrayDeadlayer_%d_%d%c", i, j, (char)(k+'A') ), deadlayer[i][j][k] ); // units of mm of Si
 
 			} // k
 
