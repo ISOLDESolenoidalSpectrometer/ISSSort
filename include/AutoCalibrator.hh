@@ -8,6 +8,7 @@
 #include <vector>
 
 #include <TFile.h>
+#include <TChain.h>
 #include <TFitResult.h>
 #include <TTree.h>
 #include <TMath.h>
@@ -86,6 +87,9 @@ struct ISSAutoCalModAsicChan{
 	unsigned int mod;
 	unsigned int asic;
 	unsigned int chan;
+	unsigned int row;
+	unsigned int side;
+	unsigned int strip;
 };
 
 struct SigmaResult {
@@ -107,10 +111,20 @@ public:
 		autocal_settings_input_file = filename;
 	} ///< Sets the name of the autocal input file in the class
 
-	int	SetOutputFile( const std::string& output_file_name ); ///< Sets the name of the output root file produced by the autocal hadd-ing process
+	void SetInputFile( const std::vector<std::string>& input_file_names ); ///< Sets the input files to be chained for analysis.
+	int	SetOutputFile( const std::string& output_file_name ); ///< Sets the name of the output root file showing the histograms and fits
+	inline void CloseOutput(){
+		std::cout << " Writing output file...\r";
+		std::cout.flush();
+		output_file->Write( 0, TObject::kWriteDelete );
+		output_file->Close();
+		std::cout << " Writing output file... Done!" << std::endl << std::endl;
+	};
 
-	void DoFits( const std::string& name_sigmas_file ) const; ///< The heart of this class, moving from alpha spectra to a calibration
-	void DoChannelFit( TH2F*h, const ISSAutoCalModAsicChan& mac, std::vector<SigmaResult>& allResult ) const; ///< The insides of the DoFits() function that calibrates for a given channel
+	void MakeHists(); ///< Make a histogram for each n-side and p-side calibration
+	void FillHists(); ///< Need to loop over input events and make the histograms for fitting
+	void DoFits( const std::string& name_sigmas_file ); ///< The heart of this class, moving from alpha spectra to a calibration
+	void DoChannelFit( TH1F *h, const ISSAutoCalModAsicChan& mac, std::vector<SigmaResult>& allResult ) const; ///< The insides of the DoFits() function that calibrates for a given channel
 	void FindPeaks( TH1F *h, std::vector<float> &centroids, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt ) const; ///< Finds the desired number of alpha peaks
 	bool FitSpectrum( TH1F *h, std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt, float &sigma ) const; ///< Fits the found/specified peaks with the user-specified fit shape
 	void CalibrateChannel( std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac, float sigma, std::vector<SigmaResult>& allResults ) const; ///< Communicates with the ISSCalibration object to produce a calibration file
@@ -136,8 +150,15 @@ public:
 
 private:
 
+	// Input tree for events data, chained
+	TChain *input_tree;
+	ISSEvts *read_evts = nullptr;
+	std::shared_ptr<ISSArrayEvt> array_evt;
+	unsigned long long n_entries = 0;
+
 	// Output file
 	std::unique_ptr<TFile> output_file; ///< The output file resulting from the hadd process of all the input files to iss_sort
+	std::string output_file_name;
 
 	// Settings file
 	std::shared_ptr<ISSSettings> set; ///< Pointer to the settings object
@@ -154,6 +175,10 @@ private:
 
 	// Autocal settings options
 	std::string autocal_settings_input_file;	///< The name of the autocal file used to control the fits
+
+	// Histograms for calibrating, filled with coincidence events
+	std::vector<std::vector<std::vector<TH1F*>>> hpstrip;	///< p-sides histograms, per module, per row, per strip
+	std::vector<std::vector<std::vector<TH1F*>>> hnstrip;	///< n-sides histograms, per module, per row, per strip
 
 	// Global control options
 	bool _debug_;					///< Allows the printing of more information to the console and more images to disk
