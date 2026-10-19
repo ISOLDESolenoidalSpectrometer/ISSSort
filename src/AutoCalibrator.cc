@@ -1300,6 +1300,9 @@ void ISSAutoCalibrator::DoFits( const std::string& name_sigmas_file ) {
 	unsigned int& side = mac.side;
 	unsigned int& strip = mac.strip;
 
+	// Print out
+	std::cout << " ISSAutoCalibrator: Performing fits" << std::endl;
+
 	// Loop over all the channels and perform the alpha spectrum fits
 	// Loop over modules in the array
 	for( mod = 0; mod < set->GetNumberOfArrayModules(); mod++ ){
@@ -1339,6 +1342,8 @@ void ISSAutoCalibrator::DoFits( const std::string& name_sigmas_file ) {
 		} // asic
 
 	} // mos
+
+	std::cout << "Done!\n";
 
 	std::ofstream out( name_sigmas_file );
     for (const auto& res : allResults) {
@@ -1586,7 +1591,36 @@ void ISSAutoCalibrator::FillHists() {
 
 		} // j
 
+		// Progress bar
+		bool update_progress = false;
+		if( n_entries < 200 )
+			update_progress = true;
+		else if( i % (n_entries/1000) == 0 || i+1 == n_entries )
+			update_progress = true;
+
+		if( update_progress ) {
+
+			// Percent complete
+			float percent = (float)(i+1)*100.0/(float)n_entries;
+
+			// Progress bar in GUI
+			if( _prog_ ) {
+
+				prog->SetPosition( percent );
+				gSystem->ProcessEvents();
+
+			}
+
+			// Progress bar in terminal
+			std::cout << " " << std::setw(6) << std::setprecision(4);
+			std::cout << percent << "%    \r";
+			std::cout.flush();
+
+		}
+
 	} // i
+
+	std::cout << "Done!\n";
 
 	return;
 
