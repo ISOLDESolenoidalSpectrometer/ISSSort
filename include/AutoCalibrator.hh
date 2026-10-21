@@ -87,9 +87,9 @@ struct ISSAutoCalModAsicChan{
 	unsigned int mod;
 	unsigned int asic;
 	unsigned int chan;
-	unsigned int row;
-	unsigned int side;
-	unsigned int strip;
+	int row;
+	int side;
+	int strip;
 };
 
 struct SigmaResult {

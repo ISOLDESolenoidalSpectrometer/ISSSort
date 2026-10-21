@@ -378,7 +378,7 @@ void ISSAutoCalibrator::SetInputFile( const std::vector<std::string>& input_file
 int ISSAutoCalibrator::SetOutputFile( const std::string& output_file_name ) {
 
 	// Open output file.
-	output_file = std::make_unique<TFile>( output_file_name.data(), "read" );
+	output_file = std::make_unique<TFile>( output_file_name.data(), "recreate" );
 	if( output_file->IsZombie() ) {
 
 		std::cout << "Cannot open " << output_file_name << std::endl;
@@ -1161,9 +1161,9 @@ void ISSAutoCalibrator::CalibrateChannel( std::vector<float> &centroids, std::ve
 	const unsigned int& mod = mac.mod;
 	const unsigned int& asic = mac.asic;
 	const unsigned int& chan = mac.chan;
-	const unsigned int& row = mac.row;
-	const unsigned int& side = mac.side;
-	const unsigned int& strip = mac.strip;
+	const int& row = mac.row;
+	const int& side = mac.side;
+	const int& strip = mac.strip;
 
 	// Get the number of found alpha peaks
 	const int NumberOfFoundAlphaPeaks = centroids.size();
@@ -1296,9 +1296,9 @@ void ISSAutoCalibrator::DoFits( const std::string& name_sigmas_file ) {
 	unsigned int& mod = mac.mod;
 	unsigned int& asic = mac.asic;
 	unsigned int& chan = mac.chan;
-	unsigned int& row = mac.row;
-	unsigned int& side = mac.side;
-	unsigned int& strip = mac.strip;
+	int& row = mac.row;
+	int& side = mac.side;
+	int& strip = mac.strip;
 
 	// Print out
 	std::cout << " ISSAutoCalibrator: Performing fits" << std::endl;
@@ -1368,9 +1368,9 @@ void ISSAutoCalibrator::DoChannelFit( TH1F* h, const ISSAutoCalModAsicChan& mac,
 	const unsigned int& mod = mac.mod;
 	const unsigned int& asic = mac.asic;
 	const unsigned int& chan = mac.chan;
-	//const unsigned int& row = mac.row;
-	//const unsigned int& side = mac.side;
-	//const unsigned int& strip = mac.strip;
+	//const int& row = mac.row;
+	//const int& side = mac.side;
+	//const int& strip = mac.strip;
 
 	// Only do the fits if the user desires
 	if ( ( _only_manual_fits_ == false || ( _only_manual_fits_ == true && manual_fit_channel[mod][asic][chan] == true ) ) && ignore_channel[mod][asic][chan] == false ){
@@ -1462,7 +1462,7 @@ void ISSAutoCalibrator::MakeHists() {
 		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
 
 			hpstrip[i][j].resize( set->GetNumberOfArrayPstrips() );
-			hnstrip[i][j].resize( set->GetNumberOfArrayNstrips() );
+			hnstrip[i][j].resize( 2*set->GetNumberOfArrayNstrips() );
 
 			dirname = "module_" + std::to_string(i);
 			dirname += "/row_" + std::to_string(j);
@@ -1486,7 +1486,7 @@ void ISSAutoCalibrator::MakeHists() {
 			} // k
 
 			// Loop over n-side channels of the wafer
-			for( unsigned int k = 0; k < set->GetNumberOfArrayNstrips(); ++k ) {
+			for( unsigned int k = 0; k < 2*set->GetNumberOfArrayNstrips(); ++k ) {
 
 				// Uncalibrated
 				hname = "n_" + std::to_string(i);
