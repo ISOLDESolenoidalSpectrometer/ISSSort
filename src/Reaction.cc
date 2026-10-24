@@ -1584,11 +1584,6 @@ void ISSReaction::MakeReaction( std::shared_ptr<ISSArrayEvt> array_evt ){
 			double eloss = GetEnergyLoss( en, dist, gStopping[2] );
 			Ejectile.SetEnergyLab( en - eloss );
 
-			// Then we recover the energy lost in the target
-			dist = -0.5 * target_thickness / TMath::Abs( TMath::Sin( alpha ) );
-			eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
-			Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
-
 			// Set parameters
 			params[2] = Ejectile.GetMomentumLab(); // p
 			fa->SetParameters( params );
@@ -1626,6 +1621,12 @@ void ISSReaction::MakeReaction( std::shared_ptr<ISSArrayEvt> array_evt ){
 		}
 
 		gErrorIgnoreLevel = kInfo; // print info and above again
+
+		// Finally we recover the energy lost in the target
+		double dist = -0.5 * target_thickness / TMath::Abs( TMath::Sin( alpha ) );
+		double eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
+		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
+
 
 #ifdef butler_algorithm
 		// Calculate the lab angle from z position (Butler method)
