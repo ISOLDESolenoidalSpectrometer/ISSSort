@@ -519,7 +519,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		// -------------------------------------------- //
 		// Find recoils and other things in VME systems //
 		// -------------------------------------------- //
-		else if( in_data->IsVme() ) {
+		else if( in_data->IsVme() && !array_evts_only ) {
 
 			// Check if it is Meystec or CAEN
 			if( in_data->IsCaen() ) {
@@ -1101,13 +1101,17 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				// Build array events, recoils, etc
 				//----------------------------------
 				ArrayFinder();		// add an ArrayEvt for each n/p pair
-				RecoilFinder();		// add a RecoilEvt for each dE-E
-				MwpcFinder();		// add an MwpcEvt for pair of TAC events
-				ElumFinder();		// add an ElumEvt for each S1 event
-				ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
-				GammaRayFinder();	// add a GammaRay event for ScintArray/HPGe events
-				LumeFinder();		// add a LumeEvt for each LUME
-				CdFinder();			// add a CDEvt for CD
+				if( !array_evts_only ) {
+					
+					RecoilFinder();		// add a RecoilEvt for each dE-E
+					MwpcFinder();		// add an MwpcEvt for pair of TAC events
+					ElumFinder();		// add an ElumEvt for each S1 event
+					ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
+					GammaRayFinder();	// add a GammaRay event for ScintArray/HPGe events
+					LumeFinder();		// add a LumeEvt for each LUME
+					CdFinder();			// add a CDEvt for CD
+
+				}
 
 				// ------------------------------------
 				// Add timing and fill the ISSEvts tree

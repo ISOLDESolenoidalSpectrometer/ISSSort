@@ -671,6 +671,7 @@ bool do_build( bool forcal = false ){
 			if( forcal ){
 				eb.NoEnergyCal();
 				eb.Force1v1Hits();
+				eb.ArrayOnly();
 			}
 			eb.BuildEvents();
 			eb.CloseOutput();

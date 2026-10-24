@@ -117,6 +117,9 @@ public:
 	/// Set a flag to apply no energy calibration to events built for the energy calibration
 	inline void NoEnergyCal(){ no_energy_cal = true; };
 
+	/// Set a flag to build array events only, skipping the rest
+	inline void ArrayOnly(){ array_evts_only = true; };
+
 	unsigned long	BuildEvents(); ///< The heart of this class
 	unsigned long	BuildSimulatedEvents(); ///< The heart of this class
 
@@ -214,6 +217,9 @@ private:
 
 	// Flag to force only 1v1 hits on the array during energy calibration
 	bool force_1v1_hits = false;
+
+	// Flag to build array events only, and skip the rest
+	bool array_evts_only = false;
 
 	// Flag to apply no energy calibration when events are built for the energy calibration
 	bool no_energy_cal = false;
