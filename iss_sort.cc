@@ -1067,7 +1067,7 @@ int main( int argc, char *argv[] ){
 	// Check if this is a source run
 	if( flag_autocal ){
 
-		flag_source = true;
+		flag_source = false;
 
 		if ( name_autocal_file.length() > 0 ){
 
