@@ -90,12 +90,14 @@ struct ISSAutoCalModAsicChan{
 	int row;
 	int side;
 	int strip;
+	int face_end;
 };
 
 struct SigmaResult {
     int mod;
     int asic;
     int chan;
+	int face_end;
     float fwhm;
 };
 
@@ -124,10 +126,10 @@ public:
 	void MakeHists(); ///< Make a histogram for each n-side and p-side calibration
 	void FillHists(); ///< Need to loop over input events and make the histograms for fitting
 	void DoFits( const std::string& name_sigmas_file ); ///< The heart of this class, moving from alpha spectra to a calibration
-	void DoChannelFit( TH1F *h, const ISSAutoCalModAsicChan& mac, std::vector<SigmaResult>& allResult ) const; ///< The insides of the DoFits() function that calibrates for a given channel
-	void FindPeaks( TH1F *h, std::vector<float> &centroids, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt ) const; ///< Finds the desired number of alpha peaks
-	bool FitSpectrum( TH1F *h, std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt, float &sigma ) const; ///< Fits the found/specified peaks with the user-specified fit shape
-	void CalibrateChannel( std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac, float sigma, std::vector<SigmaResult>& allResults ) const; ///< Communicates with the ISSCalibration object to produce a calibration file
+	void DoChannelFit( TH1F *h, std::vector<float> &centroids, std::vector<float> &errors, std::vector<float> &alphaEs, std::vector<float> &alphaEerrors, const ISSAutoCalModAsicChan& mac, float &sigma ); ///< The insides of the DoFits() function that calibrates for a given channel
+	void CalibrateChannel( std::vector<float> &centroids, std::vector<float> &errors, std::vector<float> &alphaEs, std::vector<float> &alphaEerrors, const ISSAutoCalModAsicChan& mac, float sigma, std::vector<SigmaResult>& allResults ); ///< Communicates with the ISSCalibration object to produce a calibration file
+	bool FitSpectrum( TH1F *h, std::vector<float> &centroids, std::vector<float> &errors, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt, float &sigma ); ///< Fits the found/specified peaks with the user-specified fit shape
+	void FindPeaks( TH1F *h, std::vector<float> &centroids, const ISSAutoCalModAsicChan& mac, ISSAutoCalPlottingOptions& plot_opt ); ///< Finds the desired number of alpha peaks
 	void SaveCalFile( const std::string& name_results_file ); ///< Saves the calibration to a file
 
 	inline void AddCalibration( std::shared_ptr<ISSCalibration> mycal ){
@@ -177,8 +179,14 @@ private:
 	std::string autocal_settings_input_file;	///< The name of the autocal file used to control the fits
 
 	// Histograms for calibrating, filled with coincidence events
-	std::vector<std::vector<std::vector<TH1F*>>> hpstrip;	///< p-sides histograms, per module, per row, per strip
-	std::vector<std::vector<std::vector<TH1F*>>> hnstrip;	///< n-sides histograms, per module, per row, per strip
+	std::vector<std::vector<std::vector<std::vector<TH1F*>>>> hpstrip;	///< p-sides histograms, per module, per row, per strip, per face
+	std::vector<std::vector<std::vector<std::vector<TH1F*>>>> hnstrip;	///< n-sides histograms, per module, per row, per strip, near and far
+
+	// For coincidences to work, we need to make some assumption, which should probably come in
+	// the user input file. We'll test both both faces and the near and far ends of the n-sides
+	const int pref_near = 114; // p-side near-side strip reference for n-side calibration
+	const int pref_far = 10; // p-side far-side strip reference for n-side calibration
+	const int pmargin = 3; // how many p-side strips left and right to include for more stats
 
 	// Global control options
 	bool _debug_;					///< Allows the printing of more information to the console and more images to disk
@@ -227,6 +235,7 @@ private:
 	// Print warnings in a constistent manner
 	void PrintFitWarning( const ISSAutoCalModAsicChan& mac, const std::string& type, const std::string& detail ) const; ///< Prints the warnings in a consistent manner
 	std::string GetAsicHistName( const ISSAutoCalModAsicChan& mac ) const; ///< Returns asic histogram name as used a lot in code
+	std::string GetAsicCalName( const ISSAutoCalModAsicChan& mac ) const; ///< Returns asic calibration name as used a lot in code
 };
 
 #endif
