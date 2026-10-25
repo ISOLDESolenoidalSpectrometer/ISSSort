@@ -1302,7 +1302,7 @@ int main( int argc, char *argv[] ){
 
 	myset = std::make_shared<ISSSettings>( name_set_file );
 	mycal = std::make_shared<ISSCalibration>( name_cal_file, myset );
-	myreact = std::make_shared<ISSReaction>( name_react_file, myset, flag_source );
+	myreact = std::make_shared<ISSReaction>( name_react_file, myset, ( flag_source || flag_autocal ) );
 
 	if (flag_print_settings)
 		myset->PrintSettings();
