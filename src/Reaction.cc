@@ -1230,7 +1230,7 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	double dEdx_e;
 
 	// number of steps to take in integration
-	unsigned int Nmeshpoints = 2e5;
+	unsigned int Nmeshpoints = 2e4;
 	double E = Emin;
 	double Emax_nuc = 0;
 	double range = iRange[5]->Eval( Emax );
@@ -1283,19 +1283,19 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	// Do the numerical integration of the other stopping powers
 	double dE = (Emax-Emin)/(double)Nmeshpoints;
 	double Edet = Emin - dE;
-	for( unsigned int i = 0; i < Nmeshpoints-100; i++ ){
+	for( unsigned int i = 0; i < Nmeshpoints; i++ ){
 
 		E = (double)i + 0.5;
 		E *= dE;
 		E += Emin;
 
-		// Evaluate the electronic stopping power
-		dEdx_e = iStopping[3]->Eval(E);
-
 		// Calculate the energy lost to nuclear stopping
 		if( E < Emax_nuc )
 			En = iPHC_nuc->Eval(E);
 		else break;
+
+		// Evaluate the electronic stopping power
+		dEdx_e = iStopping[3]->Eval(E);
 
 		// From W. N. Lennard et al. NIM A248 (1986) 454
 		// "Nonlinear response of Si detectors for low-Z ions"
