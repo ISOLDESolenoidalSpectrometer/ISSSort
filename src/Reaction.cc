@@ -1646,12 +1646,6 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 
 		gErrorIgnoreLevel = kInfo; // print info and above again
 
-		// Finally we recover the energy lost in the target
-		double dist = -0.5 * target_thickness / TMath::Abs( TMath::Sin( alpha ) );
-		double eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
-		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
-
-
 #ifdef butler_algorithm
 		// Calculate the lab angle from z position (Butler method)
 		alpha  = (double)Ejectile.GetZ() * GetField_corr(); 	// qb
@@ -1668,6 +1662,11 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 		else z = z_meas + r_meas * TMath::Tan( alpha );
 		Ejectile.SetThetaLab( TMath::PiOver2() + alpha );
 #endif
+
+		// Finally we recover the energy lost in the target
+		double dist = -0.5 * target_thickness / TMath::Abs( TMath::Sin( alpha ) );
+		double eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
+		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
 
 		// Total energy of ejectile in centre of mass
 		e3_cm = Ejectile.GetEnergyTotLab();
