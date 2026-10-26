@@ -1076,7 +1076,8 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 		else total = nucl + elec ; // in some units, conversion done later
 
 		g->SetPoint( g->GetN(), En, total );
-		r->SetPoint( g->GetN(), En, range );
+		r->SetPoint( r->GetN(), En, range );
+
 
 	}
 
