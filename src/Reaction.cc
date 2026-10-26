@@ -1608,11 +1608,6 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 			double eloss = GetEnergyLoss( en, dist, gStopping[2] );
 			Ejectile.SetEnergyLab( en - eloss );
 
-			// Then we recover the energy lost in the target
-			dist = -0.5 * target_thickness / TMath::Abs( TMath::Sin( alpha ) );
-			eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
-			Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
-
 			// Set parameters
 			params[2] = Ejectile.GetMomentumLab(); // p
 			fa->SetParameters( params );
@@ -1647,7 +1642,7 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 
 			iter++;
 
-		}
+		} // while loop
 
 		gErrorIgnoreLevel = kInfo; // print info and above again
 
@@ -1667,6 +1662,11 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 		else z = z_meas + r_meas * TMath::Tan( alpha );
 		Ejectile.SetThetaLab( TMath::PiOver2() + alpha );
 #endif
+
+		// Finally we recover the energy lost in the target
+		double dist = -0.5 * target_thickness / TMath::Abs( TMath::Sin( alpha ) );
+		double eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
+		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
 
 		// Total energy of ejectile in centre of mass
 		e3_cm = Ejectile.GetEnergyTotLab();
