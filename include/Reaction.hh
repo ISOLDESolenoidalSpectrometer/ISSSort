@@ -25,6 +25,7 @@
 #include "TGraph.h"
 #include "Math/RootFinder.h"
 #include "Math/Functor.h"
+#include "Math/Interpolator.h"
 #include "TSpline.h"
 
 // Settings header
@@ -519,10 +520,13 @@ public:
 	inline void SetOffsetY( double y ){ y_offset = y; };	///< Setter for the target offset (Y)
 
 	// Energy loss and stopping powers
-	double GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> &g );///< Calculate the energy loss of a given energy of particle through a given material
-	double GetNuclearEnergyLoss( double Ei, double range, std::unique_ptr<TGraph> &gn, std::unique_ptr<TGraph> &gtot );///< Calculate the nuclear specific energy loss
+	double GetEnergyLoss( double Ei, double dist,
+				std::unique_ptr<ROOT::Math::Interpolator> &is,
+				double Emin, double Emax );///< Calculate the energy loss of a given energy of particle through a given material
 	bool ReadStoppingPowers( std::string isotope1, std::string isotope2,
 				std::unique_ptr<TGraph> &g, std::unique_ptr<TGraph> &r,
+				std::unique_ptr<ROOT::Math::Interpolator> &is,
+				std::unique_ptr<ROOT::Math::Interpolator> &ir,
 				bool electriconly = false, bool nuclearonly = false );///< Reads relevant SRIM files
 
 	// Pulse height correction
@@ -728,17 +732,29 @@ private:
 	double gamma_energy_cut[2];						///< Gamma-ray energy cut, lower and upper limits
 
 	// Stopping powers
-	std::vector<std::unique_ptr<TGraph>> gStopping;	///< Vector of pointer to relevant stopping-power TGraphs relevant to the reaction of study
-	std::vector<std::unique_ptr<TGraph>> gRange;	///< Vector of pointer to relevant range TGraphs relevant to the reaction of study
-	std::unique_ptr<TGraph> gPHC;					///< TGraph containing pulse-height correction information
-	std::unique_ptr<TGraph> gPHC_inv;				///< Flipped axes of gPHC
-	bool stopping;									///< Flag to indicate whether calculation of stopping powers has worked or not
-	bool phcurves;									///< Flag to indicate whether pulse height correction data was read successfully
-	std::vector<double> alpha_energies;				///< Energies of the alphas for calibration in a source run
+	std::vector<std::unique_ptr<TGraph>> gStopping;						///< Vector of pointer to relevant stopping-power TGraphs relevant to the reaction of study
+	std::vector<std::unique_ptr<TGraph>> gRange;						///< Vector of pointer to relevant range TGraphs relevant to the reaction of study
+	std::vector<double> min_stopping_en;								///< Vector of minimum values of energy for the interpolation
+	std::vector<double> max_stopping_en;								///< Vector of maximum values of energy for the interpolation
+	std::vector<std::unique_ptr<ROOT::Math::Interpolator>> iStopping;	///< Interpolation of stopping powers
+	std::vector<std::unique_ptr<ROOT::Math::Interpolator>> iRange;		///< Interpolation of ranges
+	std::unique_ptr<TGraph> gPHC;										///< TGraph containing pulse-height correction information
+	std::unique_ptr<TGraph> gPHC_inv;									///< Flipped axes of gPHC
+	std::unique_ptr<TGraph> gPHC_nuc;									///< Graph of nuclear stopping versus energy for the PHC calculation
+	std::unique_ptr<ROOT::Math::Interpolator> iPHC;						///< Interpolation of pulse height corrections
+	std::unique_ptr<ROOT::Math::Interpolator> iPHC_inv;					///< Interpolation of pulse height corrections with inverted axes
+	std::unique_ptr<ROOT::Math::Interpolator> iPHC_nuc;					///< Interpolation of nuclear stopping powers for pulse height corrections
+	double min_PHC_en, max_PHC_en = 1e5;								///< Energy range for PHC
+	bool stopping;														///< Flag to indicate whether calculation of stopping powers has worked or not
+	bool phcurves;														///< Flag to indicate whether pulse height correction data was read successfully
+	std::vector<double> alpha_energies;									///< Energies of the alphas for calibration in a source run
 
 
 	// Flag in case it's an alpha source
 	bool flag_source;	///< Flag in case it's an alpha source run
+
+	// Flag for printing a warning about stopping powers
+	bool flag_srim_range = false;
 
 };
 

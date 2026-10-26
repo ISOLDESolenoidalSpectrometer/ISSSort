@@ -751,23 +751,43 @@ void ISSReaction::ReadReaction() {
 	for( unsigned int i = 0; i < 6; ++i ) {
 		gStopping.push_back( std::make_unique<TGraph>() );
 		gRange.push_back( std::make_unique<TGraph>() );
+		iStopping.push_back( std::make_unique<ROOT::Math::Interpolator>( 0, ROOT::Math::Interpolation::kAKIMA ) );
+		iRange.push_back( std::make_unique<ROOT::Math::Interpolator>( 0, ROOT::Math::Interpolation::kAKIMA ) );
+		min_stopping_en.push_back(10.0);
+		max_stopping_en.push_back(1e6);
 	}
 
 	if( !flag_source ) {
-		stopping &= ReadStoppingPowers( Beam.GetIsotope(), Target.GetIsotope(), gStopping[0], gRange[0] );
-		stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), Target.GetIsotope(), gStopping[1], gRange[1] );
+		stopping &= ReadStoppingPowers( Beam.GetIsotope(), Target.GetIsotope(), gStopping[0], gRange[0], iStopping[0], iRange[0] );
+		stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), Target.GetIsotope(), gStopping[1], gRange[1], iStopping[1], iRange[1] );
+		min_stopping_en[0] = TMath::MinElement( gStopping[0]->GetN(), gStopping[0]->GetX() );
+		min_stopping_en[1] = TMath::MinElement( gStopping[1]->GetN(), gStopping[1]->GetX() );
+		max_stopping_en[0] = TMath::MaxElement( gStopping[0]->GetN(), gStopping[0]->GetX() );
+		max_stopping_en[1] = TMath::MaxElement( gStopping[1]->GetN(), gStopping[1]->GetX() );
 	}
-	stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), "Al", gStopping[2], gRange[2] );
+	stopping &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[2], gRange[2], iStopping[2], iRange[2] );
+	min_stopping_en[2] = TMath::MinElement( gStopping[2]->GetN(), gStopping[2]->GetX() );
+	max_stopping_en[2] = TMath::MaxElement( gStopping[2]->GetN(), gStopping[2]->GetX() );
 
 	// Get the electric and nuclear stopping powers for the PHC in a TGraph
 	phcurves = true;
-	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[3], gRange[3], true, false ); // electric only from SRIM files
-	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[4], gRange[4], false, true ); // nuclear only from SRIM files
-	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[5], gRange[5] );				 // total stopping from SRIM files
+	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[3], gRange[3], iStopping[3], iRange[3], true, false ); // electric only from SRIM files
+	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[4], gRange[4], iStopping[4], iRange[4], false, true ); // nuclear only from SRIM files
+	phcurves &= ReadStoppingPowers( Ejectile.GetIsotope(), "Si", gStopping[5], gRange[5], iStopping[5], iRange[5] );			  // total stopping from SRIM files
+	min_stopping_en[3] = TMath::MinElement( gStopping[3]->GetN(), gStopping[3]->GetX() );
+	min_stopping_en[4] = TMath::MinElement( gStopping[4]->GetN(), gStopping[4]->GetX() );
+	min_stopping_en[5] = TMath::MinElement( gStopping[5]->GetN(), gStopping[5]->GetX() );
+	max_stopping_en[3] = TMath::MaxElement( gStopping[3]->GetN(), gStopping[3]->GetX() );
+	max_stopping_en[4] = TMath::MaxElement( gStopping[4]->GetN(), gStopping[4]->GetX() );
+	max_stopping_en[5] = TMath::MaxElement( gStopping[5]->GetN(), gStopping[5]->GetX() );
 
 	// Get the PHC data in a TGraph
 	gPHC = std::make_unique<TGraph>();
 	gPHC_inv = std::make_unique<TGraph>();
+	gPHC_nuc = std::make_unique<TGraph>();
+	iPHC = std::make_unique<ROOT::Math::Interpolator>( 0, ROOT::Math::Interpolation::kAKIMA );
+	iPHC_inv = std::make_unique<ROOT::Math::Interpolator>( 0, ROOT::Math::Interpolation::kAKIMA );
+	iPHC_nuc = std::make_unique<ROOT::Math::Interpolator>( 0, ROOT::Math::Interpolation::kAKIMA );
 	CalculatePulseHeightCorrection( Ejectile.GetIsotope() );
 
 	// Some diagnostics and info
@@ -792,7 +812,7 @@ void ISSReaction::ReadReaction() {
 		// But only if it's not a source run
 		if( !flag_source ) {
 
-			double eloss = GetEnergyLoss( Beam.GetEnergyLab(), 0.5 * target_thickness, gStopping[0] );
+			double eloss = GetEnergyLoss( Beam.GetEnergyLab(), 0.5 * target_thickness, iStopping[0], min_stopping_en[0], max_stopping_en[0] );
 			Beam.SetEnergyLab( Beam.GetEnergyLab() - eloss );
 			std::cout << "Beam energy at centre of target = ";
 			std::cout << Beam.GetEnergyLab()*0.001 << " MeV" << std::endl;
@@ -844,7 +864,7 @@ void ISSReaction::ReadReaction() {
 		energy_inner = Ejectile.GetEnergyLab();
 		enloss_inner = GetEnergyLoss( energy_inner,
 									 elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_inner ) ),
-									 gStopping[2] );
+									 iStopping[2], min_stopping_en[2], max_stopping_en[2] );
 
 		// Simulate the elastic scattering reaction - outer
 		SimulateReaction( elum_outer_hit );
@@ -853,7 +873,7 @@ void ISSReaction::ReadReaction() {
 		energy_outer = Ejectile.GetEnergyLab();
 		enloss_outer = GetEnergyLoss( energy_outer,
 									 elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_outer ) ),
-									 gStopping[2] );
+									 iStopping[2], min_stopping_en[2], max_stopping_en[2] );
 
 		// Simulate the elastic scattering reaction - centre
 		SimulateReaction( elum_centre_hit );
@@ -862,7 +882,7 @@ void ISSReaction::ReadReaction() {
 		energy_centre = Ejectile.GetEnergyLab();
 		enloss_centre = GetEnergyLoss( energy_centre,
 									  elum_deadlayer / TMath::Abs( TMath::Cos( theta_lab_centre ) ),
-									  gStopping[2] );
+									  iStopping[2], min_stopping_en[2], max_stopping_en[2] );
 
 		// Change ejectile and recoils back again
 		Ejectile.SetA( tmpA );
@@ -898,59 +918,57 @@ void ISSReaction::ReadReaction() {
 /// This interpolates the TGraph using a spline
 /// \param[in] Ei The initial energy of the nuclide
 /// \param[in] dist The distance the nuclide travels in the target material
-/// \param[in] g The TGraph of the energy loss generated in the ISSReaction::ReadReaction() function
+/// \param[in] is The ROOT::Math::Interpolator object containing the energy losses. Generated in the ISSReaction::ReadReaction() function
+/// \param[in] Emin The minimum energy for the interpolation
 /// \returns Ei-E The energy loss of a particular nuclide in a particular material
-double ISSReaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> &g ) {
+double ISSReaction::GetEnergyLoss( double Ei, double dist, std::unique_ptr<ROOT::Math::Interpolator> &is, double Emin, double Emax ) {
+
+	if( Ei > Emax || Ei < Emin ) {
+
+		if( !flag_srim_range ){
+
+			std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+			std::cout << "!!!! Particle energy outside of the range of stopping powers: ";
+			if( Ei > Emax ) std::cout << Ei << " > " << Emax << " (dist = " << dist << ")      !!!!\n";
+			else if( Ei < Emin ) std::cout << Ei << " < " << Emin << " (dist = " << dist << ")      !!!!\n";
+			std::cout << "!!!!        -------- Consider increasing energy range of SRIM files --------          !!!!\n";
+			std::cout << "!!!! Energy losses for such events are not calculated and NaN is returned             !!!!\n";
+			std::cout << "!!!! This warning only appear once, but there may be many events going missing!       !!!!\n";
+			std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n";
+			flag_srim_range = true;
+
+		}
+
+		return TMath::QuietNaN();
+
+	}
 
 	unsigned int Nmeshpoints = 50; // number of steps to take in integration
 	double dx = dist/(double)Nmeshpoints;
 	double E = Ei;
+	double eloss = 0;
 
-	// Create a spline for the provided TGraph
-	// Use akima spline to make energy loss graph smoother
-	std::unique_ptr<TSpline3> spline = std::make_unique<TSpline3>("spline", g.get(), "akima");
 	for( unsigned int i = 0; i < Nmeshpoints; i++ ) {
 
-		double eloss = spline->Eval(E) * dx;
-		if( eloss > E && eloss > 0 ) eloss = E; // incase we are "stopped"
+		if( E < Emin ) {
+			eloss = E;
+			break; // when we fall below Emin we assume maximum energy loss
+		}
+
+		// Stopping power times increment
+		eloss = is->Eval(E) * dx;
+		if( eloss > E ) eloss = E; // incase we are "stopped"
+
+		if( TMath::IsNaN(eloss) ){
+			std::cout << "NaN when getting energy loss at " << E << " keV for dx = ";
+			std::cout << dx << " over dist = " << dist << " keV\n";
+		}
 
 		E -= eloss;
-		if( E < 100. && eloss > 0 ) break; // when we fall below 100 keV we assume maximum energy loss
 
 	}
 
 	return Ei - E;
-
-}
-
-///////////////////////////////////////////////////////////////////////////////
-/// Returns the nuclear specific energy loss at a given initial energy and over the range travelled.
-/// A negative distance will add the energy back on, i.e. travelling backwards.
-/// This means that you will get a negative energy loss as a return value
-/// This interpolates the TGraph using a spline
-/// \param[in] Ei The initial energy of the nuclide
-/// \param[in] range The range over which the nuclide travels in the target material
-/// \param[in] gn The TGraph of the nuclear energy loss
-/// \param[in] gtot The TGraph of the total energy loss
-/// \returns En: The nuclear specific energy loss of a particular nuclide over the range
-double ISSReaction::GetNuclearEnergyLoss( double Ei, double range, std::unique_ptr<TGraph> &gn, std::unique_ptr<TGraph> &gtot ) {
-
-	unsigned int Nmeshpoints = 200; // number of steps to take in integration
-	double dx = range/(double)Nmeshpoints;
-	double E = Ei;
-	double En = 0;
-
-	// Create splines for the provided TGraphs
-	std::unique_ptr<TSpline3> splineTot = std::make_unique<TSpline3>("splineTot", gtot.get(), "akima"); // Use akima spline to make energy loss graph smoother - BRJ
-	std::unique_ptr<TSpline3> splineN   = std::make_unique<TSpline3>("splineN", gn.get(), "akima"); // Use akima spline to make energy loss graph smoother - BRJ
-
-	for( unsigned int i = 0; i < Nmeshpoints; i++ ) {
-		if( E < 0.5 ) break; // when we fall below 0.5 keV we assume we're stopped
-		E -= splineTot->Eval(E) * dx;
-		En += splineN->Eval(E) * dx;
-	}
-
-	return En;
 
 }
 
@@ -968,6 +986,8 @@ double ISSReaction::GetNuclearEnergyLoss( double Ei, double range, std::unique_p
 /// \returns true/false depending on whether the function succeeds operating
 bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2,
 									 std::unique_ptr<TGraph> &g, std::unique_ptr<TGraph> &r,
+									 std::unique_ptr<ROOT::Math::Interpolator> &is,
+									 std::unique_ptr<ROOT::Math::Interpolator> &ir,
 									 bool electriconly, bool nuclearonly ) {
 
 	/// Open stopping power files and make TGraphs of data
@@ -1112,6 +1132,14 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 
 	}
 
+	// Sort the graphs to make them faster to evaluate
+	g->SetBit( TGraph::kIsSortedX );
+	r->SetBit( TGraph::kIsSortedX );
+
+	// Make the interpolator function for later
+	is->SetData( g->GetN(), g->GetX(), g->GetY() );
+	ir->SetData( r->GetN(), r->GetX(), r->GetY() );
+
 	// Draw the plot and save it somewhere
 	std::unique_ptr<TCanvas> c = std::make_unique<TCanvas>();
 	c->SetLogx();
@@ -1153,8 +1181,13 @@ double ISSReaction::GetPulseHeightCorrection( double Ei, bool detected ) {
 	// If we failed to read the data, return a zero correction value
 	if( !phcurves ) return 0;
 
-	if( detected ) return gPHC_inv->Eval(Ei); // get actual ion energy from PH (detected energy)
-	else return gPHC->Eval(Ei); // get PH for actual ion energy
+	// Skip events outside the range of the PHC and throw them away
+	if( Ei > max_PHC_en || Ei < min_PHC_en ) {
+		return TMath::QuietNaN();
+	}
+
+	if( detected ) return iPHC_inv->Eval(Ei); // get actual ion energy from PH (detected energy)
+	else return iPHC->Eval(Ei); // get PH for actual ion energy
 
 }
 
@@ -1173,10 +1206,15 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	title_inv += isotope;
 	title_inv += ";Deposited energy [keV/#mum];";
 	title_inv += isotope + " energy after dead layer [keV]";
+	std::string title_nuc = "Nuclear stopping energies for ";
+	title_nuc += isotope + ";";
+	title_nuc += isotope + " energy after dead layer [keV]";
+	title_nuc += ";Total energy lost to nuclear stopping [keV];";
 
 	// Initialise an empty TGraph
 	gPHC->SetTitle( title.c_str() );
 	gPHC_inv->SetTitle( title_inv.c_str() );
+	gPHC_nuc->SetTitle( title_nuc.c_str() );
 
 	// Keep things quiet from ROOT
 	gErrorIgnoreLevel = kWarning;
@@ -1185,34 +1223,79 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	std::unique_ptr<TGraph> gRes = std::make_unique<TGraph>();
 
 	// Calculate the stopping
-	double E, Emax = 100e3;
-	double range, dEdx_n, dEdx_e;
+	double Emin = TMath::MinElement( gStopping[5]->GetN(), gStopping[5]->GetX() );
+	double Emax = TMath::MaxElement( gStopping[5]->GetN(), gStopping[5]->GetX() );
+	if( Emax > max_PHC_en ) Emax = max_PHC_en;
+	min_PHC_en = Emin;
+	double dEdx_e;
 
 	// number of steps to take in integration
-	unsigned int Nmeshpoints = 2e4;
-	double dE = Emax/(double)Nmeshpoints;
-	double Edet = 0.0;
+	unsigned int Nmeshpoints = 2e5;
+	double E = Emin;
+	double Emax_nuc = 0;
+	double range = iRange[5]->Eval( Emax );
+	double xmin = iRange[3]->Eval( Emin );
+	double xprev = 0;
+	double dx = (range-xmin)/(double)Nmeshpoints;
+	double En = 0;
 
-	// Create splines for the TGraphs used in the calculation
-	std::unique_ptr<TSpline3> splineRange         = std::make_unique<TSpline3>("splineRange", gRange[3].get(), "akima"); // // Use akima spline to make phc smoother
-	std::unique_ptr<TSpline3> splineStoppingPower = std::make_unique<TSpline3>("splineStoppingPower", gStopping[3].get(), "akima"); //Use akima spline to make phc smoother
+	// Fill a zero value on the graph to help interpolation
+	gPHC_nuc->SetPoint( gPHC_nuc->GetN(), 0, 0 );
 
-
-	// Do the numerical integration
+	// First make the nuclear stopping graph
 	for( unsigned int i = 0; i < Nmeshpoints; i++ ){
+
+		// Logarithmic steps
+		double t = (double)i / (double)(Nmeshpoints-1);
+		double x = xmin * TMath::Power( range / xmin, t );
+
+		// Get the delta x, needs to be at least one step first
+		if( i == 0 ){
+			xprev = x;
+			continue;
+		}
+		else dx = x - xprev;
+
+		// Evaluate the nuclear stopping power
+		En += iStopping[4]->Eval(E) * dx;
+
+		// Fill the graph
+		gPHC_nuc->SetPoint( gPHC_nuc->GetN(), E, En );
+
+		// Increment the energy
+		Emax_nuc = E;
+		E += iStopping[5]->Eval(E) * dx;
+
+		// Increment the distance
+		xprev = x;
+
+	} // i
+
+	// Make sure it is sorted so it's faster to evaluate
+	// And make an interpolator to use the Akima splines
+	gPHC_nuc->SetBit( TGraph::kIsSortedX );
+	iPHC_nuc->SetData( gPHC_nuc->GetN(), gPHC_nuc->GetX(), gPHC_nuc->GetY() );
+
+	// Fill a zero value on the graphs to help interpolation
+	//gPHC->SetPoint( gPHC->GetN(), 0, 0 );
+	//gPHC_inv->SetPoint( gPHC_inv->GetN(), 0, 0 );
+
+	// Do the numerical integration of the other stopping powers
+	double dE = (Emax-Emin)/(double)Nmeshpoints;
+	double Edet = Emin - dE;
+	for( unsigned int i = 0; i < Nmeshpoints-100; i++ ){
 
 		E = (double)i + 0.5;
 		E *= dE;
+		E += Emin;
 
-		// Evaluate stopping powers and range
-		range = splineRange->Eval(E);
-		dEdx_e = splineStoppingPower->Eval(E);
+		// Evaluate the electronic stopping power
+		dEdx_e = iStopping[3]->Eval(E);
 
-		// Calculate the nuclear stopping
-		// TODO: this is inefficient, but still only takes a couple of seconds
-		// ideally the integrated nuclear energy loss versus energy would be
-		// calculated only once and stored as a TGraph or something. Who cares?
-		dEdx_n = GetNuclearEnergyLoss( E, range, gStopping[4], gStopping[5] );
+		// Calculate the energy lost to nuclear stopping
+		if( E < Emax_nuc )
+			En = iPHC_nuc->Eval(E);
+		else break;
 
 		// From W. N. Lennard et al. NIM A248 (1986) 454
 		// "Nonlinear response of Si detectors for low-Z ions"
@@ -1222,17 +1305,18 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 		Edet += dE * PHC;
 
 		//if( E > 2000. && E < 2010. ) {
+		//	std::cout << "\ni = " << i << " / " << Nmeshpoints << std::endl;
 		//	std::cout << "Energy = " << E << " keV" << std::endl;
-		//	std::cout << "Range = " << range << " mm" << std::endl;
+		//	std::cout << "Range = " << iRange[3]->Eval(E) << " mm" << std::endl;
 		//	std::cout << "dEdx_e = " << dEdx_e << " keV/mm" << std::endl;
-		//	std::cout << "dEdx_n = " << dEdx_n << " keV" << std::endl;
+		//	std::cout << "En = " << En << " keV" << std::endl;
 		//	std::cout << "PHC = " << PHC << " keV" << std::endl;
 		//	std::cout << "Edet = " << Edet << " keV" << std::endl;
 		//}
 
-		gPHC->SetPoint( gPHC->GetN(), E + dEdx_n, Edet );
-		gPHC_inv->SetPoint( gPHC_inv->GetN(), Edet, E + dEdx_n );
-		gRes->SetPoint( gRes->GetN(), E + dEdx_n, Edet - E - dEdx_n );
+		gPHC->SetPoint( gPHC->GetN(), E + En, Edet );
+		gPHC_inv->SetPoint( gPHC_inv->GetN(), Edet, E + En );
+		gRes->SetPoint( gRes->GetN(), E + En, Edet - E - En );
 
 	}
 
@@ -1246,10 +1330,20 @@ void ISSReaction::CalculatePulseHeightCorrection( std::string isotope ) {
 	std::string pdfname = std::string( SRIM_DIR ) + "/" + isotope + "_phc.pdf";
 	c->SaveAs( pdfname.c_str() );
 
-	// These lines make root files for PH residual and eloss for the isotope that is read in
+	// sort graphs in order to make it faster to evaluate
+	// And make an interpolator to use the Akima splines
+	gPHC->SetBit( TGraph::kIsSortedX );
+	gPHC_inv->SetBit( TGraph::kIsSortedX );
+	gRes->SetBit( TGraph::kIsSortedX );
+	iPHC->SetData( gPHC->GetN(), gPHC->GetX(), gPHC->GetY() );
+	iPHC_inv->SetData( gPHC_inv->GetN(), gPHC_inv->GetX(), gPHC_inv->GetY() );
 
+	// These lines make root files for PH residual and eloss for the isotope that is read in
 	std::string tfilenameroot = std::string( SRIM_DIR ) + "/" + isotope + "_phc.root";
 	TFile *tfile = new TFile(tfilenameroot.c_str(),"recreate");
+	gPHC->Write("gPHC");
+	gPHC_inv->Write("gPHC_inv");
+	gPHC_nuc->Write("gPHC_nuc");
 	gRes->Write("gRes");
 	tfile->Close();
 
@@ -1304,7 +1398,7 @@ double ISSReaction::SimulateEmission( double en, double theta_lab, double phi_la
 
 	// Calculate the energy lost in the target
 	double dist = 0.5 * target_thickness / TMath::Abs( TMath::Sin( theta_lab ) );
-	double eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
+	double eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, iStopping[1], min_stopping_en[1], max_stopping_en[1] );
 	Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
 
 	// Calculate the energy loss in the deadlayer
@@ -1315,7 +1409,7 @@ double ISSReaction::SimulateEmission( double en, double theta_lab, double phi_la
 	else if( detector == 1 ) {
 		dist = GetELUMDeadlayer() / TMath::Abs( TMath::Sin( theta_lab - TMath::PiOver2() ) );
 	}
-	eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[2] );
+	eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, iStopping[2], min_stopping_en[2], max_stopping_en[2] );
 	Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
 
 	return Ejectile.GetEnergyLab();
@@ -1425,7 +1519,7 @@ double ISSReaction::SimulateDecay( TVector3 vec, double en, double dl, int detec
 	else if( detector == 1 ) {
 		dist = dl / TMath::Abs( TMath::Sin( alpha ) );
 	}
-	double eloss = GetEnergyLoss( en, dist, gStopping[2] );
+	double eloss = GetEnergyLoss( en, dist, iStopping[2], min_stopping_en[2], max_stopping_en[2] );
 
 	//std::cout << "z = " << z_meas << " mm, angle = ";
 	//std::cout << alpha*TMath::RadToDeg() << " deg, dead layer = ";
@@ -1546,9 +1640,13 @@ void ISSReaction::MakeReaction( std::shared_ptr<ISSArrayEvt> array_evt ){
 		phi_meas = vec.Phi();
 	}
 
+	//std::cout << "Before PHC = " << en << ", after = ";
+
 	// Pulse height conversion to proton energy using RDP
 	en = GetPulseHeightCorrection( en, true );
 	Ejectile.SetEnergyLab(en);
+
+	//std::cout << en << std::endl;
 
 	//------------------------//
 	// Kinematics calculation //
@@ -1581,128 +1679,140 @@ void ISSReaction::MakeReaction( std::shared_ptr<ISSArrayEvt> array_evt ){
 		alpha  = TMath::ASin( alpha );
 
 #else
-		alpha = TMath::PiOver4();
-		double alpha_prev = 9999.;
+	alpha = TMath::PiOver4();
+	double alpha_prev = 9999.;
 
-		while( TMath::Abs( ( alpha - alpha_prev ) / alpha ) > 0.0001 && iter < 50 ) {
+	while( TMath::Abs( ( alpha - alpha_prev ) / alpha ) > 0.0001 && iter < 50 ) {
+
 #endif
 
-			// Distance is negative because energy needs to be recovered
-			// First we recover the energy lost in the Si dead layer
-			double dist = -1.0 * GetArrayDeadlayer(mod,row,face) / TMath::Abs( TMath::Cos( alpha ) );
-			double eloss = GetEnergyLoss( en, dist, gStopping[2] );
-			Ejectile.SetEnergyLab( en - eloss );
-
-			// Set parameters
-			params[2] = Ejectile.GetMomentumLab(); // p
-			fa->SetParameters( params );
-			fb->SetParameters( params );
-			ROOT::Math::GradFunctor1D wf( *fa, *fb );
-
-#ifdef butler_algorithm
-			// Use Butler's method and solve the root
-			z_prev = z;
-			rf->SetFunction( wf, z_meas );
-			rf->Solve( 500, 1e-5, 1e-6 );
-
-			// Check result
-			if( rf->Status() ){
-				z = TMath::QuietNaN();
-				break;
-			}
-			else z = rf->Root();
-#else
-			// Build the alpha function and derivative, then solve
-			alpha_prev = alpha;
-			rf->SetFunction( wf, 0.2 * TMath::Pi() ); // with derivatives
-			rf->Solve( 500, 1e-5, 1e-6 );
-
-			// Check result
-			if( rf->Status() ){
-				alpha = TMath::QuietNaN();
-				break;
-			}
-			else alpha = rf->Root();
-#endif
-
-			iter++;
-
+		// test if we are failing before continuing
+		if( TMath::IsNaN( alpha + z ) ) {
+			alpha = TMath::QuietNaN();
+			z = TMath::QuietNaN();
+			break;
 		}
 
-		gErrorIgnoreLevel = kInfo; // print info and above again
+		// Distance is negative because energy needs to be recovered
+		// First we recover the energy lost in the Si dead layer
+		double dist = -1.0 * GetArrayDeadlayer(mod,row,face) / TMath::Abs( TMath::Cos( alpha ) );
+		double eloss = GetEnergyLoss( en, dist, iStopping[2], min_stopping_en[2], max_stopping_en[2] );
+		Ejectile.SetEnergyLab( en - eloss );
 
-		// Finally we recover the energy lost in the target
-		double dist = -0.5 * target_thickness / TMath::Abs( TMath::Sin( alpha ) );
-		double eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, gStopping[1] );
-		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
-
+		// Set parameters
+		params[2] = Ejectile.GetMomentumLab(); // p
+		fa->SetParameters( params );
+		fb->SetParameters( params );
+		ROOT::Math::GradFunctor1D wf( *fa, *fb );
 
 #ifdef butler_algorithm
-		// Calculate the lab angle from z position (Butler method)
-		alpha  = (double)Ejectile.GetZ() * GetField_corr(); 	// qb
-		alpha /= TMath::TwoPi(); 							// qb/2pi
-		alpha *= z;											// * z
-		alpha /= Ejectile.GetMomentumLab();					// over p
-		alpha  = TMath::ASin( alpha );
-		double theta_lab = alpha;
-		if( z_meas < 0 ) theta_lab += TMath::PiOver2();
-		Ejectile.SetThetaLab( theta_lab );
+		// Use Butler's method and solve the root
+		z_prev = z;
+		rf->SetFunction( wf, z_meas );
+		rf->Solve( 500, 1e-5, 1e-6 );
+
+		// Check result
+		if( rf->Status() ){
+			z = TMath::QuietNaN();
+			break;
+		}
+		else z = rf->Root();
 #else
-		// Get the real z value at beam axis and lab angle (alpha method)
-		if( z_meas < 0 ) z = z_meas - r_meas * TMath::Tan( alpha );
-		else z = z_meas + r_meas * TMath::Tan( alpha );
-		Ejectile.SetThetaLab( TMath::PiOver2() + alpha );
+		// Build the alpha function and derivative, then solve
+		alpha_prev = alpha;
+		rf->SetFunction( wf, 0.2 * TMath::Pi() ); // with derivatives
+		rf->Solve( 500, 1e-5, 1e-6 );
+
+		// Check result
+		if( rf->Status() ){
+			alpha = TMath::QuietNaN();
+			break;
+		}
+		else alpha = rf->Root();
 #endif
 
-		// Total energy of ejectile in centre of mass
-		e3_cm = Ejectile.GetEnergyTotLab();
-		e3_cm -= GetBeta() * Ejectile.GetMomentumLab() * TMath::Sin( alpha );
-		e3_cm *= GetGamma();
-		Ejectile.SetEnergyTotCM( e3_cm );
-		Recoil.SetEnergyTotCM( GetEnergyTotCM() - e3_cm );
-
-		// Theta_CM
-		theta_cm  = Ejectile.GetEnergyTotCM();
-		theta_cm -= Ejectile.GetEnergyTotLab() / GetGamma();
-		theta_cm /= GetBeta() * Ejectile.GetMomentumCM();
-		theta_cm  = TMath::ACos( theta_cm );
-		Recoil.SetThetaCM( theta_cm );
-		Ejectile.SetThetaCM( TMath::Pi() - theta_cm );
-
-		// Ex
-		Ex  = TMath::Power( GetEnergyTotCM(), 2.0 );
-		Ex -= 2.0 * GetEnergyTotCM() * Ejectile.GetEnergyTotCM();
-		Ex += TMath::Power( Ejectile.GetMass(), 2.0 );
-		Ex  = TMath::Sqrt( Ex ) - Recoil.GetMass();
-		Recoil.SetEx( Ex );
-		Ejectile.SetEx( 0.0 );
-
-		// Phi - TODO: This depends on the direction of the field!
-		if( phi_meas < 0 ) phi_meas += TMath::TwoPi();
-		phi = phi_meas * z / z_meas + TMath::Pi();
-		if( phi > TMath::TwoPi() ) phi -= TMath::TwoPi();
-
-
-		// Debug output
-		if( z > 0 || z < 0 ){
-
-			//std::cout << "z_meas = " << z_meas << std::endl;
-			//std::cout << "z_corr = " << z << std::endl;
-			//std::cout << "Ep = " << en << std::endl;
-			//std::cout << "alpha = " << alpha*TMath::RadToDeg() << std::endl;
-			//std::cout << "e3_cm = " << e3_cm << std::endl;
-			//std::cout << "e4_cm = " << Recoil.GetEnergyTotCM() << std::endl;
-			//std::cout << "etot_cm = " << GetEnergyTotCM() << std::endl;
-			//std::cout << "etot_lab = " << GetEnergyTotLab() << std::endl;
-			//std::cout << "gamma = " << GetGamma() << std::endl;
-			//std::cout << "beta = " << GetBeta() << std::endl;
-			//std::cout << "theta_cm = " << Recoil.GetThetaCM()*TMath::RadToDeg() << std::endl;
-			//std::cout << "Ex = " << Recoil.GetEx() << std::endl;
-			//std::cout << std::endl;
-
-		}
-
-		return;
+		iter++;
 
 	}
+
+	gErrorIgnoreLevel = kInfo; // print info and above again
+
+#ifdef butler_algorithm
+	// Calculate the lab angle from z position (Butler method)
+	alpha  = (double)Ejectile.GetZ() * GetField_corr(); 	// qb
+	alpha /= TMath::TwoPi(); 							// qb/2pi
+	alpha *= z;											// * z
+	alpha /= Ejectile.GetMomentumLab();					// over p
+	alpha  = TMath::ASin( alpha );
+	double theta_lab = alpha;
+	if( z_meas < 0 ) theta_lab += TMath::PiOver2();
+	Ejectile.SetThetaLab( theta_lab );
+#else
+	// Get the real z value at beam axis and lab angle (alpha method)
+	if( z_meas < 0 ) z = z_meas - r_meas * TMath::Tan( alpha );
+	else z = z_meas + r_meas * TMath::Tan( alpha );
+	Ejectile.SetThetaLab( TMath::PiOver2() + alpha );
+#endif
+
+	// Finally we recover the energy lost in the target
+	if( TMath::IsNaN( alpha + z ) ) {
+		Ejectile.SetEnergyLab( TMath::QuietNaN() );
+	}
+	else {
+		double dist = -0.5 * target_thickness / TMath::Abs( TMath::Sin( alpha ) );
+		double eloss = GetEnergyLoss( Ejectile.GetEnergyLab(), dist, iStopping[1], min_stopping_en[1], max_stopping_en[1] );
+		Ejectile.SetEnergyLab( Ejectile.GetEnergyLab() - eloss );
+	}
+
+	// Total energy of ejectile in centre of mass
+	e3_cm = Ejectile.GetEnergyTotLab();
+	e3_cm -= GetBeta() * Ejectile.GetMomentumLab() * TMath::Sin( alpha );
+	e3_cm *= GetGamma();
+	Ejectile.SetEnergyTotCM( e3_cm );
+	Recoil.SetEnergyTotCM( GetEnergyTotCM() - e3_cm );
+
+	// Theta_CM
+	theta_cm  = Ejectile.GetEnergyTotCM();
+	theta_cm -= Ejectile.GetEnergyTotLab() / GetGamma();
+	theta_cm /= GetBeta() * Ejectile.GetMomentumCM();
+	theta_cm  = TMath::ACos( theta_cm );
+	Recoil.SetThetaCM( theta_cm );
+	Ejectile.SetThetaCM( TMath::Pi() - theta_cm );
+
+	// Ex
+	Ex  = TMath::Power( GetEnergyTotCM(), 2.0 );
+	Ex -= 2.0 * GetEnergyTotCM() * Ejectile.GetEnergyTotCM();
+	Ex += TMath::Power( Ejectile.GetMass(), 2.0 );
+	Ex  = TMath::Sqrt( Ex ) - Recoil.GetMass();
+	Recoil.SetEx( Ex );
+	Ejectile.SetEx( 0.0 );
+
+	// Phi - TODO: This depends on the direction of the field!
+	if( phi_meas < 0 ) phi_meas += TMath::TwoPi();
+	phi = phi_meas * z / z_meas + TMath::Pi();
+	if( phi > TMath::TwoPi() ) phi -= TMath::TwoPi();
+
+
+	// Debug output
+	if( z > 0 || z < 0 ){
+
+		//std::cout << "z_meas = " << z_meas << std::endl;
+		//std::cout << "z_corr = " << z << std::endl;
+		//std::cout << "Ep = " << en << std::endl;
+		//std::cout << "alpha = " << alpha*TMath::RadToDeg() << std::endl;
+		//std::cout << "e3_cm = " << e3_cm << std::endl;
+		//std::cout << "e4_cm = " << Recoil.GetEnergyTotCM() << std::endl;
+		//std::cout << "etot_cm = " << GetEnergyTotCM() << std::endl;
+		//std::cout << "etot_lab = " << GetEnergyTotLab() << std::endl;
+		//std::cout << "gamma = " << GetGamma() << std::endl;
+		//std::cout << "beta = " << GetBeta() << std::endl;
+		//std::cout << "theta_cm = " << Recoil.GetThetaCM()*TMath::RadToDeg() << std::endl;
+		//std::cout << "Ex = " << Recoil.GetEx() << std::endl;
+		//std::cout << std::endl;
+
+	}
+
+	return;
+
+}
 
