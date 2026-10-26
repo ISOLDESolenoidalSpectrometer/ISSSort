@@ -1116,15 +1116,23 @@ bool ISSReaction::ReadStoppingPowers( std::string isotope1, std::string isotope2
 	std::unique_ptr<TCanvas> c = std::make_unique<TCanvas>();
 	c->SetLogx();
 	g->Draw("A*");
-	std::string pdfname = srimfilename.substr( 0, srimfilename.find_last_of(".") );
-	if( electriconly ) pdfname += "_dedx_e.pdf";
-	else if( nuclearonly ) pdfname += "_dedx_n.pdf";
-	else pdfname += "_dedx.pdf";
-	c->SaveAs( pdfname.c_str() );
-	//c->SetLogy();
-	r->Draw("A*");
-	pdfname = srimfilename.substr( 0, srimfilename.find_last_of(".") ) + "_range.pdf";
-	c->SaveAs( pdfname.c_str() );
+	std::string pdfname_base = srimfilename.substr( 0, srimfilename.find_last_of(".") );
+	if( electriconly ) {
+		std::string pdfname = pdfname_base + "_dedx_e.pdf";
+		c->SaveAs( pdfname.c_str() );
+	}
+	else if( nuclearonly ) {
+		std::string pdfname = pdfname_base + "_dedx_n.pdf";
+		c->SaveAs( pdfname.c_str() );
+	}
+	else {
+		std::string pdfname = pdfname_base + "_dedx.pdf";
+		c->SaveAs( pdfname.c_str() );
+		r->Draw("A*");
+		c->SetLogy();
+		pdfname = pdfname_base + "_range.pdf";
+		c->SaveAs( pdfname.c_str() );
+	}
 
 	input_file.close();
 
