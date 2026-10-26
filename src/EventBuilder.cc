@@ -449,6 +449,9 @@ unsigned long ISSEventBuilder::BuildEvents() {
 
 			}
 
+			// Check if we are building for energy calibrations
+			if( no_energy_cal ) myenergy = asic_data->GetAdcValue();
+
 			// If it's below zero in energy, consider it below threshold
 			if( myenergy < 0 ) mythres = false;
 
@@ -516,7 +519,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 		// -------------------------------------------- //
 		// Find recoils and other things in VME systems //
 		// -------------------------------------------- //
-		else if( in_data->IsVme() ) {
+		else if( in_data->IsVme() && !array_evts_only ) {
 
 			// Check if it is Meystec or CAEN
 			if( in_data->IsCaen() ) {
@@ -543,7 +546,7 @@ unsigned long ISSEventBuilder::BuildEvents() {
 			myclipped = vme_data->IsClipped();
 
 			// New calibration supplied
-			if( overwrite_cal ) {
+			if( overwrite_cal || no_energy_cal ) {
 
 				std::string entype = cal->VmeType( myvme, mymod, mych );
 				unsigned short adc_value = 0;
@@ -556,7 +559,10 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				else if( entype == "Qdiff" ){
 					adc_value = vme_data->GetQdiff();
 				}
-				myenergy = cal->VmeEnergy( myvme, mymod, mych, adc_value );
+
+				// Check if we are building for energy calibrations
+				if( no_energy_cal ) myenergy = adc_value;
+				else myenergy = cal->VmeEnergy( myvme, mymod, mych, adc_value );
 
 				if( adc_value < cal->VmeThreshold( myvme, mymod, mych ) )
 					mythres = false;
@@ -1095,13 +1101,17 @@ unsigned long ISSEventBuilder::BuildEvents() {
 				// Build array events, recoils, etc
 				//----------------------------------
 				ArrayFinder();		// add an ArrayEvt for each n/p pair
-				RecoilFinder();		// add a RecoilEvt for each dE-E
-				MwpcFinder();		// add an MwpcEvt for pair of TAC events
-				ElumFinder();		// add an ElumEvt for each S1 event
-				ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
-				GammaRayFinder();	// add a GammaRay event for ScintArray/HPGe events
-				LumeFinder();		// add a LumeEvt for each LUME
-				CdFinder();			// add a CDEvt for CD
+				if( !array_evts_only ) {
+					
+					RecoilFinder();		// add a RecoilEvt for each dE-E
+					MwpcFinder();		// add an MwpcEvt for pair of TAC events
+					ElumFinder();		// add an ElumEvt for each S1 event
+					ZeroDegreeFinder();	// add a ZeroDegreeEvt for each dE-E
+					GammaRayFinder();	// add a GammaRay event for ScintArray/HPGe events
+					LumeFinder();		// add a LumeEvt for each LUME
+					CdFinder();			// add a CDEvt for CD
+
+				}
 
 				// ------------------------------------
 				// Add timing and fill the ISSEvts tree
@@ -1511,6 +1521,10 @@ void ISSEventBuilder::ArrayFinder() {
 
 				}
 			}
+
+			// A check here if we are forcing 1v1 hits
+			if( force_1v1_hits && ( pindex.size() != 1 || nindex.size() != 1 ) )
+			   continue;
 
 			// Easy case, p == 1 vs n == 1
 			if( pindex.size() == 1 && nindex.size() == 1 ) {

@@ -3315,7 +3315,7 @@ unsigned long ISSHistogrammer::FillHists() {
 			else array_evt = read_evts->GetArrayEvt(j);
 
 			// Do the reaction
-			react->MakeReaction( array_evt->GetPosition(), array_evt->GetEnergy() );
+			react->MakeReaction( array_evt );
 
 			// Setup the output tree if user wants it
 			if( react->RxTreeEnabled() ) {
@@ -5027,7 +5027,7 @@ unsigned long ISSHistogrammer::FillHists() {
 		bool update_progress = false;
 		if( n_entries < 200 )
 			update_progress = true;
-		else if( i % (n_entries/100) == 0 || i+1 == n_entries )
+		else if( i % (n_entries/1000) == 0 || i+1 == n_entries )
 			update_progress = true;
 
 		if( update_progress ) {

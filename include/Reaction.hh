@@ -25,6 +25,7 @@
 #include "TGraph.h"
 #include "Math/RootFinder.h"
 #include "Math/Functor.h"
+#include "Math/Interpolator.h"
 #include "TSpline.h"
 
 // Settings header
@@ -194,9 +195,11 @@ public:
 	}///< Getter for the reaction file location
 
 	// This is the function called event-by-event
-	void	MakeReaction( TVector3 vec, double en );///< Called event-by-event for transfer reactions
+	void	MakeReaction( std::shared_ptr<ISSArrayEvt> array_evt );///< Called event-by-event for transfer reactions
 	void	SimulateReaction( TVector3 vec );///< Setup your particles, then call this with the ejectile detection position
-	double	SimulateDecay( TVector3 vec, double en, int detector = 0 );///< Called during the autocalibration process with alphas
+	double	SimulateDecay( std::shared_ptr<ISSArrayEvt> array_evt, double en );///< Called during the autocalibration process with alphas
+	double	SimulateDecay( std::shared_ptr<ISSElumEvt> elum_evt, double en );///< Called during the autocalibration process with alphas
+	double	SimulateDecay( TVector3 vec, double en, double dl, int detector = 0 );///< Called during the autocalibration process with alphas
 	double	SimulateEmission( double en, double theta_lab, double phi_lab, int detector = 0 );///< Called during the simulation of particle emission
 
 	// Getters
@@ -207,7 +210,12 @@ public:
 	inline double GetField(){ return Mfield; };///< Getter for the magnetic field strength
 	inline double GetField_corr(){ return Mfield*T_to_mm; };///< Calculates magnetic field strength in MeV/ e*mm*c
 	inline double GetArrayDistance(){ return z0; };///< Getter for the distance between the array and first silicon wafer
-	inline double GetArrayDeadlayer(){ return deadlayer; };		///< Getter for the array dead layer
+	inline double GetArrayDeadlayer( unsigned char mod = 0, unsigned char row = 0, char face = 'A' ){
+		if( mod < set->GetNumberOfArrayModules() && row < set->GetNumberOfArrayRows() && ( face == 'A' || face == 'B' ) ){
+			return deadlayer[mod][row][face-'A'];
+		}
+		else return 0.0;
+	};		///< Getter for the array dead layer
 	inline double GetELUMDistance(){ return elum_z; };			///< Getter for the distance between the target and the ELUM silicon
 	inline double GetELUMInnerRadius(){ return elum_rin; };		///< Getter for the ELUM inner radius
 	inline double GetELUMOuterRadius(){ return elum_rout; };	///< Getter for the ELUM outer radius
@@ -499,7 +507,12 @@ public:
 	// Setters
 	inline void	SetField( double m ){ Mfield = m; };					///< Setter for the magnetic field strength
 	inline void	SetArrayDistance( double d ){ z0 = d; };				///< Setter for the distance between the target and first silicon wafer of the array
-	inline void	SetArrayDeadlayer( double d ){ deadlayer = d; };		///< Setter for the array dead layer
+	inline void	SetArrayDeadlayer( unsigned char mod, unsigned char row, char face, double d ){
+		if( mod < set->GetNumberOfArrayModules() &&
+		    row < set->GetNumberOfArrayRows() &&
+		    ( face == 'A' || face == 'B' ) )
+		deadlayer[row][mod][face-'A'] = d;
+	};		///< Setter for the array dead layer
 	inline void	SetELUMDistance( double d ){ elum_z = d; };				///< Setter for the distance between the target and ELUM silicon
 	inline void	SetELUMDeadlayer( double d ){ elum_deadlayer = d; };	///< Setter for the ELUM dead layer
 
@@ -507,10 +520,13 @@ public:
 	inline void SetOffsetY( double y ){ y_offset = y; };	///< Setter for the target offset (Y)
 
 	// Energy loss and stopping powers
-	double GetEnergyLoss( double Ei, double dist, std::unique_ptr<TGraph> &g );///< Calculate the energy loss of a given energy of particle through a given material
-	double GetNuclearEnergyLoss( double Ei, double range, std::unique_ptr<TGraph> &gn, std::unique_ptr<TGraph> &gtot );///< Calculate the nuclear specific energy loss
+	double GetEnergyLoss( double Ei, double dist,
+				std::unique_ptr<ROOT::Math::Interpolator> &is,
+				double Emin, double Emax );///< Calculate the energy loss of a given energy of particle through a given material
 	bool ReadStoppingPowers( std::string isotope1, std::string isotope2,
 				std::unique_ptr<TGraph> &g, std::unique_ptr<TGraph> &r,
+				std::unique_ptr<ROOT::Math::Interpolator> &is,
+				std::unique_ptr<ROOT::Math::Interpolator> &ir,
 				bool electriconly = false, bool nuclearonly = false );///< Reads relevant SRIM files
 
 	// Pulse height correction
@@ -576,9 +592,9 @@ private:
 	std::map< std::string, double > ame_be;///< List of binding energies from AME2020
 
 	// Stuff with the magnet and detectors
-	double Mfield;			///< Magnetic field strength in Telsa
-	double z0;				///< Distance between the array and first silicon wafer
-	double deadlayer;		///< Dead layer on array silicon in mm of Si equivalent
+	double Mfield;												///< Magnetic field strength in Telsa
+	double z0;													///< Distance between the array and first silicon wafer
+	std::vector<std::vector<std::vector<double>>> deadlayer;	///< Dead layer on array silicon in mm of Si equivalent
 
 	// Reaction partners
 	ISSParticle Beam;		///< Beam particle
@@ -716,17 +732,29 @@ private:
 	double gamma_energy_cut[2];						///< Gamma-ray energy cut, lower and upper limits
 
 	// Stopping powers
-	std::vector<std::unique_ptr<TGraph>> gStopping;	///< Vector of pointer to relevant stopping-power TGraphs relevant to the reaction of study
-	std::vector<std::unique_ptr<TGraph>> gRange;	///< Vector of pointer to relevant range TGraphs relevant to the reaction of study
-	std::unique_ptr<TGraph> gPHC;					///< TGraph containing pulse-height correction information
-	std::unique_ptr<TGraph> gPHC_inv;				///< Flipped axes of gPHC
-	bool stopping;									///< Flag to indicate whether calculation of stopping powers has worked or not
-	bool phcurves;									///< Flag to indicate whether pulse height correction data was read successfully
-	std::vector<double> alpha_energies;				///< Energies of the alphas for calibration in a source run
+	std::vector<std::unique_ptr<TGraph>> gStopping;						///< Vector of pointer to relevant stopping-power TGraphs relevant to the reaction of study
+	std::vector<std::unique_ptr<TGraph>> gRange;						///< Vector of pointer to relevant range TGraphs relevant to the reaction of study
+	std::vector<double> min_stopping_en;								///< Vector of minimum values of energy for the interpolation
+	std::vector<double> max_stopping_en;								///< Vector of maximum values of energy for the interpolation
+	std::vector<std::unique_ptr<ROOT::Math::Interpolator>> iStopping;	///< Interpolation of stopping powers
+	std::vector<std::unique_ptr<ROOT::Math::Interpolator>> iRange;		///< Interpolation of ranges
+	std::unique_ptr<TGraph> gPHC;										///< TGraph containing pulse-height correction information
+	std::unique_ptr<TGraph> gPHC_inv;									///< Flipped axes of gPHC
+	std::unique_ptr<TGraph> gPHC_nuc;									///< Graph of nuclear stopping versus energy for the PHC calculation
+	std::unique_ptr<ROOT::Math::Interpolator> iPHC;						///< Interpolation of pulse height corrections
+	std::unique_ptr<ROOT::Math::Interpolator> iPHC_inv;					///< Interpolation of pulse height corrections with inverted axes
+	std::unique_ptr<ROOT::Math::Interpolator> iPHC_nuc;					///< Interpolation of nuclear stopping powers for pulse height corrections
+	double min_PHC_en, max_PHC_en = 1e5;								///< Energy range for PHC
+	bool stopping;														///< Flag to indicate whether calculation of stopping powers has worked or not
+	bool phcurves;														///< Flag to indicate whether pulse height correction data was read successfully
+	std::vector<double> alpha_energies;									///< Energies of the alphas for calibration in a source run
 
 
 	// Flag in case it's an alpha source
 	bool flag_source;	///< Flag in case it's an alpha source run
+
+	// Flag for printing a warning about stopping powers
+	bool flag_srim_range = false;
 
 };
 

@@ -494,10 +494,10 @@ int ISSArrayEvt::FindNID( double phi ){
 	if( phi > TMath::TwoPi() ) phi -= TMath::TwoPi();
 
 	// Check if we are on side A or B
-	bool sideB = false;
+	bool faceB = false;
 	if( phi > TMath::TwoPi() / 6. ) {
 
-		sideB = true;
+		faceB = true;
 		phi -= TMath::TwoPi() / 6.;
 
 	}
@@ -516,7 +516,7 @@ int ISSArrayEvt::FindNID( double phi ){
 
 		// check if we are in the strip
 		if( phi > vec_low.Phi() && phi < vec_upp.Phi() )
-			return i + 11 * sideB;
+			return i + 11 * faceB;
 
 	}
 

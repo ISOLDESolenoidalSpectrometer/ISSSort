@@ -575,7 +575,7 @@ void do_convert(){
 }
 
 
-bool do_build(){
+bool do_build( bool forcal = false ){
 
 	//-----------------------//
 	// Physics event builder //
@@ -605,7 +605,8 @@ bool do_build(){
 		name_output_file = name_input_file.substr( 0,
 												  name_input_file.find_last_of(".") );
 
-		name_output_file = datadir_name + "/" + name_output_file + "_events.root";
+		if( forcal ) name_output_file = datadir_name + "/" + name_output_file + "_events_forcal.root";
+		else name_output_file = datadir_name + "/" + name_output_file + "_events.root";
 		name_input_file = datadir_name + "/" + name_input_file + ".root";
 
 		// Check if the input file exists
@@ -667,6 +668,11 @@ bool do_build(){
 
 			eb.SetInputFile( name_input_file );
 			eb.SetOutput( name_output_file );
+			if( forcal ){
+				eb.NoEnergyCal();
+				eb.Force1v1Hits();
+				eb.ArrayOnly();
+			}
 			eb.BuildEvents();
 			eb.CloseOutput();
 
@@ -691,7 +697,7 @@ void do_hist(){
 	std::ifstream ftest;
 	std::string name_input_file;
 
-	std::vector<std::string> name_hist_files;
+	std::vector<std::string> name_list_files;
 
 	// Update settings and reaction files if given
 	if( overwrite_set ){
@@ -717,15 +723,15 @@ void do_hist(){
 		}
 		else ftest.close();
 
-		name_hist_files.push_back( name_input_file );
+		name_list_files.push_back( name_input_file );
 
 	}
 
 	// Only do something if there are valid files
-	if( name_hist_files.size() ) {
+	if( name_list_files.size() ) {
 
 		// Set input files
-		hist.SetInputFile( name_hist_files );
+		hist.SetInputFile( name_list_files );
 
 		// Generate a new reaction file if we don't have the settings from the input
 		if( !overwrite_set )
@@ -839,7 +845,7 @@ void do_pace4(){
 	std::ifstream ftest;
 	std::string name_input_file;
 
-	std::vector<std::string> name_hist_files;
+	std::vector<std::string> name_list_files;
 
 	// Add settings file
 	hist.AddSettings( myset );
@@ -861,15 +867,13 @@ void do_pace4(){
 		}
 		else ftest.close();
 
-		name_hist_files.push_back( name_input_file );
-
 	}
 
 	// Only do something if there are valid files
-	if( name_hist_files.size() ) {
+	if( name_list_files.size() ) {
 
 		hist.SetOutput( output_name );
-		hist.SetPace4File( name_hist_files );
+		hist.SetPace4File( name_list_files );
 		hist.FillHists();
 		hist.CloseOutput();
 
@@ -889,7 +893,7 @@ void do_autocal(){
 	std::cout << "\n +++ ISS Analysis:: processing AutoCalibration +++" << std::endl;
 
 	// Autocal debug messages
-	if ( autocal.GetDebugStatus() ){
+	if( autocal.GetDebugStatus() ){
 		std::cout << "  !  AUTOCAL DEBUG MODE" << std::endl;
 		std::cout << "  !  Fitting " << autocal.GetFitShapeName() << "s" << std::endl;
 		if ( autocal.OnlyManualFitStatus() ){
@@ -897,55 +901,55 @@ void do_autocal(){
 		}
 	}
 
-	TFile *rtest;
 	std::ifstream ftest;
 	std::string name_input_file;
 	std::string name_output_file = "autocal.root";
-	std::string hadd_file_list = "";
 	std::string name_results_file = "autocal_results.cal";
 	std::string name_sigmas_file = "autocal_sigmas.dat";
 
-	// Check each file
+	std::vector<std::string> name_list_files;
+
+	// We are going to chain all the event files now
 	for( unsigned int i = 0; i < input_names.size(); i++ ){
 
-	  // name of the input file as created in do_convert
-	  name_input_file = input_names.at(i).substr( input_names.at(i).find_last_of("/")+1);
-	  name_input_file = datadir_name + "/" + name_input_file + "_source.root";
+		name_input_file = input_names.at(i).substr( input_names.at(i).find_last_of("/")+1,
+												   input_names.at(i).length() - input_names.at(i).find_last_of("/")-1 );
+		name_input_file = name_input_file.substr( 0,
+												 name_input_file.find_last_of(".") );
+		name_input_file = datadir_name + "/" + name_input_file + "_events_forcal.root";
 
-		// Add to list if the converted file exists
+		// Add to list if the event file exists (if it doesn't it should have been rebuilt already)
 		ftest.open( name_input_file );
-		if( ftest.is_open() ) {
+		if( !ftest.is_open() ) {
 
-			ftest.close();
-			rtest = new TFile( name_input_file.data() );
-			if( !rtest->IsZombie() ) {
-				hadd_file_list += " " + name_input_file;
-			}
-			else {
-				std::cout << "Skipping " << name_input_file;
-				std::cout << ", it's broken" << std::endl;
-			}
-			rtest->Close();
+			std::cerr << name_input_file << " does not exist" << std::endl;
+			continue;
 
 		}
+		else ftest.close();
 
-		else {
-			std::cout << "Skipping " << name_input_file;
-			std::cout << ", file does not exist" << std::endl;
-		}
+		name_list_files.push_back( name_input_file );
 
 	}
 
-	// Perform the hadd (doesn't work on Windows)
-	std::string cmd = "hadd -k -T -v 0 -f ";
-	cmd += name_output_file;
-	cmd += hadd_file_list;
-	gSystem->Exec( cmd.data() );
+	// Only do something if there are valid files
+	if( name_list_files.size() ) {
 
-	// Give this file to the autocalibrator
-	if( autocal.SetOutputFile( name_output_file ) ) return;
-	autocal.DoFits( name_sigmas_file );
-	autocal.SaveCalFile( name_results_file );
+		// Set input files
+		autocal.SetInputFile( name_list_files );
+
+		// Give this file to the autocalibrator
+		if( autocal.SetOutputFile( name_output_file ) ) return;
+		autocal.FillHists();
+		autocal.DoFits( name_sigmas_file );
+		autocal.SaveCalFile( name_results_file );
+
+		// Close
+		autocal.CloseOutput();
+
+	}
+
+	return;
 
 }
 
@@ -960,7 +964,7 @@ void do_relcal(){
 	std::ifstream ftest;
 	std::string name_input_file;
 
-	std::vector<std::string> name_hist_files;
+	std::vector<std::string> name_list_files;
 
 	// Update settings and calibration files (required)
 	rc.AddSettings( myset );
@@ -984,17 +988,17 @@ void do_relcal(){
 		}
 		else ftest.close();
 
-		name_hist_files.push_back( name_input_file );
+		name_list_files.push_back( name_input_file );
 
 	}
 
 	// Only do something if there are valid files
-	if( name_hist_files.size() ) {
+	if( name_list_files.size() ) {
 
 		rc.SetPsideTagId( relcal_pid );
 		rc.SetNsideTagId( relcal_nid );
 		rc.SetOutput( output_name );
-		rc.SetInputFile( name_hist_files );
+		rc.SetInputFile( name_list_files );
 		rc.FillHists();
 		rc.CloseOutput();
 
@@ -1063,7 +1067,7 @@ int main( int argc, char *argv[] ){
 	// Check if this is a source run
 	if( flag_autocal ){
 
-		flag_source = true;
+		flag_source = false;
 
 		if ( name_autocal_file.length() > 0 ){
 
@@ -1298,7 +1302,7 @@ int main( int argc, char *argv[] ){
 
 	myset = std::make_shared<ISSSettings>( name_set_file );
 	mycal = std::make_shared<ISSCalibration>( name_cal_file, myset );
-	myreact = std::make_shared<ISSReaction>( name_react_file, myset, flag_source );
+	myreact = std::make_shared<ISSReaction>( name_react_file, myset, ( flag_source || flag_autocal ) );
 
 	if (flag_print_settings)
 		myset->PrintSettings();
@@ -1348,12 +1352,17 @@ int main( int argc, char *argv[] ){
 		if( !flag_source && !flag_autocal && !flag_relcal ) {
 
 			// Build events and if successful, do histogramming
-			if( do_build() ) do_hist();
+			if( do_build( false ) ) do_hist();
 
 		}
 
 		// Autocal routine is run independently
-		else if( flag_autocal ) do_autocal();
+		else if( flag_autocal ) {
+
+			// Build events and if successful, do calibrations
+			if( do_build( true ) ) do_autocal();
+
+		}
 
 		// Relative calibration routine is run independently
 		else if( flag_relcal ) do_relcal();

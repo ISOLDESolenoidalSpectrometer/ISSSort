@@ -59,6 +59,15 @@ public:
 	inline bool 			GetNHit(){ return nhit; };
 	inline unsigned char	GetModule(){ return mod; };
 	inline unsigned char	GetRow(){ return row; };
+	inline char				GetFace(){
+		if( nid < 11 ) return 'A';
+		else return 'B';
+	};
+	inline std::string		GetWaferName(){
+		std::string wafername = std::to_string(mod) + "_";
+		wafername += std::to_string(row) + GetFace();
+		return wafername;
+	};
 
 	float		GetX();
 	float		GetY();
@@ -86,8 +95,8 @@ protected:
 	unsigned char	row;	///< row number of the silicon
 	float			pen;	///< p-side energy in keV
 	float 			nen;	///< n-side energy in keV
-	unsigned char	pid;	///< p-side strip id, from 0 - 511, i.e along all 4 wafers
-	unsigned char	nid;	///< n-side strip id, from 0 - 65, i.e. around all 6 sides
+	unsigned char	pid;	///< p-side strip id, from 0 - 127, i.e each pair of wafers in a row
+	unsigned char	nid;	///< n-side strip id, from 0 - 21, i.e. each pair of wafers in a row
 	double			ptime;	///< p-side timestamp
 	double			ntime;	///< n-side timestamp
 

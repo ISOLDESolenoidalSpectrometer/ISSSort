@@ -40,6 +40,8 @@ public:
 	inline unsigned int GetNumberOfArrayRows(){ return n_array_row; };
 	inline unsigned int GetNumberOfArrayPstrips(){ return n_array_pstrip; };
 	inline unsigned int GetNumberOfArrayNstrips(){ return n_array_nstrip; };
+	inline unsigned int GetNumberOfArrayPstripsPerRow(){ return n_array_pstrip; };
+	inline unsigned int GetNumberOfArrayNstripsPerRow(){ return 2*n_array_nstrip; };
 
 	// Array mapping
 	void ArrayMapping();

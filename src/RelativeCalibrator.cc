@@ -163,9 +163,9 @@ void ISSRelativeCalibrator::MakeHists(){
 
 		for( unsigned int j = 0; j < set->GetNumberOfArrayRows(); ++j ) {
 
-			array_pQ_nQ[i][j].resize( set->GetNumberOfArrayPstrips() );
+			array_pQ_nQ[i][j].resize( set->GetNumberOfArrayPstripsPerRow() );
 
-			for( unsigned int k = 0; k < set->GetNumberOfArrayPstrips(); ++k ) {
+			for( unsigned int k = 0; k < set->GetNumberOfArrayPstripsPerRow(); ++k ) {
 
 				hname  = "array_" + std::to_string(i) + "_" + std::to_string(j);
 				hname  += "_pQ_" + std::to_string(ptag) + "_nQ_" + std::to_string(k);
@@ -179,9 +179,9 @@ void ISSRelativeCalibrator::MakeHists(){
 
 			} // k
 
-			array_nQ_pQ[i][j].resize( set->GetNumberOfArrayNstrips()*2 );
+			array_nQ_pQ[i][j].resize( set->GetNumberOfArrayNstripsPerRow() );
 
-			for( unsigned int k = 0; k < set->GetNumberOfArrayNstrips()*2; ++k ) {
+			for( unsigned int k = 0; k < set->GetNumberOfArrayNstripsPerRow(); ++k ) {
 
 				hname  = "array_" + std::to_string(i) + "_" + std::to_string(j);
 				hname  += "_nQ_" + std::to_string(ntag) + "_pQ_" + std::to_string(k);
@@ -251,7 +251,7 @@ void ISSRelativeCalibrator::CalibratePsides() {
 			canv[i][j]->Print( (pdfname + "[").data() , "pdf" );
 
 			// Loop over all the strips
-			for( unsigned int k = 0; k < set->GetNumberOfArrayPstrips(); ++k ) {
+			for( unsigned int k = 0; k < set->GetNumberOfArrayPstripsPerRow(); ++k ) {
 
 				// Start with a fresh LinearFitter
 				plf->ClearPoints();
@@ -428,7 +428,7 @@ void ISSRelativeCalibrator::CalibrateNsides() {
 			poffset[i][j] = cal->GetAsicOffsets().at(pmod).at(pasic).at(pch);
 
 			// Loop over all the strips
-			for( unsigned int k = 0; k < set->GetNumberOfArrayNstrips()*2; ++k ) {
+			for( unsigned int k = 0; k < set->GetNumberOfArrayNstripsPerRow(); ++k ) {
 
 				// Start with a fresh LinearFitter
 				nlf->ClearPoints();
