@@ -544,7 +544,7 @@ float ISSCalibration::AsicWalk( unsigned int mod, unsigned int asic, float energ
 			// else calculate the walk using the defined function
 			else {
 
-				// Params for time walk function ROOT finder
+				// Params for time walk function root finder
 				for( unsigned int i = 0; i < nwalkpars; i++ ){
 
 					if( hit ) walk_params[i] = fAsicWalkHit1[mod][asic][i];

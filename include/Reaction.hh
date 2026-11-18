@@ -52,6 +52,11 @@ const double T_to_mm =   299.792458;	///< in units of 1/mm
 const double k_Si 	 =     2.88e-10;	///< k value - mm/e-h pair for PHC in silicon
 const double e0_Si 	 =     3.67e-03;	///< epsilon_0 for silicon for PHC in keV
 
+// CeBr3 geometry, fixed by the frame
+const double scint_halfwidth = 112.0;	///< z axis to the front face of the housings, in mm
+const double scint_pitch     =  56.0;	///< Housing-to-housing spacing, in mm
+const double scint_depth     =  25.0;	///< Front face of the housing to the centre of the crystal (1 mm window + half of 48 mm), in mm
+
 // Element names
 const std::vector<std::string> gElName = {
 	"n","H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg",
@@ -184,6 +189,9 @@ public:
 	std::shared_ptr<TCutG> CreateTCutG( std::ifstream *cut_file, std::string cut_name );
 	void ReadMassTables();///< Reads the AME2020 mass tables
 	void ReadReaction();///< Reads the reaction input file
+	void ReadScintArrayLayout( TEnv *config );///< Sets up the CeBr3 ring, leaving out the modules listed in ScintArray.MissingModules
+	void ComputeScintArrayGeometry();///< Calculates the centre of each fitted CeBr3 crystal from the layout and the array to target distance
+	double DopplerCorrection( double en, unsigned char id );///< Doppler corrects a CeBr3 gamma-ray energy for the recoil
 
 	void SetFile( std::string filename ){
 		fInputFile = filename;
@@ -212,6 +220,19 @@ public:
 	inline double GetELUMInnerRadius(){ return elum_rin; };		///< Getter for the ELUM inner radius
 	inline double GetELUMOuterRadius(){ return elum_rout; };	///< Getter for the ELUM outer radius
 	inline double GetELUMDeadlayer(){ return elum_deadlayer; };	///< Getter for the ELUM dead layer
+
+	// CeBr3 geometry
+	inline double GetScintArrayDistance(){ return scint_z; };	///< Getter for the z of the middle of the CeBr3 array
+	inline unsigned int GetNumberOfScintArrayCrystals(){ return scint_pos.size(); };	///< Getter for the number of CeBr3 crystal positions in the ring
+	inline bool IsScintArrayCrystalFitted( unsigned char i ){ return i < scint_fitted.size() && scint_fitted[i]; };	///< True if crystal i has a position
+	inline int GetScintArrayWall( unsigned char i ){ return i < scint_wall.size() ? scint_wall[i] : -1; };	///< Wall of crystal i: 0 = A (+x), 1 = Top (+y), 2 = B (-x), 3 = Bottom (-y), -1 = missing
+	inline int GetScintArraySlot( unsigned char i ){ return i < scint_slot.size() ? scint_slot[i] : -1; };	///< Slot of crystal i along its wall, counting round the ring (A bottom to top, Top A to B, B top to bottom, Bottom B to A)
+	inline int GetScintArrayRing( unsigned char i ){ return i < scint_ring.size() ? scint_ring[i] : -1; };	///< Ring of crystal i: 0 = downstream, 1 = upstream
+	inline TVector3 GetScintArrayPosition( unsigned char i ){ return scint_pos.at(i); };///< Getter for the centre of CeBr3 crystal i (index = crystal number - 1), in mm from the target
+	inline double GetScintArrayTheta( unsigned char i ){ return GetScintArrayPosition(i).Theta(); };	///< Polar angle of crystal i to the beam axis, radians
+	inline double GetScintArrayPhi( unsigned char i ){ return GetScintArrayPosition(i).Phi(); };		///< Azimuth of crystal i from wall A (+x) towards up (+y), radians
+	inline double GetScintArrayR( unsigned char i ){ return GetScintArrayPosition(i).Mag(); };		///< Distance from the target to the centre of crystal i, mm
+
 	inline double GetThetaCM(){ return Recoil.GetThetaCM(); };///< Getter for the CM angle of the recoil/ejectile
 	inline double GetThetaLab(){ return Ejectile.GetThetaLab(); };///< Getter for the lab angle of the ejectile
 	inline double GetDistance(){ return z; };///< Getter for the z distance as ejectile returns to axis
@@ -496,6 +517,13 @@ public:
 		else return 0;
 	};///< Getter for gamma energy cut, given by user in reaction file
 
+	// Excitation-energy gate for the Doppler-corrected gamma-ray spectrum
+	inline double GetGammaExGate( unsigned char i ){
+		// i = 0 for lower limit and i = 1 for upper limit
+		if( i < 2 ) return gamma_ex_gate[i];
+		else return 0;
+	};///< Getter for the Ex gate on gamma_array_cut<n>_dc_exgate, given by user in reaction file
+
 	// Setters
 	inline void	SetField( double m ){ Mfield = m; };					///< Setter for the magnetic field strength
 	inline void	SetArrayDistance( double d ){ z0 = d; };				///< Setter for the distance between the target and first silicon wafer of the array
@@ -503,6 +531,7 @@ public:
 	inline void	SetELUMDistance( double d ){ elum_z = d; };				///< Setter for the distance between the target and ELUM silicon
 	inline void	SetELUMDeadlayer( double d ){ elum_deadlayer = d; };	///< Setter for the ELUM dead layer
 
+	inline void	SetScintArrayDistance( double d ){ scint_z = d; ComputeScintArrayGeometry(); };	///< Setter for the z of the middle of the CeBr3 array
 	inline void SetOffsetX( double x ){ x_offset = x; };	///< Setter for the target offset (X)
 	inline void SetOffsetY( double y ){ y_offset = y; };	///< Setter for the target offset (Y)
 
@@ -688,6 +717,15 @@ private:
 	double elum_rout;		///< outer radius of the ELUM detector
 	double elum_deadlayer;	///< Dead layer on ELUM in mm of Si equivalent
 
+	// CeBr3 geometry
+	double scint_z;						///< z of the middle of the CeBr3 array, in mm
+	std::vector<TVector3> scint_pos;	///< Centre of each crystal, in mm from the target (index = crystal number - 1)
+	std::vector<bool> scint_fitted;		///< True if the crystal is fitted, i.e. has a position
+	std::vector<bool> scint_warned;		///<! True once the "no position" warning has been printed for a crystal
+	std::vector<int> scint_wall;		///< Wall of each crystal: 0 = A (+x), 1 = Top (+y), 2 = B (-x), 3 = Bottom (-y), -1 = not fitted
+	std::vector<int> scint_slot;		///< Slot of each crystal along its wall
+	std::vector<int> scint_ring;		///< Ring of each crystal: 0 = downstream, 1 = upstream
+
 	// Recoil detector type
 	unsigned int recoil_evt_type;	///< Which type of recoil detector are we using?
 									///< 0: is the normal recoil detector (QQQ1 or S14) with data in recoil_evt
@@ -714,6 +752,7 @@ private:
 	std::shared_ptr<TCutG> fission_cutH;			///< Heavy fission fragment cut
 	std::shared_ptr<TCutG> fission_cutL;			///< Light fission fragment cut
 	double gamma_energy_cut[2];						///< Gamma-ray energy cut, lower and upper limits
+	double gamma_ex_gate[2];						///< Ex gate for the Ex-gated Doppler-corrected gamma-ray spectrum
 
 	// Stopping powers
 	std::vector<std::unique_ptr<TGraph>> gStopping;	///< Vector of pointer to relevant stopping-power TGraphs relevant to the reaction of study

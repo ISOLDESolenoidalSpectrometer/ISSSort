@@ -1,5 +1,7 @@
 #include "Reaction.hh"
 
+#include <sstream>
+
 // Uncomment this below to switch to the Butler algorithm (currently in testing)
 #define butler_algorithm
 
@@ -181,7 +183,7 @@ ISSReaction::ISSReaction( std::string filename, std::shared_ptr<ISSSettings> mys
 	alpha_energies.push_back( 5478.62 );
 	alpha_energies.push_back( 5795.04 );
 
-	// Setup the ROOT finder algorithms
+	// Set up the root-finder algorithms
 #ifdef butler_algorithm
 	// Root finder algorithm - The Peter Butler method
 	double low_limit = z0;
@@ -780,6 +782,10 @@ void ISSReaction::ReadReaction() {
 	gamma_energy_cut[0] = config->GetValue( "GammaCut_Energy.Min", 0.0 );	// lower limit of the gamma-ray energy for gating spectra (0 keV)
 	gamma_energy_cut[1] = config->GetValue( "GammaCut_Energy.Max", 1e5 );	// upper limit of the gamma-ray energy for gating spectra (100 MeV)
 
+	// Ex gate for the Ex-gated, Doppler-corrected gamma-ray spectrum (gamma_array_cut<n>_dc_exgate)
+	gamma_ex_gate[0] = config->GetValue( "GammaCut_Ex.Min", 0.0 );		// lower limit of Ex in keV (default 0 keV)
+	gamma_ex_gate[1] = config->GetValue( "GammaCut_Ex.Max", 1000.0 );	// upper limit of Ex in keV (default 1000 keV)
+
 	// Target thickness and offsets
 	target_thickness = config->GetValue( "TargetThickness", 0.200 ); // units of mg/cm^2
 	x_offset = config->GetValue( "TargetOffset.X", 0.0 );	// of course this should be 0.0 if you centre the beam! Units of mm, vertical
@@ -790,6 +796,20 @@ void ISSReaction::ReadReaction() {
 	elum_rin  		= config->GetValue( "ELUM.InnerRadius", 24.0 ); // units of mm
 	elum_rout 		= config->GetValue( "ELUM.OuterRadius", 48.0 ); // units of mm
 	elum_deadlayer	= config->GetValue( "ELUM.Deadlayer", 0.00095 ); // units of mm of Si equivalent
+
+	// CeBr3 (ScintArray) geometry
+	// InnerHalfWidth, Pitch and Depth are fixed constants in Reaction.hh
+	ReadScintArrayLayout( config );	// which wall, slot and ring each crystal is fitted in
+	if( config->Defined( "ScintArray.Distance" ) ) {
+		scint_z = config->GetValue( "ScintArray.Distance", 0.0 );	// units of mm, z of the middle of the array, between the two rings
+		ComputeScintArrayGeometry();
+	}
+	else {
+		scint_z = 0.0;
+		scint_pos.clear();
+		scint_fitted.clear();
+		std::cout << "ScintArray.Distance not given in the reaction file: no CeBr3 geometry, so no Doppler correction" << std::endl;
+	}
 
 	// MWPC TAC gates
 	for ( unsigned int i = 0; i < 2; ++i ) {
@@ -1209,6 +1229,140 @@ double ISSReaction::GetPulseHeightCorrection( double Ei, bool detected ) {
 
 	if( detected ) return gPHC_inv->Eval(Ei); // get actual ion energy from PH (detected energy)
 	else return gPHC->Eval(Ei); // get PH for actual ion energy
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// Sets up the ring of CeBr3 modules.
+/// A module is one slot on a wall and holds two crystals, downstream and upstream.
+///   wall A   (+x) slots 0-4, bottom to top:     crystals 0-9
+///   Top      (+y) slots 0-3, from A to B:       crystals 10-17
+///   wall B   (-x) slots 0-4, top to bottom:     crystals 18-27
+///   Bottom   (-y) slots 0-3, from B to A:       crystals 28-35
+/// within a module the even crystal is downstream from the target.
+/// Modules that are not fitted are listed in the reaction file, such as
+///   ScintArray.MissingModules: Bottom, A 2
+
+/// \param[in] config 
+void ISSReaction::ReadScintArrayLayout( TEnv *config ) {
+
+	const int n_slots[4] = { 5, 4, 5, 4 };		// modules along each wall
+
+	// Missing modules from the reaction file
+	const std::string wall_name[4] = { "A", "Top", "B", "Bottom" };
+	std::vector<std::pair<int,int>> missing;	// wall, slot (-1 = the whole wall)
+	std::stringstream list( config->GetValue( "ScintArray.MissingModules", "" ) );
+	std::string item;
+	while( std::getline( list, item, ',' ) ) {
+
+		std::stringstream words( item );
+		std::string name;
+		int slot;
+		if( !( words >> name ) ) continue;			// empty entry
+		if( !( words >> slot ) ) slot = -1;			// no slot given: the whole wall
+
+		int w = -1;
+		for( int k = 0; k < 4; ++k )
+			if( name == wall_name[k] ) w = k;
+
+		if( w < 0 ) {
+			std::cerr << "ScintArray.MissingModules: incorrect entry " << name << ", use A, Top, B or Bottom" << std::endl;
+			continue;
+		}
+		missing.push_back( { w, slot } );
+	}
+
+	// The full ring
+	scint_wall.clear();
+	scint_slot.clear();
+	scint_ring.clear();
+	for( int w = 0; w < 4; ++w ) {
+		for( int slot = 0; slot < n_slots[w]; ++slot ) {
+
+			// Is this module missing?
+			bool is_missing = false;
+			for( auto &m : missing )
+				if( m.first == w && ( m.second < 0 || m.second == slot ) ) is_missing = true;
+
+			for( int ring = 0; ring < 2; ++ring ) {
+				scint_wall.push_back( is_missing ? -1 : w );	// -1 = not fitted, so no position
+				scint_slot.push_back( slot );
+				scint_ring.push_back( ring );
+			}
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// Calculates the centre of each fitted crystal in the CeBr3 scintillator array,
+/// from the wall, slot and ring.
+
+void ISSReaction::ComputeScintArrayGeometry() {
+
+	unsigned int n_crystals = scint_wall.size();
+	scint_pos.assign( n_crystals, TVector3( 0, 0, 0 ) );
+	scint_fitted.assign( n_crystals, false );
+
+	double r_crystal = scint_halfwidth + scint_depth;	// z axis to crystal centre
+	double z_ring[2] = { scint_z + 0.5 * scint_pitch, scint_z - 0.5 * scint_pitch };	// downstream, upstream
+
+	unsigned int n_wall[4] = { 0, 0, 0, 0 };
+	for( unsigned int i = 0; i < n_crystals; ++i ) {
+
+		if( scint_wall[i] < 0 ) continue;	// not fitted
+
+		double side = ( scint_slot[i] - 2.0 ) * scint_pitch;		// up wall A from the bottom row
+		double across = ( 1.5 - scint_slot[i] ) * scint_pitch;	// across the top from wall A
+		double z = z_ring[ scint_ring[i] ];
+
+		if( scint_wall[i] == 0 ) scint_pos[i] = TVector3( r_crystal, side, z );			// side wall A, bottom to top
+		else if( scint_wall[i] == 1 ) scint_pos[i] = TVector3( across, r_crystal, z );	// top wall, A to B
+		else if( scint_wall[i] == 2 ) scint_pos[i] = TVector3( -r_crystal, -side, z );	// side wall B, top to bottom
+		else scint_pos[i] = TVector3( -across, -r_crystal, z );						// bottom wall, B to A
+
+		scint_fitted[i] = true;
+		n_wall[ scint_wall[i] ]++;
+
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// Event by event Doppler correction using the recoil velocity and the crystal position.
+/// \param[in] en The gamma-ray energy measured in the lab, in keV
+/// \param[in] id The CeBr3 crystal index (crystal number - 1)
+/// \return The gamma-ray energy in the rest frame of the recoil, in keV
+double ISSReaction::DopplerCorrection( double en, unsigned char id ) {
+
+	// No geometry for this crystal, so returns the energy unchanged
+	if( !IsScintArrayCrystalFitted( id ) ) {
+		std::cerr << "Warning: CeBr3 crystal " << (int)id << " has no position, so it is not Doppler corrected" << std::endl;
+		return en;
+	}
+
+	// Recoil direction in the lab
+	double theta_r = Recoil.GetThetaLab();
+	double phi_r = phi + TMath::Pi();
+
+	// Crystal direction from the target
+	double theta_c = GetScintArrayTheta( id );
+	double phi_c = GetScintArrayPhi( id );
+
+	// Unit vector along the recoil direction: ( sin(theta) cos(phi), sin(theta) sin(phi), cos(theta) )
+	double rx = TMath::Sin( theta_r ) * TMath::Cos( phi_r );
+	double ry = TMath::Sin( theta_r ) * TMath::Sin( phi_r );
+	double rz = TMath::Cos( theta_r );
+
+	// Unit vector from the target to the centre of the crystal
+	double cx = TMath::Sin( theta_c ) * TMath::Cos( phi_c );
+	double cy = TMath::Sin( theta_c ) * TMath::Sin( phi_c );
+	double cz = TMath::Cos( theta_c );
+
+	// Angle between the recoil and the crystal from the dot product of the two unit vectors:
+	// cos(psi) = rx*cx + ry*cy + rz*cz
+	//          = cos(theta_r) cos(theta_c) + sin(theta_r) sin(theta_c) cos(phi_r - phi_c)
+	double cos_psi = rx * cx + ry * cy + rz * cz;
+
+	return en * Recoil.GetGamma() * ( 1.0 - Recoil.GetBeta() * cos_psi );
 
 }
 
@@ -1690,6 +1844,19 @@ void ISSReaction::MakeReaction( TVector3 vec, double en ){
 		Ex  = TMath::Sqrt( Ex ) - Recoil.GetMass();
 		Recoil.SetEx( Ex );
 		Ejectile.SetEx( 0.0 );
+
+		// Calculate the theta angle of the recoil in the lab frame
+		// Please note that Recoil.GetMomentumCM() uses the g.s. mass
+		double p_cm = Ejectile.GetMomentumCM();
+		double cos_4 = TMath::Cos( Recoil.GetThetaCM() );
+		double sin_4 = TMath::Sin( Recoil.GetThetaCM() );
+
+		double p4_perp = p_cm * sin_4;
+		double p4_z = GetGamma() * ( p_cm * cos_4 + GetBeta() * Recoil.GetEnergyTotCM() );
+		double e4_lab = GetGamma() * ( Recoil.GetEnergyTotCM() + GetBeta() * p_cm * cos_4 );
+
+		Recoil.SetThetaLab ( TMath::ATan( p4_perp / p4_z ) );
+		Recoil.SetEnergyLab( e4_lab - Recoil.GetMass() - Recoil.GetEx() );
 
 		// Phi - TODO: This depends on the direction of the field!
 		if( phi_meas < 0 ) phi_meas += TMath::TwoPi();

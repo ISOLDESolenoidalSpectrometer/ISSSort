@@ -437,7 +437,6 @@ private:
 	std::unique_ptr<ISSRxEvent> rx_evts; ///< Container for event-by-event reaction data
 	std::unique_ptr<ISSRxInfo> rx_info; ///< Container for reaction info (doesn't change for each event)
 
-
 	// Progress bar
 	bool _prog_;
 	std::shared_ptr<TGProgressBar> prog;
@@ -760,9 +759,13 @@ private:
 	TH1F *gamma_fission, *gamma_recoil, *gamma_recoilT, *gamma_array;
 	TH1F *gamma_gamma_td, *gamma_fission_td, *gamma_recoil_td, *gamma_array_td;
 	TH2F *gamma_gamma_fission, *gamma_gamma_recoil, *gamma_gamma_array;
-	TH2F *gamma_Ex_ebis, *gamma_Ex_fission, *gamma_Ex_recoilT, *gamma_Ex_recoil;
+	TH2F *gamma_Ex_ebis, *gamma_Ex_ebis_dc, *gamma_Ex_fission, *gamma_Ex_recoilT, *gamma_Ex_recoil, *gamma_Ex_recoil_dc;
 	std::vector<TH1F*> gamma_array_cut;
 	std::vector<TH2F*> gamma_gamma_array_cut;
+	std::vector<TH2F*> gamma_Ex_cut_dc;
+	std::vector<TH1F*> gamma_array_cut_dc;
+	std::vector<TH1F*> gamma_array_cut_dc_exgate;
+	std::vector<TH2F*> gamma_gamma_array_cut_dc;
 
 };
 
