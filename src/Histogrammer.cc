@@ -2197,6 +2197,9 @@ void ISSHistogrammer::MakeHists() {
 		gamma_Ex_ebis = new TH2F( "gamma_Ex_ebis", "Gamma-ray energy vs excitation energy, time-random subtracted, EBIS on-off;E_{#gamma} (keV);E_{x} (keV);Counts",
 								 react->HistExBins(), react->HistExMin(), react->HistExMax(),
 								 react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax() );
+		gamma_Ex_ebis_dc = new TH2F( "gamma_Ex_ebis_dc", "Gamma-ray energy (Doppler corrected for the recoil, CeBr3 only) vs excitation energy, time-random subtracted, EBIS on-off;E_{#gamma} (keV);E_{x} (keV);Counts",
+								 react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax(),
+								 react->HistExBins(), react->HistExMin(), react->HistExMax() );
 		gamma_Ex_fission = new TH2F( "gamma_Ex_fission", "Gamma-ray vs excitation energy, time-random subtracted, gated on fission fragments;E_{#gamma} (keV);E_{x} (keV);Counts",
 									react->HistExBins(), react->HistExMin(), react->HistExMax(),
 									react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax() );
@@ -2206,11 +2209,18 @@ void ISSHistogrammer::MakeHists() {
 		gamma_Ex_recoil = new TH2F( "gamma_Ex_recoil", "Gamma-ray vs excitation energy, time-random subtracted, gated on recoils in energy cut;E_{#gamma} (keV);E_{x} (keV);Counts",
 								   react->HistExBins(), react->HistExMin(), react->HistExMax(),
 								   react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax() );
+		gamma_Ex_recoil_dc = new TH2F( "gamma_Ex_recoil_dc", "Gamma-ray (Doppler corrected for the recoil, CeBr3 only) vs excitation energy, time-random subtracted, gated on recoils in energy cut;E_{#gamma} (keV);E_{x} (keV);Counts",
+								   react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax(),
+								   react->HistExBins(), react->HistExMin(), react->HistExMax() );
 
 
 		// Check the E vs z cuts from the user
 		gamma_array_cut.resize( react->GetNumberOfEvsZCuts() );
 		gamma_gamma_array_cut.resize( react->GetNumberOfEvsZCuts() );
+		gamma_Ex_cut_dc.resize( react->GetNumberOfEvsZCuts() );
+		gamma_array_cut_dc.resize( react->GetNumberOfEvsZCuts() );
+		gamma_array_cut_dc_exgate.resize( react->GetNumberOfEvsZCuts() );
+		gamma_gamma_array_cut_dc.resize( react->GetNumberOfEvsZCuts() );
 		for( unsigned int i = 0; i < react->GetNumberOfEvsZCuts(); ++i ){
 
 			hname = "gamma_array_cut" + std::to_string(i);
@@ -2223,6 +2233,33 @@ void ISSHistogrammer::MakeHists() {
 			htitle = "Gamma-ray coincidence matrix, gated on array events in cut " + std::to_string(i);
 			htitle += ", time-random subtracted;Energy (keV);Energy (keV);Counts";
 			gamma_gamma_array_cut[i] = new TH2F( hname.data(), htitle.data(),
+												react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax(),
+												react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax() );
+
+			hname = "gamma_Ex_cut" + std::to_string(i) + "_dc";
+			htitle = "Gamma-ray energy (Doppler corrected for the recoil, CeBr3 only) vs excitation energy, gated on array events in cut " + std::to_string(i);
+			htitle += ", time-random subtracted;E_{#gamma} (keV);E_{x} (keV);Counts";
+			gamma_Ex_cut_dc[i] = new TH2F( hname.data(), htitle.data(),
+										  react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax(),
+										  react->HistExBins(), react->HistExMin(), react->HistExMax() );
+
+			hname = "gamma_array_cut" + std::to_string(i) + "_dc";
+			htitle = "Gamma-ray singles (Doppler corrected for the recoil, CeBr3 only), gated on array events in cut " + std::to_string(i);
+			htitle += ", time-random subtracted;E_{#gamma} (keV);Counts";
+			gamma_array_cut_dc[i] = new TH1F( hname.data(), htitle.data(),
+											 react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax() );
+
+			hname = "gamma_array_cut" + std::to_string(i) + "_dc_exgate";
+			htitle = "Gamma-ray singles (Doppler corrected for the recoil, CeBr3 only), gated on array events in cut " + std::to_string(i);
+			htitle += Form( " with %.0f < E_{x} < %.0f keV, time-random subtracted;E_{#gamma} (keV);Counts",
+						   react->GetGammaExGate(0), react->GetGammaExGate(1) );
+			gamma_array_cut_dc_exgate[i] = new TH1F( hname.data(), htitle.data(),
+													react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax() );
+
+			hname = "gamma_gamma_array_cut" + std::to_string(i) + "_dc";
+			htitle = "Gamma-ray coincidence matrix (Doppler corrected for the recoil, CeBr3 only), gated on array events in cut " + std::to_string(i);
+			htitle += ", time-random subtracted;Energy (keV);Energy (keV);Counts";
+			gamma_gamma_array_cut_dc[i] = new TH2F( hname.data(), htitle.data(),
 												react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax(),
 												react->HistGammaBins(), react->HistGammaMin(), react->HistGammaMax() );
 
@@ -3236,8 +3273,10 @@ void ISSHistogrammer::ResetHists() {
 		gamma_gamma_recoil->Reset("ICESM");
 		gamma_gamma_array->Reset("ICESM");
 		gamma_Ex_ebis->Reset("ICESM");
+		gamma_Ex_ebis_dc->Reset("ICESM");
 		gamma_Ex_fission->Reset("ICESM");
 		gamma_Ex_recoil->Reset("ICESM");
+		gamma_Ex_recoil_dc->Reset("ICESM");
 		gamma_gamma_td->Reset("ICESM");
 		gamma_fission_td->Reset("ICESM");
 		gamma_recoil_td->Reset("ICESM");
@@ -3247,6 +3286,14 @@ void ISSHistogrammer::ResetHists() {
 			gamma_array_cut[i]->Reset("ICESM");
 		for( unsigned int i = 0; i < gamma_gamma_array_cut.size(); ++i )
 			gamma_gamma_array_cut[i]->Reset("ICESM");
+		for( unsigned int i = 0; i < gamma_Ex_cut_dc.size(); ++i )
+			gamma_Ex_cut_dc[i]->Reset("ICESM");
+		for( unsigned int i = 0; i < gamma_array_cut_dc.size(); ++i )
+			gamma_array_cut_dc[i]->Reset("ICESM");
+		for( unsigned int i = 0; i < gamma_array_cut_dc_exgate.size(); ++i )
+			gamma_array_cut_dc_exgate[i]->Reset("ICESM");
+		for( unsigned int i = 0; i < gamma_gamma_array_cut_dc.size(); ++i )
+			gamma_gamma_array_cut_dc[i]->Reset("ICESM");
 
 	}
 
@@ -3426,6 +3473,36 @@ unsigned long ISSHistogrammer::FillHists() {
 							else if( RandomCoincidence( gamma_evt1, array_evt ) )
 								gamma_array_cut[k]->Fill( gamma_evt1->GetEnergy(), -1.0 * react->GetArrayGammaFillRatio() );
 
+							// Ex versus Egamma, Doppler corrected
+							if( gamma_evt1->GetType() == 0 ) {
+
+								double gen_dc = react->DopplerCorrection( gamma_evt1->GetEnergy(), gamma_evt1->GetID() );
+
+								if( PromptCoincidence( gamma_evt1, array_evt ) )
+									gamma_Ex_cut_dc[k]->Fill( gen_dc, react->GetEx() );
+
+								else if( RandomCoincidence( gamma_evt1, array_evt ) )
+									gamma_Ex_cut_dc[k]->Fill( gen_dc, react->GetEx(), -1.0 * react->GetArrayGammaFillRatio() );
+
+								if( PromptCoincidence( gamma_evt1, array_evt ) )
+									gamma_array_cut_dc[k]->Fill( gen_dc );
+
+								else if( RandomCoincidence( gamma_evt1, array_evt ) )
+									gamma_array_cut_dc[k]->Fill( gen_dc, -1.0 * react->GetArrayGammaFillRatio() );
+
+								// Same, but for Ex inside the gate (specified in reaction.dat)
+								if( react->GetEx() > react->GetGammaExGate(0) && react->GetEx() < react->GetGammaExGate(1) ) {
+
+									if( PromptCoincidence( gamma_evt1, array_evt ) )
+										gamma_array_cut_dc_exgate[k]->Fill( gen_dc );
+
+									else if( RandomCoincidence( gamma_evt1, array_evt ) )
+										gamma_array_cut_dc_exgate[k]->Fill( gen_dc, -1.0 * react->GetArrayGammaFillRatio() );
+
+								}
+
+							}
+
 							// Loop over second gamma-ray events
 							for( unsigned int m = 0; m < read_evts->GetGammaRayMultiplicity(); ++m ) {
 
@@ -3447,6 +3524,25 @@ unsigned long ISSHistogrammer::FillHists() {
 
 								else if( RandomCoincidence( gamma_evt1, array_evt ) && RandomCoincidence( gamma_evt1, gamma_evt2 ) )
 									gamma_gamma_array_cut[k]->Fill( gamma_evt1->GetEnergy(), gamma_evt2->GetEnergy(), react->GetGammaGammaFillRatio() * react->GetArrayGammaFillRatio());
+
+								// Egamma matrix (Doppler corrected)
+								if( gamma_evt1->GetType() == 0 && gamma_evt2->GetType() == 0 ) {
+
+									double w = 0.0;
+									if( PromptCoincidence( gamma_evt1, array_evt ) && PromptCoincidence( gamma_evt1, gamma_evt2 ) )
+										w = 1.0;
+									else if( RandomCoincidence( gamma_evt1, array_evt ) && PromptCoincidence( gamma_evt1, gamma_evt2 ) )
+										w = -1.0 * react->GetArrayGammaFillRatio();
+									else if( PromptCoincidence( gamma_evt1, array_evt ) && RandomCoincidence( gamma_evt1, gamma_evt2 ) )
+										w = -1.0 * react->GetGammaGammaFillRatio();
+									else if( RandomCoincidence( gamma_evt1, array_evt ) && RandomCoincidence( gamma_evt1, gamma_evt2 ) )
+										w = react->GetGammaGammaFillRatio() * react->GetArrayGammaFillRatio();
+
+									if( w != 0.0 )
+										gamma_gamma_array_cut_dc[k]->Fill( react->DopplerCorrection( gamma_evt1->GetEnergy(), gamma_evt1->GetID() ),
+																		 react->DopplerCorrection( gamma_evt2->GetEnergy(), gamma_evt2->GetID() ), w );
+
+								}
 
 							} // m
 
@@ -3505,6 +3601,19 @@ unsigned long ISSHistogrammer::FillHists() {
 
 						else if( RandomCoincidence( gamma_evt1, array_evt ) )
 							gamma_Ex_ebis->Fill( gamma_evt1->GetEnergy(), react->GetEx(), -1.0 * react->GetArrayGammaFillRatio() );
+
+						// Ex versus Egamma, Doppler corrected
+						if( gamma_evt1->GetType() == 0 ) {
+
+							double gen_dc = react->DopplerCorrection( gamma_evt1->GetEnergy(), gamma_evt1->GetID() );
+
+							if( PromptCoincidence( gamma_evt1, array_evt ) )
+								gamma_Ex_ebis_dc->Fill( gen_dc, react->GetEx() );
+
+							else if( RandomCoincidence( gamma_evt1, array_evt ) )
+								gamma_Ex_ebis_dc->Fill( gen_dc, react->GetEx(), -1.0 * react->GetArrayGammaFillRatio() );
+
+						}
 
 					} // k
 
@@ -3603,6 +3712,19 @@ unsigned long ISSHistogrammer::FillHists() {
 
 						else if( RandomCoincidence( gamma_evt1, array_evt ) )
 							gamma_Ex_ebis->Fill( gamma_evt1->GetEnergy(), react->GetEx(), -1.0 * react->GetEBISFillRatio() * react->GetArrayGammaFillRatio() );
+
+						// Ex versus Egamma, Doppler corrected
+						if( gamma_evt1->GetType() == 0 ) {
+
+							double gen_dc = react->DopplerCorrection( gamma_evt1->GetEnergy(), gamma_evt1->GetID() );
+
+							if( PromptCoincidence( gamma_evt1, array_evt ) )
+								gamma_Ex_ebis_dc->Fill( gen_dc, react->GetEx(), -1.0 * react->GetEBISFillRatio() );
+
+							else if( RandomCoincidence( gamma_evt1, array_evt ) )
+								gamma_Ex_ebis_dc->Fill( gen_dc, react->GetEx(), -1.0 * react->GetEBISFillRatio() * react->GetArrayGammaFillRatio() );
+
+						}
 
 					} // k
 
@@ -4184,6 +4306,19 @@ unsigned long ISSHistogrammer::FillHists() {
 							else if( RandomCoincidence( gamma_evt1, array_evt ) )
 								gamma_Ex_recoil->Fill( gamma_evt1->GetEnergy(), react->GetEx(), -1.0 * react->GetArrayGammaFillRatio() );
 
+							// Ex versus Egamma, Doppler corrected
+							if( gamma_evt1->GetType() == 0 ) {
+
+								double gen_dc = react->DopplerCorrection( gamma_evt1->GetEnergy(), gamma_evt1->GetID() );
+
+								if( PromptCoincidence( gamma_evt1, array_evt ) )
+									gamma_Ex_recoil_dc->Fill( gen_dc, react->GetEx() );
+
+								else if( RandomCoincidence( gamma_evt1, array_evt ) )
+									gamma_Ex_recoil_dc->Fill( gen_dc, react->GetEx(), -1.0 * react->GetArrayGammaFillRatio() );
+
+							}
+
 						} // k
 
 					} // gamma-ray hists enabled
@@ -4300,6 +4435,19 @@ unsigned long ISSHistogrammer::FillHists() {
 
 							else if( RandomCoincidence( gamma_evt1, array_evt ) )
 								gamma_Ex_recoil->Fill( gamma_evt1->GetEnergy(), react->GetEx(), react->GetArrayRecoilFillRatio() * react->GetArrayGammaFillRatio() );
+
+							// Ex versus Egamma, Doppler corrected
+							if( gamma_evt1->GetType() == 0 ) {
+
+								double gen_dc = react->DopplerCorrection( gamma_evt1->GetEnergy(), gamma_evt1->GetID() );
+
+								if( PromptCoincidence( gamma_evt1, array_evt ) )
+									gamma_Ex_recoil_dc->Fill( gen_dc, react->GetEx(), -1.0 * react->GetArrayRecoilFillRatio() );
+
+								else if( RandomCoincidence( gamma_evt1, array_evt ) )
+									gamma_Ex_recoil_dc->Fill( gen_dc, react->GetEx(), react->GetArrayRecoilFillRatio() * react->GetArrayGammaFillRatio() );
+
+							}
 
 						} // k
 
